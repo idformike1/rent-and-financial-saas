@@ -1,0 +1,15 @@
+# .aiignore
+.next/
+out/
+build/
+dist/
+node_modules/
+.env
+.env.local
+.env.production
+*.pem
+prisma/migrations/
+prisma/generated/
+public/images/
+public/fonts/
+next-env.d.ts

@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------------------------------
+// Operational Entities
+// ----------------------------------------------------------------------------
+
+enum MaintenanceStatus {
+  OPERATIONAL
+  UNDER_REPAIR
+  DECOMMISSIONED
+}
+
+model Unit {
+  id                String            @id @default(uuid())
+  propertyId        String
+  unitNumber        String
+  type              String            // e.g., "Apartment", "Parking", "Storage"
+  maintenanceStatus MaintenanceStatus @default(OPERATIONAL)
+  leases            Lease[]
+}
+
+model Tenant {
+  id      String   @id @default(uuid())
+  name    String
+  leases  Lease[]
+  charges Charge[]
+}
+
+model Lease {
+  id          String   @id @default(uuid())
+  tenantId    String
+  unitId      String
+  isPrimary   Boolean  @default(false)
+  rentAmount  Decimal
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  
+  unit        Unit     @relation(fields: [unitId], references: [id])
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  charges     Charge[]
+}
+
+// ----------------------------------------------------------------------------
+// Financial Entities
+// ----------------------------------------------------------------------------
+
+enum ChargeType {
+  RENT
+  WATER_SUBMETER
+  ELEC_SUBMETER
+  LATE_FEE
+  CREDIT
+}
+
+enum AccountCategory {
+  ASSET       // Cash, Bank Checking, Savings
+  INCOME      // Rental Revenue, Utility Recovery
+  EXPENSE     // Master Water Bill, Master Elec Bill, Personal Draw
+}
+
+model Charge {
+  id          String     @id @default(uuid())
+  tenantId    String
+  leaseId     String     
+  type        ChargeType
+  amount      Decimal
+  amountPaid  Decimal    @default(0.00)
+  dueDate     DateTime
+  isFullyPaid Boolean    @default(false)
+
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  lease       Lease      @relation(fields: [leaseId], references: [id])
+}
+
+model Account {
+  id          String          @id @default(uuid())
+  name        String          
+  category    AccountCategory
+  entries     LedgerEntry[]
+}
+
+model LedgerEntry {
+  id            String   @id @default(uuid())
+  transactionId String   
+  accountId     String
+  amount        Decimal  
+  date          DateTime
+  description   String
+
+  account       Account  @relation(fields: [accountId], references: [id])
+}
+
+// ----------------------------------------------------------------------------
+// Audit Trail Entities
+// ----------------------------------------------------------------------------
+
+enum AuditActionType {
+  WAIVE_OFF
+  MANUAL_CREDIT
+  VOID_PAYMENT
+  MAINTENANCE_DECOMMISSION
+}
+
+model AuditLog {
+  id            String          @id @default(uuid())
+  timestamp     DateTime        @default(now())
+  managerId     String          
+  actionType    AuditActionType 
+  targetId      String          
+  amountContext Decimal         
+  reasonText    String          
+}

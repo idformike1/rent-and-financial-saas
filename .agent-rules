@@ -1,0 +1,6 @@
+# AUTONOMOUS AGENT BEHAVIORAL PROTOCOLS
+
+1. **Think Before You Mutate:** Before running terminal commands like `npm install` or editing a core file, briefly write out your logic in a comment or plan.
+2. **The "No Guessing" Rule:** If a TypeScript error occurs regarding a Prisma type mismatch, DO NOT use `@ts-ignore`. Inspect the generated types and fix the data shape.
+3. **Graceful Failure:** If you get stuck in an error loop (e.g., failing to resolve an import 3 times), STOP executing and wait for human intervention.
+4. **No Placeholder Code:** Write complete, production-ready logic for every file you touch.

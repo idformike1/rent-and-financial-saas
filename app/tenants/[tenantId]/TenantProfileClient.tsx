@@ -1,0 +1,90 @@
+'use client'
+
+import { useState } from 'react'
+import PaymentDrawer from '@/components/PaymentDrawer'
+import { ChargeDTO, TenantDTO } from '@/types'
+import { CreditCard, FileText } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
+export default function TenantProfileClient({ tenant, charges }: { tenant: TenantDTO, charges: ChargeDTO[] }) {
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const router = useRouter()
+
+  const handleSuccess = () => {
+    setDrawerOpen(false)
+    router.refresh() // Refresh the server component to pull new ledger data
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row gap-8">
+      {/* Left Column: Profile */}
+      <div className="w-full md:w-1/3 bg-white border border-slate-200 shadow-sm sm:rounded-lg p-6 h-fit">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-slate-900">{tenant.name}</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 uppercase tracking-wide">
+            Active
+          </span>
+        </div>
+        
+        <div className="space-y-4">
+          <button 
+            onClick={() => setDrawerOpen(true)}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors"
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Receive Payment
+          </button>
+        </div>
+      </div>
+
+      {/* Right Column: Ledger / Charges */}
+      <div className="w-full md:w-2/3 bg-white border border-slate-200 shadow-sm sm:rounded-lg overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+          <h3 className="text-lg leading-6 font-medium text-slate-900 flex items-center">
+            <FileText className="mr-2 h-5 w-5 text-slate-500" />
+            Outstanding Charges
+          </h3>
+          <span className="text-sm font-medium text-slate-500">
+            Total Due: ${charges.reduce((acc, c) => acc + (c.amount - c.amountPaid), 0).toFixed(2)}
+          </span>
+        </div>
+        
+        <ul className="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
+          {charges.length === 0 ? (
+            <li className="px-6 py-10 text-center text-slate-500 text-sm italic">
+              No outstanding charges found.
+            </li>
+          ) : (
+            charges.map((charge) => (
+              <li key={charge.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-900 truncate uppercase tracking-wider">
+                      {charge.type}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Due: {new Date(charge.dueDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-slate-900">
+                      ${(charge.amount - charge.amountPaid).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+
+      <PaymentDrawer 
+        tenant={tenant} 
+        activeCharges={charges} 
+        isOpen={drawerOpen} 
+        onClose={() => setDrawerOpen(false)} 
+        onSuccess={handleSuccess} 
+      />
+    </div>
+  )
+}
