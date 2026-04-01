@@ -5,9 +5,11 @@ import { usePathname } from 'next/navigation'
 import { Landmark, Users, Building, FileText, Search } from 'lucide-react'
 
 const navigation = [
-  { name: 'Treasury', href: '/treasury', icon: Landmark },
-  { name: 'Tenants', href: '/tenants', icon: Users },
+  { name: 'Dashboard', href: '/treasury', icon: Landmark },
   { name: 'Properties', href: '/properties', icon: Building },
+  { name: 'Tenants', href: '/tenants', icon: Users },
+  { name: 'Onboarding', href: '/onboarding', icon: Search }, // Using Search for Onboarding/Discovery
+  { name: 'Expenses', href: '/expenses', icon: FileText },
   { name: 'Master Ledger', href: '/reports/master-ledger', icon: FileText },
 ]
 
@@ -21,7 +23,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const breadcrumbs = pathname
     .split('/')
     .filter(Boolean)
-    .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .map(segment => {
+      if (segment === 'treasury') return 'Dashboard';
+      return segment.charAt(0).toUpperCase() + segment.slice(1);
+    })
 
   return (
     <div className="flex h-screen bg-white">

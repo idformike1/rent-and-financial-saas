@@ -1,50 +1,58 @@
 import prisma from '@/lib/prisma'
-import TenantProfileClient from './TenantProfileClient'
 import { notFound } from 'next/navigation'
-import { ChargeDTO } from '@/types'
+import TenantProfileView from '@/app/tenants/[tenantId]/TenantProfileView'
 
 export default async function TenantProfilePage({ params }: { params: { tenantId: string } }) {
-  const paramData = await params;
-  const tId = paramData.tenantId;
+  const { tenantId } = params;
 
   const tenant = await prisma.tenant.findUnique({
-    where: { id: tId },
+    where: { id: tenantId },
     include: {
+      leases: {
+        include: { unit: true },
+        orderBy: { startDate: 'desc' }
+      },
       charges: {
-        where: { isFullyPaid: false, amount: { gt: 0 } },
-        include: { lease: true }
+        where: { isFullyPaid: false },
+        orderBy: { dueDate: 'asc' }
       }
     }
-  })
-
-  if (!tenant) notFound()
-
-  // Algorithm A Data Prep: Ensure charges are sorted exactly as Algorithm A will sort them backend
-  const sortedCharges = tenant.charges.sort((a, b) => {
-    if (a.lease.isPrimary && !b.lease.isPrimary) return -1;
-    if (!a.lease.isPrimary && b.lease.isPrimary) return 1;
-    return a.dueDate.getTime() - b.dueDate.getTime();
   });
 
-  const chargesDTO: ChargeDTO[] = sortedCharges.map(c => ({
+  if (!tenant) {
+    notFound();
+  }
+
+  // Map to DTOs for the client component
+  const tenantDTO = {
+    id: tenant.id,
+    name: tenant.name
+  };
+
+  const chargesDTO = tenant.charges.map(c => ({
     id: c.id,
-    tenantId: c.tenantId,
-    leaseId: c.leaseId,
     type: c.type,
     amount: c.amount.toNumber(),
     amountPaid: c.amountPaid.toNumber(),
     dueDate: c.dueDate,
     isFullyPaid: c.isFullyPaid
-  }))
+  }));
 
-  const tenantDTO = {
-    id: tenant.id,
-    name: tenant.name
-  }
+  const activeLease = tenant.leases.find(l => l.isActive);
 
   return (
     <div className="py-6">
-      <TenantProfileClient tenant={tenantDTO} charges={chargesDTO} />
+      <TenantProfileView 
+        tenant={tenantDTO} 
+        activeLease={activeLease ? {
+          id: activeLease.id,
+          unitNumber: activeLease.unit.unitNumber,
+          rentAmount: activeLease.rentAmount.toNumber(),
+          startDate: activeLease.startDate,
+          endDate: activeLease.endDate
+        } : null}
+        charges={chargesDTO}
+      />
     </div>
-  )
+  );
 }
