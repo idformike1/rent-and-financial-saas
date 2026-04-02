@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { fetchTeamMembers } from "@/actions/team.actions"
 import UserTable from "@/components/team/UserTable"
+import InviteOperatorButton from "@/components/team/InviteOperatorButton"
 import { Users, UserCheck, ShieldAlert, Plus } from "lucide-react"
 
 export default async function TeamPage() {
@@ -23,10 +24,7 @@ export default async function TeamPage() {
           </div>
         </div>
 
-        <button className="flex items-center gap-4 bg-[#FF3D00] text-black border-4 border-black px-8 py-5 font-black uppercase tracking-widest shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all focus:outline-none">
-          <Plus size={32} />
-          <span className="text-xl">Invite Operator</span>
-        </button>
+        <InviteOperatorButton />
       </header>
 
       {/* Stats Bar */}
@@ -62,7 +60,7 @@ export default async function TeamPage() {
           Registry Overview
         </h2>
         <UserTable 
-          users={members.map(m => ({
+          users={members.map((m: any) => ({
             ...m,
             role: m.role as string
           }))} 

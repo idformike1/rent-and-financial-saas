@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import bcrypt from "bcryptjs"
 
 // Helper to ensure the user is an OWNER in the organization
 async function ensureOwner() {
@@ -115,4 +116,34 @@ export async function deleteUserForever(userId: string) {
   })
   
   revalidatePath('/settings/team')
+}
+
+export async function inviteMember(email: string, name: string) {
+  const session = await ensureOwner()
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email }
+  })
+
+  if (existingUser) {
+    throw new Error("User already exists in the system.")
+  }
+
+  const defaultPassword = "password123" 
+  const passwordHash = await bcrypt.hash(defaultPassword, 10)
+
+  const newUser = await prisma.user.create({
+    data: {
+      email,
+      name,
+      passwordHash,
+      role: 'MANAGER',
+      organizationId: session.user.organizationId,
+      isActive: true,
+      canEdit: true,
+    }
+  })
+
+  revalidatePath('/settings/team')
+  return { success: true, user: newUser }
 }
