@@ -8,6 +8,8 @@ declare module "next-auth" {
       role: string
       organizationId: string
       organizationName: string
+      isActive: boolean
+      canEdit: boolean
     } & DefaultSession["user"]
   }
 
@@ -15,6 +17,8 @@ declare module "next-auth" {
     role: string
     organizationId: string
     organizationName: string
+    isActive: boolean
+    canEdit: boolean
   }
 }
 
@@ -24,5 +28,7 @@ declare module "next-auth/jwt" {
     role: string
     organizationId: string
     organizationName: string
+    isActive: boolean
+    canEdit: boolean
   }
 }

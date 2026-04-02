@@ -215,10 +215,12 @@ model Organization {
 model User {
   id             String       @id @default(uuid())
   email          String       @unique
-  password       String
+  passwordHash   String       @map("password")
   name           String?
-  role           String       @default("MANAGER")
+  role           String       @default("MANAGER") // OWNER, ADMIN, MANAGER
   organizationId String
+  isActive       Boolean      @default(true)
+  canEdit        Boolean      @default(true)
   createdAt      DateTime     @default(now())
   
   organization   Organization @relation(fields: [organizationId], references: [id])

@@ -3,8 +3,7 @@ import { authConfig } from './auth.config';
 
 const { auth } = NextAuth(authConfig);
 
-// In Next.js 16+, the proxy.ts file must export a named function or have a specific structure.
-// Using 'proxy' as the exported name to satisfy the new requirement.
+// In Next.js 16+, migration to proxy.ts is recommended over middleware.ts.
 export const proxy = auth((req) => {
   const isAuth = !!req.auth;
   const isLoginPage = req.nextUrl.pathname.startsWith('/login');
@@ -12,6 +11,14 @@ export const proxy = auth((req) => {
 
   // Allow API auth routes
   if (isApiAuthRoute) return;
+
+  // Enterprise Enforcement: Check if user is active
+  if (isAuth && !req.auth?.user?.isActive) {
+    if (isLoginPage) return; // Allow staying on login to see error
+    const errorUrl = new URL('/login', req.nextUrl.origin);
+    errorUrl.searchParams.set('error', 'deactivated');
+    return Response.redirect(errorUrl);
+  }
 
   // Protect all other routes
   if (!isAuth && !isLoginPage) {

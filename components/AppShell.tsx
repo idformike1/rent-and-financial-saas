@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Expenses', href: '/expenses', icon: FileText },
   { name: 'Intelligence Hub', href: '/reports', icon: Activity },
   { name: 'Master Ledger', href: '/reports/master-ledger', icon: FileText },
+  { name: 'Team', href: '/settings/team', icon: Users },
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -50,6 +51,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
           <nav className="space-y-2">
             {navigation.map((item) => {
+              if (item.name === 'Team' && session?.user?.role !== 'OWNER') return null;
               const isActive = pathname.startsWith(item.href)
               return (
                 <Link
