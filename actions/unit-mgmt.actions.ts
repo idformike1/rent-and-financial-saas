@@ -6,10 +6,11 @@ import { MaintenanceStatus } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export async function createUnit(data: { unitNumber: string, type: string, category: string, propertyId: string }) {
-  return runSecureServerAction('MANAGER', async () => {
+  return runSecureServerAction('MANAGER', async (session) => {
     try {
       const unit = await prisma.unit.create({
         data: {
+          organizationId: session.organizationId,
           unitNumber: data.unitNumber,
           type: data.type,
           category: data.category,
@@ -26,11 +27,11 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
 }
 
 export async function updateUnitStatus(unitId: string, status: MaintenanceStatus) {
-  return runSecureServerAction('MANAGER', async () => {
+  return runSecureServerAction('MANAGER', async (session) => {
     try {
       if (status === 'DECOMMISSIONED') {
         const activeLeases = await prisma.lease.count({
-          where: { unitId, isActive: true }
+          where: { unitId, isActive: true, organizationId: session.organizationId }
         });
         if (activeLeases > 0) {
           return { 
@@ -42,7 +43,7 @@ export async function updateUnitStatus(unitId: string, status: MaintenanceStatus
       }
 
       const unit = await prisma.unit.update({
-        where: { id: unitId },
+        where: { id: unitId, organizationId: session.organizationId },
         data: { maintenanceStatus: status }
       });
       revalidatePath('/properties');

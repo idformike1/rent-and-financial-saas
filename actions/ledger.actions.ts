@@ -18,10 +18,10 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
       }
 
       const tenant = await prisma.tenant.findUnique({
-        where: { id: payload.tenantId },
+        where: { id: payload.tenantId, organizationId: session.organizationId },
         include: {
           charges: {
-            where: { isFullyPaid: false, amount: { gt: 0 } }, 
+            where: { isFullyPaid: false, amount: { gt: 0 }, organizationId: session.organizationId }, 
             include: { lease: true }
           }
         }
@@ -67,7 +67,7 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
         
         txOps.push(
           prisma.charge.update({
-            where: { id: charge.id },
+            where: { id: charge.id, organizationId: session.organizationId },
             data: {
               amountPaid: charge.amountPaid.plus(amountToApply),
               isFullyPaid: newIsFullyPaid
@@ -89,6 +89,7 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
           txOps.push(
             prisma.charge.create({
               data: {
+                organizationId: session.organizationId,
                 tenantId: tenant.id,
                 leaseId: activeLease.id,
                 type: 'CREDIT',
@@ -102,8 +103,8 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
         }
       }
 
-      const assetAccount = await prisma.account.findFirst({ where: { category: AccountCategory.ASSET } });
-      const revenueAccount = await prisma.account.findFirst({ where: { name: 'Rental Revenue' } });
+      const assetAccount = await prisma.account.findFirst({ where: { category: AccountCategory.ASSET, organizationId: session.organizationId } });
+      const revenueAccount = await prisma.account.findFirst({ where: { name: 'Rental Revenue', organizationId: session.organizationId } });
 
       if (!assetAccount || !revenueAccount) {
         return { success: false, message: "System Ledger Error: Revenue accounts not reached.", errorCode: "STATE_CONFLICT" };
@@ -116,6 +117,7 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
       txOps.push(
         prisma.ledgerEntry.create({
           data: {
+            organizationId: session.organizationId,
             transactionId,
             accountId: assetAccount.id,
             amount: new Prisma.Decimal(payload.amountPaid),
@@ -132,6 +134,7 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
       txOps.push(
         prisma.ledgerEntry.create({
           data: {
+            organizationId: session.organizationId,
             transactionId,
             accountId: revenueAccount.id,
             amount: new Prisma.Decimal(payload.amountPaid).negated(),
@@ -160,17 +163,18 @@ export async function reconcileUtilities(propertyId: string, startDate: Date, en
   return runSecureServerAction('MANAGER', async (session) => {
     // 1. Fetch Master Expense (Water/Elec) for the period
     const expenseAccounts = await prisma.account.findMany({
-      where: { category: AccountCategory.EXPENSE, name: { contains: 'Master' } }
+      where: { category: AccountCategory.EXPENSE, name: { contains: 'Master' }, organizationId: session.organizationId }
     });
 
     // 2. Fetch Utility Recovery Income for the period
     const incomeAccounts = await prisma.account.findMany({
-      where: { category: AccountCategory.INCOME, name: { contains: 'Utility Recovery' } }
+      where: { category: AccountCategory.INCOME, name: { contains: 'Utility Recovery' }, organizationId: session.organizationId }
     });
 
     const expenseEntryAgg = await prisma.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: {
+        organizationId: session.organizationId,
         accountId: { in: expenseAccounts.map((a: any) => a.id) },
         date: { gte: startDate, lte: endDate }
       }
@@ -179,6 +183,7 @@ export async function reconcileUtilities(propertyId: string, startDate: Date, en
     const incomeEntryAgg = await prisma.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: {
+        organizationId: session.organizationId,
         accountId: { in: incomeAccounts.map((a: any) => a.id) },
         date: { gte: startDate, lte: endDate }
       }

@@ -1,18 +1,27 @@
-// Role-Based Access Control Definitions
+import { auth } from "@/auth";
+
 export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN';
 
 export interface SessionContext {
   userId: string;
   role: UserRole;
+  organizationId: string;
+  organizationName: string;
 }
 
 /**
- * MOCK: In production, securely get the session from NextAuth or similar.
+ * SECURE: Retrieves the session from NextAuth.
  */
 export async function getCurrentSession(): Promise<SessionContext | null> {
+  const session = await auth();
+  
+  if (!session?.user) return null;
+
   return {
-    userId: 'mock-manager-123',
-    role: 'MANAGER',
+    userId: session.user.id as string,
+    role: session.user.role as UserRole,
+    organizationId: session.user.organizationId as string,
+    organizationName: session.user.organizationName as string,
   };
 }
 
@@ -26,11 +35,15 @@ export async function verifyRole(requiredRole: UserRole, currentRole: UserRole):
     'ADMIN': 3
   };
   
-  return roleHierarchy[currentRole] >= roleHierarchy[requiredRole];
+  return roleHierarchy[currentRole] <= roleHierarchy[requiredRole];
 }
 
 /**
  * Server Action wrapper protecting database mutations
+ * 
+ * CRITICAL WARNING: To ensure complete SaaS tenant isolation, 
+ * ALL future database queries within these actions MUST append 
+ * `where: { organizationId: session.organizationId }`.
  */
 export async function runSecureServerAction<T>(
   requiredRole: UserRole, 

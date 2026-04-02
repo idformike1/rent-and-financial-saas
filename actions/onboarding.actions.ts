@@ -23,6 +23,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
       if (data.email || data.phone) {
         const existing = await prisma.tenant.findFirst({
           where: {
+            organizationId: session.organizationId,
             OR: [
               ...(data.email ? [{ email: data.email }] : []),
               ...(data.phone ? [{ phone: data.phone }] : [])
@@ -41,7 +42,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
       }
 
       const unit = await prisma.unit.findUnique({ 
-        where: { id: data.unitId },
+        where: { id: data.unitId, organizationId: session.organizationId },
         include: { leases: { where: { isActive: true } } }
       });
       if (!unit) return { success: false, message: "Unit not found", errorCode: "VALIDATION_ERROR" };
@@ -77,6 +78,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
         // Step 1: Create Tenant with Enterprise fields
         const tenant = await txOps.tenant.create({
           data: { 
+            organizationId: session.organizationId,
             name: data.tenantName,
             email: data.email,
             phone: data.phone,
@@ -91,6 +93,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
 
         const lease = await txOps.lease.create({
           data: {
+            organizationId: session.organizationId,
             tenantId: tenant.id,
             unitId: data.unitId,
             isPrimary: true,
@@ -105,6 +108,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
         // Step 3: Financial Initialization
         await txOps.charge.create({
           data: {
+            organizationId: session.organizationId,
             tenantId: tenant.id,
             leaseId: lease.id,
             type: 'RENT', 
@@ -117,6 +121,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
 
         await txOps.charge.create({
           data: {
+            organizationId: session.organizationId,
             tenantId: tenant.id,
             leaseId: lease.id,
             type: 'RENT', 
@@ -128,7 +133,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
         });
 
         await txOps.unit.update({
-          where: { id: unit.id },
+          where: { id: unit.id, organizationId: session.organizationId },
           data: { maintenanceStatus: 'OPERATIONAL' }
         });
 

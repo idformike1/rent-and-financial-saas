@@ -1,26 +1,38 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import NextAuth from 'next-auth';
+import { authConfig } from './auth.config';
 
-export function proxy(request: NextRequest) {
-  const isLoginPage = request.nextUrl.pathname.startsWith('/login')
-  
-  // MOCK: Checking for an auth token. In production, this verifies a JWT or NextAuth session cookie.
-  const hasToken = request.cookies.has('auth-session')
+const { auth } = NextAuth(authConfig);
 
-  if (!hasToken && !isLoginPage) {
-    // Redirect unauthenticated traffic to /login
-    return NextResponse.redirect(new URL('/login', request.url))
+// In Next.js 16+, migration to proxy.ts is recommended over middleware.ts.
+export const proxy = auth((req) => {
+  const isAuth = !!req.auth;
+  const isLoginPage = req.nextUrl.pathname.startsWith('/login');
+  const isApiAuthRoute = req.nextUrl.pathname.startsWith('/api/auth');
+
+  // Allow API auth routes
+  if (isApiAuthRoute) return;
+
+  // Enterprise Enforcement: Check if user is active
+  if (isAuth && !req.auth?.user?.isActive) {
+    if (isLoginPage) return; // Allow staying on login to see error
+    const errorUrl = new URL('/login', req.nextUrl.origin);
+    errorUrl.searchParams.set('error', 'deactivated');
+    return Response.redirect(errorUrl);
   }
 
-  if (hasToken && isLoginPage) {
-    // If logged in, don't stay on the login page
-    return NextResponse.redirect(new URL('/treasury', request.url))
+  // Protect all other routes
+  if (!isAuth && !isLoginPage) {
+    const loginUrl = new URL('/login', req.nextUrl.origin);
+    return Response.redirect(loginUrl);
   }
 
-  return NextResponse.next()
-}
+  // Redirect to dashboard if logged in and trying to access /login
+  if (isAuth && isLoginPage) {
+    const dashboardUrl = new URL('/treasury', req.nextUrl.origin);
+    return Response.redirect(dashboardUrl);
+  }
+});
 
 export const config = {
-  // Protect all routes except static assets, internal files, and API routes
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-}
+};

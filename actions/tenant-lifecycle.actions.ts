@@ -7,10 +7,10 @@ import { revalidatePath } from 'next/cache'
 import { MaintenanceStatus } from '@prisma/client'
 
 export async function updateTenantDetails(tenantId: string, data: { name: string, email?: string, phone?: string, nationalId?: string }) {
-  return runSecureServerAction('MANAGER', async () => {
+  return runSecureServerAction('MANAGER', async (session) => {
     try {
       const tenant = await prisma.tenant.update({
-        where: { id: tenantId },
+        where: { id: tenantId, organizationId: session.organizationId },
         data: { 
           name: data.name,
           email: data.email,
@@ -32,17 +32,17 @@ export async function updateTenantDetails(tenantId: string, data: { name: string
  * Rule #4: Data is immutable history. No restoration permitted.
  */
 export async function softDeleteTenant(tenantId: string) {
-  return runSecureServerAction('MANAGER', async () => {
+  return runSecureServerAction('MANAGER', async (session) => {
     try {
       await prisma.$transaction([
         // Step 1: Soft Delete Tenant
         prisma.tenant.update({
-          where: { id: tenantId },
+          where: { id: tenantId, organizationId: session.organizationId },
           data: { isDeleted: true }
         }),
         // Step 2: Archive all active leases
         prisma.lease.updateMany({
-           where: { tenantId, isActive: true },
+           where: { tenantId, isActive: true, organizationId: session.organizationId },
            data: { isActive: false, endDate: new Date() }
         })
       ]);
@@ -64,9 +64,9 @@ export async function addAdditionalLease(data: {
   depositAmount: number,
   startDate: string 
 }) {
-  return runSecureServerAction('MANAGER', async () => {
+  return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const unit = await prisma.unit.findUnique({ where: { id: data.unitId } });
+      const unit = await prisma.unit.findUnique({ where: { id: data.unitId, organizationId: session.organizationId } });
       if (!unit) return { success: false, message: "Unit not found" };
       
       // Rule #3: Block Decommissioned Units
@@ -81,6 +81,7 @@ export async function addAdditionalLease(data: {
       await prisma.$transaction([
         prisma.lease.create({
           data: {
+            organizationId: session.organizationId,
             tenantId: data.tenantId,
             unitId: data.unitId,
             isPrimary: false, // Additional leases are secondary
@@ -92,7 +93,7 @@ export async function addAdditionalLease(data: {
           }
         }),
         prisma.unit.update({
-          where: { id: data.unitId },
+          where: { id: data.unitId, organizationId: session.organizationId },
           data: { maintenanceStatus: 'OPERATIONAL' }
         })
       ]);
@@ -107,19 +108,19 @@ export async function addAdditionalLease(data: {
 }
 
 export async function processMoveOut(tenantId: string, leaseId: string, unitId: string) {
-  return runSecureServerAction('MANAGER', async () => {
+  return runSecureServerAction('MANAGER', async (session) => {
     try {
       await prisma.$transaction([
         prisma.lease.update({
-          where: { id: leaseId },
+          where: { id: leaseId, organizationId: session.organizationId },
           data: { isActive: false, endDate: new Date() }
         }),
         prisma.unit.update({
-          where: { id: unitId },
+          where: { id: unitId, organizationId: session.organizationId },
           data: { maintenanceStatus: 'OPERATIONAL' }
         }),
         prisma.charge.deleteMany({
-           where: { tenantId, leaseId, isFullyPaid: false }
+           where: { tenantId, leaseId, isFullyPaid: false, organizationId: session.organizationId }
         })
       ]);
       
