@@ -17,7 +17,7 @@ export async function waiveCharge(chargeId: string, reasonText: string) {
     if (balance.lte(0)) return { success: false, message: "Charge is already fully paid." }
 
     try {
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         // 1. Waive the remaining balance by marking it as paid (system credit essentially)
         await tx.charge.update({
           where: { id: chargeId },

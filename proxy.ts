@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname.startsWith('/login')
   
   // MOCK: Checking for an auth token. In production, this verifies a JWT or NextAuth session cookie.
