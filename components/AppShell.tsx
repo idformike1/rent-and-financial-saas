@@ -3,7 +3,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield, ChevronRight } from 'lucide-react'
+import { toast } from '@/lib/toast'
+import { globalSearch, SearchResult } from '@/actions/search.actions'
 
 const navigation = [
   { name: 'Dashboard', href: '/treasury', icon: Landmark },
@@ -19,6 +22,25 @@ const navigation = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+
+  // Search State
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
+
+  useEffect(() => {
+    const fetchSearch = async () => {
+      if (searchQuery.length >= 3) {
+        const results = await globalSearch(searchQuery);
+        setSuggestions(results);
+      } else {
+        setSuggestions([]);
+      }
+    };
+
+    const timer = setTimeout(fetchSearch, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   if (pathname === '/login') {
     return <>{children}</>
@@ -92,18 +114,72 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 bg-white">
         {/* Top Header */}
         <header className="h-16 flex items-center justify-between px-8 border-b-4 border-black bg-white">
-          <div className="flex items-center text-xs font-black uppercase tracking-widest">
-            {breadcrumbs.length > 0 ? (
-              breadcrumbs.map((crumb, index) => (
-                <span key={index} className="flex items-center">
-                  {index > 0 && <span className="mx-3 opacity-30">//</span>}
-                  <span className={index === breadcrumbs.length - 1 ? "bg-black text-white px-2 py-0.5" : "text-zinc-500"}>
-                    {crumb}
-                  </span>
-                </span>
-              ))
+          <div className="flex items-center text-xs font-black uppercase tracking-widest flex-1 relative">
+            {isSearchOpen ? (
+              <div className="flex-1 max-w-md animate-in fade-in slide-in-from-left-2 transition-all">
+                <input 
+                  autoFocus
+                  type="text"
+                  placeholder="SEARCH PROTOCOL: ENTER QUERY..."
+                  className="w-full bg-zinc-100 border-2 border-black px-4 py-1 text-[10px] font-black focus:outline-none focus:bg-white transition-colors"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && suggestions.length > 0) {
+                       window.location.href = suggestions[0].href;
+                       setIsSearchOpen(false);
+                       setSearchQuery('');
+                    }
+                    if (e.key === 'Escape') setIsSearchOpen(false);
+                  }}
+                />
+                
+                {/* Search Suggestions Dropdown */}
+                {suggestions.length > 0 && (
+                  <div className="absolute top-10 left-0 w-full bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-50 overflow-hidden divide-y-2 divide-zinc-100 animate-in slide-in-from-top-2">
+                    <div className="bg-black text-white px-3 py-1 flex items-center justify-between">
+                      <span className="text-[8px] font-black tracking-widest">GLOBAL SYSTEMS INDEX</span>
+                      <span className="text-[8px] opacity-50">{suggestions.length} MATCHES</span>
+                    </div>
+                    {suggestions.map((result) => (
+                      <Link
+                        key={result.id}
+                        href={result.href}
+                        onClick={() => {
+                          setIsSearchOpen(false);
+                          setSearchQuery('');
+                        }}
+                        className="flex items-center justify-between p-3 hover:bg-zinc-50 transition-colors group"
+                      >
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                             <span className="text-[8px] font-black bg-zinc-200 px-1 rounded">{result.type}</span>
+                             <span className="text-xs font-black group-hover:text-indigo-600 truncate max-w-[200px]">{result.title}</span>
+                          </div>
+                          <span className="text-[10px] text-zinc-400 font-bold mt-0.5">{result.subtitle}</span>
+                        </div>
+                        <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    ))}
+                    <div className="bg-zinc-50 p-2 text-[8px] font-black text-center text-zinc-300 uppercase tracking-widest">
+                      Press Escape to close scan terminal
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
-              <span className="bg-black text-white px-2 py-0.5">Dashboard</span>
+              breadcrumbs.length > 0 ? (
+                breadcrumbs.map((crumb, index) => (
+                  <span key={index} className="flex items-center">
+                    {index > 0 && <span className="mx-3 opacity-30">//</span>}
+                    <span className={index === breadcrumbs.length - 1 ? "bg-black text-white px-2 py-0.5" : "text-zinc-500"}>
+                      {crumb}
+                    </span>
+                  </span>
+                ))
+              ) : (
+                <span className="bg-black text-white px-2 py-0.5">Dashboard</span>
+              )
             )}
           </div>
           
@@ -113,7 +189,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               SYSTEM SECURE
             </div>
             
-            <button className="p-2 border-2 border-black hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
+            <button 
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className={`p-2 border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 ${isSearchOpen ? 'bg-black text-white' : 'bg-white text-black hover:bg-zinc-100'}`}
+            >
               <Search className="h-5 w-5 font-black" />
             </button>
           </div>
