@@ -2,14 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Landmark, Users, Building, FileText, Search } from 'lucide-react'
+import { Landmark, Users, Building, FileText, Search, Activity } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/treasury', icon: Landmark },
   { name: 'Properties', href: '/properties', icon: Building },
   { name: 'Tenants', href: '/tenants', icon: Users },
-  { name: 'Onboarding', href: '/onboarding', icon: Search }, // Using Search for Onboarding/Discovery
+  { name: 'Onboarding', href: '/onboarding', icon: Search },
   { name: 'Expenses', href: '/expenses', icon: FileText },
+  { name: 'Intelligence Hub', href: '/reports', icon: Activity },
   { name: 'Master Ledger', href: '/reports/master-ledger', icon: FileText },
 ]
 

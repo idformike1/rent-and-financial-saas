@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -21,7 +21,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportData, setReportData] = useState<any>(null);
 
-  const { register, watch, handleSubmit, formState: { errors } } = useForm<ReportParams>({
+  const { register, watch, handleSubmit, setValue, formState: { errors } } = useForm<ReportParams>({
     resolver: zodResolver(reportParamsSchema),
     defaultValues: {
       reportType: 'INCOME_STATEMENT',
@@ -32,6 +32,13 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 
   const selectedReport = watch('reportType');
   const selectedScope = watch('scope');
+
+  // Trigger: Restrict scope to PROPERTY for Tax Preparation
+  useEffect(() => {
+    if (selectedReport === 'TAX_PREPARATION') {
+      setValue('scope', 'PROPERTY');
+    }
+  }, [selectedReport, setValue]);
 
   async function onGenerate(params: ReportParams) {
     setIsGenerating(true);
