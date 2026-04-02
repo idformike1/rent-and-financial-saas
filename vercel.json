@@ -1,0 +1,14 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/billing",
+      "schedule": "0 0 1 * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/middleware",
+      "destination": "/proxy"
+    }
+  ]
+}
