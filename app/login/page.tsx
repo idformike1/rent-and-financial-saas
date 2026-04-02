@@ -1,45 +1,91 @@
 'use client'
 
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleLogin = () => {
-    // Set a mock auth cookie for development testing
-    document.cookie = "auth-session=mock-token; path=/; max-age=3600"
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
     
-    // Redirect to the main dashboard
-    router.push('/treasury')
-    router.refresh()
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError('INVALID CREDENTIALS: ACCESS DENIED')
+      } else {
+        router.push('/treasury')
+        router.refresh()
+      }
+    } catch (err) {
+      setError('SYSTEM ERROR: PLEASE RETRY')
+    }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-50 dark:bg-black">
-      <div className="w-full max-w-sm p-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl space-y-8 animate-in fade-in zoom-in duration-500">
-        <div className="space-y-2 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">WELCOME</h1>
-          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">SIGN IN TO ACCESS THE ENGINE</p>
-        </div>
-        
-        <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-lg text-xs leading-relaxed text-amber-800 dark:text-amber-200/80 italic">
-          &quot;This is a secure mock login for performance and integration testing. In the final production environment, this is replaced by the hardened identity provider.&quot;
-        </div>
+    <div className="flex items-center justify-center min-h-screen bg-black text-white selection:bg-white selection:text-black font-mono">
+      <div className="w-full max-w-md p-10 border-4 border-white shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]">
+        <div className="space-y-6">
+          <div className="border-b-4 border-white pb-6">
+            <h1 className="text-6xl font-black italic tracking-tighter">LOGIN</h1>
+            <p className="text-sm font-bold uppercase tracking-widest mt-2">Enterprise SaaS Instance: 0xREKCAL</p>
+          </div>
 
-        <button 
-          onClick={handleLogin}
-          className="relative group w-full overflow-hidden rounded-xl bg-zinc-950 px-8 py-4 transition-all hover:bg-zinc-800 active:scale-[0.98] dark:bg-zinc-50 dark:hover:bg-zinc-200"
-        >
-          <span className="relative z-10 font-bold uppercase tracking-widest text-zinc-50 dark:text-zinc-950">
-            Sign In
-          </span>
-          <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 transition-opacity group-hover:opacity-100" />
-        </button>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest">Protocol Email</label>
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-black border-2 border-white p-4 text-xl focus:bg-white focus:text-black outline-none transition-colors placeholder:text-zinc-700" 
+                  placeholder="admin@system.com"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest">Access Cipher</label>
+                <input 
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-black border-2 border-white p-4 text-xl focus:bg-white focus:text-black outline-none transition-colors placeholder:text-zinc-700"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
 
-        <div className="pt-4 text-center">
-          <p className="text-xs font-semibold uppercase tracking-tighter text-zinc-400 dark:text-zinc-600">
-            Security Hardening: Active
-          </p>
+            {error && (
+              <div className="bg-red-600 p-4 border-2 border-white font-black text-center text-sm">
+                {error}
+              </div>
+            )}
+
+            <button 
+              type="submit"
+              className="w-full bg-white text-black p-6 text-2xl font-black uppercase tracking-wide hover:bg-zinc-200 active:translate-y-1 active:translate-x-1 active:shadow-none transition-all shadow-[8px_8px_0px_0px_rgba(255,255,255,0.4)]"
+            >
+              INITIALIZE SESSION
+            </button>
+          </form>
+
+          <div className="pt-6 border-t border-zinc-800 flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+            <span>Security: HARDENED</span>
+            <span>Version: 7.6.0-ENTERPRISE</span>
+          </div>
         </div>
       </div>
     </div>
