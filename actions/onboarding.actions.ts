@@ -73,7 +73,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
       const proratedRent = new Prisma.Decimal(proratedRentRaw.toFixed(2));
       const secDep = new Prisma.Decimal(data.securityDeposit);
 
-      const result = await prisma.$transaction(async (txOps) => {
+      const result = await prisma.$transaction(async (txOps: Prisma.TransactionClient) => {
         // Step 1: Create Tenant with Enterprise fields
         const tenant = await txOps.tenant.create({
           data: { 
