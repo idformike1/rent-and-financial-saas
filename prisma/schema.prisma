@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
 
 // ----------------------------------------------------------------------------
@@ -17,12 +17,17 @@ enum MaintenanceStatus {
 }
 
 model Property {
-  id        String   @id @default(uuid())
-  name      String   // e.g., "North Complex"
-  address   String
-  createdAt     DateTime      @default(now())
-  units         Unit[]
-  ledgerEntries LedgerEntry[]
+  id             String        @id @default(uuid())
+  organizationId String
+  name           String        // e.g., "North Complex"
+  address        String
+  createdAt      DateTime      @default(now())
+  
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  units          Unit[]
+  ledgerEntries  LedgerEntry[]
+
+  @@index([organizationId])
 }
 
 model Unit {
@@ -38,15 +43,19 @@ model Unit {
 }
 
 model Tenant {
-  id          String   @id @default(uuid())
-  name        String
-  email       String?  // Deduplication candidate
-  phone       String?  // Deduplication candidate
-  nationalId  String?  // Deduplication candidate
-  isDeleted   Boolean  @default(false)
+  id             String        @id @default(uuid())
+  organizationId String
+  name           String
+  email          String?       // Deduplication candidate
+  phone          String?       // Deduplication candidate
+  nationalId     String?       // Deduplication candidate
+  isDeleted      Boolean       @default(false)
   
-  leases      Lease[]
-  charges     Charge[]
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  leases         Lease[]
+  charges        Charge[]
+
+  @@index([organizationId])
 }
 
 model Lease {
@@ -76,15 +85,19 @@ enum ExpenseScope {
 }
 
 model ExpenseCategory {
-  id        String            @id @default(uuid())
-  name      String
-  scope     ExpenseScope
-  parentId  String?
-  parent    ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
-  children  ExpenseCategory[] @relation("SubCategories")
-  entries   LedgerEntry[]
+  id             String            @id @default(uuid())
+  organizationId String
+  name           String
+  scope          ExpenseScope
+  parentId       String?
+  
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  parent         ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
+  children       ExpenseCategory[] @relation("SubCategories")
+  entries        LedgerEntry[]
 
-  @@unique([name, scope, parentId])
+  @@unique([name, scope, parentId, organizationId])
+  @@index([organizationId])
 }
 
 enum ChargeType {
@@ -129,6 +142,7 @@ enum PaymentMode {
 
 model LedgerEntry {
   id                String           @id @default(uuid())
+  organizationId    String
   transactionId     String   
   accountId         String
   amount            Decimal  
@@ -144,9 +158,13 @@ model LedgerEntry {
   payee             String?
   receiptUrl        String?
 
+  organization      Organization     @relation(fields: [organizationId], references: [id])
   account           Account          @relation(fields: [accountId], references: [id])
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
+
+  @@index([organizationId])
+  @@index([transactionId])
 }
 
 // ----------------------------------------------------------------------------
@@ -161,11 +179,51 @@ enum AuditActionType {
 }
 
 model AuditLog {
-  id            String          @id @default(uuid())
-  timestamp     DateTime        @default(now())
-  managerId     String          
-  actionType    AuditActionType 
-  targetId      String          
-  amountContext Decimal         
-  reasonText    String          
+  id             String          @id @default(uuid())
+  organizationId String
+  timestamp      DateTime        @default(now())
+  managerId      String          
+  actionType     AuditActionType 
+  targetId       String          
+  amountContext  Decimal         
+  reasonText     String          
+
+  @@index([organizationId])
+}
+
+// ----------------------------------------------------------------------------
+// Multi-Tenancy (B2B SaaS Foundation)
+// ----------------------------------------------------------------------------
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  users             User[]
+  properties        Property[]
+  tenants           Tenant[]
+  expenseCategories ExpenseCategory[]
+  ledgerEntries     LedgerEntry[]
+}
+
+model User {
+  id             String       @id @default(uuid())
+  organizationId String
+  email          String       @unique
+  name           String?
+  passwordHash   String
+  role           UserRole     @default(MANAGER)
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  ADMIN
 }
