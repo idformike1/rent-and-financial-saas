@@ -14,7 +14,7 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
     try {
       let amountRemaining = new Prisma.Decimal(payload.amountPaid);
       if (amountRemaining.lte(0)) {
-        return { success: false, message: "Amount must be greater than 0.", errorCode: "VALIDATION_ERROR" };
+        return { success: false, message: "Fiscal Breach: Amount must be greater than zero.", errorCode: "VALIDATION_ERROR" };
       }
 
       const tenant = await prisma.tenant.findUnique({
@@ -27,18 +27,29 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
         }
       });
 
-      if (!tenant) return { success: false, message: "Tenant not found", errorCode: "VALIDATION_ERROR" };
+      if (!tenant) return { success: false, message: "Tenant registry mismatch.", errorCode: "VALIDATION_ERROR" };
 
-      // Algorithm A Step 2: Sort
-      const charges = tenant.charges.sort((a, b) => {
+      /**
+       * ALGORITHM A (UPGRADED): MULTI-DIMENSIONAL WATERFALL
+       * Priority Array:
+       * 1. Date Chronology (Oldest Debt First)
+       * 2. Relationship Tier (Primary Leases First)
+       * 3. Entity Integrity (Secondary Leases)
+       */
+      const charges = tenant.charges.sort((a: any, b: any) => {
+        // Tie-breaker 1: Maturity (Oldest Due Date)
+        const dateDiff = a.dueDate.getTime() - b.dueDate.getTime();
+        if (dateDiff !== 0) return dateDiff;
+        
+        // Tie-breaker 2: Subscription Tier (Primary First)
         if (a.lease.isPrimary && !b.lease.isPrimary) return -1;
         if (!a.lease.isPrimary && b.lease.isPrimary) return 1;
-        return a.dueDate.getTime() - b.dueDate.getTime();
+        
+        return 0;
       });
 
       const txOps = [];
 
-      // Algorithm A Step 3: Distribute
       let loopIndex = 0;
       while (amountRemaining.gt(0) && loopIndex < charges.length) {
         const charge = charges[loopIndex];
@@ -66,9 +77,14 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
         loopIndex++;
       }
 
-      // Overpayment: Credit
+      // Overpayment: Automatic Credit Materialization
       if (amountRemaining.gt(0)) {
-        const activeLease = await prisma.lease.findFirst({ where: { tenantId: tenant.id, isActive: true } });
+        const activeLease = await prisma.lease.findFirst({ 
+          where: { tenantId: tenant.id, isActive: true, isPrimary: true } 
+        }) || await prisma.lease.findFirst({ 
+          where: { tenantId: tenant.id, isActive: true } 
+        });
+
         if (activeLease) {
           txOps.push(
             prisma.charge.create({
@@ -86,17 +102,17 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
         }
       }
 
-      // Algorithm A Step 4: Ledger double-entry
       const assetAccount = await prisma.account.findFirst({ where: { category: AccountCategory.ASSET } });
       const revenueAccount = await prisma.account.findFirst({ where: { name: 'Rental Revenue' } });
 
       if (!assetAccount || !revenueAccount) {
-        return { success: false, message: "Crucial accounts missing in system.", errorCode: "STATE_CONFLICT" };
+        return { success: false, message: "System Ledger Error: Revenue accounts not reached.", errorCode: "STATE_CONFLICT" };
       }
 
       const transactionId = randomUUID();
+      const pDate = new Date(payload.transactionDate);
 
-      // DEBIT ASSET (Positive)
+      // DEBIT ASSET (Positive) - Mapping Payment Mode and Ref
       txOps.push(
         prisma.ledgerEntry.create({
           data: {
@@ -104,7 +120,10 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
             accountId: assetAccount.id,
             amount: new Prisma.Decimal(payload.amountPaid),
             date: new Date(),
-            description: `Payment from tenant ${tenant.name}`
+            transactionDate: pDate,
+            description: `Payment from ${tenant.name} (${payload.paymentMode}) - REF: ${payload.referenceText}`,
+            paymentMode: payload.paymentMode as any,
+            referenceText: payload.referenceText
           }
         })
       );
@@ -117,15 +136,17 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
             accountId: revenueAccount.id,
             amount: new Prisma.Decimal(payload.amountPaid).negated(),
             date: new Date(),
-            description: `Payment from tenant ${tenant.name}`
+            transactionDate: pDate,
+            description: `Revenue recognized via ${tenant.name}`,
+            paymentMode: payload.paymentMode as any,
+            referenceText: payload.referenceText
           }
         })
       );
 
-      // Commit transaction
       await prisma.$transaction(txOps);
 
-      return { success: true, message: "Payment processed successfully.", data: { transactionId } };
+      return { success: true, message: "Waterfall processing complete. Ledger entry immutable.", data: { transactionId } };
     } catch (e: any) {
       return { success: false, message: e.message || "Unknown error", errorCode: "STATE_CONFLICT" };
     }
@@ -150,7 +171,7 @@ export async function reconcileUtilities(propertyId: string, startDate: Date, en
     const expenseEntryAgg = await prisma.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: {
-        accountId: { in: expenseAccounts.map(a => a.id) },
+        accountId: { in: expenseAccounts.map((a: any) => a.id) },
         date: { gte: startDate, lte: endDate }
       }
     });
@@ -158,7 +179,7 @@ export async function reconcileUtilities(propertyId: string, startDate: Date, en
     const incomeEntryAgg = await prisma.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: {
-        accountId: { in: incomeAccounts.map(a => a.id) },
+        accountId: { in: incomeAccounts.map((a: any) => a.id) },
         date: { gte: startDate, lte: endDate }
       }
     });

@@ -8,16 +8,33 @@ import { randomUUID } from 'crypto'
  * Creates a robust 11-month fiscal history for testing Dashboards & CRM.
  */
 async function main() {
-  const connectionString = process.env.DATABASE_URL?.includes('5432') 
-    ? process.env.DATABASE_URL 
-    : process.env.DATABASE_URL?.replace(':6543', ':5432').replace('pgbouncer=true', '');
-
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
-  const prisma = new PrismaClient({ adapter });
+  const prisma = new PrismaClient();
 
   console.log('🚀 INITIALIZING TEST DRIVE ENVIRONMENT...')
   
+  // -- 0. EXPENSE CATEGORIES --
+  console.log('📂 Seeding Chart of Accounts (Expense Categories)...')
+  const categoriesData = [
+    // PROPERTY SCOPE
+    { name: 'Building Utilities', scope: 'PROPERTY', children: ['Water', 'Electricity'] },
+    { name: 'Maintenance', scope: 'PROPERTY', children: ['Plumbing', 'Electrical'] },
+    // HOME SCOPE
+    { name: 'Home Utilities', scope: 'HOME', children: ['Water', 'Internet'] },
+    // PERSONAL SCOPE
+    { name: 'Person 1', scope: 'PERSONAL', children: ['Food', 'Travel'] },
+    { name: 'Person 2', scope: 'PERSONAL', children: ['Food', 'Medical'] },
+  ];
+
+  for (const cat of categoriesData) {
+    const parent = await (prisma as any).expenseCategory.create({
+      data: { name: cat.name, scope: cat.scope }
+    });
+    for (const childName of cat.children) {
+      await (prisma as any).expenseCategory.create({
+        data: { name: childName, scope: cat.scope, parentId: parent.id }
+      });
+    }
+  }
   // -- 1. CHART OF ACCOUNTS --
   const accountsData = [
     { name: 'Bank Checking (Chase)', category: AccountCategory.ASSET },
@@ -34,25 +51,56 @@ async function main() {
 
   const accounts: Record<string, string> = {};
   for (const acc of accountsData) {
-    const record = await prisma.account.upsert({
+    const record = await (prisma as any).account.upsert({
       where: { id: randomUUID() }, // Upsert by name isn't possible in schema, so we create if missing
       update: {},
       create: acc
     });
     // Actually finding by name is safer for the record map
-    const actual = await prisma.account.findFirst({ where: { name: acc.name } });
+    const actual = await (prisma as any).account.findFirst({ where: { name: acc.name } });
     if (actual) accounts[acc.name] = actual.id;
   }
 
-  // -- 2. PHYSICAL ASSETS (30 Units) --
-  console.log('🏗️  Creating Units...')
+  // -- 2. PHYSICAL ASSETS (Properties & Units) --
+  console.log('🏗️  Materializing Properties...')
+  const northComplex = await (prisma as any).property.create({
+    data: {
+      name: 'North Complex',
+      address: '123 Sky Tower Blvd, Sector North'
+    }
+  });
+
+  const southPlaza = await (prisma as any).property.create({
+    data: {
+      name: 'South Plaza',
+      address: '456 Market Road, Central District'
+    }
+  });
+
+  console.log('🏘️  Allocating Units to Properties...')
   const units = [];
-  for (let i = 101; i <= 130; i++) {
-    units.push(await prisma.unit.create({
+  
+  // North Complex: Flats (Residential Focused)
+  for (let i = 101; i <= 115; i++) {
+    units.push(await (prisma as any).unit.create({
       data: {
-        unitNumber: `A${i}`,
-        propertyId: 'PROP-MASTER-001',
+        unitNumber: `N-${i}`,
+        propertyId: northComplex.id,
         type: i % 5 === 0 ? 'Studio' : 'Apartment',
+        category: 'FLAT',
+        maintenanceStatus: MaintenanceStatus.OPERATIONAL
+      }
+    }));
+  }
+
+  // South Plaza: Shutters & Stores (Commercial Focused)
+  for (let i = 201; i <= 215; i++) {
+    units.push(await (prisma as any).unit.create({
+      data: {
+        unitNumber: `S-${i}`,
+        propertyId: southPlaza.id,
+        type: i % 3 === 0 ? 'Store' : 'Retail Shutter',
+        category: i % 3 === 0 ? 'STORE' : 'SHUTTER',
         maintenanceStatus: MaintenanceStatus.OPERATIONAL
       }
     }));
@@ -63,8 +111,13 @@ async function main() {
   const now = new Date();
   
   for (let i = 0; i < 30; i++) {
-    const tenant = await prisma.tenant.create({
-      data: { name: `Tenant ${i + 1}` }
+    const tenant = await (prisma as any).tenant.create({
+      data: { 
+        name: `Tenant ${i + 1}`,
+        email: `tenant${i + 1}@enterprise.inc`,
+        phone: `+1-555-${(1000 + i).toString().padStart(4, '0')}`,
+        nationalId: `ID-CORP-${(10000 + i).toString()}`
+      }
     });
 
     const unit = units[i];
@@ -75,12 +128,13 @@ async function main() {
     const endDate = new Date(startDate);
     endDate.setFullYear(endDate.getFullYear() + 1);
 
-    const lease = await prisma.lease.create({
+    const lease = await (prisma as any).lease.create({
       data: {
         tenantId: tenant.id,
         unitId: unit.id,
-        isPrimary: true,
+        isPrimary: i < 15, // First 15 are primary
         rentAmount: rent,
+        depositAmount: rent,
         startDate,
         endDate,
         isActive: true
@@ -96,7 +150,7 @@ async function main() {
       const isPaid = Math.random() > 0.15; // 85% payment rate
       const amountPaid = isPaid ? rent : 0;
 
-      const charge = await prisma.charge.create({
+      const charge = await (prisma as any).charge.create({
         data: {
           tenantId: tenant.id,
           leaseId: lease.id,
@@ -112,7 +166,7 @@ async function main() {
       if (isPaid) {
         const txId = randomUUID();
         // Asset Debit (+)
-        await prisma.ledgerEntry.create({
+        await (prisma as any).ledgerEntry.create({
           data: {
             transactionId: txId,
             accountId: accounts['Bank Checking (Chase)'],
@@ -122,7 +176,7 @@ async function main() {
           }
         });
         // Revenue Credit (-)
-        await prisma.ledgerEntry.create({
+        await (prisma as any).ledgerEntry.create({
           data: {
             transactionId: txId,
             accountId: accounts['Rental Revenue'],
@@ -136,7 +190,7 @@ async function main() {
       // Add Random Utility Charge & Recovery
       if (m % 2 === 0) {
         const utilAmt = 45.50 + i;
-        await prisma.charge.create({
+        await (prisma as any).charge.create({
           data: {
             tenantId: tenant.id,
             leaseId: lease.id,
@@ -149,7 +203,7 @@ async function main() {
         });
 
         const utilTxId = randomUUID();
-        await prisma.ledgerEntry.create({
+        await (prisma as any).ledgerEntry.create({
           data: {
             transactionId: utilTxId,
             accountId: accounts['Bank Checking (Chase)'],
@@ -158,7 +212,7 @@ async function main() {
             description: `Utility: ${tenant.name}`
           }
         });
-        await prisma.ledgerEntry.create({
+        await (prisma as any).ledgerEntry.create({
           data: {
             transactionId: utilTxId,
             accountId: accounts['Utility Recovery (Water)'],
@@ -178,7 +232,7 @@ async function main() {
     const masterBillTxId = randomUUID();
     
     // Master Water Bill (Expense)
-    await prisma.ledgerEntry.create({
+    await (prisma as any).ledgerEntry.create({
       data: {
         transactionId: masterBillTxId,
         accountId: accounts['Master Water Bill'],
@@ -189,7 +243,7 @@ async function main() {
     });
 
     // Asset Payment Out (Credit)
-    await prisma.ledgerEntry.create({
+    await (prisma as any).ledgerEntry.create({
       data: {
         transactionId: masterBillTxId,
         accountId: accounts['Bank Checking (Chase)'],
@@ -201,8 +255,7 @@ async function main() {
   }
 
   console.log('✅ TEST DRIVE ENVIRONMENT MATERIALIZED.')
-  await prisma.$disconnect();
-  await pool.end();
+  await (prisma as any).$disconnect();
 }
 
 main().catch(err => {

@@ -2,8 +2,8 @@ import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import TenantProfileView from '@/app/tenants/[tenantId]/TenantProfileView'
 
-export default async function TenantProfilePage({ params }: { params: { tenantId: string } }) {
-  const { tenantId } = params;
+export default async function TenantProfilePage({ params }: { params: Promise<{ tenantId: string }> }) {
+  const { tenantId } = await params;
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
@@ -26,10 +26,14 @@ export default async function TenantProfilePage({ params }: { params: { tenantId
   // Map to DTOs for the client component
   const tenantDTO = {
     id: tenant.id,
-    name: tenant.name
+    name: tenant.name,
+    email: tenant.email,
+    phone: tenant.phone,
+    nationalId: tenant.nationalId,
+    isDeleted: tenant.isDeleted
   };
 
-  const chargesDTO = tenant.charges.map(c => ({
+  const chargesDTO = tenant.charges.map((c: any) => ({
     id: c.id,
     type: c.type,
     amount: c.amount.toNumber(),
@@ -38,19 +42,23 @@ export default async function TenantProfilePage({ params }: { params: { tenantId
     isFullyPaid: c.isFullyPaid
   }));
 
-  const activeLease = tenant.leases.find(l => l.isActive);
+  const activeLeases = tenant.leases
+    .filter((l: any) => l.isActive)
+    .map((l: any) => ({
+      id: l.id,
+      unitId: l.unit.id,
+      unitNumber: l.unit.unitNumber,
+      rentAmount: l.rentAmount.toNumber(),
+      startDate: l.startDate,
+      endDate: l.endDate,
+      isPrimary: l.isPrimary
+    }));
 
   return (
     <div className="py-6">
       <TenantProfileView 
         tenant={tenantDTO} 
-        activeLease={activeLease ? {
-          id: activeLease.id,
-          unitNumber: activeLease.unit.unitNumber,
-          rentAmount: activeLease.rentAmount.toNumber(),
-          startDate: activeLease.startDate,
-          endDate: activeLease.endDate
-        } : null}
+        activeLeases={activeLeases}
         charges={chargesDTO}
       />
     </div>

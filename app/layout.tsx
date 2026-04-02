@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Enterprise-grade property management and financial reconciliation engine (Phase 2).",
 };
 
+import Toaster from "@/components/Toaster";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} text-slate-900 antialiased h-screen overflow-hidden bg-white`}>
+        <Toaster />
         <AppShell>
           {children}
         </AppShell>

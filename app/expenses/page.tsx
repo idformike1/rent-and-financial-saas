@@ -1,98 +1,141 @@
 import prisma from '@/lib/prisma'
-import { AccountCategory } from '@prisma/client'
 import Link from 'next/link'
-import { PieChart, Plus, ReceiptText, TrendingDown } from 'lucide-react'
+import { Plus, ReceiptText, TrendingDown, Landmark, Home, User, PieChart as PieIcon, ArrowRight } from 'lucide-react'
+import ExpensesChartClient from './ExpensesChartClient'
 
-export default async function ExpensesDashboard() {
-  const expenseAccounts = await prisma.account.findMany({
-    where: { category: AccountCategory.EXPENSE },
+export default async function UnifiedExpensesDashboard() {
+  const entries = await (prisma as any).ledgerEntry.findMany({
+    where: {
+      expenseCategoryId: { not: null }
+    },
     include: {
-      entries: {
-        orderBy: { date: 'desc' }
-      }
-    }
+      expenseCategory: {
+        include: { parent: true }
+      },
+      property: true
+    },
+    orderBy: { date: 'desc' }
   });
 
-  const totalsByCategory = expenseAccounts.map(account => {
-    const total = account.entries.reduce((sum, entry) => sum + entry.amount.toNumber(), 0);
-    return { name: account.name, total, entries: account.entries };
-  }).filter(t => t.total > 0 || t.entries.length > 0);
+  const calculateTotal = (scope: string) => {
+    return entries
+      .filter((e: any) => e.expenseCategory?.scope === scope)
+      .reduce((sum: number, e: any) => sum + Math.abs(Number(e.amount)), 0);
+  };
 
-  const totalExpense = totalsByCategory.reduce((acc, cat) => acc + cat.total, 0);
+  const propertyTotal = calculateTotal('PROPERTY');
+  const homeTotal = calculateTotal('HOME');
+  const personalTotal = calculateTotal('PERSONAL');
+  const grandTotal = propertyTotal + homeTotal + personalTotal;
 
-  // Flatten entries for the table
-  const allEntries = totalsByCategory.flatMap(cat => 
-    cat.entries.map(e => ({ ...e, accountName: cat.name }))
-  ).sort((a, b) => b.date.getTime() - a.date.getTime());
+  // Prepare data for the chart (Group by Parent Category name)
+  const categoryMap: Record<string, number> = {};
+  entries.forEach((e: any) => {
+    const catName = e.expenseCategory?.parent?.name || e.expenseCategory?.name || 'Uncategorized';
+    categoryMap[catName] = (categoryMap[catName] || 0) + Math.abs(Number(e.amount));
+  });
+
+  const chartData = Object.entries(categoryMap).map(([name, value]) => ({ name, value }));
+
+  const cardClass = "bg-white border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] rounded-2xl p-6 flex flex-col items-start space-y-4 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-default";
 
   return (
-    <div className="py-6 max-w-7xl mx-auto px-4 sm:px-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
+    <div className="py-8 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-slate-900 pb-8 gap-6">
         <div>
-          <div className="flex items-center space-x-2 mb-1">
-            <TrendingDown className="w-8 h-8 text-red-500" />
-            <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic">Operational Expenses</h1>
+          <div className="flex items-center space-x-2 mb-2">
+            <Landmark className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Unified Wealth Ledger</h1>
           </div>
-          <p className="text-slate-500 font-medium">Categorical breakdown and audit log of all property expenditures.</p>
-        </div>
-        <Link 
-          href="/treasury/expenses" 
-          className="bg-slate-900 text-white font-black px-6 py-4 rounded-xl shadow-[6px_6px_0px_0px_rgba(203,213,225,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase tracking-widest text-xs flex items-center"
-        >
-          <Plus className="w-4 h-4 mr-3" /> Log New Expense
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-        <div className="col-span-1 md:col-span-1 bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex flex-col justify-center border-l-4 border-l-red-500">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total Expenditures</p>
-          <p className="text-4xl font-black text-slate-900 tracking-tighter">${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+          <p className="text-slate-500 font-bold tracking-widest uppercase text-[10px]">Holistic Liquidity Outflow Audit</p>
         </div>
         
-        <div className="col-span-1 md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {totalsByCategory.slice(0, 3).map(cat => (
-             <div key={cat.name} className="bg-slate-50 border border-slate-100 p-6 rounded-2xl">
-               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 truncate">{cat.name}</p>
-               <p className="text-2xl font-black text-slate-900 tracking-tighter">${cat.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
-             </div>
-          ))}
+        <div className="flex gap-4">
+           <Link 
+            href="/settings/categories" 
+            className="bg-white text-slate-900 border-4 border-slate-900 font-black px-6 py-4 rounded-xl hover:bg-slate-50 transition-all uppercase tracking-widest text-[10px] flex items-center italic"
+          >
+            Manage Schema
+          </Link>
+          <Link 
+            href="/treasury/expenses" 
+            className="bg-slate-900 text-white font-black px-6 py-4 rounded-xl shadow-[8px_8px_0px_0px_rgba(79,70,229,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase tracking-widest text-[10px] flex items-center italic"
+          >
+            <Plus className="w-4 h-4 mr-3" /> Log Expenditure
+          </Link>
         </div>
       </div>
 
-      <div className="bg-white border text-slate-900 border-slate-200 shadow-sm rounded-3xl overflow-hidden p-8">
-        <div className="flex items-center justify-between mb-8">
-          <h3 className="text-xl font-black uppercase tracking-tight flex items-center">
-            <ReceiptText className="w-5 h-5 mr-3 text-slate-400" /> Expense Registry Log
-          </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className={cardClass}>
+           <div className="bg-indigo-100 p-3 rounded-xl"><Landmark className="w-6 h-6 text-indigo-600" /></div>
+           <div>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Property Business</p>
+             <p className="text-3xl font-black text-slate-900 italic tracking-tighter">${propertyTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+           </div>
+           <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                <div className="bg-indigo-600 h-full" style={{ width: `${(propertyTotal/grandTotal)*100}%` }}></div>
+           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
-               <tr>
-                 <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</th>
-                 <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Category</th>
-                 <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</th>
-                 <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
-               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
-               {allEntries.length === 0 ? (
-                 <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic">No operational expenses recorded.</td></tr>
-               ) : (
-                allEntries.map(e => (
-                  <tr key={e.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{new Date(e.date).toISOString().split('T')[0]}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                       <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest">{e.accountName}</span>
-                    </td>
-                    <td className="px-6 py-4 text-sm max-w-sm truncate text-slate-700">{e.description}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-black text-red-600 tracking-tight">$ {e.amount.toNumber().toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
-                  </tr>
-                ))
-               )}
-            </tbody>
-          </table>
+        <div className={cardClass}>
+           <div className="bg-green-100 p-3 rounded-xl"><Home className="w-6 h-6 text-green-600" /></div>
+           <div>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Home / Residence</p>
+             <p className="text-3xl font-black text-slate-900 italic tracking-tighter">${homeTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+           </div>
+           <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                <div className="bg-green-600 h-full" style={{ width: `${(homeTotal/grandTotal)*100}%` }}></div>
+           </div>
+        </div>
+
+        <div className={cardClass}>
+           <div className="bg-orange-100 p-3 rounded-xl"><User className="w-6 h-6 text-orange-600" /></div>
+           <div>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Personal / Individual</p>
+             <p className="text-3xl font-black text-slate-900 italic tracking-tighter">${personalTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+           </div>
+           <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                <div className="bg-orange-600 h-full" style={{ width: `${(personalTotal/grandTotal)*100}%` }}></div>
+           </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="bg-white border-4 border-slate-900 shadow-[10px_10px_0px_0px_rgba(15,23,42,1)] rounded-3xl p-8">
+            <div className="flex items-center justify-between mb-8 border-b-2 border-slate-50 pb-6">
+                <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center">
+                    <PieIcon className="w-5 h-5 mr-3 text-indigo-600" /> Categorical Breakdown
+                </h3>
+            </div>
+            <div className="h-80">
+                <ExpensesChartClient data={chartData} />
+            </div>
+        </div>
+
+        <div className="bg-white border-4 border-slate-900 shadow-[10px_10px_0px_0px_rgba(15,23,42,1)] rounded-3xl p-8 flex flex-col">
+            <div className="flex items-center justify-between mb-8 border-b-2 border-slate-50 pb-6">
+                <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center">
+                    <ReceiptText className="w-5 h-5 mr-3 text-indigo-600" /> Recent Engage Records
+                </h3>
+                <Link href="/reports/master-ledger" className="text-[10px] font-black uppercase text-indigo-600 hover:underline flex items-center">
+                    Full Ledger <ArrowRight className="w-3 h-3 ml-2" />
+                </Link>
+            </div>
+            <div className="flex-1 space-y-4">
+                {entries.slice(0, 5).map((e: any) => (
+                    <div key={e.id} className="flex items-center justify-between border-b border-slate-50 pb-3 last:border-0">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-slate-400 font-mono italic">{new Date(e.date).toISOString().split('T')[0]}</span>
+                            <span className="text-xs font-black text-slate-900 uppercase italic tracking-tighter underline decoration-2 decoration-slate-100 underline-offset-4">{e.payee || "INTERNAL"}</span>
+                        </div>
+                        <div className="text-right">
+                            <span className="block text-sm font-black text-red-600 italic tracking-tighter">-${Math.abs(Number(e.amount)).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                            <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">{e.expenseCategory?.name}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { generateCSV } from '@/lib/exporters'
+import { generateWordReport } from '@/lib/exporters'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -11,12 +11,12 @@ export async function GET(request: Request) {
   };
 
   try {
-    const csvContent = await generateCSV(filters);
+    const wordContent = await generateWordReport(filters);
     
-    return new NextResponse(csvContent, {
+    return new NextResponse(wordContent, {
       headers: {
-        'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="LEDGER_EXPORT_${new Date().toISOString().split('T')[0]}.csv"`,
+        'Content-Type': 'application/msword',
+        'Content-Disposition': `attachment; filename="LEDGER_REPORT_${new Date().toISOString().split('T')[0]}.doc"`,
       }
     });
   } catch (e: any) {

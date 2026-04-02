@@ -16,6 +16,9 @@ export interface SystemResponse<T = any> {
 export interface PaymentSubmissionPayload {
   tenantId: string;
   amountPaid: number; 
+  transactionDate: string; // ISO date
+  paymentMode: 'CASH' | 'BANK';
+  referenceText: string;
 }
 
 // ----------------------------------------------------------------------------

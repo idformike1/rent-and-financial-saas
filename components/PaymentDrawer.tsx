@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { processPayment } from '@/actions/ledger.actions'
 import { ChargeDTO, TenantDTO } from '@/types'
 import { X } from 'lucide-react'
+import { toast } from '@/lib/toast'
 
 interface PaymentDrawerProps {
   tenant: TenantDTO;
@@ -17,18 +18,25 @@ interface PaymentDrawerProps {
 }
 
 const paymentSchema = z.object({
-  amountPaid: z.number().positive("Amount must be greater than 0")
+  amountPaid: z.number().positive("Amount must be greater than 0"),
+  paymentMode: z.enum(['CASH', 'BANK']),
+  referenceText: z.string().min(3, "Reference/Details are mandatory for audit trail"),
+  transactionDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Choose a valid payment date" })
 })
 
 type PaymentForm = z.infer<typeof paymentSchema>
 
 export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, onSuccess }: PaymentDrawerProps) {
   const [isPending, startTransition] = useTransition()
-  const [serverError, setServerError] = useState('')
 
   const { register, handleSubmit, control, formState: { errors, isSubmitting }, reset } = useForm<PaymentForm>({
     resolver: zodResolver(paymentSchema),
-    defaultValues: { amountPaid: 0 }
+    defaultValues: { 
+      amountPaid: 0,
+      paymentMode: 'CASH',
+      referenceText: '',
+      transactionDate: new Date().toISOString().split('T')[0]
+    }
   })
 
   // Watch for real-time preview
@@ -62,17 +70,24 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   }, [amountPaid, activeCharges])
 
   const onSubmit = (data: PaymentForm) => {
-    setServerError('')
     startTransition(async () => {
-      const response = await processPayment({
-        tenantId: tenant.id,
-        amountPaid: data.amountPaid
-      })
-      if (response.success) {
-        reset()
-        onSuccess() // Trigger close and refresh
-      } else {
-        setServerError(response.message || 'Payment failed')
+      try {
+        const response = await processPayment({
+          tenantId: tenant.id,
+          amountPaid: data.amountPaid,
+          transactionDate: data.transactionDate,
+          paymentMode: data.paymentMode,
+          referenceText: data.referenceText
+        })
+        if (response.success) {
+          toast.success("Liquid Expenditure Successfully Materialized");
+          reset();
+          onSuccess(); // Trigger close and refresh
+        } else {
+          toast.error(response.message || "Operation failed.");
+        }
+      } catch (error) {
+        toast.error("Network synchronization failure");
       }
     })
   }
@@ -82,51 +97,89 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   return (
     <>
       <div className="fixed inset-0 bg-slate-900/40 z-40 transition-opacity" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out">
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Receive Payment</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors">
-            <X className="w-5 h-5" />
+      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out border-l-4 border-slate-900">
+        <div className="px-8 py-6 border-b-2 border-slate-900 bg-slate-50 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-black text-slate-900 uppercase italic tracking-tighter">Liquidate Liabilities</h2>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Enterprise Ledger Entry</p>
+          </div>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 rounded-full transition-colors">
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Tenant</h3>
-            <p className="text-lg font-medium text-slate-900">{tenant.name}</p>
+        <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
+          <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg">
+            <h3 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-4">Target Identity</h3>
+            <p className="text-2xl font-black tracking-tight italic">{tenant.name}</p>
           </div>
 
           <form id="payment-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Payment Amount ($)</label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 font-medium">$</span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Payment Amount ($)</label>
+                <div className="relative group">
+                  <span className="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-300 font-black text-xl">$</span>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    {...register('amountPaid', { valueAsNumber: true })} 
+                    className="block w-full pl-12 pr-4 py-5 text-2xl font-black border-2 border-slate-100 rounded-2xl focus:border-slate-900 focus:bg-white bg-slate-50 transition-all outline-none" 
+                    placeholder="0.00"
+                  />
+                </div>
+                {errors.amountPaid && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase">{errors.amountPaid.message}</p>}
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Fiscal Mode</label>
+                <select 
+                  {...register('paymentMode')}
+                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-4 text-xs font-black uppercase outline-none focus:border-slate-900 appearance-none cursor-pointer"
+                >
+                  <option value="CASH">CASH TRANSFER</option>
+                  <option value="BANK">BANK WIRE/EFT</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Posting Date</label>
                 <input 
-                  type="number" 
-                  step="0.01"
-                  {...register('amountPaid', { valueAsNumber: true })} 
-                  className="block w-full pl-8 pr-3 py-3 text-lg border-2 border-slate-200 rounded-md focus:border-indigo-600 focus:ring-0 transition-colors font-medium text-slate-900 placeholder-slate-300" 
-                  placeholder="0.00"
+                  type="date"
+                  {...register('transactionDate')}
+                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-4 text-xs font-black uppercase outline-none focus:border-slate-900"
                 />
               </div>
-              {errors.amountPaid && <p className="text-red-500 text-sm mt-2 font-medium">{errors.amountPaid.message}</p>}
             </div>
 
-            <div className="pt-4 border-t border-slate-100">
-              <h4 className="text-sm font-semibold text-slate-900 mb-4">Distribution Preview (Waterfall)</h4>
-              <div className="space-y-3">
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Audit Reference / Details</label>
+              <textarea 
+                {...register('referenceText')}
+                rows={3}
+                placeholder="e.g. Bank Ref #12345 or Cash receipt serial"
+                className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-xs font-medium outline-none focus:border-slate-900 transition-all"
+              />
+              {errors.referenceText && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase">{errors.referenceText.message}</p>}
+            </div>
+
+            <div className="pt-6 border-t-2 border-slate-100">
+              <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-4">Waterfall Preview (Algorithm A)</h4>
+              <div className="space-y-2">
                 {previewData.length === 0 ? (
-                  <p className="text-sm text-slate-500 italic">No outstanding charges.</p>
+                  <div className="p-8 border-2 border-dashed border-slate-100 rounded-2xl text-center">
+                    <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No outstanding fiscal records found.</p>
+                  </div>
                 ) : (
                   previewData.map((charge) => (
-                    <div key={charge.id} className="flex justify-between items-center bg-slate-50 p-3 rounded border border-slate-100">
+                    <div key={charge.id} className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border-2 border-slate-100 group hover:border-slate-300 transition-all">
                       <div>
-                        <p className="text-sm font-medium text-slate-900">{charge.type}</p>
-                        <p className="text-xs text-slate-500">Due: {new Date(charge.dueDate).toLocaleDateString()}</p>
+                        <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{charge.type}</p>
+                        <p className="text-[10px] font-bold text-slate-400">Due: {new Date(charge.dueDate).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-slate-500">Owes: ${charge.balanceOwed.toFixed(2)}</p>
-                        <p className="text-sm font-semibold text-green-600">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">Applied</p>
+                        <p className={`text-sm font-black ${charge.applied > 0 ? 'text-indigo-600 animate-pulse' : 'text-slate-300'}`}>
                           {charge.applied > 0 ? `+ $${charge.applied.toFixed(2)}` : '$0.00'}
                         </p>
                       </div>
@@ -135,19 +188,18 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 )}
 
                 {overpayment > 0 && (
-                  <div className="flex justify-between items-center bg-indigo-50 p-3 rounded border border-indigo-100 mt-2">
+                  <div className="flex justify-between items-center bg-indigo-50 p-4 rounded-xl border-2 border-indigo-200 mt-2">
                     <div>
-                      <p className="text-sm font-medium text-indigo-900">Credit to Ledger</p>
-                      <p className="text-xs text-indigo-700">Excess funds unapplied</p>
+                      <p className="text-[10px] font-black text-indigo-900 uppercase tracking-widest">Automatic Credit</p>
+                      <p className="text-[10px] font-bold text-indigo-400 uppercase leading-none">Unapplied Surplus Materialized</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-indigo-600">+ ${overpayment.toFixed(2)}</p>
+                      <p className="text-sm font-black text-indigo-600">+ ${overpayment.toFixed(2)}</p>
                     </div>
                   </div>
                 )}
               </div>
             </div>
-            {serverError && <p className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded">{serverError}</p>}
           </form>
         </div>
 

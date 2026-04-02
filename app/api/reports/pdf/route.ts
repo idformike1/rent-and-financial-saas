@@ -1,18 +1,22 @@
 import { NextResponse } from 'next/server'
-import { generateSuperReport } from '@/lib/exporters'
+import { generatePDFReport } from '@/lib/exporters'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const filters = {
+    searchTerm: searchParams.get('searchTerm') || undefined,
+    startDate: searchParams.get('startDate') || undefined,
+    endDate: searchParams.get('endDate') || undefined,
+    category: searchParams.get('category') || undefined,
+  };
+
   try {
-    const reportText = await generateSuperReport();
+    const pdfBuffer = await generatePDFReport(filters);
     
-    // We serve the Super-Report as a text/plain file with a .text extension for simplicity, 
-    // or as a markdown file. PDF generation requires heavy libraries like jspdf.
-    // Given the "PDF Utilities" request, I'll return it as a structured PDF-style text profile.
-    
-    return new NextResponse(reportText, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
-        'Content-Type': 'text/plain',
-        'Content-Disposition': 'attachment; filename="SUPER_INVESTOR_REPORT.txt"',
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="AUDIT_REPORT_${new Date().toISOString().split('T')[0]}.pdf"`,
       }
     });
   } catch (e: any) {
