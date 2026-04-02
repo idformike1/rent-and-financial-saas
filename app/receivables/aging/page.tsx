@@ -12,16 +12,18 @@ export default async function DelinquencyReport() {
   });
 
   const now = new Date().getTime();
+  const nowAsDate = new Date();
 
   // Calculate total due, days past due, and rank them
-  const reportData = tenants.map(tenant => {
+  const reportData = tenants.map((tenant: any) => {
     let totalDue = 0;
     let oldestDate = now;
 
     for (const c of tenant.charges) {
-      totalDue += (c.amount.toNumber() - c.amountPaid.toNumber());
-      if (c.dueDate.getTime() < oldestDate) {
-        oldestDate = c.dueDate.getTime();
+      totalDue += (Number(c.amount) - Number(c.amountPaid));
+      const dueDate = new Date(c.dueDate);
+      if (dueDate.getTime() < oldestDate) {
+        oldestDate = dueDate.getTime();
       }
     }
 
@@ -34,7 +36,7 @@ export default async function DelinquencyReport() {
       daysPastDue,
       isSevere: totalDue > 0 && daysPastDue > 30
     }
-  }).filter(t => t.totalDue > 0).sort((a, b) => b.totalDue - a.totalDue);
+  }).filter((t: any) => t.totalDue > 0).sort((a: any, b: any) => b.totalDue - a.totalDue);
 
   return (
     <div className="py-6 max-w-7xl mx-auto">
@@ -45,7 +47,7 @@ export default async function DelinquencyReport() {
         </div>
         <div className="bg-red-50 text-red-700 font-medium px-4 py-2 border border-red-200 rounded text-sm flex items-center">
           <AlertTriangle className="w-4 h-4 mr-2" />
-          Severe Delinquencies ({reportData.filter(d => d.isSevere).length})
+          Severe Delinquencies ({reportData.filter((d: any) => d.isSevere).length})
         </div>
       </div>
 
@@ -66,7 +68,7 @@ export default async function DelinquencyReport() {
                   <td colSpan={4} className="px-6 py-12 text-center text-sm text-slate-500 italic">No delinquencies recorded. Operations are current.</td>
                 </tr>
               ) : (
-                reportData.map((tenant) => (
+                reportData.map((tenant: any) => (
                   <tr key={tenant.id} className={tenant.isSevere ? 'bg-red-50/50' : 'hover:bg-slate-50 transition-colors'}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                       {tenant.name}

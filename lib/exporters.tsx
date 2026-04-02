@@ -56,7 +56,7 @@ export async function generateCSV(filters: FilterParams) {
   const entries = await getFilteredEntries(filters);
 
   const headers = ['Date', 'Transaction ID', 'Account', 'Category', 'Debit', 'Credit', 'Description'];
-  const rows = entries.map(e => {
+  const rows = entries.map((e: any) => {
     const amt = Number(e.amount);
     const isDebit = amt > 0;
     const debit = isDebit ? amt.toFixed(2) : '0.00';
@@ -110,7 +110,7 @@ export async function generateWordReport(filters: FilterParams) {
           <th>Debit (+)</th>
           <th>Credit (-)</th>
         </tr>
-        ${entries.map(e => `
+        ${entries.map((e: any) => `
           <tr>
             <td>${e.date.toISOString().split('T')[0]}</td>
             <td style="font-size: 10px;">${e.transactionId}</td>

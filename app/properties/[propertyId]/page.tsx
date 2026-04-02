@@ -24,7 +24,7 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
   });
 
   // Map to flat structure for the client component
-  const unitsWithOccupancy = units.map(u => ({
+  const unitsWithOccupancy = units.map((u: any) => ({
     id: u.id,
     unitNumber: u.unitNumber,
     type: u.type,

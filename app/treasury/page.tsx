@@ -18,8 +18,8 @@ export default async function TreasuryDashboard() {
     cash: 0
   };
 
-  accounts.forEach(acc => {
-    const total = acc.entries.reduce((sum, entry) => sum + entry.amount.toNumber(), 0);
+  accounts.forEach((acc: any) => {
+    const total = acc.entries.reduce((sum: number, entry: any) => sum + Number(entry.amount), 0);
     if (acc.name.toLowerCase().includes('bank') || acc.name.toLowerCase().includes('chase')) vaultBalances.bank += total;
     else if (acc.name.toLowerCase().includes('savings')) vaultBalances.savings += total;
     else if (acc.name.toLowerCase().includes('cash')) vaultBalances.cash += total;
@@ -39,13 +39,14 @@ export default async function TreasuryDashboard() {
     include: { account: true }
   });
 
-  entries.forEach(entry => {
-    const monthName = months[new Date(entry.date).getMonth()];
+  entries.forEach((entry: any) => {
+    const entryDate = new Date(entry.date);
+    const monthName = months[entryDate.getMonth()];
     if (trendMap[monthName]) {
-      if (entry.account.category === AccountCategory.INCOME) {
-        trendMap[monthName].income += Math.abs(entry.amount.toNumber());
-      } else if (entry.account.category === AccountCategory.EXPENSE) {
-        trendMap[monthName].expense += entry.amount.toNumber();
+      if (entry.account?.category === AccountCategory.INCOME) {
+        trendMap[monthName].income += Math.abs(Number(entry.amount));
+      } else if (entry.account?.category === AccountCategory.EXPENSE) {
+        trendMap[monthName].expense += Number(entry.amount);
       }
     }
   });
@@ -57,11 +58,11 @@ export default async function TreasuryDashboard() {
   }));
 
   // Utility Recovery Data (Algorithm B)
-  const masterBills = accounts.filter(a => a.category === AccountCategory.EXPENSE && a.name.includes('Master'));
-  const recoveries = accounts.filter(a => a.category === AccountCategory.INCOME && a.name.includes('Utility'));
+  const masterBills = accounts.filter((a: any) => a.category === AccountCategory.EXPENSE && a.name.includes('Master'));
+  const recoveries = accounts.filter((a: any) => a.category === AccountCategory.INCOME && a.name.includes('Utility'));
 
-  const billTotal = masterBills.reduce((acc, a) => acc + a.entries.reduce((s, e) => s + e.amount.toNumber(), 0), 0);
-  const recoveryTotal = recoveries.reduce((acc, a) => acc + a.entries.reduce((s, e) => s + Math.abs(e.amount.toNumber()), 0), 0);
+  const billTotal = masterBills.reduce((acc: number, a: any) => acc + a.entries.reduce((s: number, e: any) => s + Number(e.amount), 0), 0);
+  const recoveryTotal = recoveries.reduce((acc: number, a: any) => acc + a.entries.reduce((s: number, e: any) => s + Math.abs(Number(e.amount)), 0), 0);
 
   const recoveryData = [
     { name: 'Recovered', value: recoveryTotal },
@@ -77,10 +78,10 @@ export default async function TreasuryDashboard() {
     }
   });
 
-  const delinquentTenants = tenants.map(t => {
-    const balance = t.charges.reduce((sum, c) => sum + (c.amount.toNumber() - c.amountPaid.toNumber()), 0);
+  const delinquentTenants = tenants.map((t: any) => {
+    const balance = t.charges.reduce((sum: number, c: any) => sum + (Number(c.amount) - Number(c.amountPaid)), 0);
     return { id: t.id, name: t.name, balance };
-  }).filter(t => t.balance > 0).sort((a, b) => b.balance - a.balance);
+  }).filter((t: any) => t.balance > 0).sort((a: any, b: any) => b.balance - a.balance);
 
   return (
     <div className="py-6 min-h-screen">
@@ -152,7 +153,7 @@ export default async function TreasuryDashboard() {
                {delinquentTenants.length === 0 ? (
                  <tr><td colSpan={4} className="px-8 py-16 text-center text-slate-400 font-medium italic">No active fiscal drift detected. Portfolio status is nominal.</td></tr>
                ) : (
-                delinquentTenants.map(t => (
+                delinquentTenants.map((t: any) => (
                   <tr key={t.id} className="hover:bg-slate-50 transition-all group">
                     <td className="px-8 py-6 whitespace-nowrap">
                        <span className="font-black text-slate-900 tracking-tight text-xl group-hover:text-indigo-600 transition-colors uppercase italic">{t.name}</span>

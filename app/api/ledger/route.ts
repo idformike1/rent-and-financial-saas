@@ -13,7 +13,7 @@ export async function GET() {
     });
 
     // Formatting for decimal consistency in JSON
-    const formatted = entries.map(e => ({
+    const formatted = entries.map((e: any) => ({
       ...e,
       amount: e.amount.toNumber(),
     }));
