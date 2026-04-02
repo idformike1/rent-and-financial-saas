@@ -6,6 +6,13 @@ async function main() {
   console.log('--- SEEDING 100 EXPENSES ---')
 
   const properties = await prisma.property.findMany()
+  const organization = await prisma.organization.findFirst()
+  
+  if (!organization) {
+    console.log('No organization found. Please seed the organization first.')
+    return
+  }
+
   if (properties.length === 0) {
     console.log('No properties found. Please seed properties first.')
     return
@@ -45,6 +52,7 @@ async function main() {
     const payee = payees[Math.floor(Math.random() * payees.length)]
     
     expenses.push({
+      organizationId: organization.id,
       transactionId: `TX-${Math.random().toString(36).substring(7).toUpperCase()}`,
       accountId: account.id,
       amount: amount,

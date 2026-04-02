@@ -30,10 +30,11 @@ export async function waiveCharge(chargeId: string, reasonText: string) {
         // 2. Create Audit Trail
         await tx.auditLog.create({
           data: {
+            organizationId: session.organizationId,
             actionType: 'WAIVE_OFF',
             targetId: chargeId,
             amountContext: balance,
-            managerId: session.userId || 'manager-override-id',
+            managerId: session.userId,
             reasonText: reasonText
           }
         });

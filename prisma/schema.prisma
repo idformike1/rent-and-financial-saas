@@ -17,51 +17,60 @@ enum MaintenanceStatus {
 }
 
 model Property {
-  id        String   @id @default(uuid())
-  name      String   // e.g., "North Complex"
-  address   String
-  createdAt     DateTime      @default(now())
-  units         Unit[]
-  ledgerEntries LedgerEntry[]
+  id             String        @id @default(uuid())
+  organizationId String
+  name           String        // e.g., "North Complex"
+  address        String
+  createdAt      DateTime      @default(now())
+  
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  units          Unit[]
+  ledgerEntries  LedgerEntry[]
 }
 
 model Unit {
   id                String            @id @default(uuid())
+  organizationId    String
   propertyId        String
   unitNumber        String
   type              String            // e.g., "Apartment", "Parking", "Storage"
   category          String            @default("FLAT") // e.g., "FLAT", "STORE", "SHUTTER", "PARKING"
   maintenanceStatus MaintenanceStatus @default(OPERATIONAL)
   
+  organization      Organization      @relation(fields: [organizationId], references: [id])
   property          Property          @relation(fields: [propertyId], references: [id])
   leases            Lease[]
 }
 
 model Tenant {
-  id          String   @id @default(uuid())
-  name        String
-  email       String?  // Deduplication candidate
-  phone       String?  // Deduplication candidate
-  nationalId  String?  // Deduplication candidate
-  isDeleted   Boolean  @default(false)
+  id             String        @id @default(uuid())
+  organizationId String
+  name           String
+  email          String?       // Deduplication candidate
+  phone          String?       // Deduplication candidate
+  nationalId     String?       // Deduplication candidate
+  isDeleted      Boolean       @default(false)
   
-  leases      Lease[]
-  charges     Charge[]
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  leases         Lease[]
+  charges        Charge[]
 }
 
 model Lease {
-  id             String   @id @default(uuid())
+  id             String        @id @default(uuid())
+  organizationId String
   tenantId       String
   unitId         String
-  isPrimary      Boolean  @default(false)
+  isPrimary      Boolean       @default(false)
   rentAmount     Decimal
-  depositAmount  Decimal  @default(0.00)
+  depositAmount  Decimal       @default(0.00)
   startDate      DateTime
   endDate        DateTime
-  isActive       Boolean  @default(true)
+  isActive       Boolean       @default(true)
   
-  unit           Unit     @relation(fields: [unitId], references: [id])
-  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  unit           Unit          @relation(fields: [unitId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
   charges        Charge[]
 }
 
@@ -76,15 +85,17 @@ enum ExpenseScope {
 }
 
 model ExpenseCategory {
-  id        String            @id @default(uuid())
-  name      String
-  scope     ExpenseScope
-  parentId  String?
-  parent    ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
-  children  ExpenseCategory[] @relation("SubCategories")
-  entries   LedgerEntry[]
+  id             String            @id @default(uuid())
+  organizationId String
+  name           String
+  scope          ExpenseScope
+  parentId       String?
+  parent         ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
+  children       ExpenseCategory[] @relation("SubCategories")
+  entries        LedgerEntry[]
 
-  @@unique([name, scope, parentId])
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  @@unique([name, scope, parentId, organizationId])
 }
 
 enum ChargeType {
@@ -102,24 +113,29 @@ enum AccountCategory {
 }
 
 model Charge {
-  id          String     @id @default(uuid())
-  tenantId    String
-  leaseId     String     
-  type        ChargeType
-  amount      Decimal
-  amountPaid  Decimal    @default(0.00)
-  dueDate     DateTime
-  isFullyPaid Boolean    @default(false)
+  id             String        @id @default(uuid())
+  organizationId String
+  tenantId       String
+  leaseId        String     
+  type           ChargeType
+  amount         Decimal
+  amountPaid     Decimal       @default(0.00)
+  dueDate        DateTime
+  isFullyPaid    Boolean       @default(false)
 
-  tenant      Tenant     @relation(fields: [tenantId], references: [id])
-  lease       Lease      @relation(fields: [leaseId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
+  lease          Lease         @relation(fields: [leaseId], references: [id])
 }
 
 model Account {
-  id          String          @id @default(uuid())
-  name        String          
-  category    AccountCategory
-  entries     LedgerEntry[]
+  id             String          @id @default(uuid())
+  organizationId String
+  name           String          
+  category       AccountCategory
+  entries        LedgerEntry[]
+  
+  organization   Organization    @relation(fields: [organizationId], references: [id])
 }
 
 enum PaymentMode {
@@ -129,6 +145,7 @@ enum PaymentMode {
 
 model LedgerEntry {
   id                String           @id @default(uuid())
+  organizationId    String
   transactionId     String   
   accountId         String
   amount            Decimal  
@@ -144,6 +161,7 @@ model LedgerEntry {
   payee             String?
   receiptUrl        String?
 
+  organization      Organization     @relation(fields: [organizationId], references: [id])
   account           Account          @relation(fields: [accountId], references: [id])
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
@@ -161,11 +179,47 @@ enum AuditActionType {
 }
 
 model AuditLog {
-  id            String          @id @default(uuid())
-  timestamp     DateTime        @default(now())
-  managerId     String          
-  actionType    AuditActionType 
-  targetId      String          
-  amountContext Decimal         
-  reasonText    String          
+  id             String          @id @default(uuid())
+  organizationId String
+  timestamp      DateTime        @default(now())
+  managerId      String          
+  actionType     AuditActionType 
+  targetId       String          
+  amountContext  Decimal         
+  reasonText     String          
+  
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+}
+
+// ----------------------------------------------------------------------------
+// IAM Entities
+// ----------------------------------------------------------------------------
+
+model Organization {
+  id                String            @id @default(uuid())
+  name              String
+  createdAt         DateTime          @default(now())
+  
+  users             User[]
+  properties        Property[]
+  units             Unit[]
+  tenants           Tenant[]
+  leases            Lease[]
+  charges           Charge[]
+  accounts          Account[]
+  ledgerEntries     LedgerEntry[]
+  expenseCategories ExpenseCategory[]
+  auditLogs         AuditLog[]
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  password       String
+  name           String?
+  role           String       @default("MANAGER")
+  organizationId String
+  createdAt      DateTime     @default(now())
+  
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
