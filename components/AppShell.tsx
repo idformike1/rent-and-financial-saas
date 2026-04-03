@@ -4,27 +4,43 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield, ChevronRight, ShieldAlert, Zap } from 'lucide-react'
+import { 
+  Landmark, 
+  Users, 
+  Building, 
+  FileText, 
+  Search, 
+  Activity, 
+  LogOut, 
+  ShieldCheck, 
+  ChevronRight, 
+  ShieldAlert, 
+  Zap,
+  LayoutDashboard,
+  Bell,
+  Menu,
+  X
+} from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { globalSearch, SearchResult } from '@/actions/search.actions'
+import { Button, Input, Badge, Card } from '@/components/ui-finova'
 
 const navigation = [
-  { name: 'Dashboard', href: '/treasury', icon: Landmark },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Properties', href: '/properties', icon: Building },
   { name: 'Tenants', href: '/tenants', icon: Users },
   { name: 'Onboarding', href: '/onboarding', icon: Search },
   { name: 'Expenses', href: '/expenses', icon: FileText },
   { name: 'Intelligence Hub', href: '/reports', icon: Activity },
-  { name: 'Finance Translation', href: '/reports/financial-connections', icon: Shield },
+  { name: 'Finance Translation', href: '/reports/financial-connections', icon: ShieldCheck },
   { name: 'Waterfall Analytics', href: '/reports/ledger-waterfall', icon: Zap },
-  { name: 'Master Ledger', href: '/reports/master-ledger', icon: FileText },
-  { name: 'Team', href: '/settings/team', icon: Users },
-  { name: 'Audit Logs', href: '/settings/audit', icon: ShieldAlert },
+  { name: 'Governance', href: '/settings/categories', icon: ShieldAlert },
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Search State
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -53,42 +69,46 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     .split('/')
     .filter(Boolean)
     .map(segment => {
-      if (segment === 'treasury') return 'Dashboard';
+      if (segment === 'dashboard') return 'Treasury';
+      if (segment === 'categories') return 'Governance';
       return segment.charAt(0).toUpperCase() + segment.slice(1);
     })
 
   return (
-    <div className="flex h-screen bg-white font-mono">
-      {/* Sidebar - Brutalist Style */}
-      <div className="w-72 bg-black border-r-4 border-black flex flex-col hidden md:flex text-white p-6 justify-between">
-        <div className="space-y-8">
-          <div className="border-b-2 border-white pb-6">
-            <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8 text-white" />
-              <div className="flex flex-col">
-                <span className="text-xs font-black uppercase tracking-tighter opacity-50">Organization Unit</span>
-                <span className="text-xl font-bold tracking-tighter uppercase leading-none truncate max-w-[180px]">
-                  {session?.user?.organizationName || 'SYSTEM_INIT'}
-                </span>
-              </div>
+    <div className="flex h-screen bg-surface-50 dark:bg-surface-950 font-sans text-slate-900 dark:text-white">
+      
+      {/* SIDEBAR: FINOVA PREMIUM STANDARD */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-surface-900 border-r border-slate-100 dark:border-surface-800 flex flex-col transition-transform duration-300 transform lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        
+        {/* ORGANIZATION IDENTITY */}
+        <div className="p-8 pb-6">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center shrink-0">
+               <Zap className="w-6 h-6 text-brand fill-brand" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Axiom Finova</span>
+              <span className="text-lg font-black tracking-tighter uppercase leading-none truncate dark:text-white mt-1">
+                {session?.user?.organizationName || 'Master Unit'}
+              </span>
             </div>
           </div>
 
-          <nav className="space-y-2">
+          <nav className="space-y-1.5 font-medium">
             {navigation.map((item) => {
-              if ((item.name === 'Team' || item.name === 'Audit Logs') && session?.user?.role !== 'OWNER') return null;
               const isActive = pathname.startsWith(item.href)
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center px-4 py-3 text-sm font-black uppercase tracking-widest transition-all ${
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center px-4 py-3 text-[11px] font-bold uppercase tracking-widest rounded-2xl transition-all ${
                     isActive
-                      ? 'bg-white text-black translate-x-1 translate-y-1'
-                      : 'hover:bg-zinc-800'
+                      ? 'bg-brand text-white shadow-premium'
+                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-surface-800'
                   }`}
                 >
-                  <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <item.icon className={`mr-3 h-4 w-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                   {item.name}
                 </Link>
               )
@@ -96,114 +116,106 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
 
-        <div className="space-y-4 pt-6 border-t-2 border-zinc-800">
-          <div className="flex flex-col gap-1 px-4">
-            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Active Operator</span>
-            <span className="text-sm font-bold truncate">{session?.user?.name || 'ADMIN'}</span>
-            <span className="text-[10px] text-zinc-500 font-bold italic">{session?.user?.role}</span>
+        {/* ACCOUNT ACTION REGISTRY */}
+        <div className="mt-auto p-8 pt-6 border-t border-slate-100 dark:border-surface-800 space-y-4">
+          <div className="flex items-center gap-4 px-2">
+            <div className="w-10 h-10 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center font-black text-xs text-brand">
+               {session?.user?.name?.charAt(0) || 'A'}
+            </div>
+            <div className="flex flex-col min-w-0">
+               <span className="text-xs font-bold truncate text-slate-900 dark:text-white">{session?.user?.name || 'Administrator'}</span>
+               <Badge className="text-[9px] w-fit px-1.5 py-0 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20">{session?.user?.role || 'Operator'}</Badge>
+            </div>
           </div>
           
           <button 
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="flex items-center w-full px-4 py-3 text-xs font-black uppercase tracking-tighter hover:bg-red-600 transition-colors border-2 border-zinc-800"
+            className="flex items-center w-full px-5 py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-500 transition-all border border-transparent hover:border-rose-100 dark:hover:border-rose-900/40"
           >
             <LogOut className="mr-3 h-4 w-4" />
-            Termination Protocol
+            Terminate Protocol
           </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
-        {/* Top Header */}
-        <header className="h-16 flex items-center justify-between px-8 border-b-4 border-black bg-white">
-          <div className="flex items-center text-xs font-black uppercase tracking-widest flex-1 relative">
-            {isSearchOpen ? (
-              <div className="flex-1 max-w-md animate-in fade-in slide-in-from-left-2 transition-all">
-                <input 
-                  autoFocus
-                  type="text"
-                  placeholder="SEARCH PROTOCOL: ENTER QUERY..."
-                  className="w-full bg-zinc-100 border-2 border-black px-4 py-1 text-[10px] font-black focus:outline-none focus:bg-white transition-colors"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && suggestions.length > 0) {
-                       window.location.href = suggestions[0].href;
-                       setIsSearchOpen(false);
-                       setSearchQuery('');
-                    }
-                    if (e.key === 'Escape') setIsSearchOpen(false);
-                  }}
-                />
-                
-                {/* Search Suggestions Dropdown */}
-                {suggestions.length > 0 && (
-                  <div className="absolute top-10 left-0 w-full bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-50 overflow-hidden divide-y-2 divide-zinc-100 animate-in slide-in-from-top-2">
-                    <div className="bg-black text-white px-3 py-1 flex items-center justify-between">
-                      <span className="text-[8px] font-black tracking-widest">GLOBAL SYSTEMS INDEX</span>
-                      <span className="text-[8px] opacity-50">{suggestions.length} MATCHES</span>
-                    </div>
-                    {suggestions.map((result) => (
-                      <Link
-                        key={result.id}
-                        href={result.href}
-                        onClick={() => {
-                          setIsSearchOpen(false);
-                          setSearchQuery('');
-                        }}
-                        className="flex items-center justify-between p-3 hover:bg-zinc-50 transition-colors group"
-                      >
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-2">
-                             <span className="text-[8px] font-black bg-zinc-200 px-1 rounded">{result.type}</span>
-                             <span className="text-xs font-black group-hover:text-indigo-600 truncate max-w-[200px]">{result.title}</span>
-                          </div>
-                          <span className="text-[10px] text-zinc-400 font-bold mt-0.5">{result.subtitle}</span>
-                        </div>
-                        <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    ))}
-                    <div className="bg-zinc-50 p-2 text-[8px] font-black text-center text-zinc-300 uppercase tracking-widest">
-                      Press Escape to close scan terminal
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              breadcrumbs.length > 0 ? (
-                breadcrumbs.map((crumb, index) => (
-                  <span key={index} className="flex items-center">
-                    {index > 0 && <span className="mx-3 opacity-30">//</span>}
-                    <span className={index === breadcrumbs.length - 1 ? "bg-black text-white px-2 py-0.5" : "text-zinc-500"}>
-                      {crumb}
-                    </span>
+      {/* MAIN VIEWPORT COMMANDER */}
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-72 bg-surface-50 dark:bg-surface-950">
+        
+        {/* HEADER: DYNAMIC BREADCRUMB & SCAN */}
+        <header className="h-20 flex items-center justify-between px-10 border-b border-slate-100 dark:border-surface-800 bg-white dark:bg-surface-900 sticky top-0 z-40">
+          
+          <div className="flex items-center gap-6">
+            <button 
+              className="lg:hidden p-2 text-slate-400"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+            
+            <div className="hidden md:flex items-center text-[10px] font-black uppercase tracking-[0.3em] overflow-hidden whitespace-nowrap">
+              {breadcrumbs.map((crumb, index) => (
+                <span key={index} className="flex items-center">
+                  {index > 0 && <span className="mx-4 text-slate-200 dark:text-slate-700">/</span>}
+                  <span className={index === breadcrumbs.length - 1 ? "text-brand" : "text-slate-400"}>
+                    {crumb}
                   </span>
-                ))
-              ) : (
-                <span className="bg-black text-white px-2 py-0.5">Dashboard</span>
-              )
-            )}
+                </span>
+              ))}
+              {breadcrumbs.length === 0 && <span className="text-brand">Infrastructure</span>}
+            </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center text-[10px] font-black text-zinc-400 gap-2 px-3 py-1 border-2 border-zinc-100 rounded">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              SYSTEM SECURE
+          <div className="flex items-center gap-6 flex-1 justify-end max-w-2xl px-6">
+            <div className="relative w-full group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-brand transition-colors" />
+              <input 
+                type="text"
+                placeholder="Scan Registry..."
+                className="w-full bg-slate-50 dark:bg-surface-800 border border-slate-100 dark:border-surface-700 rounded-2xl pl-12 pr-4 py-2.5 text-[11px] font-bold text-slate-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              
+              {/* SCAN RESULTS DROP-OFF */}
+              {suggestions.length > 0 && (
+                <div className="absolute top-full left-0 w-full mt-4 bg-white dark:bg-surface-900 border border-slate-100 dark:border-surface-800 shadow-premium-lg rounded-2xl z-50 overflow-hidden divide-y divide-slate-50 dark:divide-surface-800 animate-in slide-in-from-top-2">
+                  <div className="p-4 flex items-center justify-between bg-surface-50 dark:bg-surface-950">
+                    <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Matched Records</span>
+                    <Badge variant="success" className="text-[8px]">{suggestions.length} Signals</Badge>
+                  </div>
+                  {suggestions.map((result) => (
+                    <Link
+                      key={result.id}
+                      href={result.href}
+                      onClick={() => setSearchQuery('')}
+                      className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-surface-800 transition-colors group"
+                    >
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                           <span className="text-[8px] font-black text-brand uppercase tracking-widest">{result.type}</span>
+                           <span className="text-xs font-bold text-slate-900 dark:text-white truncate">{result.title}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 mt-1">{result.subtitle}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-200 group-hover:text-brand transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-            
-            <button 
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className={`p-2 border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 ${isSearchOpen ? 'bg-black text-white' : 'bg-white text-black hover:bg-zinc-100'}`}
-            >
-              <Search className="h-5 w-5 font-black" />
-            </button>
+
+            <div className="flex items-center gap-3">
+              <button className="p-2.5 rounded-xl text-slate-400 hover:text-brand transition-colors relative">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-brand rounded-full border-2 border-white dark:border-surface-900" />
+              </button>
+            </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-8 bg-zinc-50">
-          <div className="max-w-7xl mx-auto">
+        {/* CONTENT DOMAIN */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="max-w-[1600px] mx-auto min-h-full">
             {children}
           </div>
         </main>

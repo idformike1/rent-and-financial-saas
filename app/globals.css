@@ -25,7 +25,7 @@
   --radius-2xl: 1.5rem;
   --radius-3xl: 2rem;
 
-  /* Premium Elevation */
+  /* Premium Elevation (Soft, Layered Shadows) */
   --shadow-premium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-premium-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
@@ -58,17 +58,20 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Finova Table Styles */
-.finova-table-container {
-  @apply overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm;
+/* Brutalist Vaporization Overrides */
+[class*="border-slate-900"], 
+[class*="border-black"],
+[class*="border-2"],
+[class*="shadow-["],
+[class*="border-["] {
+  border-width: 1px !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-premium) !important;
 }
 
-.finova-table-header {
-  @apply bg-surface-50 dark:bg-surface-900/50 px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400;
-}
-
-.finova-table-cell {
-  @apply px-6 py-4 text-sm border-t border-[var(--border)];
+/* Finova Card Base */
+.finova-card {
+  @apply bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-premium transition-all hover:shadow-premium-lg;
 }
 
 /* Input Overhaul */
@@ -76,7 +79,11 @@ body {
   @apply w-full bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all;
 }
 
-/* Finova Card Base */
-.finova-card {
-  @apply bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-premium transition-all hover:shadow-premium-lg;
+/* Finova Table Styles */
+.finova-table-container {
+  @apply overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm;
+}
+
+.finova-table-header {
+  @apply bg-surface-50 dark:bg-surface-900/50 px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400;
 }

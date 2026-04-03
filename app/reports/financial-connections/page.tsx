@@ -11,7 +11,6 @@ import {
   Zap, 
   ChevronRight,
   TrendingUp,
-  CreditCard,
   Building2,
   Users,
   PieChart,
@@ -20,6 +19,7 @@ import {
   Terminal,
   Link
 } from 'lucide-react'
+import { Card, Badge, Button } from '@/components/ui-finova'
 
 // GAAP to Axiom Translation Definition Hub
 type TranslationNode = {
@@ -85,44 +85,42 @@ export default function FinanceTranslationHub() {
   const [selected, setSelected] = useState<TranslationNode>(TRANSLATION_MAP[0])
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8 space-y-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 lg:p-12 space-y-12 animate-in fade-in duration-700">
       
-      {/* HEADER SECTION - BRUTALIST AESTHETIC */}
-      <div className="border-b-[12px] border-slate-900 pb-12 relative overflow-hidden group">
+      {/* HEADER SECTION: FINOVA RECONSTRUCTION */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-surface-800 pb-12 gap-8 relative overflow-hidden group">
         <div className="flex items-center space-x-6 relative z-10">
-          <div className="p-4 bg-slate-900 rounded-2xl transform transition-transform group-hover:rotate-12 duration-500">
-             <Layers className="w-16 h-16 text-indigo-500" />
+          <div className="w-16 h-16 bg-brand/10 rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
+             <Layers className="w-8 h-8 text-brand" />
           </div>
           <div>
-            <h1 className="text-7xl font-black italic tracking-tighter text-slate-900 uppercase">
-              Visual Finance Translation Hub
+            <h1 className="text-5xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">
+              Finance <br/><span className="text-brand">Translation Hub</span>
             </h1>
             <div className="flex items-center space-x-4 mt-2">
-               <ShieldCheck className="w-5 h-5 text-indigo-600" />
-               <p className="text-slate-500 font-black tracking-[0.4em] uppercase text-xs">
+               <ShieldCheck className="w-4 h-4 text-emerald-500" />
+               <p className="text-slate-400 font-bold tracking-[0.3em] uppercase text-[10px]">
                  AXIOM V.3 Architecture ↔ GAAP Regulatory Standards
                </p>
             </div>
           </div>
         </div>
-        <div className="absolute right-[-5%] top-0 opacity-5 -z-0">
-           <PieChart className="w-96 h-96 text-slate-900" />
+        <div className="absolute right-[-5%] top-0 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
+           <PieChart className="w-96 h-96 text-brand" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* PHASE 1: THE GAAP HIERARCHY VISUALIZER (LEFT) */}
+        {/* HIERARCHY VISUALIZER (LEFT) */}
         <div className="lg:col-span-7 space-y-8 animate-in slide-in-from-left-8 duration-700">
-          <div className="bg-white border-[8px] border-slate-900 rounded-[3rem] p-12 shadow-[24px_24px_0px_0px_rgba(15,23,42,1)]">
-            <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-12 flex items-center text-slate-900">
+          <Card className="rounded-[2.5rem] p-10 border-none shadow-premium-lg bg-white dark:bg-slate-900">
+            <h2 className="text-xl font-black uppercase italic tracking-tighter mb-10 flex items-center text-slate-900 dark:text-white border-b border-slate-50 dark:border-surface-800 pb-6">
                Hierarchical Translation Map
-               <GitBranch className="w-8 h-8 ml-4 text-indigo-600 animate-pulse" />
+               <GitBranch className="w-5 h-5 ml-4 text-brand animate-pulse" />
             </h2>
 
-            <div className="flex flex-col space-y-6 relative">
-              <div className="absolute left-[39px] top-10 bottom-10 w-2 bg-slate-100 rounded-full" />
-              
+            <div className="flex flex-col space-y-4">
               {TRANSLATION_MAP.map((node) => {
                 const isActive = selected.id === node.id
                 const Icon = node.icon
@@ -130,128 +128,118 @@ export default function FinanceTranslationHub() {
                   <button
                     key={node.id}
                     onClick={() => setSelected(node)}
-                    className={`flex items-center text-left p-6 rounded-[2rem] border-4 transition-all relative z-10 ${
+                    className={`flex items-center text-left p-5 rounded-2xl transition-all relative z-10 ${
                       isActive 
-                        ? 'bg-slate-900 border-indigo-600 translate-x-8 shadow-2xl scale-105' 
-                        : 'bg-slate-50 border-slate-900/5 hover:border-slate-900/40 hover:bg-white hover:translate-x-3'
+                        ? 'bg-slate-900 dark:bg-brand text-white shadow-premium -translate-y-1' 
+                        : 'bg-slate-50 dark:bg-surface-800/50 hover:bg-white dark:hover:bg-surface-800 text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mr-8 transition-all ${
-                      isActive ? node.color_css : 'bg-slate-200'
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mr-6 transition-all ${
+                      isActive ? 'bg-white/20' : 'bg-slate-100 dark:bg-surface-700'
                     }`}>
-                      <Icon className={`w-10 h-10 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                     </div>
                     <div className="flex-1">
-                      <span className={`text-[10px] font-black uppercase tracking-[0.3em] mb-1 block ${isActive ? 'text-indigo-400' : 'text-slate-400'}`}>
+                      <span className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1 block ${isActive ? 'text-white/60' : 'text-slate-400'}`}>
                         {node.category} COMPONENT
                       </span>
-                      <h3 className={`text-3xl font-black uppercase tracking-tighter ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                      <h3 className={`text-lg font-black uppercase tracking-tighter ${isActive ? 'text-white' : 'text-slate-800 dark:text-slate-200'}`}>
                         {node.label}
                       </h3>
                     </div>
-                    <ChevronRight className={`w-10 h-10 transition-transform ${isActive ? 'text-indigo-600 rotate-90' : 'text-slate-200'}`} />
+                    <ChevronRight className={`w-6 h-6 transition-transform ${isActive ? 'text-white rotate-90' : 'text-slate-200'}`} />
                   </button>
                 )
               })}
             </div>
-          </div>
+          </Card>
 
-          {/* INTERACTIVE WATERFALL CALLOUT */}
-          <div className="bg-indigo-600 p-8 rounded-[2.5rem] border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(79,70,229,0.3)] flex items-center justify-between">
-             <div className="space-y-2">
+          <Card className="bg-brand border-none rounded-3xl p-8 shadow-premium flex items-center justify-between text-white overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
+             <div className="space-y-2 relative z-10">
                 <div className="flex items-center space-x-3">
-                   <Zap className="w-6 h-6 text-white animate-bounce" />
-                   <h4 className="text-white text-xl font-black uppercase italic tracking-widest">Protocol Velocity</h4>
+                   <Zap className="w-5 h-5 text-white animate-pulse" />
+                   <h4 className="text-lg font-black uppercase italic tracking-widest">Protocol Velocity</h4>
                 </div>
-                <p className="text-indigo-100 text-sm font-bold opacity-80 max-w-md italic">
-                  Mutation cascading at 0.04ms. Every payment triggers a 4point validation sequence across the Chart of Accounts.
+                <p className="text-white/70 text-xs font-medium max-w-md italic tracking-wide uppercase">
+                  Mutation cascading at 0.04ms. Every payment triggers a 4-point validation sequence.
                 </p>
              </div>
-             <Terminal className="w-16 h-16 text-indigo-800 opacity-50" />
-          </div>
+             <Terminal className="w-12 h-12 text-white/10 group-hover:rotate-12 transition-transform" />
+          </Card>
         </div>
 
-        {/* PHASE 3: THE DYNAMIC TRANSLATION PANEL (RIGHT) */}
+        {/* TRANSLATION PANEL (RIGHT) */}
         <div className="lg:col-span-5 animate-in slide-in-from-right-8 duration-700 delay-100">
-           <div className="sticky top-8 space-y-8">
+           <div className="sticky top-28 space-y-8">
               
-              {/* GAAP DEFINITION CARD */}
-              <div className="bg-white border-4 border-slate-900 rounded-[2rem] p-10 shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4">
-                   <ShieldCheck className="w-12 h-12 text-slate-100" />
-                </div>
-                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mb-6">GAAP Logical Proxy</h4>
-                <p className="text-2xl font-black italic tracking-tighter text-slate-900 leading-tight">
+              <Card className="rounded-3xl p-10 border-none shadow-premium bg-white dark:bg-slate-900 border-l-8 border-brand">
+                <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">GAAP Logical Proxy</h4>
+                <p className="text-xl font-black italic tracking-tighter text-slate-900 dark:text-white leading-relaxed">
                   "{selected.gaap_definition}"
                 </p>
-              </div>
+              </Card>
 
-              {/* AXIOM CODE-MAP CARD */}
-              <div className="bg-slate-900 rounded-[2.5rem] p-12 border-4 border-slate-900 text-white relative shadow-2xl">
-                 <div className="absolute top-0 right-0 p-8">
-                    <Database className="w-32 h-32 text-indigo-600/10" />
+              <Card className="bg-surface-900 border-none p-10 rounded-[2.5rem] text-white shadow-premium-lg relative overflow-hidden group">
+                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform">
+                    <Database className="w-48 h-48 text-brand" />
                  </div>
 
-                 <div className="relative z-10 space-y-12">
-                   {/* Model Mapping */}
+                 <div className="relative z-10 space-y-10">
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
-                        <Link className="w-5 h-5 text-indigo-500" />
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Prisma Persistence Model</h5>
+                        <Link className="w-4 h-4 text-brand" />
+                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Persistence Model</h5>
                       </div>
-                      <div className="bg-slate-800/80 border-2 border-slate-700/50 p-5 rounded-2xl font-mono text-sm text-indigo-400 shadow-inner">
+                      <div className="bg-surface-800/80 border border-surface-700 px-5 py-4 rounded-xl font-mono text-xs text-brand/80">
                         {selected.axiom_model}
                       </div>
                    </section>
 
-                   {/* Payload Mapping */}
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
-                        <FileJson className="w-5 h-5 text-amber-500" />
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Variable Materialization</h5>
+                        <FileJson className="w-4 h-4 text-amber-500" />
+                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Materialization</h5>
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
-                           <div key={i} className="flex items-center space-x-4 bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
-                              <ArrowRight className="w-4 h-4 text-slate-600" />
-                              <span className="text-sm font-bold tracking-tight text-slate-300">{f}</span>
+                           <div key={i} className="flex items-center space-x-4 bg-surface-800/40 p-4 rounded-xl border border-surface-700/50">
+                              <ArrowRight className="w-3 h-3 text-slate-600" />
+                              <span className="text-[11px] font-bold tracking-tight text-slate-400">{f}</span>
                            </div>
                         ))}
                       </div>
                    </section>
 
-                   {/* Server Actions Mapping */}
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
-                        <Code2 className="w-5 h-5 text-emerald-500" />
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Instruction Pathway (Active Gates)</h5>
+                        <Code2 className="w-4 h-4 text-emerald-500" />
+                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Instruction Pathway</h5>
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
-                           <div key={i} className="flex items-center justify-between bg-slate-800 p-5 rounded-2xl border-l-[6px] border-emerald-500 group cursor-default">
-                              <span className="font-mono text-xs text-emerald-100 opacity-80">{act}</span>
-                              <div className="flex items-center space-x-2">
-                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                 <span className="text-[10px] font-black uppercase text-emerald-500">Deployed</span>
-                              </div>
+                           <div key={i} className="flex items-center justify-between bg-surface-800 p-4 rounded-xl border-l-[4px] border-emerald-500 group cursor-default">
+                              <span className="font-mono text-[10px] text-emerald-400/80">{act}</span>
+                              <Badge className="bg-emerald-500/10 text-emerald-500 text-[8px] px-1.5 py-0">Active</Badge>
                            </div>
                          ))}
                       </div>
                    </section>
                  </div>
-              </div>
+              </Card>
 
-              {/* AUDIT LOG RELAY */}
-              <div className="bg-white border-4 border-slate-900 rounded-[2rem] p-8 flex items-center justify-between hover:bg-slate-900 hover:text-white transition-all cursor-pointer group shadow-lg">
+              <Card className="rounded-3xl p-6 flex items-center justify-between transition-all cursor-pointer group shadow-premium hover:shadow-premium-lg bg-white dark:bg-slate-900 border-none">
                  <div className="flex items-center space-x-6">
-                    <Activity className="w-10 h-10 text-indigo-600 group-hover:text-indigo-400 group-hover:scale-110 transition-transform" />
+                    <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-surface-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                       <Activity className="w-6 h-6 text-brand" />
+                    </div>
                     <div>
-                       <h6 className="text-xl font-black uppercase tracking-tighter">Trace Sequence In Log</h6>
-                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-500">Global Mutation Monitor</p>
+                       <h6 className="text-lg font-black uppercase tracking-tighter text-slate-900 dark:text-white">Trace In Log</h6>
+                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Global Monitor</p>
                     </div>
                  </div>
-                 <ArrowRight className="w-8 h-8 opacity-0 group-hover:opacity-100 group-hover:translate-x-4 transition-all" />
-              </div>
+                 <ArrowRight className="w-6 h-6 text-slate-200 group-hover:text-brand group-hover:translate-x-2 transition-all" />
+              </Card>
            </div>
         </div>
       </div>

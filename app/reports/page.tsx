@@ -1,45 +1,56 @@
 import prisma from '@/lib/prisma'
 import ReportHubClient from './ReportHubClient'
-import { BrainCircuit, ShieldCheck, History } from 'lucide-react'
+import { BrainCircuit, ShieldCheck, History, ArrowRight } from 'lucide-react'
+import { Card, Badge, Button } from '@/components/ui-finova'
 
 export default async function ReportsPage() {
   const properties = await (prisma as any).property.findMany();
 
   return (
-    <div className="py-8 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-slate-900 pb-8 gap-4">
+    <div className="py-12 px-8 max-w-7xl mx-auto space-y-16 animate-in fade-in duration-700">
+      
+      {/* HEADER: INTELLIGENCE HUB OVERHAUL */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-surface-800 pb-10 gap-8">
         <div>
-          <div className="flex items-center space-x-2 mb-2">
-            <BrainCircuit className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 uppercase underline decoration-4 decoration-indigo-100 underline-offset-8">Intelligence Hub</h1>
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-brand/10 flex items-center justify-center transition-transform hover:scale-110">
+               <BrainCircuit className="w-7 h-7 text-brand fill-brand" />
+            </div>
+            <div>
+               <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Intelligence <span className="text-brand">Hub</span></h1>
+               <p className="text-slate-400 font-bold tracking-[0.3em] uppercase text-[10px] mt-2">Strategic Fiscal Analysis & Reporting Engine</p>
+            </div>
           </div>
-          <p className="text-slate-500 font-bold tracking-widest uppercase text-[10px]">Strategic Fiscal Analysis & Reporting Engine</p>
         </div>
 
-        <div className="flex items-center gap-3">
-             <div className="flex items-center bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
-                <ShieldCheck className="w-3 h-3 mr-2 text-indigo-600" />
-                <span className="text-[8px] font-black uppercase text-indigo-700 tracking-widest leading-none">Status: Analysis Logic Bound</span>
-             </div>
+        <div className="flex items-center gap-4">
+             <Badge className="bg-brand/5 text-brand border-brand/20 px-4 py-2 text-[10px] font-black uppercase tracking-widest leading-none">
+                <ShieldCheck className="w-3.5 h-3.5 mr-2" /> Analysis Logic Bound
+             </Badge>
         </div>
       </div>
 
+      {/* CORE HUB INTERFACE */}
       <div className="grid grid-cols-1 gap-12">
         <ReportHubClient properties={properties} />
       </div>
 
-      <div className="bg-slate-900 border-4 border-slate-900 rounded-3xl p-10 flex items-center justify-between shadow-[20px_20px_0px_0px_rgba(79,70,229,0.2)]">
-          <div className="flex items-center space-x-6">
-             <History className="w-10 h-10 text-indigo-400" />
-             <div className="space-y-1">
-                <p className="text-white font-black uppercase italic tracking-tighter text-xl leading-none">Predictive Audit Readiness</p>
-                <p className="text-slate-500 font-bold text-xs tracking-tight uppercase">Engineered for 100% GAAP compliance and IRS reporting integrity.</p>
+      {/* AUDIT BUMPER: FINOVA STANDARD */}
+      <Card className="bg-surface-900 dark:bg-surface-900 border-none rounded-[3rem] p-12 flex flex-col md:flex-row items-center justify-between gap-10 shadow-premium-lg group overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 rounded-full -mr-40 -mt-40 transition-transform duration-700 group-hover:scale-110" />
+          <div className="flex items-center space-x-8 relative z-10">
+             <div className="w-20 h-20 rounded-[2rem] bg-indigo-500/10 flex items-center justify-center">
+                <History className="w-10 h-10 text-brand" />
+             </div>
+             <div className="space-y-2">
+                <p className="text-white font-black uppercase italic tracking-tighter text-2xl leading-none">Predictive Audit Readiness</p>
+                <p className="text-slate-400 font-medium text-xs tracking-wide uppercase opacity-70">Engineered for 100% GAAP compliance and IRS reporting integrity.</p>
              </div>
           </div>
-          <button className="bg-white text-slate-900 text-[10px] font-black px-6 py-3 rounded-xl hover:bg-indigo-600 hover:text-white transition-all uppercase tracking-widest italic shadow-lg">
-             Enter Audit Mode
-          </button>
-      </div>
+          <Button variant="primary" className="h-14 px-10 rounded-2xl bg-white text-slate-900 hover:bg-slate-50 transition-all font-black uppercase tracking-widest relative z-10 shadow-xl">
+             Enter Audit Mode <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" />
+          </Button>
+      </Card>
     </div>
   )
 }

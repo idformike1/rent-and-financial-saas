@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Building2, MapPin, LayoutGrid, ChevronRight, Hash } from 'lucide-react'
+import { Plus, Building2, MapPin, LayoutGrid, ChevronRight, Hash, X, Loader2, Sparkles, Navigation } from 'lucide-react'
 import { createProperty } from '@/actions/property-mgmt.actions'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { toast } from '@/lib/toast'
+import { Card, Button, Input, Badge } from '@/components/ui-finova'
 
 const propertySchema = z.object({
   name: z.string().min(2, "Required"),
@@ -32,7 +33,6 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
         toast.success("Property Registered Successfully");
         reset();
         setIsAddModalOpen(false);
-        // Refresh properties or redirect if needed
       } else {
         toast.error(result.message || "Property registration failed");
       }
@@ -44,14 +44,17 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex justify-end mb-8">
-        <button 
+    <div className="flex-1 flex flex-col animate-in fade-in duration-700">
+      <div className="flex justify-end mb-10">
+        <Button 
+          variant="primary"
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-slate-900 text-white font-black text-xs px-8 py-4 rounded-2xl shadow-xl shadow-slate-200 flex items-center hover:bg-slate-800 active:scale-95 transition-all uppercase tracking-widest"
+          className="h-14 px-8 rounded-2xl font-black uppercase italic tracking-tighter shadow-premium flex items-center group overflow-hidden relative"
         >
-          <Building2 className="w-5 h-5 mr-4" /> Add New Property
-        </button>
+          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+          <Building2 className="w-5 h-5 mr-3 relative z-10" /> 
+          <span className="relative z-10">Materialize Asset</span>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -59,73 +62,84 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
           <Link 
             key={p.id} 
             href={`/properties/${p.id}`}
-            className="group bg-white border-2 border-slate-900 p-8 rounded-3xl shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all relative overflow-hidden"
+            className="group"
           >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-               <Building2 className="w-24 h-24" />
-            </div>
-            
-            <div className="mb-6">
-              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter mb-1">{p.name}</h2>
-              <div className="flex items-center text-slate-400 text-xs font-bold uppercase tracking-widest">
-                <MapPin className="w-3 h-3 mr-2" /> {p.address}
+            <Card className="p-8 rounded-[2.5rem] border-none shadow-premium hover:shadow-premium-lg hover:-translate-y-2 transition-all relative overflow-hidden bg-white dark:bg-slate-900 h-full">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all duration-700">
+                 <Building2 className="w-32 h-32 text-brand" />
               </div>
-            </div>
+              
+              <div className="mb-8 space-y-3">
+                <div className="flex items-center gap-2">
+                   <Badge className="bg-brand/5 text-brand border-brand/20 text-[8px] px-2 py-0">Asset ID: {p.id.slice(0,4)}</Badge>
+                   <Badge variant="success" className="text-[8px] px-2 py-0">Status: Active</Badge>
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic leading-tight group-hover:text-brand transition-colors">{p.name}</h2>
+                <div className="flex items-center text-slate-400 text-[10px] font-black uppercase tracking-widest leading-relaxed">
+                  <Navigation className="w-3 h-3 mr-2 text-brand" /> {p.address}
+                </div>
+              </div>
 
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100">
-               <div className="flex items-center space-x-6">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Asset Count</span>
-                    <span className="text-xl font-black text-slate-900 flex items-center">
-                      <Hash className="w-4 h-4 mr-1 text-indigo-600" /> {p._count.units}
-                    </span>
-                  </div>
-               </div>
-               <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                  <ChevronRight className="w-5 h-5" />
-               </div>
-            </div>
+              <div className="flex items-center justify-between pt-8 border-t border-slate-50 dark:border-surface-800">
+                 <div className="flex items-center space-x-6">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Deployment Count</span>
+                      <span className="text-xl font-black text-slate-900 dark:text-white flex items-center mt-1">
+                        <Hash className="w-4 h-4 mr-1.5 text-brand" /> {p._count.units}
+                      </span>
+                    </div>
+                 </div>
+                 <div className="w-12 h-12 bg-slate-50 dark:bg-surface-800 rounded-2xl flex items-center justify-center group-hover:bg-brand group-hover:text-white group-hover:shadow-premium transition-all">
+                    <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                 </div>
+              </div>
+            </Card>
           </Link>
         ))}
       </div>
 
-      {/* Add Property Modal */}
+      {/* Add Property Modal: FINOVA STANDARD */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-           <div className="bg-white border-2 border-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-             <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
-               <div>
-                  <h2 className="text-xl font-black uppercase tracking-tight italic">Resource Registration</h2>
-                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Phase 1: Property Initialization</p>
-               </div>
-               <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                 <Plus className="w-6 h-6 rotate-45" />
-               </button>
-             </div>
-             <form onSubmit={handleSubmit(onAddProperty)} className="p-10 space-y-8">
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Property Visual Label</label>
-                  <input 
-                    {...register('name')} 
-                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-5 text-lg font-black outline-none focus:border-slate-900 focus:bg-white transition-all placeholder:font-bold placeholder:text-slate-200" 
-                    placeholder="e.g. North Complex" 
-                  />
-                  {errors.name && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase">{errors.name.message as string}</p>}
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <Card className="border-none rounded-[3rem] shadow-premium-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 bg-white dark:bg-slate-900">
+             <div className="p-10 bg-slate-900 flex justify-between items-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
+                <div className="relative z-10">
+                   <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic leading-none">Asset Registration</h2>
+                   <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.3em] mt-2">Phase 1: Domain Mapping</p>
                 </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">GPS / Physical Mapping</label>
-                  <input 
+                <button onClick={() => setIsAddModalOpen(false)} className="bg-white/10 hover:bg-white/20 text-white rounded-xl p-3 transition-colors relative z-10">
+                  <X className="w-5 h-5" />
+                </button>
+             </div>
+             <form onSubmit={handleSubmit(onAddProperty)} className="p-12 space-y-10">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block px-1">Visual Deployment Label</label>
+                  <Input 
+                    {...register('name')} 
+                    className="py-7 text-xl font-black placeholder:text-slate-200 dark:placeholder:text-surface-700 italic tracking-tighter"
+                    placeholder="e.g. North Metropolitan" 
+                  />
+                  {errors.name && <p className="text-rose-500 text-[10px] font-black mt-1 uppercase px-1">{errors.name.message as string}</p>}
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block px-1">GPS Persistence Mapping</label>
+                  <Input 
                     {...register('address')} 
-                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-5 text-lg font-black outline-none focus:border-slate-900 focus:bg-white transition-all placeholder:font-bold placeholder:text-slate-200" 
+                    className="py-7 text-lg font-bold placeholder:text-slate-200 dark:placeholder:text-surface-700 tracking-tight"
                     placeholder="e.g. 123 Sky Tower Blvd" 
                   />
-                   {errors.address && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase">{errors.address.message as string}</p>}
+                  {errors.address && <p className="text-rose-500 text-[10px] font-black mt-1 uppercase px-1">{errors.address.message as string}</p>}
                 </div>
-                <button disabled={isSubmitting} className="w-full bg-slate-900 text-white font-black py-6 rounded-2xl shadow-xl shadow-slate-200 uppercase tracking-[0.34em] text-xs hover:bg-slate-800 disabled:opacity-50 active:scale-[0.98] transition-all">
-                   {isSubmitting ? 'Syncing...' : 'Complete Registration'}
-                </button>
+                <Button 
+                  disabled={isSubmitting} 
+                  variant="primary"
+                  className="w-full h-16 rounded-2xl font-black uppercase italic tracking-tighter shadow-premium"
+                >
+                   {isSubmitting ? <><Loader2 className="w-5 h-5 mr-3 animate-spin"/> Syncing Registry...</> : <><Sparkles className="w-5 h-5 mr-3"/> Finalize Deployment</>}
+                </Button>
              </form>
-           </div>
+           </Card>
         </div>
       )}
     </div>
