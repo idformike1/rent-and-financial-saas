@@ -5,6 +5,7 @@ import { Prisma, AccountCategory } from '@prisma/client'
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { PaymentSubmissionPayload, SystemResponse } from '@/types'
 import { randomUUID } from 'crypto'
+import { recordAuditLog } from '@/lib/audit-logger'
 
 /**
  * ALGORITHM A: The Payment Waterfall (Primary-First)
@@ -148,6 +149,13 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
       );
 
       await prisma.$transaction(txOps);
+
+      await recordAuditLog({
+        action: 'CREATE',
+        entityType: 'LEDGER_ENTRY',
+        entityId: transactionId,
+        metadata: { amount: payload.amountPaid, tenantId: payload.tenantId, mode: payload.paymentMode }
+      })
 
       return { success: true, message: "Waterfall processing complete. Ledger entry immutable.", data: { transactionId } };
     } catch (e: any) {

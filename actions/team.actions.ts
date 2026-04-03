@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 import bcrypt from "bcryptjs"
+import { recordAuditLog } from "@/lib/audit-logger"
 
 // Helper to ensure the user is an OWNER in the organization
 async function ensureOwner() {
@@ -55,6 +56,13 @@ export async function updateUserRole(userId: string, newRole: string) {
     },
     data: { role: newRole }
   })
+
+  await recordAuditLog({
+    action: 'ROLE_CHANGE',
+    entityType: 'USER',
+    entityId: userId,
+    metadata: { newRole }
+  })
   
   revalidatePath('/settings/team')
 }
@@ -72,6 +80,12 @@ export async function toggleUserActivation(userId: string, isActive: boolean) {
       organizationId: session.user.organizationId 
     },
     data: { isActive }
+  })
+
+  await recordAuditLog({
+    action: isActive ? 'ACTIVATE' : 'DEACTIVATE',
+    entityType: 'USER',
+    entityId: userId
   })
   
   revalidatePath('/settings/team')
@@ -100,7 +114,7 @@ export async function deleteUserForever(userId: string) {
 
   // Safety Catch: Check for existing AuditLogs or LedgerEntries
   const hasHistory = await prisma.$transaction(async (tx: any) => {
-    const logsCount = await tx.auditLog.count({ where: { managerId: userId } })
+    const logsCount = await tx.auditLog.count({ where: { userId: userId } })
     return logsCount > 0
   })
 
@@ -113,6 +127,12 @@ export async function deleteUserForever(userId: string) {
       id: userId,
       organizationId: session.user.organizationId 
     }
+  })
+
+  await recordAuditLog({
+    action: 'DELETE',
+    entityType: 'USER',
+    entityId: userId
   })
   
   revalidatePath('/settings/team')
@@ -142,6 +162,13 @@ export async function inviteMember(email: string, name: string) {
       isActive: true,
       canEdit: true,
     }
+  })
+
+  await recordAuditLog({
+    action: 'INVITE',
+    entityType: 'USER',
+    entityId: newUser.id,
+    metadata: { email }
   })
 
   revalidatePath('/settings/team')

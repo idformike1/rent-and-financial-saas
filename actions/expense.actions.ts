@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { randomUUID } from 'crypto'
 import { PaymentMode, AccountCategory } from '@prisma/client'
 import { runSecureServerAction } from '@/lib/auth-utils'
+import { recordAuditLog } from '@/lib/audit-logger'
 
 export async function logExpense(formData: FormData) {
   return runSecureServerAction('MANAGER', async (session) => {
@@ -31,7 +32,7 @@ export async function logExpense(formData: FormData) {
       if (!account) return { error: "No default asset account found for debit." };
 
       // Create the ledger entry
-      await prisma.ledgerEntry.create({
+      const entry = await prisma.ledgerEntry.create({
         data: {
           organizationId: session.organizationId,
           transactionId,
@@ -46,6 +47,13 @@ export async function logExpense(formData: FormData) {
           paymentMode
         }
       });
+
+      await recordAuditLog({
+        action: 'CREATE',
+        entityType: 'EXPENSE',
+        entityId: entry.id,
+        metadata: { amount, payee, description }
+      })
 
       revalidatePath('/expenses');
       revalidatePath('/reports/master-ledger');

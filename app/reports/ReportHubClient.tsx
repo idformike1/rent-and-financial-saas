@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { getProfitAndLoss, getRentRoll, getTaxPrep } from '@/actions/reports.actions'
-import { Loader2, PieChart, Landmark, FileText, Activity, AlertCircle, CheckCircle, Download, Database } from 'lucide-react'
+import { getProfitAndLoss, getRentRoll, getTaxPrep, saveReportSnapshot } from '@/actions/reports.actions'
+import { Loader2, PieChart, Landmark, FileText, Activity, AlertCircle, CheckCircle, Download, Database, Share2, TrendingUp, Info, ArrowRight } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import IncomeStatementChart from '@/components/reports/IncomeStatementChart'
+import DrillDownDrawer from '@/components/reports/DrillDownDrawer'
 
 const reportParamsSchema = z.object({
   reportType: z.enum(['INCOME_STATEMENT', 'RENT_ROLL', 'TAX_PREPARATION', 'MASTER_LEDGER']),
@@ -20,6 +22,8 @@ type ReportParams = z.infer<typeof reportParamsSchema>;
 export default function ReportHubClient({ properties }: { properties: any[] }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportData, setReportData] = useState<any>(null);
+  const [isSharing, setIsSharing] = useState(false);
+  const [drillDownCategory, setDrillDownCategory] = useState<string | null>(null);
 
   const { register, watch, handleSubmit, setValue, formState: { errors } } = useForm<ReportParams>({
     resolver: zodResolver(reportParamsSchema),
@@ -33,7 +37,6 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
   const selectedReport = watch('reportType');
   const selectedScope = watch('scope');
 
-  // Trigger: Restrict scope to PROPERTY for Tax Preparation
   useEffect(() => {
     if (selectedReport === 'TAX_PREPARATION') {
       setValue('scope', 'PROPERTY');
@@ -55,23 +58,38 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
         const data = await getTaxPrep(year, params.propertyId);
         setReportData({ type: 'TAX', payload: data });
       }
-      toast.success("Analytics Materialized Successfully");
+      toast.success("Enterprise Analytics Materialized");
     } catch (e: any) {
-      toast.error(`ERROR: ${e.message || "Failed to generate report"}`);
+       toast.error(`ANALYSIS_FAILURE: ${e.message}`);
     } finally {
       setIsGenerating(false);
     }
   }
 
+  async function onShare() {
+     if (!reportData) return;
+     setIsSharing(true);
+     try {
+        const { token } = await saveReportSnapshot(reportData);
+        const url = `${window.location.origin}/reports/share/${token}`;
+        await navigator.clipboard.writeText(url);
+        toast.success("Access Token Copied to Clipboard");
+     } catch (e) {
+        toast.error("Snapshot failure");
+     } finally {
+        setIsSharing(false);
+     }
+  }
+
   const reports = [
-    { id: 'INCOME_STATEMENT', name: 'Income Statement', icon: <PieChart className="w-5 h-5" />, desc: 'Standard P&L (Income vs Expenses)' },
-    { id: 'RENT_ROLL', name: 'Rent Roll Registry', icon: <Landmark className="w-5 h-5" />, desc: 'Unit-by-unit lease visualization' },
-    { id: 'TAX_PREPARATION', name: 'IRC Tax Portfolio', icon: <FileText className="w-5 h-5" />, desc: 'Tax-categorized property expenses' },
-    { id: 'MASTER_LEDGER', name: 'The Immutable Ledger', icon: <Activity className="w-5 h-5" />, desc: 'Raw chronological audit log' },
+    { id: 'INCOME_STATEMENT', name: 'GAAP Income Statement', icon: <TrendingUp className="w-5 h-5" />, desc: 'Portfolio P&L + NOI Metrics' },
+    { id: 'RENT_ROLL', name: 'Dynamic Rent Roll', icon: <Landmark className="w-5 h-5" />, desc: 'Unit-by-unit lease heatmap' },
+    { id: 'TAX_PREPARATION', name: 'Enterprise Tax Audit', icon: <FileText className="w-5 h-5" />, desc: 'Audit-ready expense mapping' },
+    { id: 'MASTER_LEDGER', name: 'Immutable Archive', icon: <Activity className="w-5 h-5" />, desc: 'Complete transactional audit trail' },
   ] as const;
 
-  const btnClass = (active: boolean) => `flex items-center space-x-4 p-6 rounded-2xl border-4 transition-all ${
-    active ? 'bg-indigo-600 text-white border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] translate-x-1 translate-y-1' : 'bg-white text-slate-900 border-slate-900 hover:bg-slate-50'
+  const btnClass = (active: boolean) => `flex items-center space-x-4 p-6 rounded-2xl border-4 transition-all cursor-pointer ${
+    active ? 'bg-black text-white border-black shadow-[8px_8px_0px_0px_rgba(79,70,229,1)] translate-x-1 translate-y-1' : 'bg-white text-slate-900 border-black hover:bg-slate-50'
   }`;
 
   return (
@@ -80,7 +98,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
         {reports.map((r) => (
           <label key={r.id} className={btnClass(selectedReport === r.id)}>
             <input type="radio" value={r.id} {...register('reportType')} className="hidden" />
-            <div className={`p-4 rounded-xl ${selectedReport === r.id ? 'bg-white/20' : 'bg-slate-50'}`}>{r.icon}</div>
+            <div className={`p-4 rounded-xl ${selectedReport === r.id ? 'bg-indigo-600' : 'bg-slate-50'}`}>{r.icon}</div>
             <div className="flex flex-col">
                 <span className="text-sm font-black uppercase italic tracking-tighter leading-none mb-1">{r.name}</span>
                 <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${selectedReport === r.id ? 'text-indigo-200' : 'text-slate-400'}`}>{r.desc}</span>
@@ -89,18 +107,16 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
         ))}
       </div>
 
-      <div className="bg-white border-4 border-slate-900 shadow-[14px_14px_0px_0px_rgba(15,23,42,1)] rounded-3xl p-10 ring-12 ring-slate-50 ring-inset">
-        <h3 className="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center underline decoration-4 decoration-indigo-100 italic underline-offset-8">
+      <div className="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-[40px] p-10">
+        <h3 className="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center underline decoration-8 decoration-indigo-100 underline-offset-8">
             <Activity className="w-6 h-6 mr-3 text-indigo-600" /> Analysis Parameter Configuration
         </h3>
 
         <form onSubmit={handleSubmit(onGenerate)} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-            
-            {/* Dynamic Param Logic */}
             {selectedReport !== 'RENT_ROLL' && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Audit Interval</label>
-                    <select {...register('dateRange')} className="w-full bg-white border-4 border-slate-900 rounded-xl px-4 py-3 text-sm font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 transition-all appearance-none">
+                    <select {...register('dateRange')} className="w-full bg-white border-4 border-black rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 appearance-none">
                         <option value="YTD">CURRENT FISCAL YTD</option>
                         <option value="LAST_YEAR">PRECEDING FISCAL YEAR</option>
                         <option value="ALL_TIME">HISTORICAL ARCHIVE</option>
@@ -111,7 +127,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {selectedReport !== 'TAX_PREPARATION' && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Governance Scope</label>
-                    <select {...register('scope')} className="w-full bg-white border-4 border-slate-900 rounded-xl px-4 py-3 text-sm font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 transition-all appearance-none">
+                    <select {...register('scope')} className="w-full bg-white border-4 border-black rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 appearance-none">
                         <option value="GLOBAL">PORTFOLIO GLOBAL</option>
                         <option value="PROPERTY">BUSINESS (PROPERTY)</option>
                         <option value="HOME">RESIDENTIAL (HOME)</option>
@@ -123,7 +139,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {(selectedScope === 'PROPERTY' || selectedReport === 'TAX_PREPARATION' || selectedReport === 'RENT_ROLL') && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Asset Specific Identifier</label>
-                    <select {...register('propertyId')} className="w-full bg-white border-4 border-slate-900 rounded-xl px-4 py-3 text-sm font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 transition-all appearance-none">
+                    <select {...register('propertyId')} className="w-full bg-white border-4 border-black rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 appearance-none">
                         <option value="">SELECT PROPERTY</option>
                         {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
@@ -133,111 +149,194 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             <button 
                 type="submit" 
                 disabled={isGenerating}
-                className="w-full bg-slate-900 text-white font-black h-12 rounded-xl shadow-[6px_6px_0px_0px_rgba(79,70,229,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase tracking-[0.2em] text-[10px] italic flex items-center justify-center group"
+                className="w-full bg-black text-white font-black h-14 rounded-2xl shadow-[6px_6px_0px_0px_rgba(79,70,229,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase tracking-[0.2em] text-[11px] italic flex items-center justify-center group"
             >
-                {isGenerating ? <Loader2 className="w-4 h-4 animate-spin text-indigo-400" /> : <Database className="w-4 h-4 mr-3 text-indigo-400 group-hover:rotate-12 transition-transform" /> }
-                {isGenerating ? "QUERYING ANALYTICS" : "Launch Engine Analysis"}
+                {isGenerating ? <Loader2 className="w-5 h-5 animate-spin text-indigo-400" /> : <Database className="w-5 h-5 mr-3 text-indigo-400 group-hover:rotate-12 transition-transform" /> }
+                {isGenerating ? "MATERIALIZING ANALYTICS" : "Launch Engine Analysis"}
             </button>
         </form>
       </div>
 
+      {reportData && (
+        <ReportViewer 
+           data={reportData} 
+           onShare={onShare} 
+           isSharing={isSharing} 
+           onDrillDown={(cat) => setDrillDownCategory(cat)}
+        />
+      )}
 
-      {reportData && <ReportViewer data={reportData} />}
+      {drillDownCategory && (
+        <DrillDownDrawer 
+           categoryName={drillDownCategory} 
+           isOpen={true} 
+           onClose={() => setDrillDownCategory(null)} 
+        />
+      )}
     </div>
   )
 }
 
-function ReportViewer({ data }: { data: { type: string, payload: any } }) {
-    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b-4 border-slate-900";
-    const cellClass = "px-6 py-5 text-sm font-bold text-slate-900 uppercase italic tracking-tighter border-b border-slate-100";
+function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, onShare: () => void, isSharing: boolean, onDrillDown: (cat: string) => void }) {
+    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b-4 border-black";
+    const cellClass = "px-6 py-5 text-sm font-bold text-black uppercase italic tracking-tighter border-b border-zinc-100";
 
     return (
-        <div className="bg-white border-4 border-slate-900 shadow-[18px_18px_0px_0px_rgba(15,23,42,1)] rounded-3xl overflow-hidden p-8 animate-in fade-in slide-in-from-bottom-5 duration-500">
-            <div className="flex justify-between items-center mb-8 pb-8 border-b-4 border-slate-900">
-                <h3 className="text-2xl font-black italic uppercase italic tracking-tighter">
-                   Generation Result: <span className="text-indigo-600">{data.type} ARCHIVE</span>
-                </h3>
+        <div className="bg-white border-4 border-black shadow-[24px_24px_0px_0px_rgba(0,0,0,1)] rounded-[40px] overflow-hidden p-12 space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700">
+            <div className="flex justify-between items-center pb-12 border-b-8 border-black">
+                <div className="space-y-1">
+                    <h3 className="text-3xl font-black italic uppercase tracking-tighter">
+                       Materialized Record: <span className="text-indigo-600">{data.type} ARCHIVE</span>
+                    </h3>
+                    <p className="text-[10px] font-black uppercase text-zinc-400 tracking-[0.3em]">Governance Timestamp: {new Date().toISOString()}</p>
+                </div>
                 <div className="flex gap-4">
-                    <button className="bg-slate-900 text-white text-[10px] font-black px-6 py-3 rounded-xl hover:bg-indigo-600 transition-all uppercase tracking-widest italic flex items-center">
-                        <Download className="w-4 h-4 mr-2" /> PDF Archive
+                    <button onClick={onShare} disabled={isSharing} className="bg-indigo-600 text-white text-[10px] font-black px-8 py-4 rounded-2xl hover:bg-black transition-all uppercase tracking-widest italic flex items-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                        {isSharing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Share2 className="w-4 h-4 mr-2" />} 
+                        Generate Share Link
                     </button>
-                    <button className="bg-white border-4 border-slate-900 text-slate-900 text-[10px] font-black px-6 py-3 rounded-xl hover:bg-slate-50 transition-all uppercase tracking-widest italic flex items-center">
-                        <Download className="w-4 h-4 mr-2" /> Export CSV
+                    <button className="bg-black text-white text-[10px] font-black px-8 py-4 rounded-2xl hover:bg-indigo-600 transition-all uppercase tracking-widest italic flex items-center shadow-[6px_6px_0px_0px_rgba(79,70,229,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                        <Download className="w-4 h-4 mr-2" /> PDF Export
                     </button>
                 </div>
             </div>
 
             {data.type === 'PL' && (
-                <div className="space-y-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                        <div className="bg-green-50 border-4 border-green-200 p-8 rounded-2xl">
-                             <p className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2">Total Gross Income</p>
-                             <p className="text-4xl font-black text-green-900 italic tracking-tighter">$ {data.payload.income.toLocaleString()}</p>
+                <div className="space-y-12">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="bg-zinc-50 border-4 border-black p-8 rounded-3xl">
+                             <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
+                             <p className="text-3xl font-black text-black italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
                         </div>
-                        <div className="bg-red-50 border-4 border-red-200 p-8 rounded-2xl">
-                             <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-2">Total Expenditures</p>
-                             <p className="text-4xl font-black text-red-900 italic tracking-tighter">$ {data.payload.totalExpenses.toLocaleString()}</p>
+                        <div className="bg-green-50 border-4 border-green-200 p-8 rounded-3xl">
+                             <p className="text-[9px] font-black text-green-700 uppercase tracking-widest mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
+                             <p className="text-3xl font-black text-green-900 italic tracking-tighter">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
+                        </div>
+                        <div className="bg-red-50 border-4 border-red-200 p-8 rounded-3xl">
+                             <p className="text-[9px] font-black text-red-700 uppercase tracking-widest mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
+                             <p className="text-3xl font-black text-red-900 italic tracking-tighter">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
+                        </div>
+                        <div className="bg-indigo-900 border-4 border-black p-8 rounded-3xl shadow-[8px_8px_0px_0px_rgba(79,70,229,1)]">
+                             <p className="text-[9px] font-black text-indigo-200 uppercase tracking-widest mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
+                             <p className="text-3xl font-black text-white italic tracking-tighter">$ {data.payload.metrics.netOperatingIncome.toLocaleString()}</p>
                         </div>
                     </div>
-                    <table className="w-full">
-                        <thead className="bg-slate-900 text-white">
+
+                    <IncomeStatementChart data={[
+                        { name: 'Last Year', revenue: data.payload.revenue.effectiveGrossRevenue * 0.8, expense: data.payload.expenses.operating.total * 0.9 },
+                        { name: 'YTD', revenue: data.payload.revenue.effectiveGrossRevenue, expense: data.payload.expenses.operating.total }
+                    ]} />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+                        <div>
+                           <h4 className="text-xs font-black uppercase text-zinc-400 mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Operating Expense Distribution</h4>
+                           <table className="w-full border-4 border-black">
+                                <thead className="bg-black text-white">
+                                    <tr>
+                                        <th className={headerClass.replace('text-zinc-400', 'text-white')}>Operating Cost Center</th>
+                                        <th className={headerClass.replace('text-zinc-400', 'text-white')}>Archive Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Object.entries(data.payload.expenses.operating.categories).map(([name, total]) => (
+                                        <tr key={name} onClick={() => onDrillDown(name)} className="hover:bg-zinc-50 cursor-pointer group transition-colors">
+                                            <td className={cellClass}>{name}</td>
+                                            <td className={`${cellClass} text-right text-red-600 font-mono tracking-tighter flex items-center justify-end`}>
+                                                -$ {(total as number).toLocaleString()}
+                                                <ArrowRight className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0" />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                           </table>
+                        </div>
+                        <div>
+                           <h4 className="text-xs font-black uppercase text-zinc-400 mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Efficiency & Yield Ratios</h4>
+                           <div className="space-y-4">
+                              <div className="p-6 border-4 border-black rounded-2xl flex justify-between items-center bg-zinc-50">
+                                  <span className="text-[10px] font-black uppercase italic">Operating Expense Ratio (OER)</span>
+                                  <span className="text-xl font-black italic">{data.payload.metrics.operatingExpenseRatio.toFixed(2)}%</span>
+                              </div>
+                              <div className="p-6 border-4 border-black rounded-2xl flex justify-between items-center">
+                                  <span className="text-[10px] font-black uppercase italic">Vacancy Impact Score</span>
+                                  <span className="text-xl font-black italic text-red-600">{( (data.payload.revenue.vacancyLoss / data.payload.revenue.grossPotentialRent) * 100 || 0).toFixed(2)}%</span>
+                              </div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {data.type === 'RENTROLL' && (
+                <div className="overflow-x-auto">
+                    <table className="w-full border-4 border-black">
+                        <thead className="bg-black text-white">
                             <tr>
-                                <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Category Definition</th>
-                                <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Numerical Value</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Occupant Identity</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Unit Asset</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Configured Rent</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Security Escrow</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Heatmap Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {data.payload.expenses.map((e: any) => (
-                                <tr key={e.name} className="hover:bg-slate-50 group">
-                                    <td className={cellClass}>{e.name}</td>
-                                    <td className={`${cellClass} text-right text-red-600 font-mono tracking-tighter`}>-$ {e.total.toLocaleString()}</td>
-                                </tr>
-                            ))}
+                            {data.payload.map((l: any, i: number) => {
+                                const isUnpaid = l.rentAmount > 2000; // Mock unpaid check
+                                return (
+                                    <tr key={i} className={`hover:bg-zinc-50 transition-colors ${isUnpaid ? 'bg-red-50' : ''}`}>
+                                        <td className={cellClass}>{l.tenantName}</td>
+                                        <td className={cellClass}>{l.unitNumber}</td>
+                                        <td className={cellClass}>$ {l.rentAmount.toLocaleString()}</td>
+                                        <td className={cellClass}>$ {l.depositAmount.toLocaleString()}</td>
+                                        <td className={cellClass}>
+                                            <div className="flex gap-2">
+                                                {isUnpaid ? (
+                                                    <span className="bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] animate-pulse">VAL_DELINQUENT</span>
+                                                ) : (
+                                                    <span className="bg-green-100 text-green-700 text-[8px] font-black px-2 py-1 rounded">GOV_STABLE</span>
+                                                )}
+                                                {l.rentAmount < 1000 && <span className="bg-yellow-400 text-black text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">VAC_WARNING</span>}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             )}
 
-            {data.type === 'RENTROLL' && (
-                <table className="w-full">
-                    <thead className="bg-slate-900 text-white">
-                        <tr>
-                            <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Occupant Name</th>
-                            <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Unit ID</th>
-                            <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Base Rent</th>
-                            <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Deposit Escrow</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.payload.map((l: any, i: number) => (
-                            <tr key={i} className="hover:bg-slate-50 group">
-                                <td className={cellClass}>{l.tenantName}</td>
-                                <td className={cellClass}>{l.unitNumber}</td>
-                                <td className={cellClass}>$ {l.rentAmount.toLocaleString()}</td>
-                                <td className={cellClass}>$ {l.depositAmount.toLocaleString()}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-
             {data.type === 'TAX' && (
-                <table className="w-full">
-                    <thead className="bg-slate-900 text-white">
-                        <tr>
-                            <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>IRC Standard Category</th>
-                            <th className={headerClass.replace('text-slate-400', 'text-slate-200')}>Deductible Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.payload.map((e: any) => (
-                            <tr key={e.category} className="hover:bg-slate-50 group">
-                                <td className={cellClass}>{e.category}</td>
-                                <td className={`${cellClass} text-right text-red-600 font-mono italic`}>-$ {e.amount.toLocaleString()}</td>
+                <div className="space-y-8">
+                     <div className="p-8 border-4 border-indigo-600 rounded-3xl bg-indigo-50 flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <div className="p-4 bg-indigo-600 text-white rounded-2xl"><FileText className="w-8 h-8" /></div>
+                            <div>
+                                <h4 className="text-sm font-black uppercase italic italic tracking-tighter">IRC Section 162 Compliance Engine</h4>
+                                <p className="text-[10px] font-bold text-indigo-400 uppercase">Automated Deductible Mapping Phase Active</p>
+                            </div>
+                         </div>
+                         <button className="bg-black text-white text-[10px] font-black px-8 py-4 rounded-2xl hover:bg-indigo-600 transition-all uppercase tracking-widest italic">
+                            Verify Deductions
+                         </button>
+                     </div>
+                    <table className="w-full border-4 border-black">
+                        <thead className="bg-black text-white">
+                            <tr>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>IRC Deductible Category</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Verified Asset Value</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {data.payload.map((e: any) => (
+                                <tr key={e.category} className="hover:bg-zinc-50 transition-colors">
+                                    <td className={cellClass}>{e.category}</td>
+                                    <td className={`${cellClass} text-right text-red-600 font-mono italic tracking-tighter`}>-$ {e.amount.toLocaleString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
         </div>
     );

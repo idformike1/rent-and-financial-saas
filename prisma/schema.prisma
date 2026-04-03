@@ -165,30 +165,28 @@ model LedgerEntry {
   account           Account          @relation(fields: [accountId], references: [id])
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
+
+  @@index([organizationId, transactionDate])
 }
 
 // ----------------------------------------------------------------------------
 // Audit Trail Entities
 // ----------------------------------------------------------------------------
 
-enum AuditActionType {
-  WAIVE_OFF
-  MANUAL_CREDIT
-  VOID_PAYMENT
-  MAINTENANCE_DECOMMISSION
-}
-
 model AuditLog {
-  id             String          @id @default(uuid())
+  id             String       @id @default(uuid())
+  action         String       // e.g., 'CREATE', 'UPDATE', 'DELETE', 'NUCLEAR_PURGE'
+  entityType     String       // e.g., 'USER', 'EXPENSE', 'PROPERTY', 'TENANT'
+  entityId       String
+  metadata       Json?
+  userId         String
   organizationId String
-  timestamp      DateTime        @default(now())
-  managerId      String          
-  actionType     AuditActionType 
-  targetId       String          
-  amountContext  Decimal         
-  reasonText     String          
-  
-  organization   Organization    @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@index([organizationId, createdAt(sort: Desc)])
 }
 
 // ----------------------------------------------------------------------------
@@ -210,6 +208,28 @@ model Organization {
   ledgerEntries     LedgerEntry[]
   expenseCategories ExpenseCategory[]
   auditLogs         AuditLog[]
+  reportSnapshots   ReportSnapshot[]
+  categorizationRules CategorizationRule[]
+}
+
+model ReportSnapshot {
+  id             String       @id @default(uuid())
+  urlToken       String       @unique
+  payload        Json
+  expiresAt      DateTime
+  organizationId String
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model CategorizationRule {
+  id             String       @id @default(uuid())
+  keyword        String
+  mappedCategory String
+  organizationId String
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 model User {
@@ -224,4 +244,5 @@ model User {
   createdAt      DateTime     @default(now())
   
   organization   Organization @relation(fields: [organizationId], references: [id])
+  auditLogs      AuditLog[]
 }

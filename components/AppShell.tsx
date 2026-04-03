@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield, ChevronRight } from 'lucide-react'
+import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield, ChevronRight, ShieldAlert } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { globalSearch, SearchResult } from '@/actions/search.actions'
 
@@ -17,6 +17,7 @@ const navigation = [
   { name: 'Intelligence Hub', href: '/reports', icon: Activity },
   { name: 'Master Ledger', href: '/reports/master-ledger', icon: FileText },
   { name: 'Team', href: '/settings/team', icon: Users },
+  { name: 'Audit Logs', href: '/settings/audit', icon: ShieldAlert },
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -73,7 +74,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
           <nav className="space-y-2">
             {navigation.map((item) => {
-              if (item.name === 'Team' && session?.user?.role !== 'OWNER') return null;
+              if ((item.name === 'Team' || item.name === 'Audit Logs') && session?.user?.role !== 'OWNER') return null;
               const isActive = pathname.startsWith(item.href)
               return (
                 <Link
