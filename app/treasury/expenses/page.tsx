@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import ExpenseFormClient from './ExpenseFormClient'
-import { Landmark, ShieldAlert, History, ArrowLeft, Shield } from 'lucide-react'
+import { Landmark, ShieldAlert, History, ArrowLeft, Shield, Zap } from 'lucide-react'
 
 export default async function ExpenseLoggingPage() {
   const properties = await (prisma as any).property.findMany();
@@ -13,28 +13,29 @@ export default async function ExpenseLoggingPage() {
   });
 
   return (
-    <div className="py-8 px-4 sm:px-6 max-w-4xl mx-auto space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-slate-900 pb-8 gap-4">
-        <div>
-          {/* Back link */}
-          <Link
-            href="/expenses"
-            className="inline-flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors mb-4 group"
-          >
-            <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Expenses
-          </Link>
-          <div className="flex items-center space-x-2 mb-2">
-            <Landmark className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Treasury Entry Hub</h1>
+    <div className="py-12 px-6 max-w-5xl mx-auto space-y-16">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-white/5 pb-10 gap-8">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 rounded-[1.75rem] bg-brand/10 flex items-center justify-center shadow-premium-lg">
+            <Landmark className="w-8 h-8 text-brand" />
           </div>
-          <p className="text-slate-500 font-bold tracking-widest uppercase text-[10px]">Dual-Stream Fiscal Materialization · Inflow & Outflow Synchronization</p>
+          <div>
+            <Link
+              href="/expenses"
+              className="inline-flex items-center text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-brand transition-colors mb-3 group"
+            >
+              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Wealth Ledger
+            </Link>
+            <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Treasury Entry Hub</h1>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Fiscal Materialization v3.1</p>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-200">
-            <ShieldAlert className="w-3 h-3 mr-2 text-green-600" />
-            <span className="text-[8px] font-black uppercase text-green-700 tracking-widest leading-none">Status: Governance Active</span>
+          <div className="flex items-center bg-emerald-500/10 px-4 py-2 rounded-2xl border border-emerald-500/20">
+            <ShieldAlert className="w-4 h-4 mr-3 text-emerald-500" />
+            <span className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-widest leading-none">Governance Signal: Active</span>
           </div>
         </div>
       </div>
@@ -43,28 +44,33 @@ export default async function ExpenseLoggingPage() {
         <ExpenseFormClient properties={properties} allCategories={allCategories} allLedgers={allLedgers} />
       </div>
 
-      {/* Footer panel — both buttons now wired */}
-      <div className="bg-slate-50 border-4 border-slate-200 rounded-3xl p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="flex items-center space-x-6">
-          <History className="w-10 h-10 text-slate-400 shrink-0" />
+      {/* Footer panel — Glassmorphic Integrity Anchor */}
+      <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-100 dark:border-white/5 rounded-[3rem] p-12 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-premium">
+        <div className="flex items-center gap-8">
+          <div className="w-16 h-16 rounded-[1.75rem] bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0">
+             <History className="w-8 h-8 text-slate-400" />
+          </div>
           <div>
-            <p className="text-slate-900 font-black uppercase italic tracking-tighter text-lg">System Integrity Anchored</p>
-            <p className="text-slate-400 font-bold text-xs mt-1 tracking-tight">All expenditures are anchored to the Chart of Accounts and the Double-Entry Ledger.</p>
+            <p className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">System Integrity Anchored</p>
+            <div className="flex items-center gap-3 mt-3">
+               <Zap className="w-3 h-3 text-brand" />
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Double-Entry Ledger Verified</p>
+            </div>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+        <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
           <Link
             href="/expenses"
-            className="bg-white border-2 border-slate-900 text-[10px] font-black px-5 py-3 rounded-lg hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest italic flex items-center justify-center"
+            className="h-14 px-8 bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 text-[10px] font-black rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all uppercase tracking-widest italic flex items-center justify-center"
           >
-            <ArrowLeft className="w-3 h-3 mr-2" />
-            Back to Expenses
+            <ArrowLeft className="w-4 h-4 mr-3 text-slate-400" />
+            Wealth Registry
           </Link>
           <Link
             href="/settings/audit"
-            className="bg-slate-900 text-white border-2 border-slate-900 text-[10px] font-black px-5 py-3 rounded-lg hover:bg-indigo-700 hover:border-indigo-700 transition-all uppercase tracking-widest italic flex items-center justify-center"
+            className="h-14 px-8 bg-slate-900 dark:bg-brand text-white text-[10px] font-black rounded-2xl shadow-brand/40 hover:shadow-brand/60 transition-all uppercase tracking-widest italic flex items-center justify-center"
           >
-            <Shield className="w-3 h-3 mr-2" />
+            <Shield className="w-4 h-4 mr-3" />
             View Audit Trail
           </Link>
         </div>

@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { logExpense } from '@/actions/expense.actions'
 import { Loader2, Landmark, CheckCircle, ArrowDownCircle, ArrowUpCircle } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import { cn } from '@/components/ui-finova'
 
 const treasurySchema = z.object({
   date: z.string().min(1, "Date is mandatory for treasury audit."),
@@ -47,23 +48,33 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
     defaultValues: { ...DEFAULT_VALUES, scope: allLedgers[0]?.id || '' },
   });
 
-  const selectedScope = watch('scope');
+  const selectedScopeId = watch('scope');
   const selectedType = watch('type');
   const selectedParentId = watch('parentCategoryId');
 
+  const activeLedger = allLedgers.find(l => l.id === selectedScopeId);
+  const showAssetContext = activeLedger?.name?.toUpperCase().includes('BUILDING');
+
   // TRIGGER: Filter categories by the dynamic Ledger (Scope) AND the stream type (INCOME/EXPENSE)
   const availableParents = allCategories.filter((c: any) => 
-    c.ledgerId === selectedScope && 
+    c.ledgerId === selectedScopeId && 
     c.type === selectedType && 
     !c.parentId
   );
   
   const availableSubs = allCategories.filter((c: any) => c.parentId === selectedParentId);
 
+  // LOGIC: Reset dependent fields when core states mutate
   useEffect(() => {
     setValue('parentCategoryId', '');
     setValue('subCategoryId', '');
-  }, [selectedScope, selectedType, setValue]);
+  }, [selectedScopeId, selectedType, setValue]);
+
+  useEffect(() => {
+    if (!showAssetContext) {
+      setValue('propertyId', '');
+    }
+  }, [showAssetContext, setValue]);
 
   async function onSubmit(data: TreasuryFormData) {
     setIsSubmitting(true);
@@ -73,11 +84,11 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
         if (value) formData.append(key, value);
       });
 
-      const result = await logExpense(formData); // Note: still calling logExpense but it will handle type
+      const result = await logExpense(formData);
       if (result.success) {
         setLastEntry({ payee: data.payee, amount: data.amount, type: data.type });
         setSessionCount(prev => prev + 1);
-        toast.success(`✓ ${data.type} Labeled: ${data.payee} — $${parseFloat(data.amount).toFixed(2)}`);
+        toast.success(`✓ ${data.type} Materialized`);
         reset({
           ...DEFAULT_VALUES,
           date: data.date,
@@ -87,134 +98,153 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           propertyId: data.propertyId,
         });
       } else {
-        toast.error(result.error || "Operation failed.");
+        toast.error(result.error || "Registry authorization failed.");
       }
     } catch (e: any) {
-      toast.error(e.message || "Network synchronization failure");
+      toast.error("Nexus synchronization failure");
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  const inputClass = "w-full bg-white border-4 border-slate-900 rounded-xl px-4 py-3 text-slate-900 font-bold outline-none focus:border-indigo-600 focus:shadow-[4px_4px_0px_0px_rgba(79,70,229,1)] transition-all text-sm uppercase placeholder-slate-300";
-  const labelClass = "text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 block";
+  const inputClass = (error?: any) => cn(
+    "w-full bg-white dark:bg-slate-800 border-2 rounded-2xl px-6 h-16 text-slate-900 dark:text-white font-black outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px] uppercase tracking-tight placeholder-slate-300 dark:placeholder-slate-600 shadow-sm",
+    error ? "border-rose-500 bg-rose-50/10" : "border-transparent focus:border-brand/20"
+  );
+  const labelClass = "text-[10px] font-black text-slate-400 uppercase tracking-[0.25rem] mb-3 ml-1 block";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {sessionCount > 0 && lastEntry && (
-        <div className={`border-4 rounded-2xl px-6 py-4 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(30,41,59,1)] ${
-          lastEntry.type === 'INCOME' ? 'bg-green-50 border-green-600' : 'bg-red-50 border-red-600'
-        }`}>
-          <div className="flex items-center space-x-4">
-            {lastEntry.type === 'INCOME' ? <ArrowUpCircle className="text-green-600" /> : <ArrowDownCircle className="text-red-600" />}
+        <div className="rounded-[2.5rem] px-10 py-8 flex items-center justify-between shadow-2xl bg-emerald-950/90 border border-emerald-500/20 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
+          <div className="flex items-center space-x-6">
+            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-black/20", lastEntry.type === 'INCOME' ? 'bg-emerald-500' : 'bg-rose-500')}>
+               {lastEntry.type === 'INCOME' ? <ArrowUpCircle className="w-7 h-7 text-white" /> : <ArrowDownCircle className="w-7 h-7 text-white" />}
+            </div>
             <div>
-              <p className="font-black uppercase tracking-tight text-sm">
-                Treasury {lastEntry.type === 'INCOME' ? 'Inflow' : 'Outflow'} #{sessionCount}
+              <p className="font-black italic uppercase tracking-tighter text-2xl text-white leading-none">
+                Entry #{sessionCount}: Materialized
               </p>
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">
-                {lastEntry.payee} — ${parseFloat(lastEntry.amount).toFixed(2)} synchronized.
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400 mt-3 animate-pulse">
+                {lastEntry.payee} — ${parseFloat(lastEntry.amount).toLocaleString(undefined, {minimumFractionDigits: 2})} // AUDITED
               </p>
             </div>
+          </div>
+          <div className="bg-emerald-500/20 p-3 rounded-full">
+            <CheckCircle className="w-8 h-8 text-emerald-500" />
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-        <div className="bg-white border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] rounded-3xl p-10 grid grid-cols-1 md:grid-cols-2 gap-8 ring-8 ring-slate-50 ring-inset">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+        <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-100 dark:border-white/5 shadow-premium rounded-[3.5rem] p-12 grid grid-cols-1 md:grid-cols-2 gap-10">
           
-          {/* FLOW TYPE SELECTOR */}
-          <div className="md:col-span-2 grid grid-cols-2 gap-4">
+          {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
+          <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-slate-100/50 dark:bg-white/5 rounded-[1.75rem]">
              <button 
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
-               className={`py-4 rounded-xl border-4 font-black uppercase tracking-widest text-xs transition-all ${
-                 selectedType === 'EXPENSE' ? 'bg-slate-900 text-white border-slate-900 shadow-[4px_4px_0px_0px_rgba(79,70,229,1)]' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
-               }`}
+               className={cn("py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+                 selectedType === 'EXPENSE' ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+               )}
              >
-                Outflow / Expense
+                <ArrowDownCircle className="w-4 h-4" /> Outflow / Out-Take
              </button>
              <button 
                type="button" 
                onClick={() => setValue('type', 'INCOME')}
-               className={`py-4 rounded-xl border-4 font-black uppercase tracking-widest text-xs transition-all ${
-                 selectedType === 'INCOME' ? 'bg-green-600 text-white border-green-600 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300'
-               }`}
+               className={cn("py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+                 selectedType === 'INCOME' ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+               )}
              >
-                Inflow / Revenue
+                <ArrowUpCircle className="w-4 h-4" /> Inflow / Revenue
              </button>
           </div>
 
           <div className="space-y-1">
             <label className={labelClass}>Materialization Date</label>
-            <input type="date" {...register('date')} className={inputClass} />
+            <input type="date" {...register('date')} className={inputClass(errors.date)} />
+            {errors.date && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.date.message}</p>}
           </div>
 
           <div className="space-y-1">
             <label className={labelClass}>Liquid Volume (Amount)</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400">$</span>
-              <input type="text" {...register('amount')} className={`${inputClass} pl-8`} placeholder="00.00" />
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-slate-400">$</span>
+              <input type="text" {...register('amount')} className={cn(inputClass(errors.amount), "pl-12 text-2xl tracking-tighter italic")} placeholder="00.00" />
             </div>
+            {errors.amount && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.amount.message}</p>}
           </div>
 
           <div className="space-y-1">
             <label className={labelClass}>Ledger Scope</label>
-            <select {...register('scope')} className={inputClass}>
-               {allLedgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-            </select>
+            <div className="relative">
+              <select {...register('scope')} className={cn(inputClass(errors.scope), "appearance-none")}>
+                {allLedgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+              </select>
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20"><Landmark className="w-4 h-4" /></div>
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <label className={labelClass}>Asset Context (Property/Unit)</label>
-            <select {...register('propertyId')} className={inputClass}>
-              <option value="">GENERAL CORE</option>
-              {properties.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-          </div>
+          {showAssetContext && (
+            <div className="space-y-1 animate-in fade-in duration-500">
+              <label className={labelClass}>Asset Context (Property)</label>
+              <select {...register('propertyId')} className={cn(inputClass(), "appearance-none")}>
+                <option value="">GENERAL CORE</option>
+                {properties.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+          )}
 
           <div className="space-y-1">
-            <label className={labelClass}>{selectedType === 'INCOME' ? 'Revenue Stream' : 'Expenditure Account'} (Parent)</label>
-            <select {...register('parentCategoryId')} className={inputClass}>
-              <option value="">SELECT SOURCE/ACCOUNT</option>
+            <label className={labelClass}>{selectedType === 'INCOME' ? 'Revenue Source' : 'Expenditure Account'}</label>
+            <select {...register('parentCategoryId')} className={cn(inputClass(errors.parentCategoryId), "appearance-none")}>
+              <option value="">SELECT ACCOUNT</option>
               {availableParents.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
+            {errors.parentCategoryId && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.parentCategoryId.message}</p>}
           </div>
 
-          <div className="space-y-1">
-            <label className={labelClass}>Granular Allocation (Sub-Node)</label>
-            <select {...register('subCategoryId')} className={inputClass} disabled={!selectedParentId}>
-              <option value="">NO SUB-ALLOCATION</option>
-              {availableSubs.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
+          {availableSubs.length > 0 && (
+            <div className="space-y-1 animate-in fade-in duration-500">
+              <label className={labelClass}>Granular Allocation</label>
+              <select {...register('subCategoryId')} className={cn(inputClass(), "appearance-none")}>
+                <option value="">NO SUB-ALLOCATION</option>
+                {availableSubs.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+          )}
 
           <div className="space-y-1">
-            <label className={labelClass}>{selectedType === 'INCOME' ? 'Payer Identity' : 'Payee Identity'} (Counterparty)</label>
-            <input {...register('payee')} className={inputClass} placeholder="Entity Name" />
+            <label className={labelClass}>{selectedType === 'INCOME' ? 'Payer Identity' : 'Payee Identity'}</label>
+            <input {...register('payee')} className={inputClass(errors.payee)} placeholder="Legal Entity Name" />
+            {errors.payee && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.payee.message}</p>}
           </div>
 
           <div className="space-y-1">
             <label className={labelClass}>Requisition Mode</label>
-            <select {...register('paymentMode')} className={inputClass}>
+            <select {...register('paymentMode')} className={cn(inputClass(), "appearance-none")}>
               <option value="BANK">DIGITAL CLEARANCE</option>
               <option value="CASH">LIQUID ASSET (CASH)</option>
             </select>
           </div>
 
-          <div className="md:col-span-2 space-y-1 pt-4">
+          <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-50 dark:border-white/5">
             <label className={labelClass}>Substantive Narrative (Description)</label>
-            <textarea rows={3} {...register('description')} className={`${inputClass} normal-case py-4`} placeholder="..." />
+            <textarea rows={3} {...register('description')} className={cn(inputClass(errors.description), "normal-case h-32 py-6")} placeholder="Enter fiscal reasoning narrative..." />
+            {errors.description && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.description.message}</p>}
           </div>
 
-          <div className="md:col-span-2 pt-8 flex flex-col sm:flex-row gap-4">
+          <div className="md:col-span-2 pt-10">
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`flex-1 text-white font-black py-6 rounded-2xl transition-all flex items-center justify-center uppercase tracking-[0.4em] text-sm italic group ${
-                selectedType === 'INCOME' ? 'bg-green-600 shadow-[0px_10px_0px_0px_rgba(15,23,42,1)]' : 'bg-slate-900 shadow-[0px_10px_0px_0px_rgba(79,70,229,1)]'
-              } hover:shadow-none hover:translate-y-[4px]`}
+              className={cn("w-full text-white font-black h-20 rounded-[1.5rem] transition-all flex items-center justify-center uppercase tracking-[0.5rem] text-[12px] italic group relative overflow-hidden active:translate-y-[1px] hover:shadow-premium-lg transition-transform",
+                selectedType === 'INCOME' ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-rose-500 shadow-rose-500/20'
+              )}
             >
-              {isSubmitting ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Landmark className="w-5 h-5 mr-3" />}
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              {isSubmitting ? <Loader2 className="w-6 h-6 mr-4 animate-spin" /> : <Landmark className="w-6 h-6 mr-4" />}
               {isSubmitting ? "Processing Ledger..." : `Authorize Treasury ${selectedType === 'INCOME' ? 'Inflow' : 'Outflow'}`}
             </button>
           </div>
@@ -222,5 +252,5 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
         </div>
       </form>
     </div>
-  )
+  );
 }

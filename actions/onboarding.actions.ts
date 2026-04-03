@@ -169,3 +169,36 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
     }
   });
 }
+
+/**
+ * IDENTITY PROTOCOL: PRE-MISSION VALIDATION
+ * Verifies if a tenant exists before proceeding to Step 2.
+ */
+export async function checkTenantExistence(name: string, email?: string, phone?: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const existing = await prisma.tenant.findFirst({
+        where: {
+          organizationId: session.organizationId,
+          isDeleted: false,
+          OR: [
+            { name: { equals: name, mode: 'insensitive' } },
+            ...(email ? [{ email: { equals: email, mode: 'insensitive' } }] : []),
+            ...(phone ? [{ phone: { equals: phone, mode: 'insensitive' } }] : [])
+          ]
+        }
+      });
+
+      if (existing) {
+        return { 
+          exists: true, 
+          message: `Identity Conflict: A Tenant named '${existing.name}' is already registered in the Nexus.` 
+        };
+      }
+
+      return { exists: false };
+    } catch (e: any) {
+      return { exists: false, error: "Validation Protocol Failure" };
+    }
+  });
+}

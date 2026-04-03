@@ -73,8 +73,8 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
   const { register: regLease, handleSubmit: handleLeaseSubmit, formState: { errors: leaseErrors } } = useForm<AddLeaseForm>({
     resolver: zodResolver(addLeaseSchema),
     defaultValues: {
-      rentAmount: 1200,
-      depositAmount: 1200,
+      rentAmount: 0,
+      depositAmount: 0,
       startDate: new Date().toISOString().split('T')[0]
     }
   });
@@ -178,10 +178,10 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
           </div>
           <div>
             <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">{tenant.name}</h1>
-            <div className="flex flex-wrap gap-4 mt-3">
-              {tenant.email && <span className="text-[10px] font-bold text-slate-500 flex items-center bg-slate-50 px-2 py-1 rounded border border-slate-100"><Mail className="w-3 h-3 mr-1" /> {tenant.email}</span>}
-              {tenant.phone && <span className="text-[10px] font-bold text-slate-500 flex items-center bg-slate-50 px-2 py-1 rounded border border-slate-100"><Phone className="w-3 h-3 mr-1" /> {tenant.phone}</span>}
-              {tenant.nationalId && <span className="text-[10px] font-bold text-indigo-600 flex items-center bg-indigo-50 px-2 py-1 rounded border border-indigo-100 uppercase tracking-widest"><ShieldCheck className="w-3 h-3 mr-1" /> ID: {tenant.nationalId}</span>}
+            <div className="flex flex-wrap gap-4 mt-4">
+              {tenant.email && <span className="text-[10px] font-black text-slate-400 flex items-center bg-slate-800/60 px-4 py-2 rounded-xl border border-white/5 backdrop-blur-md uppercase tracking-widest"><Mail className="w-3.5 h-3.5 mr-2 text-indigo-400" /> {tenant.email}</span>}
+              {tenant.phone && <span className="text-[10px] font-black text-slate-400 flex items-center bg-slate-800/60 px-4 py-2 rounded-xl border border-white/5 backdrop-blur-md uppercase tracking-widest"><Phone className="w-3.5 h-3.5 mr-2 text-indigo-400" /> {tenant.phone}</span>}
+              {tenant.nationalId && <span className="text-[10px] font-black text-slate-400 flex items-center bg-slate-800/60 px-4 py-2 rounded-xl border border-white/5 backdrop-blur-md uppercase tracking-[0.2em]"><ShieldCheck className="w-3.5 h-3.5 mr-2 text-indigo-400" /> ID::{tenant.nationalId}</span>}
             </div>
           </div>
         </div>
@@ -227,8 +227,8 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
                 <Layers className="w-4 h-4 mr-2 text-indigo-500" /> Asset Portfolio
               </h4>
               {!tenant.isDeleted && (
-                <button onClick={() => setIsAddLeaseModalOpen(true)} className="bg-indigo-50 text-indigo-600 p-2 rounded-lg hover:bg-indigo-100 transition-colors">
-                  <Plus className="w-4 h-4" />
+                <button onClick={() => setIsAddLeaseModalOpen(true)} className="bg-emerald-500 text-white p-2 rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                  <Plus className="w-5 h-5 font-black" />
                 </button>
               )}
             </div>
@@ -315,38 +315,41 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
       {/* Protocols (Modals) */}
       
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-           <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border-4 border-slate-900 animate-in zoom-in-95 duration-200">
-              <div className="p-8 border-b-2 border-slate-100 bg-slate-50 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <div className="bg-slate-900 rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-white/5 animate-in zoom-in-95 duration-200 relative">
+              <button 
+                onClick={() => setIsEditModalOpen(false)} 
+                className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors z-10"
+              >
+                <XCircle className="w-8 h-8" />
+              </button>
+              <div className="p-8 border-b border-white/5 bg-white/5 flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">Override Identity</h2>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Master Registry Mutation</p>
+                  <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">Override Identity</h2>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Master Registry Mutation</p>
                 </div>
-                <button onClick={() => setIsEditModalOpen(false)} className="bg-slate-900 text-white p-2 rounded-full hover:rotate-90 transition-all">
-                  <Plus className="rotate-45" />
-                </button>
               </div>
               <form onSubmit={handleSubmit(onEditTenant)} className="p-10 space-y-6">
                  <div className="grid grid-cols-2 gap-6">
                    <div className="col-span-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Legal Aggregate Name</label>
-                     <input {...register('name')} className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-5 text-xl font-black italic outline-none focus:border-slate-900 transition-all" />
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Legal Aggregate Name</label>
+                     <input {...register('name')} className="w-full bg-slate-800 border border-white/5 rounded-2xl p-5 text-xl font-black italic outline-none focus:border-indigo-500 transition-all text-white" />
                      {editErrors.name && <p className="text-red-500 text-[10px] mt-2 font-black uppercase">{editErrors.name.message}</p>}
                    </div>
                    <div className="col-span-2 md:col-span-1">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Electronic Mail</label>
-                     <input {...register('email')} placeholder="tenant@enterprise.com" className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold outline-none focus:border-slate-900 transition-all" />
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Electronic Mail</label>
+                     <input {...register('email')} placeholder="tenant@enterprise.com" className="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-sm font-bold outline-none focus:border-indigo-500 transition-all text-white" />
                    </div>
                    <div className="col-span-2 md:col-span-1">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Telephonic Contact</label>
-                     <input {...register('phone')} placeholder="+1 (555) 000-0000" className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold outline-none focus:border-slate-900 transition-all" />
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Telephonic Contact</label>
+                     <input {...register('phone')} placeholder="+1 (555) 000-0000" className="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-sm font-bold outline-none focus:border-indigo-500 transition-all text-white" />
                    </div>
                    <div className="col-span-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Government/National Identifier</label>
-                     <input {...register('nationalId')} placeholder="SSN / Passport / ID" className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold outline-none focus:border-slate-900 transition-all uppercase" />
+                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Government/National Identifier</label>
+                     <input {...register('nationalId')} placeholder="SSN / Passport / ID" className="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-sm font-bold outline-none focus:border-indigo-500 transition-all text-white uppercase" />
                    </div>
                  </div>
-                 <button disabled={isSubmitting} className="w-full bg-slate-900 text-white font-black py-6 rounded-2xl shadow-xl hover:bg-slate-800 disabled:opacity-50 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-3">
+                 <button disabled={isSubmitting} className="w-full bg-indigo-600 text-white font-black py-6 rounded-2xl shadow-xl hover:bg-indigo-700 disabled:opacity-50 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-3">
                     {isSubmitting ? 'Mutating Database...' : 'Commit Changes to Registry'}
                  </button>
               </form>
@@ -355,21 +358,24 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
       )}
 
       {isAddLeaseModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-           <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border-4 border-indigo-600 animate-in zoom-in-95 duration-200">
-              <div className="p-8 border-b-2 border-slate-100 bg-indigo-50 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <div className="bg-slate-900 rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-white/5 animate-in zoom-in-95 duration-200 relative">
+              <button 
+                onClick={() => setIsAddLeaseModalOpen(false)} 
+                className="absolute top-6 right-6 text-emerald-500/50 hover:text-emerald-500 transition-colors z-10"
+              >
+                <XCircle className="w-8 h-8" />
+              </button>
+              <div className="p-8 border-b border-emerald-900/50 bg-emerald-950 flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-black text-indigo-900 uppercase italic tracking-tighter">Asset Expansion</h2>
-                  <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Multi-Unit Logical Bridge</p>
+                  <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter text-emerald-50">Asset Expansion</h2>
+                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Multi-Unit Logical Bridge</p>
                 </div>
-                <button onClick={() => setIsAddLeaseModalOpen(false)} className="bg-indigo-600 text-white p-2 rounded-full hover:rotate-90 transition-all">
-                  <Plus className="rotate-45" />
-                </button>
               </div>
               <form onSubmit={handleLeaseSubmit(onAddLease)} className="p-10 space-y-6">
                  <div>
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Target Asset (Vacant/Operational)</label>
-                    <select {...regLease('unitId')} className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-5 text-lg font-black outline-none focus:border-indigo-600 transition-all appearance-none cursor-pointer">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Target Asset (Vacant/Operational)</label>
+                    <select {...regLease('unitId')} className="w-full bg-slate-800 border border-white/5 rounded-2xl p-5 text-lg font-black outline-none focus:border-emerald-500 transition-all appearance-none cursor-pointer text-white">
                       <option value="">-- Deploy to Unit --</option>
                       {availableUnits.map(u => (
                         <option key={u.id} value={u.id}>Unit {u.unitNumber} ({u.type})</option>
@@ -379,19 +385,19 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
                  </div>
                  <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Expansion Monthly Rent</label>
-                      <input type="number" {...regLease('rentAmount', {valueAsNumber: true})} className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold outline-none focus:border-indigo-600 transition-all" />
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Expansion Monthly Rent</label>
+                      <input type="number" {...regLease('rentAmount', {valueAsNumber: true})} className="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-sm font-bold outline-none focus:border-emerald-500 transition-all text-white" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Expansion Security Deposit</label>
-                      <input type="number" {...regLease('depositAmount', {valueAsNumber: true})} className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold outline-none focus:border-indigo-600 transition-all" />
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Expansion Security Deposit</label>
+                      <input type="number" {...regLease('depositAmount', {valueAsNumber: true})} className="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-sm font-bold outline-none focus:border-emerald-500 transition-all text-white" />
                     </div>
                     <div className="col-span-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Expansion Commencement Date</label>
-                       <input type="date" {...regLease('startDate')} className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold outline-none focus:border-indigo-600 transition-all" />
+                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Expansion Commencement Date</label>
+                       <input type="date" {...regLease('startDate')} className="w-full bg-slate-800 border border-white/5 rounded-xl p-4 text-sm font-bold outline-none focus:border-emerald-500 transition-all text-white" />
                     </div>
                  </div>
-                 <button disabled={isSubmitting} className="w-full bg-indigo-600 text-white font-black py-6 rounded-2xl shadow-xl hover:bg-indigo-700 disabled:opacity-50 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-3">
+                 <button disabled={isSubmitting} className="w-full bg-emerald-600 text-white font-black py-6 rounded-2xl shadow-xl hover:bg-emerald-700 disabled:opacity-50 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-3">
                     {isSubmitting ? 'Deploying...' : 'Provision Additional Unit'}
                  </button>
               </form>
@@ -400,25 +406,28 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
       )}
 
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden border-4 border-red-900">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-slate-900 rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden border border-white/5 animate-in zoom-in-95 duration-200 relative">
+               <button onClick={() => setIsDeleteModalOpen(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
+                 <XCircle className="w-8 h-8" />
+               </button>
                <div className="p-12 text-center">
-                  <div className="bg-red-50 text-red-600 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-8 border-4 border-red-100 shadow-xl">
+                  <div className="bg-rose-500/10 text-rose-500 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-8 border border-rose-500/20 shadow-xl">
                     <Trash2 className="w-12 h-12" />
                   </div>
-                  <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tighter uppercase italic">Protocol Breach Warning</h2>
-                  <p className="text-slate-500 font-medium mb-10 leading-relaxed px-4">
-                    Executing <span className="font-bold text-red-600">SOFT-DELETE Protocol #4</span>. This record will be archived for fiscal eternity. All active expansion units will be terminated immediately. <br/> <span className="text-xs font-black text-red-500 mt-4 block">THIS ACTION IS IRREVERSIBLE.</span>
+                  <h2 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase italic">Protocol Breach Warning</h2>
+                  <p className="text-slate-400 font-medium mb-10 leading-relaxed px-4 text-sm">
+                    Executing <span className="font-bold text-rose-500">SOFT-DELETE Protocol #4</span>. This record will be archived for fiscal eternity. All active expansion units will be terminated immediately. <br/> <span className="text-xs font-black text-rose-500 mt-4 block">THIS ACTION IS IRREVERSIBLE.</span>
                   </p>
                   <div className="flex flex-col gap-3">
                     <button 
                       onClick={onDeleteTenant}
                       disabled={isSubmitting}
-                      className="w-full bg-red-600 text-white font-black py-6 rounded-2xl shadow-xl hover:bg-red-700 transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
+                      className="w-full bg-rose-600 text-white font-black py-6 rounded-2xl shadow-xl hover:bg-rose-700 transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
                     >
                       {isSubmitting ? 'Archiving...' : 'Execute Purge Protocol'}
                     </button>
-                    <button onClick={() => setIsDeleteModalOpen(false)} className="w-full text-slate-400 font-black uppercase tracking-widest text-[10px] py-4 hover:text-slate-900 transition-colors">
+                    <button onClick={() => setIsDeleteModalOpen(false)} className="w-full text-slate-500 font-black uppercase tracking-widest text-[10px] py-4 hover:text-white transition-colors">
                       Abort Protocol
                     </button>
                   </div>
@@ -428,25 +437,28 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
       )}
 
       {isMoveOutModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden border-4 border-slate-900">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-slate-900 rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden border border-white/5 animate-in zoom-in-95 duration-200 relative">
+               <button onClick={() => setIsMoveOutModalOpen(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
+                 <XCircle className="w-8 h-8" />
+               </button>
                <div className="p-10 text-center">
-                  <div className="bg-amber-50 text-amber-600 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-8 border-2 border-amber-100">
+                  <div className="bg-amber-500/10 text-amber-500 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-8 border border-amber-500/20">
                     <Home className="w-10 h-10" />
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter uppercase italic">Decommission Unit {isMoveOutModalOpen.unitNumber}?</h2>
-                  <p className="text-slate-500 font-medium mb-10 leading-relaxed px-4 text-sm">
-                    This protocol will terminate the lease specific to <span className="font-bold text-slate-900">Unit {isMoveOutModalOpen.unitNumber}</span>. Any other expansion units held by the tenant will remain active.
+                  <h2 className="text-2xl font-black text-white mb-4 tracking-tighter uppercase italic">Decommission Unit {isMoveOutModalOpen.unitNumber}?</h2>
+                  <p className="text-slate-400 font-medium mb-10 leading-relaxed px-4 text-sm text-sm">
+                    This protocol will terminate the lease specific to <span className="font-bold text-white">Unit {isMoveOutModalOpen.unitNumber}</span>. Any other expansion units held by the tenant will remain active.
                   </p>
                   <div className="flex flex-col gap-3">
                     <button 
                       onClick={onMoveOut}
                       disabled={isSubmitting}
-                      className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-slate-800 transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
+                      className="w-full bg-white text-slate-900 font-black py-5 rounded-2xl shadow-xl hover:bg-slate-100 transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
                     >
                       {isSubmitting ? 'Resetting Asset...' : 'Initiate Unit Vacancy'}
                     </button>
-                    <button onClick={() => setIsMoveOutModalOpen(null)} className="w-full text-slate-400 font-bold uppercase tracking-widest text-[10px] py-4">
+                    <button onClick={() => setIsMoveOutModalOpen(null)} className="w-full text-slate-500 font-bold uppercase tracking-widest text-[10px] py-4 hover:text-white transition-colors">
                       Maintain Occupation
                     </button>
                   </div>

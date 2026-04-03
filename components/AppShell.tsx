@@ -10,6 +10,7 @@ import {
   Users, LayoutDashboard, Database, Layers, Zap, Clock,
   ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut
 } from 'lucide-react'
+import GlobalSearch from './GlobalSearch'
 
 // ─── FULL 3-DOMAIN NAVIGATION REGISTRY ───────────────────────────────────────
 const navigationSections = [
@@ -181,7 +182,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <Menu size={20} />
           </button>
 
-          <div className="flex-1" />
+          <GlobalSearch />
 
           {/* Theme toggle */}
           <button

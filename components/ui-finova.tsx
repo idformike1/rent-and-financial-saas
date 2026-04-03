@@ -2,15 +2,8 @@
 
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-/**
- * UTILITY: TW MERGE WRAPPER
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+import { cn } from '@/lib/utils'
+export { cn }
 
 /**
  * AXIOM 2026: CARD (QUIET CONFIDENCE STANDARD)

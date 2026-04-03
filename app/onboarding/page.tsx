@@ -4,12 +4,12 @@ import { useState, useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { submitOnboarding } from '@/actions/onboarding.actions'
+import { submitOnboarding, checkTenantExistence } from '@/actions/onboarding.actions'
 import { getAvailableUnits } from '@/actions/unit.actions'
-import { User, Home, DollarSign, Calendar, ChevronRight, ChevronLeft, CheckCircle2, Loader2, AlertCircle, ShieldCheck, AlertTriangle, Zap, Mail, Phone, Fingerprint } from 'lucide-react'
+import { User, Home, DollarSign, Calendar, ChevronRight, ChevronLeft, CheckCircle2, Loader2, AlertCircle, ShieldCheck, AlertTriangle, Zap, Mail, Phone, Fingerprint, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from '@/lib/toast'
-import { Card, Button, Input, Badge } from '@/components/ui-finova'
+import { Card, Button, Input, Badge, cn } from '@/components/ui-finova'
 
 const onboardingSchema = z.object({
   tenantName: z.string().min(2, "Full name required"),
@@ -46,7 +46,7 @@ export default function OnboardingWizard() {
     fetchUnits();
   }, []);
 
-  const { register, handleSubmit, formState: { errors }, trigger, control, reset } = useForm<OnboardingFormData>({
+  const { register, handleSubmit, formState: { errors }, trigger, control, reset, getValues } = useForm<OnboardingFormData>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       tenantName: '',
@@ -54,6 +54,8 @@ export default function OnboardingWizard() {
       phone: '',
       nationalId: '',
       unitId: '',
+      baseRent: 0,
+      securityDeposit: 0,
       moveInDate: new Date().toISOString().split('T')[0]
     }
   });
@@ -81,11 +83,24 @@ export default function OnboardingWizard() {
   }, [watchedValues.moveInDate, watchedValues.baseRent, watchedValues.securityDeposit]);
 
   const nextStep = async () => {
+    setServerError('');
     let fieldsToValidate: any[] = [];
     if (step === 1) fieldsToValidate = ['tenantName', 'email', 'phone', 'nationalId'];
     if (step === 2) fieldsToValidate = ['unitId', 'baseRent', 'securityDeposit', 'moveInDate'];
+    
     const isValid = await trigger(fieldsToValidate);
-    if (isValid) setStep(step + 1);
+    if (!isValid) return;
+
+    if (step === 1) {
+      const vals = getValues();
+      const check = await checkTenantExistence(vals.tenantName, vals.email, vals.phone);
+      if (check.exists) {
+        setServerError(check.message!);
+        return;
+      }
+    }
+
+    setStep(step + 1);
   };
 
   const onSubmit = async (data: OnboardingFormData) => {
@@ -109,29 +124,47 @@ export default function OnboardingWizard() {
 
   if (step === 4) {
     return (
-      <div className="max-w-2xl mx-auto py-12 px-6 animate-in zoom-in duration-500">
-        <Card className="p-12 text-center space-y-8 rounded-[3rem] border-none shadow-premium-lg">
-          <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+      <div className="max-w-3xl mx-auto py-12 px-6 animate-in zoom-in-95 duration-500">
+        <Card className="p-16 text-center space-y-12 rounded-[4rem] border-none shadow-premium-lg bg-white/80 backdrop-blur-xl">
+          <div className="w-24 h-24 bg-emerald-50 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-premium-sm">
+            <CheckCircle2 className="w-12 h-12 text-emerald-500" />
           </div>
-          <h2 className="text-4xl font-black italic tracking-tighter uppercase text-slate-900 border-b border-slate-50 pb-6">Materialized</h2>
-          <p className="text-slate-500 font-medium leading-relaxed">The tenancy agreement and master ledger entries have been cashed into the registry.</p>
-          <div className="bg-slate-900 rounded-3xl p-8 text-left space-y-6 relative overflow-hidden">
-            <Badge className="bg-brand text-white border-none text-[8px]">Ref: {successData?.leaseId.slice(0,8)}</Badge>
-            <div className="grid grid-cols-2 gap-4">
-               <div>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lease ID</p>
-                  <p className="font-mono text-[10px] text-white truncate">{successData?.leaseId}</p>
-               </div>
-               <div>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Tenant ID</p>
-                  <p className="font-mono text-[10px] text-white truncate">{successData?.tenantId}</p>
+          <h2 className="text-5xl font-black italic tracking-tighter uppercase text-slate-900 border-b-2 border-slate-50 pb-10">Materialized</h2>
+          <p className="text-slate-500 font-medium text-lg leading-relaxed max-w-lg mx-auto">The agreement and master ledger entries have been successfully cashed into the registry.</p>
+          
+          <div className="bg-slate-900 rounded-[2.5rem] p-10 text-left space-y-8 relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 p-6 opacity-10">
+               <Fingerprint className="w-32 h-32 text-white" />
+            </div>
+            <div className="space-y-6 relative z-10">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-3">
+                     <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Fiscal Lease Identifier</p>
+                     <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+                        <p className="font-mono text-sm text-white truncate font-bold">{successData?.leaseId}</p>
+                     </div>
+                  </div>
+                  <div className="space-y-3">
+                     <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Master Tenant Hash</p>
+                     <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+                        <p className="font-mono text-sm text-white truncate font-bold">{successData?.tenantId}</p>
+                     </div>
+                  </div>
                </div>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <Button variant="primary" onClick={() => window.location.href = '/tenants'} className="h-14 rounded-2xl font-black uppercase italic tracking-tighter">Enter Command Center</Button>
-            <button onClick={() => { reset(); setStep(1); }} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand">Reset Wizard</button>
+
+          <div className="flex flex-col gap-6 pt-6">
+            <Button variant="primary" onClick={() => window.location.href = '/tenants'} className="h-16 rounded-[1.5rem] font-black uppercase italic tracking-tighter text-xl shadow-brand/40">
+               Enter Command Center <ChevronRight className="w-6 h-6 ml-3" />
+            </Button>
+            <button 
+               onClick={() => { reset(); setStep(1); }} 
+               className="h-14 rounded-2xl font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center group"
+            >
+               <AlertCircle className="w-4 h-4 mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+               Reset Activation Wizard
+            </button>
           </div>
         </Card>
       </div>
@@ -170,20 +203,20 @@ export default function OnboardingWizard() {
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity Aggregate</label>
                   <div className="relative">
                     <User className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-300" />
-                    <Input {...register('tenantName')} className="pl-16 py-7 text-2xl font-black italic tracking-tighter" placeholder="Full Legal Name" />
+                    <Input {...register('tenantName')} className={cn("pl-16 py-7 text-2xl font-black italic tracking-tighter h-16", errors.tenantName && "border-rose-500")} placeholder="Full Legal Name" />
                   </div>
                 </div>
                 <div className="space-y-4">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Protocol Email</label>
-                  <Input {...register('email')} placeholder="tenant@axiom.com" />
+                  <Input {...register('email')} className={cn("h-16 font-black", errors.email && "border-rose-500")} placeholder="tenant@axiom.com" />
                 </div>
                 <div className="space-y-4">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact String</label>
-                  <Input {...register('phone')} placeholder="+1 (555) 000" />
+                  <Input {...register('phone')} className={cn("h-16 font-black", errors.phone && "border-rose-500")} placeholder="+1 (555) 000" />
                 </div>
                 <div className="md:col-span-2 space-y-4">
                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Registry Identifier</label>
-                   <Input {...register('nationalId')} placeholder="ID / Passport / SSN" />
+                   <Input {...register('nationalId')} className={cn("h-16 font-black", errors.nationalId && "border-rose-500")} placeholder="ID / Passport / SSN" />
                 </div>
               </div>
             </div>
@@ -194,18 +227,22 @@ export default function OnboardingWizard() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="md:col-span-2 space-y-4">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Allocation</label>
-                     <select {...register('unitId')} className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-5 font-black text-lg outline-none appearance-none focus:ring-2 focus:ring-brand">
+                     <select {...register('unitId')} className={cn("w-full bg-slate-50 border-2 rounded-2xl px-6 py-5 font-black text-lg h-16 outline-none appearance-none focus:ring-2 focus:ring-brand", errors.unitId ? 'border-rose-500' : 'border-slate-100')}>
                         <option value="">Select Target Unit</option>
                         {units.map(u => <option key={u.id} value={u.id}>Unit {u.unitNumber} // {u.type}</option>)}
                      </select>
                   </div>
                   <div className="space-y-4">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subscription Rate</label>
-                     <Input type="number" {...register('baseRent', {valueAsNumber: true})} placeholder="0.00" />
+                     <Input type="number" {...register('baseRent', {valueAsNumber: true})} className={cn("h-16 font-black", errors.baseRent && "border-rose-500")} placeholder="0.00" />
+                  </div>
+                  <div className="space-y-4">
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Collateral Deposit</label>
+                     <Input type="number" {...register('securityDeposit', {valueAsNumber: true})} className={cn("h-16 font-black", errors.securityDeposit && "border-rose-500")} placeholder="0.00" />
                   </div>
                   <div className="space-y-4">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Commencement</label>
-                     <Input type="date" {...register('moveInDate')} />
+                     <Input type="date" {...register('moveInDate')} className={cn("h-16 font-black", errors.moveInDate && "border-rose-500")} />
                   </div>
                </div>
             </div>
@@ -227,16 +264,25 @@ export default function OnboardingWizard() {
             </div>
           )}
 
+          {serverError && (
+            <div className="bg-rose-500/10 border-2 border-rose-500 p-6 rounded-2xl flex items-center gap-4 text-rose-500 animate-in shake duration-500">
+               <AlertCircle className="w-5 h-5 flex-shrink-0" />
+               <p className="text-[10px] font-black uppercase tracking-widest">{serverError}</p>
+            </div>
+          )}
+
           <div className="flex justify-between items-center pt-10 border-t border-slate-50">
              {step > 1 ? (
-               <button type="button" onClick={() => setStep(step-1)} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center"><ChevronLeft className="w-4 h-4 mr-2" /> Reverse</button>
+               <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center transition-colors"><ChevronLeft className="w-4 h-4 mr-2" /> Reverse</button>
              ) : <div />}
              
              {step < 3 ? (
-               <Button type="button" variant="primary" onClick={nextStep} className="px-10 h-14 rounded-2xl font-black uppercase italic tracking-tighter">Proceed <ChevronRight className="w-4 h-4 ml-2" /></Button>
+               <Button type="button" variant="primary" onClick={nextStep} className="px-10 h-16 rounded-2xl font-black uppercase italic tracking-tighter shadow-brand/40">Proceed <ChevronRight className="w-4 h-4 ml-2" /></Button>
              ) : (
-               <Button type="submit" variant="primary" disabled={isSubmitting} className="px-10 h-14 rounded-2xl font-black uppercase italic tracking-tighter bg-emerald-500 hover:bg-emerald-600">
-                  {isSubmitting ? 'Mutating...' : 'Activate Tenancy'}
+               <Button type="submit" variant="primary" disabled={isSubmitting} className="px-12 h-16 rounded-2xl font-black uppercase italic tracking-tighter bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/40">
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" /> Provisioning...</div>
+                  ) : 'Activate Tenancy'}
                </Button>
              )}
           </div>
