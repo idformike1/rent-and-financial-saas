@@ -9,6 +9,7 @@ import { Loader2, PieChart, Landmark, FileText, Activity, AlertCircle, CheckCirc
 import { toast } from '@/lib/toast'
 import IncomeStatementChart from '@/components/reports/IncomeStatementChart'
 import DrillDownDrawer from '@/components/reports/DrillDownDrawer'
+import { Card, Button, Badge, cn } from '@/components/ui-finova'
 
 const reportParamsSchema = z.object({
   reportType: z.enum(['INCOME_STATEMENT', 'RENT_ROLL', 'TAX_PREPARATION', 'MASTER_LEDGER']),
@@ -88,9 +89,12 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
     { id: 'MASTER_LEDGER', name: 'Immutable Archive', icon: <Activity className="w-5 h-5" />, desc: 'Complete transactional audit trail' },
   ] as const;
 
-  const btnClass = (active: boolean) => `flex items-center space-x-4 p-6 rounded-2xl border-4 transition-all cursor-pointer ${
-    active ? 'bg-black text-white border-black shadow-[8px_8px_0px_0px_rgba(79,70,229,1)] translate-x-1 translate-y-1' : 'bg-white text-slate-900 border-black hover:bg-slate-50'
-  }`;
+  const btnClass = (active: boolean) => cn(
+    "flex items-center space-x-4 p-6 rounded-3xl border transition-all cursor-pointer",
+    active 
+      ? "bg-slate-900 text-white border-slate-900 shadow-brand/20 shadow-premium translate-x-1 translate-y-1" 
+      : "bg-white text-slate-900 border-slate-100 hover:bg-slate-50 shadow-premium"
+  );
 
   return (
     <div className="space-y-12">
@@ -107,7 +111,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
         ))}
       </div>
 
-      <div className="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-[40px] p-10">
+      <Card variant="glass" className="p-10 rounded-[2.5rem]">
         <h3 className="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center underline decoration-8 decoration-indigo-100 underline-offset-8">
             <Activity className="w-6 h-6 mr-3 text-indigo-600" /> Analysis Parameter Configuration
         </h3>
@@ -116,7 +120,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {selectedReport !== 'RENT_ROLL' && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Audit Interval</label>
-                    <select {...register('dateRange')} className="w-full bg-white border-4 border-black rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 appearance-none">
+                    <select {...register('dateRange')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="YTD">CURRENT FISCAL YTD</option>
                         <option value="LAST_YEAR">PRECEDING FISCAL YEAR</option>
                         <option value="ALL_TIME">HISTORICAL ARCHIVE</option>
@@ -127,7 +131,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {selectedReport !== 'TAX_PREPARATION' && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Governance Scope</label>
-                    <select {...register('scope')} className="w-full bg-white border-4 border-black rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 appearance-none">
+                    <select {...register('scope')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="GLOBAL">PORTFOLIO GLOBAL</option>
                         <option value="PROPERTY">BUSINESS (PROPERTY)</option>
                         <option value="HOME">RESIDENTIAL (HOME)</option>
@@ -139,23 +143,24 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {(selectedScope === 'PROPERTY' || selectedReport === 'TAX_PREPARATION' || selectedReport === 'RENT_ROLL') && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Asset Specific Identifier</label>
-                    <select {...register('propertyId')} className="w-full bg-white border-4 border-black rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:border-indigo-600 appearance-none">
+                    <select {...register('propertyId')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="">SELECT PROPERTY</option>
                         {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
                 </div>
             )}
 
-            <button 
+            <Button 
                 type="submit" 
+                variant="primary"
                 disabled={isGenerating}
-                className="w-full bg-black text-white font-black h-14 rounded-2xl shadow-[6px_6px_0px_0px_rgba(79,70,229,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase tracking-[0.2em] text-[11px] italic flex items-center justify-center group"
+                className="w-full h-14 rounded-2xl shadow-brand/20 tracking-[0.2em] text-[11px] italic"
             >
                 {isGenerating ? <Loader2 className="w-5 h-5 animate-spin text-indigo-400" /> : <Database className="w-5 h-5 mr-3 text-indigo-400 group-hover:rotate-12 transition-transform" /> }
                 {isGenerating ? "MATERIALIZING ANALYTICS" : "Launch Engine Analysis"}
-            </button>
+            </Button>
         </form>
-      </div>
+      </Card>
 
       {reportData && (
         <ReportViewer 
@@ -178,12 +183,12 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 }
 
 function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, onShare: () => void, isSharing: boolean, onDrillDown: (cat: string) => void }) {
-    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b-4 border-black";
+    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 dark:border-slate-800";
     const cellClass = "px-6 py-5 text-sm font-bold text-black uppercase italic tracking-tighter border-b border-zinc-100";
 
     return (
-        <div className="bg-white border-4 border-black shadow-[24px_24px_0px_0px_rgba(0,0,0,1)] rounded-[40px] overflow-hidden p-12 space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700">
-            <div className="flex justify-between items-center pb-12 border-b-8 border-black">
+        <Card variant="glass" className="p-12 rounded-[2.5rem] space-y-12 shadow-premium-lg">
+            <div className="flex justify-between items-center pb-12 border-b border-slate-100 dark:border-slate-800">
                 <div className="space-y-1">
                     <h3 className="text-3xl font-black italic uppercase tracking-tighter">
                        Materialized Record: <span className="text-indigo-600">{data.type} ARCHIVE</span>
@@ -191,33 +196,33 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                     <p className="text-[10px] font-black uppercase text-zinc-400 tracking-[0.3em]">Governance Timestamp: {new Date().toISOString()}</p>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={onShare} disabled={isSharing} className="bg-indigo-600 text-white text-[10px] font-black px-8 py-4 rounded-2xl hover:bg-black transition-all uppercase tracking-widest italic flex items-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                    <Button onClick={onShare} disabled={isSharing} variant="primary" className="px-8 py-4 rounded-2xl text-[10px] italic">
                         {isSharing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Share2 className="w-4 h-4 mr-2" />} 
                         Generate Share Link
-                    </button>
-                    <button className="bg-black text-white text-[10px] font-black px-8 py-4 rounded-2xl hover:bg-indigo-600 transition-all uppercase tracking-widest italic flex items-center shadow-[6px_6px_0px_0px_rgba(79,70,229,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                    </Button>
+                    <Button variant="secondary" className="px-8 py-4 rounded-2xl text-[10px] italic bg-slate-900 text-white border-none">
                         <Download className="w-4 h-4 mr-2" /> PDF Export
-                    </button>
+                    </Button>
                 </div>
             </div>
 
             {data.type === 'PL' && (
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div className="bg-zinc-50 border-4 border-black p-8 rounded-3xl">
-                             <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
-                             <p className="text-3xl font-black text-black italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
+                        <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-8 rounded-3xl">
+                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
+                             <p className="text-3xl font-black text-slate-900 dark:text-white italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
                         </div>
-                        <div className="bg-green-50 border-4 border-green-200 p-8 rounded-3xl">
-                             <p className="text-[9px] font-black text-green-700 uppercase tracking-widest mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
-                             <p className="text-3xl font-black text-green-900 italic tracking-tighter">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
+                        <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 p-8 rounded-3xl">
+                             <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
+                             <p className="text-3xl font-black text-emerald-900 dark:text-emerald-400 italic tracking-tighter">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
                         </div>
-                        <div className="bg-red-50 border-4 border-red-200 p-8 rounded-3xl">
-                             <p className="text-[9px] font-black text-red-700 uppercase tracking-widest mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
-                             <p className="text-3xl font-black text-red-900 italic tracking-tighter">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
+                        <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800 p-8 rounded-3xl">
+                             <p className="text-[9px] font-black text-rose-700 uppercase tracking-widest mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
+                             <p className="text-3xl font-black text-rose-900 dark:text-rose-400 italic tracking-tighter">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
                         </div>
-                        <div className="bg-indigo-900 border-4 border-black p-8 rounded-3xl shadow-[8px_8px_0px_0px_rgba(79,70,229,1)]">
-                             <p className="text-[9px] font-black text-indigo-200 uppercase tracking-widest mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
+                        <div className="bg-slate-900 p-8 rounded-3xl shadow-premium shadow-slate-900/20">
+                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
                              <p className="text-3xl font-black text-white italic tracking-tighter">$ {data.payload.metrics.netOperatingIncome.toLocaleString()}</p>
                         </div>
                     </div>
@@ -338,6 +343,6 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                     </table>
                 </div>
             )}
-        </div>
+        </Card>
     );
 }

@@ -39,43 +39,43 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
-      <Card className="w-full max-w-md p-10 border-none shadow-premium-lg rounded-[2.5rem] bg-white dark:bg-slate-900 animate-in fade-in zoom-in duration-500">
-        <div className="space-y-8">
-          <div className="text-center space-y-3">
-             <div className="w-16 h-16 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform hover:scale-110">
-                <Zap className="w-8 h-8 text-brand fill-brand" />
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-6 animate-in fade-in duration-1000">
+      <Card variant="glass" className="w-full max-w-md p-12 border-none shadow-premium-lg rounded-[3.5rem] animate-in zoom-in-95 duration-700">
+        <div className="space-y-10">
+          <div className="text-center space-y-4">
+             <div className="w-20 h-20 bg-brand/10 rounded-3xl flex items-center justify-center mx-auto mb-8 transition-all hover:rotate-12 hover:scale-110 shadow-premium">
+                <Zap className="w-10 h-10 text-brand fill-brand" />
              </div>
-             <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Axiom <br/><span className="text-brand">Finova</span></h1>
-             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Enterprise SaaS Terminal</p>
+             <h1 className="text-5xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Axiom <br/><span className="text-brand">Finova</span></h1>
+             <p className="text-[10px] font-black uppercase tracking-[0.45em] text-slate-400 mt-4 leading-relaxed">Enterprise SaaS Terminal</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Identity Protocol</label>
+          <form onSubmit={handleSubmit} className="space-y-10">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Identity Protocol</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-brand transition-colors" />
+                  <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-brand transition-colors" />
                   <Input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 rounded-xl py-4 focus:ring-brand focus:border-transparent transition-all" 
+                    className="pl-16 h-16 rounded-3xl text-lg font-black italic tracking-tighter" 
                     placeholder="admin@axiom.com"
                     required
                   />
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Access Cipher</label>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Access Cipher</label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-brand transition-colors" />
+                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-brand transition-colors" />
                   <Input 
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 rounded-xl py-4 focus:ring-brand focus:border-transparent transition-all"
+                    className="pl-16 h-16 rounded-3xl text-base font-black tracking-widest"
                     placeholder="••••••••"
                     required
                   />
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-rose-50 dark:bg-rose-900/20 p-4 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-600 dark:text-rose-400 text-center text-xs font-bold uppercase tracking-wider animate-in shake duration-300">
+              <div className="bg-rose-500/10 text-rose-600 dark:text-rose-400 p-5 rounded-2xl text-center text-[10px] font-black uppercase tracking-widest animate-in shake duration-500">
                 {error}
               </div>
             )}
@@ -93,22 +93,22 @@ export default function LoginPage() {
               type="submit"
               disabled={isLoading}
               variant="primary"
-              className="w-full h-14 rounded-2xl text-lg font-black uppercase italic tracking-tighter shadow-premium"
+              className="w-full h-16 rounded-3xl text-xl font-black uppercase italic tracking-tighter shadow-premium"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-5 h-5 mr-3 animate-spin" /> Verifying...
+                  <Loader2 className="w-6 h-6 mr-4 animate-spin" /> Verifying...
                 </>
               ) : (
                 <>
-                  Authorize Session <ArrowRight className="w-5 h-5 ml-2" />
+                  Authorize Session <ArrowRight className="w-6 h-6 ml-3" />
                 </>
               )}
             </Button>
           </form>
 
-          <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-[9px] font-bold text-slate-300 uppercase tracking-widest">
-            <span className="flex items-center gap-1.5"><ShieldCheck className="w-3 h-3 text-emerald-500" /> V.3.1 Secure Pipeline</span>
+          <div className="pt-10 border-t border-slate-100 dark:border-slate-800/50 flex justify-between items-center text-[9px] font-black text-slate-300 uppercase tracking-widest">
+            <span className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-500" /> V.3.1 Secure Pipeline</span>
             <span>Ref: 0xFINOVA</span>
           </div>
         </div>

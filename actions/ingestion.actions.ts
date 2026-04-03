@@ -31,9 +31,9 @@ export async function ingestBulkExpenses(data: any[]) {
       const validated = IngestionPayload.safeParse(data);
       if (!validated.success) {
         return { 
-           success: false, 1
+           success: false, 
            error: "DATA_VALIDATION_FAILURE", 
-           details: validated.error.errors.map(e => `[${e.path.join('.')}] ${e.message}`)
+           details: validated.error.issues.map((e: any) => `[${e.path.join('.')}] ${e.message}`)
         };
       }
 

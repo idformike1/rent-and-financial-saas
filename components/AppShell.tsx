@@ -1,223 +1,208 @@
 'use client'
-
+import { useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
+import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
-import { useState, useEffect } from 'react'
-import { 
-  Landmark, 
-  Users, 
-  Building, 
-  FileText, 
-  Search, 
-  Activity, 
-  LogOut, 
-  ShieldCheck, 
-  ChevronRight, 
-  ShieldAlert, 
-  Zap,
-  LayoutDashboard,
-  Bell,
-  Menu,
-  X
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Sun, Moon, Menu, ChevronDown,
+  Users, LayoutDashboard, Database, Layers, Zap, Clock,
+  ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut
 } from 'lucide-react'
-import { toast } from '@/lib/toast'
-import { globalSearch, SearchResult } from '@/actions/search.actions'
-import { Button, Input, Badge, Card } from '@/components/ui-finova'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Properties', href: '/properties', icon: Building },
-  { name: 'Tenants', href: '/tenants', icon: Users },
-  { name: 'Onboarding', href: '/onboarding', icon: Search },
-  { name: 'Expenses', href: '/expenses', icon: FileText },
-  { name: 'Intelligence Hub', href: '/reports', icon: Activity },
-  { name: 'Finance Translation', href: '/reports/financial-connections', icon: ShieldCheck },
-  { name: 'Waterfall Analytics', href: '/reports/ledger-waterfall', icon: Zap },
-  { name: 'Governance', href: '/settings/categories', icon: ShieldAlert },
+// ─── FULL 3-DOMAIN NAVIGATION REGISTRY ───────────────────────────────────────
+const navigationSections = [
+  {
+    label: 'Core Operations',
+    items: [
+      { name: 'Treasury',         href: '/dashboard',   icon: LayoutDashboard },
+      { name: 'Properties',       href: '/properties',  icon: Database },
+      { name: 'Tenants',          href: '/tenants',     icon: Users },
+      { name: 'Onboarding',       href: '/onboarding',  icon: Search },
+      { name: 'Expense Registry', href: '/expenses',    icon: Layers },
+      { name: 'Asset Reserve',    href: '/treasury',    icon: Database },
+    ]
+  },
+  {
+    label: 'Intelligence Hub',
+    items: [
+      { name: 'Analytic Hub',  href: '/reports',                       icon: Activity },
+      { name: 'Master Ledger', href: '/reports/master-ledger',         icon: Layers },
+      { name: 'Waterfall Core',href: '/reports/ledger-waterfall',      icon: Zap },
+      { name: 'Forex Engine',  href: '/reports/financial-connections', icon: Activity },
+      { name: 'Aging Matrix',  href: '/receivables/aging',             icon: Clock },
+    ]
+  },
+  {
+    label: 'Governance Control',
+    items: [
+      { name: 'Taxonomy Logic', href: '/settings/categories', icon: Settings },
+      { name: 'Audit Protocol', href: '/settings/audit',      icon: ShieldCheck },
+      { name: 'Data Ingestion', href: '/settings/ingestion',  icon: ArrowUpRight },
+      { name: 'Team Command',   href: '/settings/team',       icon: Users },
+    ]
+  }
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const { data: session } = useSession()
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  // Default open: Core Operations only
+  const [openSections, setOpenSections] = useState<string[]>(['Core Operations'])
+  const pathname = usePathname()
 
-  // Search State
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
+  useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
-    const fetchSearch = async () => {
-      if (searchQuery.length >= 3) {
-        const results = await globalSearch(searchQuery);
-        setSuggestions(results);
-      } else {
-        setSuggestions([]);
-      }
-    };
-
-    const timer = setTimeout(fetchSearch, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  if (pathname === '/login') {
-    return <>{children}</>
+  const toggleSection = (label: string) => {
+    setOpenSections(prev =>
+      prev.includes(label)
+        ? prev.filter(s => s !== label)
+        : [...prev, label]
+    )
   }
 
-  const breadcrumbs = pathname
-    .split('/')
-    .filter(Boolean)
-    .map(segment => {
-      if (segment === 'dashboard') return 'Treasury';
-      if (segment === 'categories') return 'Governance';
-      return segment.charAt(0).toUpperCase() + segment.slice(1);
-    })
+  if (!mounted) return null
 
   return (
-    <div className="flex h-screen bg-surface-50 dark:bg-surface-950 font-sans text-slate-900 dark:text-white">
-      
-      {/* SIDEBAR: FINOVA PREMIUM STANDARD */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-surface-900 border-r border-slate-100 dark:border-surface-800 flex flex-col transition-transform duration-300 transform lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        
-        {/* ORGANIZATION IDENTITY */}
-        <div className="p-8 pb-6">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center shrink-0">
-               <Zap className="w-6 h-6 text-brand fill-brand" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Axiom Finova</span>
-              <span className="text-lg font-black tracking-tighter uppercase leading-none truncate dark:text-white mt-1">
-                {session?.user?.organizationName || 'Master Unit'}
-              </span>
-            </div>
-          </div>
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500 overflow-hidden">
 
-          <nav className="space-y-1.5 font-medium">
-            {navigation.map((item) => {
-              const isActive = pathname.startsWith(item.href)
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center px-4 py-3 text-[11px] font-bold uppercase tracking-widest rounded-2xl transition-all ${
-                    isActive
-                      ? 'bg-brand text-white shadow-premium'
-                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-surface-800'
-                  }`}
-                >
-                  <item.icon className={`mr-3 h-4 w-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                  {item.name}
-                </Link>
-              )
-            })}
-          </nav>
+      {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-72 flex flex-col
+        finova-glass
+        transform transition-transform duration-500 ease-in-out
+        lg:relative lg:translate-x-0
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+
+        {/* Brand mark */}
+        <div className="shrink-0 px-8 pt-8 pb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-brand flex items-center justify-center shadow-lg shadow-brand/20">
+              <Zap className="text-white fill-white w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-black italic tracking-tighter dark:text-white">
+              AXIOM <span className="text-brand">2026</span>
+            </h2>
+          </div>
         </div>
 
-        {/* ACCOUNT ACTION REGISTRY */}
-        <div className="mt-auto p-8 pt-6 border-t border-slate-100 dark:border-surface-800 space-y-4">
-          <div className="flex items-center gap-4 px-2">
-            <div className="w-10 h-10 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center font-black text-xs text-brand">
-               {session?.user?.name?.charAt(0) || 'A'}
+        {/* Scrollable nav */}
+        <nav className="flex-1 overflow-y-auto px-6 pb-4 space-y-2">
+          {navigationSections.map((section) => (
+            <div key={section.label} className="space-y-1">
+              {/* Section toggle header */}
+              <button
+                onClick={() => toggleSection(section.label)}
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                {section.label}
+                <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${openSections.includes(section.label) ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Collapsible items */}
+              <AnimatePresence initial={false}>
+                {openSections.includes(section.label) && (
+                  <motion.div
+                    key={section.label}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    className="overflow-hidden space-y-1"
+                  >
+                    {section.items.map((item) => {
+                      const isActive = pathname === item.href
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`
+                            flex items-center px-5 py-3 text-[11px] font-bold uppercase tracking-[0.1em] rounded-2xl transition-all duration-200
+                            ${isActive
+                              ? 'bg-brand text-white shadow-md shadow-brand/25'
+                              : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white'
+                            }
+                          `}
+                        >
+                          <item.icon className="mr-3 h-4 w-4 shrink-0" />
+                          {item.name}
+                        </Link>
+                      )
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <div className="flex flex-col min-w-0">
-               <span className="text-xs font-bold truncate text-slate-900 dark:text-white">{session?.user?.name || 'Administrator'}</span>
-               <Badge className="text-[9px] w-fit px-1.5 py-0 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20">{session?.user?.role || 'Operator'}</Badge>
+          ))}
+        </nav>
+
+        {/* ── PINNED FOOTER: Identity + Log Out ───────────────────────────── */}
+        <div className="shrink-0 px-6 py-6 border-t border-slate-200/50 dark:border-white/5">
+          {/* User identity card */}
+          <div className="bg-slate-100/60 dark:bg-slate-800/40 rounded-2xl px-4 py-3 flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 rounded-full bg-brand/10 dark:bg-brand/20 flex items-center justify-center font-black text-brand text-xs shrink-0">
+              S
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black uppercase text-slate-800 dark:text-slate-200 leading-none mb-1 truncate">
+                Sovereign Auditor
+              </p>
+              <p className="text-[8px] font-bold uppercase tracking-widest text-emerald-500">
+                Admin
+              </p>
             </div>
           </div>
-          
-          <button 
+
+          {/* Log out trigger */}
+          <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="flex items-center w-full px-5 py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-500 transition-all border border-transparent hover:border-rose-100 dark:hover:border-rose-900/40"
+            className="w-full flex items-center justify-center gap-2 py-3 text-[9px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all duration-300"
           >
-            <LogOut className="mr-3 h-4 w-4" />
-            Terminate Protocol
+            <LogOut size={13} />
+            Sign Out
           </button>
         </div>
       </aside>
 
-      {/* MAIN VIEWPORT COMMANDER */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-72 bg-surface-50 dark:bg-surface-950">
-        
-        {/* HEADER: DYNAMIC BREADCRUMB & SCAN */}
-        <header className="h-20 flex items-center justify-between px-10 border-b border-slate-100 dark:border-surface-800 bg-white dark:bg-surface-900 sticky top-0 z-40">
-          
-          <div className="flex items-center gap-6">
-            <button 
-              className="lg:hidden p-2 text-slate-400"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X /> : <Menu />}
-            </button>
-            
-            <div className="hidden md:flex items-center text-[10px] font-black uppercase tracking-[0.3em] overflow-hidden whitespace-nowrap">
-              {breadcrumbs.map((crumb, index) => (
-                <span key={index} className="flex items-center">
-                  {index > 0 && <span className="mx-4 text-slate-200 dark:text-slate-700">/</span>}
-                  <span className={index === breadcrumbs.length - 1 ? "text-brand" : "text-slate-400"}>
-                    {crumb}
-                  </span>
-                </span>
-              ))}
-              {breadcrumbs.length === 0 && <span className="text-brand">Infrastructure</span>}
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-6 flex-1 justify-end max-w-2xl px-6">
-            <div className="relative w-full group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-brand transition-colors" />
-              <input 
-                type="text"
-                placeholder="Scan Registry..."
-                className="w-full bg-slate-50 dark:bg-surface-800 border border-slate-100 dark:border-surface-700 rounded-2xl pl-12 pr-4 py-2.5 text-[11px] font-bold text-slate-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              
-              {/* SCAN RESULTS DROP-OFF */}
-              {suggestions.length > 0 && (
-                <div className="absolute top-full left-0 w-full mt-4 bg-white dark:bg-surface-900 border border-slate-100 dark:border-surface-800 shadow-premium-lg rounded-2xl z-50 overflow-hidden divide-y divide-slate-50 dark:divide-surface-800 animate-in slide-in-from-top-2">
-                  <div className="p-4 flex items-center justify-between bg-surface-50 dark:bg-surface-950">
-                    <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Matched Records</span>
-                    <Badge variant="success" className="text-[8px]">{suggestions.length} Signals</Badge>
-                  </div>
-                  {suggestions.map((result) => (
-                    <Link
-                      key={result.id}
-                      href={result.href}
-                      onClick={() => setSearchQuery('')}
-                      className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-surface-800 transition-colors group"
-                    >
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                           <span className="text-[8px] font-black text-brand uppercase tracking-widest">{result.type}</span>
-                           <span className="text-xs font-bold text-slate-900 dark:text-white truncate">{result.title}</span>
-                        </div>
-                        <span className="text-[10px] text-slate-400 mt-1">{result.subtitle}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-200 group-hover:text-brand transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+      {/* ── MAIN COLUMN ─────────────────────────────────────────────────────── */}
+      {/* FIX: explicit dark:bg-slate-950 prevents the white canvas bleed */}
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
 
-            <div className="flex items-center gap-3">
-              <button className="p-2.5 rounded-xl text-slate-400 hover:text-brand transition-colors relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-brand rounded-full border-2 border-white dark:border-surface-900" />
-              </button>
-            </div>
-          </div>
+        {/* Header */}
+        <header className="h-20 finova-glass flex items-center justify-between px-8 shrink-0">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 text-slate-500"
+          >
+            <Menu size={20} />
+          </button>
+
+          <div className="flex-1" />
+
+          {/* Theme toggle */}
+          <button
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            className="p-3 rounded-2xl bg-white/50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-white/10 transition-all hover:scale-105 active:scale-95"
+          >
+            <motion.div
+              animate={{ rotate: resolvedTheme === 'dark' ? 360 : 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {resolvedTheme === 'dark'
+                ? <Moon size={18} className="text-slate-200" />
+                : <Sun size={18} className="text-amber-500" />
+              }
+            </motion.div>
+          </button>
         </header>
 
-        {/* CONTENT DOMAIN */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="max-w-[1600px] mx-auto min-h-full">
-            {children}
-          </div>
+        {/* Main canvas — FIX: dark:bg-slate-950 ensures full-viewport dark mode */}
+        <main className="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+          {children}
         </main>
       </div>
     </div>

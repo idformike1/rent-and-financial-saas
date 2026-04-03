@@ -1,89 +1,164 @@
 @import "tailwindcss";
 
 @theme {
-  /* Finova Premium Color Tokens */
-  --color-brand: #4f46e5;
-  --color-brand-foreground: #ffffff;
-  
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  
-  --color-surface-50: #f8fafc;
-  --color-surface-100: #f1f5f9;
-  --color-surface-200: #e2e8f0;
-  --color-surface-800: #1e293b;
-  --color-surface-900: #0f172a;
-  --color-surface-950: #020617;
+  /* ── MODERN GROWTH: TEAL & EMERALD PALETTE ───────────────────────────── */
+  --color-brand:        #064E3B;
+  --color-brand-dark:   #34D399;
+  --color-accent:       #10B981;
 
-  /* Typography Density */
-  --font-sans: "Inter", "Geist Sans", sans-serif;
-  --font-mono: "Geist Mono", monospace;
+  --color-success:      #16A34A;
+  --color-success-dark: #22C55E;
+  --color-danger:       #DC2626;
+  --color-danger-dark:  #EF4444;
 
-  /* Finova Rounded Standards */
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
+  /* ── DUAL TYPOGRAPHY ─────────────────────────────────────────────────── */
+  --font-sans: var(--font-inter), sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
 
-  /* Premium Elevation (Soft, Layered Shadows) */
-  --shadow-premium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-premium-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* ── RAZOR-SHARP GEOMETRY ────────────────────────────────────────────── */
+  --radius-xl:  2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 4px;
 }
 
+/* ── LIGHT MODE TOKENS ───────────────────────────────────────────────────── */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --border: #e2e8f0;
-  --input: #f1f5f9;
-  --ring: #4f46e5;
+  --background: #F8FAFC;
+  --foreground: #020617;
+  --card:       #FFFFFF;
+  --border:     #E2E8F0;
+  --muted:      #64748B;
 }
 
-[data-theme='dark'] {
+/* ── DARK MODE TOKENS ────────────────────────────────────────────────────── */
+.dark {
   --background: #020617;
-  --foreground: #f8fafc;
-  --card: #0f172a;
-  --card-foreground: #f8fafc;
-  --border: #1e293b;
-  --input: #1e293b;
-  --ring: #6366f1;
+  --foreground: #F8FAFC;
+  --card:       #0F172A;
+  --border:     #1E293B;
+  --muted:      #94A3B8;
+}
+
+/* ── BASE BODY ───────────────────────────────────────────────────────────── */
+html {
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-size: 14px;       /* UI Base: 14px global shift */
+  line-height: 1.375;    /* leading-snug */
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
-/* Brutalist Vaporization Overrides */
-[class*="border-slate-900"], 
-[class*="border-black"],
-[class*="border-2"],
-[class*="shadow-["],
-[class*="border-["] {
-  border-width: 1px !important;
-  border-color: var(--border) !important;
-  box-shadow: var(--shadow-premium) !important;
+/* ══════════════════════════════════════════════════════════════════════════
+   SCORCHED EARTH: COLOR OVERRIDE LAYER
+   Resolves hardcoded Tailwind utility color clashes sitewide.
+   The !important cascade defeats JIT-generated specificity on bg-/text- utilities.
+   CSS variables are live-updated by .dark class toggle, propagating theme instantly.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Main canvas — always inherits theme background */
+main {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }
 
-/* Finova Card Base */
-.finova-card {
-  @apply bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-premium transition-all hover:shadow-premium-lg;
+/* 2. Cards, panels, tables inside main — force theme card color */
+/*    Catches: bg-white, bg-slate-50/100/800/900/950, finova-glass */
+main [class*="bg-white"],
+main [class*="bg-slate-"],
+.finova-glass {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-radius: 4px !important;
 }
 
-/* Input Overhaul */
-.finova-input {
-  @apply w-full bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all;
+/* 3. Active nav items — preserve brand fill over the broad bg-slate- rule */
+[class*="bg-brand"] {
+  background-color: var(--color-brand) !important;
+  border-color: var(--color-brand) !important;
+  color: #ffffff !important;
 }
 
-/* Finova Table Styles */
-.finova-table-container {
-  @apply overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm;
+/* 4. ALL headings stay readable in both modes */
+h1, h2, h3, h4, h5, h6,
+[class*="text-slate-9"],
+[class*="text-slate-8"] {
+  color: var(--foreground) !important;
 }
 
-.finova-table-header {
-  @apply bg-surface-50 dark:bg-surface-900/50 px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400;
+/* 5. Muted / label text */
+p[class*="text-slate-4"],
+p[class*="text-slate-5"],
+span[class*="text-slate-4"],
+span[class*="text-slate-5"] {
+  color: var(--muted) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ARCHITECTURAL TYPE SCALE
+   Applied globally via attribute substring selectors.
+   No page edits required — all financial figures and structural text
+   automatically conform to the terminal-readout aesthetic.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── MICRO / META (10px): uppercase labels, badge text ───────────────────── */
+[class*="text-[10px]"],
+[class*="text-[9px]"],
+[class*="text-[8px]"] {
+  letter-spacing: 0.05em !important;    /* tracking-wider */
+  text-transform: uppercase;
+}
+
+/* ── DATA MATRIX (12px): all tabular + xs text → mono, lining nums ──────── */
+table,
+th,
+td,
+[class*="text-xs"] {
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  line-height: 1 !important;            /* leading-none */
+}
+
+/* ── UI BASE (14px): inherited from body, no override needed ─────────────── */
+
+/* ── STRUCTURAL HEADERS (16px) ───────────────────────────────────────────── */
+[class*="text-base"],
+[class*="text-sm"][class*="font-semibold"] {
+  font-weight: 600;
+}
+
+/* ── KPI SUB-METRICS (24–32px): mono, tight tracking, lining nums ────────── */
+[class*="text-2xl"],
+[class*="text-3xl"] {
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -0.025em !important;  /* tracking-tight */
+  line-height: 1 !important;
+}
+
+/* ── PRIMARY TELEMETRY (36px+): font-light for terminal density ──────────── */
+/*    At massive scale, light weight + tight tracking = data-terminal readout */
+[class*="text-4xl"],
+[class*="text-5xl"],
+[class*="text-6xl"] {
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -0.05em !important;   /* tracking-tighter */
+  font-weight: 300 !important;          /* font-light: prevents heaviness at scale */
+  line-height: 1 !important;
+}
+
+/* ── SCROLLBAR: minimal, matches tight grid aesthetic ────────────────────── */
+::-webkit-scrollbar         { width: 3px; height: 3px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   { background: var(--border); border-radius: 0; }
