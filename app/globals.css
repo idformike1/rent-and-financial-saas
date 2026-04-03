@@ -162,3 +162,98 @@ td,
 ::-webkit-scrollbar         { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track   { background: transparent; }
 ::-webkit-scrollbar-thumb   { background: var(--border); border-radius: 0; }
+
+/* =========================================
+   FORM CONTROL FIXES (Accessibility)
+========================================= */
+input, select, textarea {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 2px !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted) !important;
+  opacity: 1 !important;
+}
+
+/* Ensure form wrappers don't force white text */
+[class*="relative"] > input {
+  color: var(--foreground) !important;
+}
+
+/* =========================================
+   NEO-BRUTALISM PURGE (Legacy Cleanup)
+   Removes massive offset shadows and skewed buttons
+========================================= */
+button, 
+[role="button"], 
+[class*="shadow-"],
+.technical-panel {
+  box-shadow: none !important;
+  transform: none !important; /* Strips harsh active:translate shifts */
+}
+
+/* Normalize generic buttons to Modern Growth */
+button {
+  border-radius: var(--radius-xl) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Ensure primary CTA buttons remain highly visible */
+button[class*="bg-brand"], 
+button[class*="bg-emerald"] {
+  background-color: var(--color-brand) !important;
+  color: #FFFFFF !important;
+  border-color: var(--color-brand) !important;
+}
+
+/* =========================================
+   TYPOGRAPHY NORMALIZATION
+========================================= */
+/* Strip legacy heavy italics from structural headers */
+h1, h2, h3 {
+  font-style: normal !important;
+}
+
+/* =========================================
+   THE FINAL EXORCISM (Deep Utility Purge)
+========================================= */
+
+/* 1. Kill All Hardcoded Italics */
+[class*="italic"] {
+  font-style: normal !important;
+}
+
+/* 2. Eradicate Organic Blobs & Asymmetrical Radii */
+/* Targets decorative shapes and forces them into the brutalist grid */
+[class*="rounded-full"], 
+[class*="rounded-tl-"], 
+[class*="rounded-tr-"], 
+[class*="rounded-bl-"], 
+[class*="rounded-br-"] {
+  border-radius: var(--radius-xl) !important;
+}
+
+/* 3. Strip Rogue Text Highlights & Ghost Backgrounds */
+[class*="bg-blue-1"], 
+[class*="bg-blue-500/"],
+[class*="bg-white/"],
+mark {
+  background-color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* 4. Fix Faint/Invisible Decorative Text */
+[class*="text-slate-200"], 
+[class*="text-slate-300"], 
+[class*="text-white/"] {
+  color: var(--muted) !important;
+}
+
+/* 5. Force Mono on Treasury/Metric Cards specifically if missed */
+[class*="text-5xl"], [class*="text-4xl"] {
+  font-family: var(--font-mono) !important;
+  font-style: normal !important;
+}
