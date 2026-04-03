@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma'
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { Prisma } from '@prisma/client'
 import { SystemResponse } from '@/types'
+import { recordAuditLog } from '@/lib/audit-logger'
 
 export interface OnboardingPayload {
   tenantName: string;
@@ -41,7 +42,7 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
         }
       }
 
-      const unit = await prisma.unit.findUnique({ 
+      const unit = await prisma.unit.findFirst({ 
         where: { id: data.unitId, organizationId: session.organizationId },
         include: { leases: { where: { isActive: true } } }
       });
@@ -105,6 +106,22 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
           }
         });
 
+        await recordAuditLog({
+          action: 'CREATE',
+          entityType: 'TENANT',
+          entityId: tenant.id,
+          metadata: { name: tenant.name },
+          tx: txOps
+        });
+
+        await recordAuditLog({
+          action: 'CREATE',
+          entityType: 'LEASE',
+          entityId: lease.id,
+          metadata: { rent: data.baseRent },
+          tx: txOps
+        });
+
         // Step 3: Financial Initialization
         await txOps.charge.create({
           data: {
@@ -132,7 +149,8 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
           }
         });
 
-        await txOps.unit.update({
+        // Use updateMany for safe organizationId scoping on non-composite primary keys
+        await txOps.unit.updateMany({
           where: { id: unit.id, organizationId: session.organizationId },
           data: { maintenanceStatus: 'OPERATIONAL' }
         });

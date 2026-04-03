@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import prisma from "@/lib/prisma";
 
 export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN';
 
@@ -58,6 +59,24 @@ export async function runSecureServerAction<T>(
   const isAuthorized = await verifyRole(requiredRole, session.role);
   if (!isAuthorized) {
     throw new Error(`FORBIDDEN: Requires ${requiredRole} access level.`);
+  }
+
+  /**
+   * CRITICAL SECURITY CHECK: ORPHANED IDENTITY PREVENTION
+   * Verify that the organizationId from the session actually exists in the persistence layer.
+   * Prevents Foreign Key violations (P2003) on stale or hijacked UUIDs.
+   */
+  const orgExists = await prisma.organization.count({
+    where: { id: session.organizationId }
+  });
+
+  if (orgExists === 0) {
+    // RETURN structured error instead of throwing to prevent Next.js 500 crash
+    return { 
+      success: false, 
+      errorCode: 'ORPHANED_SESSION', 
+      message: 'SECURITY ALERT: Organization identity void. Please trigger re-authentication.' 
+    } as any;
   }
 
   return action(session);

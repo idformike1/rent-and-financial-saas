@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield, ChevronRight, ShieldAlert } from 'lucide-react'
+import { Landmark, Users, Building, FileText, Search, Activity, LogOut, Shield, ChevronRight, ShieldAlert, Zap } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { globalSearch, SearchResult } from '@/actions/search.actions'
 
@@ -15,6 +15,8 @@ const navigation = [
   { name: 'Onboarding', href: '/onboarding', icon: Search },
   { name: 'Expenses', href: '/expenses', icon: FileText },
   { name: 'Intelligence Hub', href: '/reports', icon: Activity },
+  { name: 'Finance Translation', href: '/reports/financial-connections', icon: Shield },
+  { name: 'Waterfall Analytics', href: '/reports/ledger-waterfall', icon: Zap },
   { name: 'Master Ledger', href: '/reports/master-ledger', icon: FileText },
   { name: 'Team', href: '/settings/team', icon: Users },
   { name: 'Audit Logs', href: '/settings/audit', icon: ShieldAlert },

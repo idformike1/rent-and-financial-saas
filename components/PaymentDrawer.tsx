@@ -8,6 +8,7 @@ import { processPayment } from '@/actions/ledger.actions'
 import { ChargeDTO, TenantDTO } from '@/types'
 import { X } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import { signOut } from 'next-auth/react'
 
 interface PaymentDrawerProps {
   tenant: TenantDTO;
@@ -84,10 +85,21 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
           reset();
           onSuccess(); // Trigger close and refresh
         } else {
-          toast.error(response.message || "Operation failed.");
+          // Phase 2: AXIOM Session Resilience Protocol
+          if (response.errorCode === "ORPHANED_SESSION") {
+            toast.error("SECURITY ALERT: Session Desynchronized. Redirecting to Terminal...");
+            setTimeout(() => {
+              signOut({ callbackUrl: '/login' });
+            }, 2000);
+          } else if (response.errorCode === "UNAUTHORIZED") {
+            toast.error("Access Forbidden: Insufficient permissions for this vault.");
+          } else {
+            toast.error(response.message || "Operation failed.");
+          }
         }
-      } catch (error) {
-        toast.error("Network synchronization failure");
+      } catch (error: any) {
+        // Fallback for hard network failures
+        toast.error("Network synchronization failure. Please verify connectivity.");
       }
     })
   }

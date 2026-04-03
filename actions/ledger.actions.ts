@@ -13,82 +13,70 @@ import { recordAuditLog } from '@/lib/audit-logger'
 export async function processPayment(payload: PaymentSubmissionPayload): Promise<SystemResponse> {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      let amountRemaining = new Prisma.Decimal(payload.amountPaid);
-      if (amountRemaining.lte(0)) {
-        return { success: false, message: "Fiscal Breach: Amount must be greater than zero.", errorCode: "VALIDATION_ERROR" };
-      }
+      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        let amountRemaining = new Prisma.Decimal(payload.amountPaid);
+        if (amountRemaining.lte(0)) {
+          throw new Error("Fiscal Breach: Amount must be greater than zero.");
+        }
 
-      const tenant = await prisma.tenant.findUnique({
-        where: { id: payload.tenantId, organizationId: session.organizationId },
-        include: {
-          charges: {
-            where: { isFullyPaid: false, amount: { gt: 0 }, organizationId: session.organizationId }, 
-            include: { lease: true }
+        const tenant = await tx.tenant.findUnique({
+          where: { id: payload.tenantId, organizationId: session.organizationId },
+          include: {
+            charges: {
+              where: { isFullyPaid: false, amount: { gt: 0 }, organizationId: session.organizationId }, 
+              include: { lease: true }
+            }
           }
-        }
-      });
+        });
 
-      if (!tenant) return { success: false, message: "Tenant registry mismatch.", errorCode: "VALIDATION_ERROR" };
+        if (!tenant) throw new Error("Tenant registry mismatch.");
 
-      /**
-       * ALGORITHM A (UPGRADED): MULTI-DIMENSIONAL WATERFALL
-       * Priority Array:
-       * 1. Date Chronology (Oldest Debt First)
-       * 2. Relationship Tier (Primary Leases First)
-       * 3. Entity Integrity (Secondary Leases)
-       */
-      const charges = tenant.charges.sort((a: any, b: any) => {
-        // Tie-breaker 1: Maturity (Oldest Due Date)
-        const dateDiff = a.dueDate.getTime() - b.dueDate.getTime();
-        if (dateDiff !== 0) return dateDiff;
-        
-        // Tie-breaker 2: Subscription Tier (Primary First)
-        if (a.lease.isPrimary && !b.lease.isPrimary) return -1;
-        if (!a.lease.isPrimary && b.lease.isPrimary) return 1;
-        
-        return 0;
-      });
+        /**
+         * ALGORITHM A (UPGRADED): MULTI-DIMENSIONAL WATERFALL
+         */
+        const charges = tenant.charges.sort((a: any, b: any) => {
+          const dateDiff = a.dueDate.getTime() - b.dueDate.getTime();
+          if (dateDiff !== 0) return dateDiff;
+          if (a.lease.isPrimary && !b.lease.isPrimary) return -1;
+          if (!a.lease.isPrimary && b.lease.isPrimary) return 1;
+          return 0;
+        });
 
-      const txOps = [];
+        let loopIndex = 0;
+        while (amountRemaining.gt(0) && loopIndex < charges.length) {
+          const charge = charges[loopIndex];
+          const balanceOwed = charge.amount.minus(charge.amountPaid);
+          
+          let amountToApply = amountRemaining;
+          let newIsFullyPaid = false;
 
-      let loopIndex = 0;
-      while (amountRemaining.gt(0) && loopIndex < charges.length) {
-        const charge = charges[loopIndex];
-        const balanceOwed = charge.amount.minus(charge.amountPaid);
-        
-        let amountToApply = amountRemaining;
-        let newIsFullyPaid = false;
-
-        if (amountRemaining.gte(balanceOwed)) {
-          amountToApply = balanceOwed;
-          newIsFullyPaid = true;
-        }
-        
-        amountRemaining = amountRemaining.minus(amountToApply);
-        
-        txOps.push(
-          prisma.charge.update({
+          if (amountRemaining.gte(balanceOwed)) {
+            amountToApply = balanceOwed;
+            newIsFullyPaid = true;
+          }
+          
+          amountRemaining = amountRemaining.minus(amountToApply);
+          
+          await tx.charge.update({
             where: { id: charge.id, organizationId: session.organizationId },
             data: {
               amountPaid: charge.amountPaid.plus(amountToApply),
               isFullyPaid: newIsFullyPaid
             }
-          })
-        );
-        loopIndex++;
-      }
+          });
+          loopIndex++;
+        }
 
-      // Overpayment: Automatic Credit Materialization
-      if (amountRemaining.gt(0)) {
-        const activeLease = await prisma.lease.findFirst({ 
-          where: { tenantId: tenant.id, isActive: true, isPrimary: true } 
-        }) || await prisma.lease.findFirst({ 
-          where: { tenantId: tenant.id, isActive: true } 
-        });
+        // Overpayment: Automatic Credit Materialization
+        if (amountRemaining.gt(0)) {
+          const activeLease = await tx.lease.findFirst({ 
+            where: { tenantId: tenant.id, isActive: true, isPrimary: true } 
+          }) || await tx.lease.findFirst({ 
+            where: { tenantId: tenant.id, isActive: true } 
+          });
 
-        if (activeLease) {
-          txOps.push(
-            prisma.charge.create({
+          if (activeLease) {
+            await tx.charge.create({
               data: {
                 organizationId: session.organizationId,
                 tenantId: tenant.id,
@@ -99,24 +87,75 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
                 dueDate: new Date(),
                 isFullyPaid: false,
               }
-            })
-          );
+            });
+          }
         }
-      }
 
-      const assetAccount = await prisma.account.findFirst({ where: { category: AccountCategory.ASSET, organizationId: session.organizationId } });
-      const revenueAccount = await prisma.account.findFirst({ where: { name: 'Rental Revenue', organizationId: session.organizationId } });
+        let assetAccount = await tx.account.findFirst({ 
+          where: { category: AccountCategory.ASSET, organizationId: session.organizationId } 
+        });
 
-      if (!assetAccount || !revenueAccount) {
-        return { success: false, message: "System Ledger Error: Revenue accounts not reached.", errorCode: "STATE_CONFLICT" };
-      }
+        // REVENUE SEARCH UPGRADE (V.3.2)
+        let revenueAccount = await tx.account.findFirst({ 
+          where: { category: AccountCategory.INCOME, organizationId: session.organizationId } 
+        });
 
-      const transactionId = randomUUID();
-      const pDate = new Date(payload.transactionDate);
+        // FALLBACK: If no explicit INCOME account, search for ANY FinancialLedger with class REVENUE
+        if (!revenueAccount) {
+          const revenueLedger = await prisma.financialLedger.findFirst({
+            where: { class: 'REVENUE', organizationId: session.organizationId }
+          });
+          
+          if (revenueLedger) {
+            // Attempt to find a backing account for this revenue stream
+            revenueAccount = await tx.account.findFirst({
+              where: { name: revenueLedger.name, organizationId: session.organizationId }
+            });
+            
+            // AUTO-MATERIALIZATION protocol: create backing account if it exists as a ledger
+            if (!revenueAccount) {
+              revenueAccount = await tx.account.create({
+                data: {
+                  name: revenueLedger.name,
+                  category: AccountCategory.INCOME,
+                  organizationId: session.organizationId
+                }
+              });
+            }
+          } else {
+             // FINAL FALLBACK: Materialize a global system income account if absolutely nothing exists
+             revenueAccount = await tx.account.create({
+               data: {
+                 name: "GENERAL OPERATING REVENUE (AUTO)",
+                 category: AccountCategory.INCOME,
+                 organizationId: session.organizationId
+               }
+             });
+          }
+        }
 
-      // DEBIT ASSET (Positive) - Mapping Payment Mode and Ref
-      txOps.push(
-        prisma.ledgerEntry.create({
+        // ASSET FALLBACK: Ensure a Cash account exists for Debit
+        if (!assetAccount) {
+          assetAccount = await tx.account.findFirst({ 
+            where: { name: { contains: 'CASH', mode: 'insensitive' }, organizationId: session.organizationId } 
+          }) || await tx.account.create({
+            data: {
+              name: "CASH ON HAND (AUTO)",
+              category: AccountCategory.ASSET,
+              organizationId: session.organizationId
+            }
+          });
+        }
+
+        if (!assetAccount || !revenueAccount) {
+          throw new Error("Critical Ledger Failure: Automated account materialization failed. Contact Infrastructure.");
+        }
+
+        const transactionId = randomUUID();
+        const pDate = new Date(payload.transactionDate);
+
+        // DEBIT ASSET (Positive)
+        await tx.ledgerEntry.create({
           data: {
             organizationId: session.organizationId,
             transactionId,
@@ -128,12 +167,10 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
             paymentMode: payload.paymentMode as any,
             referenceText: payload.referenceText
           }
-        })
-      );
+        });
 
-      // CREDIT REVENUE (Negative)
-      txOps.push(
-        prisma.ledgerEntry.create({
+        // CREDIT REVENUE (Negative)
+        await tx.ledgerEntry.create({
           data: {
             organizationId: session.organizationId,
             transactionId,
@@ -145,20 +182,24 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
             paymentMode: payload.paymentMode as any,
             referenceText: payload.referenceText
           }
-        })
-      );
+        });
 
-      await prisma.$transaction(txOps);
+        await recordAuditLog({
+          action: 'PAYMENT',
+          entityType: 'LEDGER_ENTRY',
+          entityId: transactionId,
+          metadata: { amount: payload.amountPaid, tenantId: payload.tenantId, mode: payload.paymentMode },
+          tx,
+          userId: session.userId,
+          organizationId: session.organizationId
+        });
 
-      await recordAuditLog({
-        action: 'CREATE',
-        entityType: 'LEDGER_ENTRY',
-        entityId: transactionId,
-        metadata: { amount: payload.amountPaid, tenantId: payload.tenantId, mode: payload.paymentMode }
-      })
+        return { transactionId };
+      });
 
-      return { success: true, message: "Waterfall processing complete. Ledger entry immutable.", data: { transactionId } };
+      return { success: true, message: "Waterfall processing complete. Ledger entry immutable.", data: result };
     } catch (e: any) {
+      console.error('[PAYMENT_WATERFALL_FATAL]', e);
       return { success: false, message: e.message || "Unknown error", errorCode: "STATE_CONFLICT" };
     }
   });

@@ -78,24 +78,34 @@ model Lease {
 // Financial Entities
 // ----------------------------------------------------------------------------
 
-enum ExpenseScope {
-  PERSONAL
-  HOME
-  PROPERTY
+
+
+model FinancialLedger {
+  id             String            @id @default(uuid())
+  organizationId String
+  name           String
+  class          String            @default("EXPENSE") // REVENUE, EXPENSE, CAPEX
+  createdAt      DateTime          @default(now())
+  
+  categories     ExpenseCategory[]
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+
+  @@unique([name, organizationId])
 }
 
 model ExpenseCategory {
   id             String            @id @default(uuid())
   organizationId String
   name           String
-  scope          ExpenseScope
+  ledgerId       String
   parentId       String?
   parent         ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
   children       ExpenseCategory[] @relation("SubCategories")
   entries        LedgerEntry[]
 
   organization   Organization      @relation(fields: [organizationId], references: [id])
-  @@unique([name, scope, parentId, organizationId])
+  ledger         FinancialLedger   @relation(fields: [ledgerId], references: [id])
+  @@unique([name, ledgerId, parentId, organizationId])
 }
 
 enum ChargeType {
@@ -206,6 +216,7 @@ model Organization {
   charges           Charge[]
   accounts          Account[]
   ledgerEntries     LedgerEntry[]
+  financialLedgers  FinancialLedger[]
   expenseCategories ExpenseCategory[]
   auditLogs         AuditLog[]
   reportSnapshots   ReportSnapshot[]

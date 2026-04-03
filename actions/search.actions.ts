@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from "@/lib/prisma"
-import { auth } from "@/auth"
+import { runSecureServerAction } from '@/lib/auth-utils'
 
 export type SearchResult = {
   id: string;
@@ -12,10 +12,9 @@ export type SearchResult = {
 }
 
 export async function globalSearch(query: string): Promise<SearchResult[]> {
-  const session = await auth()
-  if (!session?.user?.organizationId || query.length < 3) return []
-
-  const orgId = session.user.organizationId
+  return runSecureServerAction('MANAGER', async (session) => {
+    if (query.length < 3) return []
+    const orgId = session.organizationId
   const results: SearchResult[] = []
 
   // 1. Search Properties
@@ -91,4 +90,5 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   }))
 
   return results
+  });
 }

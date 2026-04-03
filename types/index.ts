@@ -1,4 +1,4 @@
-import { MaintenanceStatus, ChargeType, AccountCategory, AuditActionType } from '@prisma/client'
+import { MaintenanceStatus, ChargeType, AccountCategory } from '@prisma/client'
 
 // ----------------------------------------------------------------------------
 // API Response Types
@@ -7,7 +7,7 @@ export interface SystemResponse<T = any> {
   success: boolean;
   message: string;
   data?: T;
-  errorCode?: "VALIDATION_ERROR" | "DB_LOCKED" | "UNAUTHORIZED" | "STATE_CONFLICT";
+  errorCode?: "VALIDATION_ERROR" | "DB_LOCKED" | "UNAUTHORIZED" | "STATE_CONFLICT" | "ORPHANED_SESSION";
 }
 
 // ----------------------------------------------------------------------------
