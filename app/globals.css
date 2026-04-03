@@ -1,39 +1,82 @@
 @import "tailwindcss";
 
+@theme {
+  /* Finova Premium Color Tokens */
+  --color-brand: #4f46e5;
+  --color-brand-foreground: #ffffff;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+  --color-surface-950: #020617;
+
+  /* Typography Density */
+  --font-sans: "Inter", "Geist Sans", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+
+  /* Finova Rounded Standards */
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+
+  /* Premium Elevation */
+  --shadow-premium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-premium-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+  --ring: #4f46e5;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme='dark'] {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #6366f1;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* GLOBAL FORM ACCESSIBILITY FIXES */
-input, select, textarea {
-  color: #0f172a !important; /* Force slate-900 for readability on light bgs */
-  background-color: #ffffff;
+/* Finova Table Styles */
+.finova-table-container {
+  @apply overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm;
 }
 
-/* Ensure placeholder visibility */
-input::placeholder, textarea::placeholder {
-  color: #94a3b8; /* Slate 400 */
+.finova-table-header {
+  @apply bg-surface-50 dark:bg-surface-900/50 px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400;
+}
+
+.finova-table-cell {
+  @apply px-6 py-4 text-sm border-t border-[var(--border)];
+}
+
+/* Input Overhaul */
+.finova-input {
+  @apply w-full bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all;
+}
+
+/* Finova Card Base */
+.finova-card {
+  @apply bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-premium transition-all hover:shadow-premium-lg;
 }

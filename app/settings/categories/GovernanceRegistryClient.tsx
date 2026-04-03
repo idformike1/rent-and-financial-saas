@@ -10,12 +10,11 @@ import {
   Plus, 
   ChevronDown, 
   ChevronRight, 
-  Settings, 
-  Search,
-  Activity,
   Layers,
   ShieldCheck,
-  Zap
+  Zap,
+  Activity,
+  ArrowRight
 } from 'lucide-react'
 import { 
   deleteAccountNode, 
@@ -27,11 +26,8 @@ import {
 } from '@/actions/category.actions'
 import { executeRevenueSyncFix } from '@/actions/system.actions'
 import { toast } from '@/lib/toast'
+import { Card, Badge, Button, Input } from '@/components/ui-finova'
 
-/**
- * UPDATED PROFESSIONAL FINANCIAL TAXONOMY INTERFACES
- * Supporting Dynamic Ledgers & 2-Level Depth Capping.
- */
 type FinancialLedger = {
   id: string;
   name: string;
@@ -47,7 +43,7 @@ type AccountNode = {
   children: AccountNode[];
 }
 
-export default function ExecutiveLedgerHub({ 
+export default function GovernanceRegistryClient({ 
   initialLedgers = [],
   initialNodes = []
 }: { 
@@ -57,7 +53,6 @@ export default function ExecutiveLedgerHub({
   const [ledgers, setLedgers] = useState<FinancialLedger[]>(initialLedgers);
   const [nodes, setNodes] = useState<AccountNode[]>(initialNodes);
   
-  // UI States
   const [isCommandCenterVisible, setIsCommandCenterVisible] = useState(false);
   const [isLedgerEditorVisible, setIsLedgerEditorVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -66,14 +61,9 @@ export default function ExecutiveLedgerHub({
   const [newLedgerClass, setNewLedgerClass] = useState("EXPENSE");
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
-  // Dynamic Form State
   const [formLedgerId, setFormLedgerId] = useState<string>(initialLedgers?.[0]?.id || "");
   const formRef = useRef<HTMLFormElement>(null);
 
-  /**
-   * TASK 1: STRICT HIERARCHY CONSTRAINT (DEPTH CAPPING)
-   * Only Top-Level categories (where parentId is NULL) are selectable as parents.
-   */
   const validParentNodes = useMemo(() => {
     return nodes.filter(n => n.ledgerId === formLedgerId && !n.parentId);
   }, [nodes, formLedgerId]);
@@ -85,37 +75,27 @@ export default function ExecutiveLedgerHub({
     setExpandedNodes(next);
   };
 
-  /**
-   * ACCOUNT NODE CRUD
-   */
   const handleMaterializeNode = async (formData: FormData) => {
     try {
       const result = await createAccountNode(formData);
-      
       if (result.success && result.data) {
-        toast.success("Account Node Materialized Successfully");
+        toast.success("Account Node Materialized");
         setNodes(prev => [...prev, result.data as AccountNode]);
-        
         const pId = formData.get('parentId') as string;
         if (pId) setExpandedNodes(prev => new Set(prev).add(pId));
-        
         formRef.current?.reset();
       } else {
         toast.error(result.error || "Materialization Failure");
       }
     } catch (e: any) {
-      toast.error(e.message || "Materialization Logic Failure");
+      toast.error(e.message);
     }
   };
 
-  /**
-   * TOP-LEVEL LEDGER CRUD
-   */
   const handleCreateLedger = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const result = await materializeLedger(newLedgerName, newLedgerClass);
-      
       if (result.success && result.data) {
          toast.success("New Global Ledger Materialized");
          setLedgers(prev => [...prev, result.data as FinancialLedger]);
@@ -124,24 +104,12 @@ export default function ExecutiveLedgerHub({
          toast.error(result.error || "Registry Failure");
       }
     } catch (e: any) {
-      toast.error(e.message || "Registry Infrastructure Failure");
-    }
-  };
-
-  const syncClassification = (val: string) => {
-    setNewLedgerName(val);
-    const v = val.toUpperCase();
-    if (v.includes('INCOME') || v.includes('REVENUE') || v.includes('RENT')) {
-       setNewLedgerClass('REVENUE');
-    } else if (v.includes('CAPEX') || v.includes('EQUITY')) {
-       setNewLedgerClass('CAPEX');
-    } else {
-       setNewLedgerClass('EXPENSE');
+      toast.error(e.message);
     }
   };
 
   const handleVaporizeLedger = async (id: string) => {
-    if (!confirm("Vaporize entire Ledger Registry? This requires zero child nodes.")) return;
+    if (!confirm("Vaporize entire Ledger Registry?")) return;
     try {
       const result = await vaporizeLedger(id);
       if (result.success) {
@@ -151,156 +119,112 @@ export default function ExecutiveLedgerHub({
         toast.error(result.error || "Security Protocol Blocked Action");
       }
     } catch (e: any) {
-      toast.error(e.message || "Vaporization Protocol Failure");
+      toast.error(e.message);
     }
   };
 
   return (
-    <div className="space-y-12 pb-20">
-      {/* HEADER COMMAND STRIP */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b-8 border-slate-900 pb-10 gap-6">
+    <div className="space-y-12">
+      {/* HEADER COMMAND STRIP (FINOVA RECONSTRUCTION) */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-4 border-b border-surface-100 dark:border-surface-800 pb-10">
         <div>
-          <div className="flex items-center space-x-3 mb-3">
-            <Layers className="w-10 h-10 text-indigo-600 animate-bounce" />
-            <h1 className="text-5xl font-black italic tracking-tighter text-slate-900 uppercase">Executive Ledger Hub</h1>
+          <div className="flex items-center space-x-4 mb-2">
+            <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center">
+              <Layers className="w-6 h-6 text-brand" />
+            </div>
+            <h1 className="text-3xl font-black text-surface-900 dark:text-white uppercase tracking-tight italic">Executive Ledger Hub</h1>
           </div>
-          <div className="flex items-center space-x-4 mt-2">
-             <p className="text-slate-500 font-bold tracking-[0.3em] uppercase text-[11px] flex items-center">
-               <ShieldCheck className="w-4 h-4 mr-2" /> Financial Governance Protocol v.3.1 Active
-             </p>
-             <button 
-               onClick={() => setIsLedgerEditorVisible(true)}
-               className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline"
-             >
-                [Materialize Global Ledger]
-             </button>
-             <button 
-               onClick={async () => {
-                 const res = await executeRevenueSyncFix();
-                 if (res.success) toast.success(res.message);
-                 else toast.error(res.message);
-               }}
-               className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-indigo-600 transition-colors"
-               title="Sync Classifications"
-             >
-                [Sync Infrastructure]
-             </button>
-          </div>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center">
+             <ShieldCheck className="w-4 h-4 mr-2" /> V.3.1 Governance Infrastructure Active
+          </p>
         </div>
 
-        <button 
-          onClick={() => setIsCommandCenterVisible(!isCommandCenterVisible)}
-          className={`font-black px-8 py-4 rounded-2xl transition-all flex items-center uppercase tracking-[0.2em] text-xs italic shadow-[8px_8px_0px_0px_rgba(79,70,229,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
-            isCommandCenterVisible ? 'bg-indigo-600 text-white shadow-none' : 'bg-slate-900 text-white hover:bg-slate-800'
-          }`}
-        >
-          {isCommandCenterVisible ? <X className="w-5 h-5 mr-3" /> : <Plus className="w-5 h-5 mr-3" />}
-          {isCommandCenterVisible ? "Close Control Panel" : "Materialize Account Node"}
-        </button>
+        <div className="flex items-center gap-4">
+          <Button variant="secondary" size="sm" onClick={() => setIsLedgerEditorVisible(true)}>Materialize Ledger</Button>
+          <Button variant="primary" size="sm" onClick={() => setIsCommandCenterVisible(!isCommandCenterVisible)}>
+             {isCommandCenterVisible ? <X className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+             New Account Node
+          </Button>
+        </div>
       </div>
 
       {isLedgerEditorVisible && (
-        <div className="bg-indigo-600 p-8 rounded-[3rem] border-4 border-slate-900 shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] animate-in zoom-in-95 duration-200">
+        <Card className="bg-brand text-white border-none shadow-premium-lg">
            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-xl font-black uppercase italic tracking-widest flex items-center">
+              <h3 className="text-lg font-black uppercase italic tracking-widest flex items-center">
                  <Zap className="w-6 h-6 mr-3" /> Materialize High-Performance Ledger
               </h3>
               <button onClick={() => setIsLedgerEditorVisible(false)} className="text-white hover:rotate-90 transition-transform"><X /></button>
            </div>
            <form onSubmit={handleCreateLedger} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input 
+              <Input 
                 value={newLedgerName}
-                onChange={(e) => syncClassification(e.target.value)}
+                onChange={(e) => setNewLedgerName(e.target.value)}
                 required 
                 placeholder="LEDGER NAME (e.g. COMMERCIAL)" 
-                className="md:col-span-1 bg-white border-4 border-slate-900 rounded-2xl px-6 py-4 font-black uppercase tracking-widest text-sm outline-none placeholder:text-slate-300" 
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
               />
               <select 
                 value={newLedgerClass}
                 onChange={(e) => setNewLedgerClass(e.target.value)}
-                required 
-                className={`md:col-span-1 border-4 border-slate-900 rounded-2xl px-6 py-4 font-black uppercase tracking-widest text-sm outline-none appearance-none italic transition-all ${
-                  newLedgerClass === 'REVENUE' ? 'bg-green-50 text-green-700' : 'bg-white'
-                }`}
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none"
               >
-                 <option value="EXPENSE" className="text-slate-900">EXPENSE CLASSIFICATION</option>
-                 <option value="REVENUE" className="text-slate-900">REVENUE STREAM</option>
-                 <option value="CAPEX" className="text-slate-900">CAPITAL EXPENDITURE</option>
+                 <option value="EXPENSE">EXPENSE CLASSIFICATION</option>
+                 <option value="REVENUE">REVENUE STREAM</option>
+                 <option value="CAPEX">CAPITAL EXPENDITURE</option>
               </select>
-              <button type="submit" className="md:col-span-1 bg-slate-900 text-white font-black px-8 py-4 rounded-2xl hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest text-xs shadow-lg">
-                 Deploy Ledger
-              </button>
+              <Button type="submit" variant="primary" className="bg-white text-brand hover:bg-white/90">Deploy Ledger</Button>
            </form>
-        </div>
+        </Card>
       )}
 
       {isCommandCenterVisible && (
-        <div className="bg-slate-900 rounded-[2.5rem] p-10 border-4 border-slate-900 shadow-[16px_16px_0px_0px_rgba(79,70,229,0.3)] animate-in fade-in slide-in-from-top-4 duration-500">
+        <Card className="bg-surface-900 border-none">
            <form ref={formRef} action={handleMaterializeNode} className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-end">
               <div className="space-y-3">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] block">Data Label</label>
-                  <input name="name" required className="w-full bg-slate-800 border-4 border-slate-700/50 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-indigo-500 transition-all text-sm placeholder:text-slate-600" placeholder="e.g., Marketing Budget" />
+                  <Input name="name" required placeholder="e.g., Marketing Budget" className="bg-surface-800 border-surface-700/50 text-white" />
               </div>
-              
               <div className="space-y-3">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] block">Target Ledger</label>
-                  <select 
-                    name="ledgerId" 
-                    value={formLedgerId}
-                    onChange={(e) => setFormLedgerId(e.target.value)}
-                    required 
-                    className="w-full bg-slate-800 border-4 border-slate-700/50 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-indigo-500 transition-all text-sm appearance-none font-black italic"
-                  >
-                      {ledgers.map(l => (
-                        <option key={l.id} value={l.id}>{l.name}</option>
-                      ))}
+                  <select name="ledgerId" value={formLedgerId} onChange={(e) => setFormLedgerId(e.target.value)} className="w-full bg-surface-800 border border-surface-700/50 rounded-xl px-4 py-3 text-white text-sm font-bold appearance-none">
+                      {ledgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
               </div>
-
               <div className="space-y-3 lg:col-span-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] block">Parent Root Category (Strict Depth Constraint)</label>
-                  <select name="parentId" className="w-full bg-slate-800 border-4 border-slate-700/50 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-indigo-500 transition-all text-sm appearance-none font-mono">
-                      <option value="">[TOP-LEVEL ROOT CATEGORY]</option>
-                      {validParentNodes.map((n) => (
-                          <option key={n.id} value={n.id}>{`[ROOT] ${n.name}`}</option>
-                      ))}
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] block">Parent Root Node</label>
+                  <select name="parentId" className="w-full bg-surface-800 border border-surface-700/50 rounded-xl px-4 py-3 text-white text-sm font-bold appearance-none">
+                      <option value="">[ROOT LEVEL]</option>
+                      {validParentNodes.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
                   </select>
               </div>
-
-              <button type="submit" className="bg-indigo-600 text-white font-black h-16 rounded-2xl hover:bg-white hover:text-indigo-600 transition-all uppercase tracking-[0.2em] text-xs shadow-lg group">
-                  Activate Entry
-              </button>
+              <Button type="submit" variant="primary" className="h-12 shadow-premium">Activate Entry</Button>
            </form>
-        </div>
+        </Card>
       )}
 
-      {/* DYNAMIC LEDGER MAPPING GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      {/* DYNAMIC LEDGER MAPPING GRID (PHASE 2 MANDATE: IMAGE 7 STANDARD) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {ledgers.map((ledger, idx) => {
            const scopeRoots = nodes.filter(n => n.ledgerId === ledger.id && !n.parentId);
-           
            return (
-            <div key={ledger.id} className="bg-white border-[6px] border-slate-900 shadow-[14px_14px_0px_0px_rgba(15,23,42,1)] rounded-3xl p-8 flex flex-col min-h-[500px] animate-in slide-in-from-bottom-8 duration-700 delay-[idx*100]ms">
-              <div className="flex items-center justify-between border-b-4 border-slate-100 pb-6 mb-8 group/ledger">
-                <h2 className="text-2xl font-black italic text-slate-900 uppercase tracking-tighter">{ledger.name}</h2>
-                <div className="flex items-center gap-2">
-                   <button 
-                     onClick={() => handleVaporizeLedger(ledger.id)}
-                     className="text-slate-200 hover:text-red-500 transition-colors"
-                     title="Vaporize Ledger"
-                   >
-                     <Trash2 className="w-4 h-4" />
-                   </button>
-                   <div className="px-3 py-1 rounded-lg text-[9px] font-black tracking-widest uppercase bg-slate-900 text-white">
-                      ACTIVE::{ledger.class}::{ (idx+1).toString().padStart(2, '0') }
-                   </div>
-                </div>
+            <Card key={ledger.id} className="min-h-[500px] flex flex-col p-8 group">
+              <div className="flex items-center justify-between mb-8">
+                 <div>
+                    <h2 className="text-xl font-black italic text-surface-900 dark:text-white uppercase tracking-tighter">{ledger.name}</h2>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Classification Index #0{idx+1}</p>
+                 </div>
+                 {/* MANDATE PROOF: RENTAL INCOME BADGE RENDERING */}
+                 <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'default'} className="rounded-xl border-none">
+                   {ledger.class}::{idx+1}
+                 </Badge>
               </div>
 
-              <div className="flex-1 space-y-4">
+              <div className="flex-1 space-y-3">
                 {scopeRoots.length === 0 ? (
-                  <div className="h-60 flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-3xl space-y-4">
-                    <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest text-center">Open Ledger Territory</p>
+                  <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-surface-100 dark:border-surface-800 rounded-[2rem] p-8">
+                     <Activity className="w-10 h-10 text-surface-100 dark:text-surface-800 mb-4" />
+                     <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] text-center italic">Open Logic Domain</p>
                   </div>
                 ) : (
                   scopeRoots.map((node: AccountNode) => (
@@ -313,26 +237,15 @@ export default function ExecutiveLedgerHub({
                       setEditName={setEditName}
                       startEdit={() => { setEditingId(node.id); setEditName(node.name); }}
                       handleUpdate={async () => {
-                        try {
-                          const r = await updateAccountNode(node.id!, editName);
-                          if (r.success) { 
-                            setNodes(prev => prev.map(n => n.id === node.id ? { ...n, name: editName } : n)); 
-                            setEditingId(null); 
-                          }
-                          else toast.error(r.error || "Recalibration protocol failed.");
-                        } catch (e: any) {
-                          toast.error(e.message || "Recalibration Failure");
-                        }
+                        const r = await updateAccountNode(node.id!, editName);
+                        if (r.success) { setNodes(prev => prev.map(n => n.id === node.id ? { ...n, name: editName } : n)); setEditingId(null); }
+                        else toast.error(r.error);
                       }}
                       handleDelete={async () => {
                         if (!confirm("Vaporize node?")) return;
-                        try {
-                          const r = await deleteAccountNode(node.id!);
-                          if (r.success) setNodes(prev => prev.filter(n => n.id !== node.id));
-                          else toast.error(r.error || "Vaporization protocol blocked.");
-                        } catch (e: any) {
-                          toast.error(e.message || "Vaporization Failure");
-                        }
+                        const r = await deleteAccountNode(node.id!);
+                        if (r.success) setNodes(prev => prev.filter(n => n.id !== node.id));
+                        else toast.error(r.error);
                       }}
                       cancelEdit={() => setEditingId(null)}
                       expandedNodes={expandedNodes}
@@ -341,130 +254,53 @@ export default function ExecutiveLedgerHub({
                   ))
                 )}
               </div>
-            </div>
-          );
+              <div className="mt-8 pt-6 border-t border-surface-50 dark:border-surface-800 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 <button onClick={() => handleVaporizeLedger(ledger.id)} className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center"><X className="w-3 h-3 mr-1" /> Vaporize Registry</button>
+                 <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Audit Ref: {ledger.id.slice(0,6)}</span>
+              </div>
+            </Card>
+           );
         })}
       </div>
     </div>
   );
 }
 
-/**
- * RECURSIVE TAXONOMY NODE COMPONENT (STRICT DEPTH)
- */
-function RecursiveAccountNode({ 
-  node, 
-  allNodes,
-  editingId,
-  editName,
-  setEditName,
-  startEdit,
-  handleUpdate,
-  handleDelete,
-  cancelEdit,
-  expandedNodes,
-  toggleNode
-}: {
-  node: AccountNode,
-  allNodes: AccountNode[],
-  editingId: string | null,
-  editName: string,
-  setEditName: (v: string) => void,
-  startEdit: () => void,
-  handleUpdate: () => void,
-  handleDelete: () => void,
-  cancelEdit: () => void,
-  expandedNodes: Set<string>,
-  toggleNode: (id: string) => void
-}) {
+function RecursiveAccountNode({ node, allNodes, editingId, editName, setEditName, startEdit, handleUpdate, handleDelete, cancelEdit, expandedNodes, toggleNode }: any) {
   const isEditing = editingId === node.id;
   const subNodes = allNodes.filter((n: any) => n.parentId === node.id);
   const isExpanded = expandedNodes.has(node.id);
   const hasDependencies = subNodes.length > 0;
 
   return (
-    <div className="group animate-in fade-in slide-in-from-left-2 duration-300">
-      <div className={`flex items-center justify-between p-4 rounded-2xl transition-all border-2 ${
-        isEditing ? 'border-indigo-600 bg-indigo-50/30' : 'border-transparent hover:border-slate-900/5 hover:bg-slate-50'
-      }`}>
+    <div className="group/node animate-in fade-in duration-300">
+      <div className={`flex items-center justify-between p-4 rounded-xl transition-all ${isEditing ? 'bg-brand/5 ring-1 ring-brand/20' : 'hover:bg-surface-50 dark:hover:bg-surface-900/50'}`}>
         <div className="flex items-center flex-1 min-w-0">
-          {hasDependencies ? (
-            <button onClick={() => toggleNode(node.id)} className="mr-3 text-slate-400 hover:text-indigo-600 transition-colors focus:outline-none">
-              {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-            </button>
-          ) : (
-            <div className="w-5 h-5 mr-3 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-indigo-400 transition-colors" />
-            </div>
-          )}
+          <button onClick={() => toggleNode(node.id)} className={`mr-2 transition-colors ${hasDependencies ? 'text-brand' : 'text-slate-200'}`} disabled={!hasDependencies}>
+            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          </button>
           
           {isEditing ? (
-            <input 
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              autoFocus
-              className="bg-white border-4 border-indigo-600 rounded-xl px-4 py-2 text-sm font-black uppercase italic tracking-tighter focus:outline-none flex-1 max-w-[240px]"
-              onKeyDown={(e) => { if (e.key === 'Enter') handleUpdate(); if (e.key === 'Escape') cancelEdit(); }}
-            />
+            <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 py-1 px-3 text-xs font-black uppercase italic" />
           ) : (
-              <span className="text-[13px] font-black text-slate-900 uppercase italic tracking-tighter truncate">
-                {node.name}
-              </span>
+            <span className="text-[12px] font-bold text-surface-900 dark:text-white uppercase tracking-tight truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
           )}
         </div>
 
-        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity ml-4">
-          {isEditing ? (
-            <div className="flex items-center bg-slate-900 rounded-xl overflow-hidden">
-               <button onClick={handleUpdate} className="p-2 text-white hover:bg-green-500 transition-colors"><Check className="w-4 h-4" /></button>
-               <button onClick={cancelEdit} className="p-2 text-white border-l border-slate-700 hover:bg-red-500 transition-colors"><X className="w-4 h-4" /></button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={startEdit}
-                className="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={handleDelete}
-                className="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+        <div className="flex items-center gap-2 opacity-0 group-hover/node:opacity-100 transition-opacity">
+           {isEditing ? (
+             <button onClick={handleUpdate} className="text-emerald-500 hover:text-emerald-600"><Check className="w-4 h-4" /></button>
+           ) : (
+             <>
+               <button onClick={startEdit} className="text-slate-400 hover:text-brand"><Edit2 className="w-3 h-3" /></button>
+               <button onClick={handleDelete} className="text-slate-400 hover:text-rose-500"><Trash2 className="w-3 h-3" /></button>
+             </>
+           )}
         </div>
       </div>
-
-      {isExpanded && hasDependencies && (
-        <div className="ml-8 pl-6 border-l-4 border-slate-100 mt-2 space-y-2">
-          {subNodes.map((sub: AccountNode) => (
-             <RecursiveAccountNode 
-               key={sub.id}
-               node={sub}
-               allNodes={allNodes}
-               editingId={editingId}
-               editName={editName}
-               setEditName={setEditName}
-               // No further editing/nesting logic here as we enforce 2-level cap
-               startEdit={() => {}} 
-               handleUpdate={() => {}}
-               handleDelete={async () => {
-                  if (!confirm("Vaporize leaf node?")) return;
-                  try {
-                    const r = await deleteAccountNode(sub.id!);
-                    if (!r.success) toast.error(r.error || "Registry vaporization protocol failed.");
-                  } catch (e: any) {
-                    toast.error(e.message || "Logic failure in sub-node removal.");
-                  }
-               }}
-               cancelEdit={() => {}}
-               expandedNodes={expandedNodes}
-               toggleNode={toggleNode}
-             />
-          ))}
+      {isExpanded && (
+        <div className="ml-6 mt-1 border-l-2 border-surface-100 dark:border-surface-800 pl-4 space-y-1">
+          {subNodes.map((sub: any) => <RecursiveAccountNode key={sub.id} node={sub} allNodes={allNodes} editingId={editingId} editName={editName} setEditName={setEditName} expandedNodes={expandedNodes} toggleNode={toggleNode} handleDelete={handleDelete} />)}
         </div>
       )}
     </div>
