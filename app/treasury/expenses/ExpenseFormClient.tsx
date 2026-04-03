@@ -17,7 +17,7 @@ const treasurySchema = z.object({
   payee: z.string().min(2, "Identification of payee/payer is mandatory for data governance."),
   description: z.string().min(3, "Substantive narrative required for fiscal reasoning."),
   scope: z.string(),
-  type: z.enum(['INCOME', 'EXPENSE']),
+  type: z.enum(['REVENUE', 'EXPENSE']),
   propertyId: z.string().optional(),
   parentCategoryId: z.string().min(1, "Core account category must be defined."),
   subCategoryId: z.string().optional(),
@@ -55,10 +55,11 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   const activeLedger = allLedgers.find(l => l.id === selectedScopeId);
   const showAssetContext = activeLedger?.name?.toUpperCase().includes('BUILDING');
 
-  // TRIGGER: Filter categories by the dynamic Ledger (Scope) AND the stream type (INCOME/EXPENSE)
+  // TRIGGER: Filter Ledgers by flow type
+  const availableLedgers = allLedgers.filter(l => l.class === selectedType);
   const availableParents = allCategories.filter((c: any) => 
     c.ledgerId === selectedScopeId && 
-    c.type === selectedType && 
+    c.ledger?.class === selectedType && 
     !c.parentId
   );
   
@@ -68,7 +69,11 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   useEffect(() => {
     setValue('parentCategoryId', '');
     setValue('subCategoryId', '');
-  }, [selectedScopeId, selectedType, setValue]);
+    // If current scope is no longer valid for the selected type, reset it to the first available ledger of that type
+    if (selectedScopeId && !availableLedgers.find(l => l.id === selectedScopeId)) {
+        setValue('scope', availableLedgers[0]?.id || '');
+    }
+  }, [selectedScopeId, selectedType, setValue, availableLedgers]);
 
   useEffect(() => {
     if (!showAssetContext) {
@@ -118,8 +123,8 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
       {sessionCount > 0 && lastEntry && (
         <div className="rounded-[2.5rem] px-10 py-8 flex items-center justify-between shadow-2xl bg-emerald-950/90 border border-emerald-500/20 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
-            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-black/20", lastEntry.type === 'INCOME' ? 'bg-emerald-500' : 'bg-rose-500')}>
-               {lastEntry.type === 'INCOME' ? <ArrowUpCircle className="w-7 h-7 text-white" /> : <ArrowDownCircle className="w-7 h-7 text-white" />}
+            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-black/20", lastEntry.type === 'REVENUE' ? 'bg-emerald-500' : 'bg-rose-500')}>
+               {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-white" /> : <ArrowDownCircle className="w-7 h-7 text-white" />}
             </div>
             <div>
               <p className="font-black italic uppercase tracking-tighter text-2xl text-white leading-none">
@@ -152,9 +157,9 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
              </button>
              <button 
                type="button" 
-               onClick={() => setValue('type', 'INCOME')}
+               onClick={() => setValue('type', 'REVENUE')}
                className={cn("py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'INCOME' ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                 selectedType === 'REVENUE' ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                )}
              >
                 <ArrowUpCircle className="w-4 h-4" /> Inflow / Revenue
@@ -180,7 +185,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
             <label className={labelClass}>Ledger Scope</label>
             <div className="relative">
               <select {...register('scope')} className={cn(inputClass(errors.scope), "appearance-none")}>
-                {allLedgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                {availableLedgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
               </select>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20"><Landmark className="w-4 h-4" /></div>
             </div>
@@ -197,7 +202,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           )}
 
           <div className="space-y-1">
-            <label className={labelClass}>{selectedType === 'INCOME' ? 'Revenue Source' : 'Expenditure Account'}</label>
+            <label className={labelClass}>{selectedType === 'REVENUE' ? 'Revenue Source' : 'Expenditure Account'}</label>
             <select {...register('parentCategoryId')} className={cn(inputClass(errors.parentCategoryId), "appearance-none")}>
               <option value="">SELECT ACCOUNT</option>
               {availableParents.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -216,7 +221,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           )}
 
           <div className="space-y-1">
-            <label className={labelClass}>{selectedType === 'INCOME' ? 'Payer Identity' : 'Payee Identity'}</label>
+            <label className={labelClass}>{selectedType === 'REVENUE' ? 'Payer Identity' : 'Payee Identity'}</label>
             <input {...register('payee')} className={inputClass(errors.payee)} placeholder="Legal Entity Name" />
             {errors.payee && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.payee.message}</p>}
           </div>
@@ -240,12 +245,12 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               type="submit"
               disabled={isSubmitting}
               className={cn("w-full text-white font-black h-20 rounded-[1.5rem] transition-all flex items-center justify-center uppercase tracking-[0.5rem] text-[12px] italic group relative overflow-hidden active:translate-y-[1px] hover:shadow-premium-lg transition-transform",
-                selectedType === 'INCOME' ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-rose-500 shadow-rose-500/20'
+                selectedType === 'REVENUE' ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-rose-500 shadow-rose-500/20'
               )}
             >
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
               {isSubmitting ? <Loader2 className="w-6 h-6 mr-4 animate-spin" /> : <Landmark className="w-6 h-6 mr-4" />}
-              {isSubmitting ? "Processing Ledger..." : `Authorize Treasury ${selectedType === 'INCOME' ? 'Inflow' : 'Outflow'}`}
+              {isSubmitting ? "Processing Ledger..." : `Authorize Treasury ${selectedType === 'REVENUE' ? 'Inflow' : 'Outflow'}`}
             </button>
           </div>
 

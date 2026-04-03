@@ -177,23 +177,41 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
 export async function checkTenantExistence(name: string, email?: string, phone?: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const existing = await prisma.tenant.findFirst({
-        where: {
-          organizationId: session.organizationId,
-          isDeleted: false,
-          OR: [
-            { name: { equals: name, mode: 'insensitive' } },
-            ...(email ? [{ email: { equals: email, mode: 'insensitive' } }] : []),
-            ...(phone ? [{ phone: { equals: phone, mode: 'insensitive' } }] : [])
-          ]
-        }
+      // 1. Exact Name Check
+      const nameMatch = await prisma.tenant.findFirst({
+        where: { organizationId: session.organizationId, name: { equals: name, mode: 'insensitive' }, isDeleted: false }
       });
-
-      if (existing) {
+      if (nameMatch) {
         return { 
           exists: true, 
-          message: `Identity Conflict: A Tenant named '${existing.name}' is already registered in the Nexus.` 
+          message: `Identity Conflict: A Tenant named '${nameMatch.name}' is already registered.` 
         };
+      }
+
+      // 2. Email Check
+      if (email) {
+        const emailMatch = await prisma.tenant.findFirst({
+          where: { organizationId: session.organizationId, email: { equals: email, mode: 'insensitive' }, isDeleted: false }
+        });
+        if (emailMatch) {
+          return { 
+            exists: true, 
+            message: `Identity Conflict: The email '${email}' is already associated with '${emailMatch.name}'. Duplicate registrations are blocked by Protocol.` 
+          };
+        }
+      }
+
+      // 3. Phone Check
+      if (phone) {
+        const phoneMatch = await prisma.tenant.findFirst({
+          where: { organizationId: session.organizationId, phone: { equals: phone, mode: 'insensitive' }, isDeleted: false }
+        });
+        if (phoneMatch) {
+          return { 
+            exists: true, 
+            message: `Identity Conflict: The contact string '${phone}' is already registered for '${phoneMatch.name}'.` 
+          };
+        }
       }
 
       return { exists: false };

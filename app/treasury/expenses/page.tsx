@@ -6,7 +6,7 @@ import { Landmark, ShieldAlert, History, ArrowLeft, Shield, Zap } from 'lucide-r
 export default async function ExpenseLoggingPage() {
   const properties = await (prisma as any).property.findMany();
   const allCategories = await (prisma as any).expenseCategory.findMany({
-    include: { children: true }
+    include: { children: true, ledger: true }
   });
   const allLedgers = await (prisma as any).financialLedger.findMany({
     orderBy: { name: 'asc' }
