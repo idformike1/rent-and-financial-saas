@@ -1,9 +1,7 @@
-'use client'
-
-import { ThemeProvider } from 'next-themes'
+import type { Metadata } from 'next'
 import { Inter, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
-import AppShell from '@/components/AppShell'
+import { ThemeProvider } from 'next-themes'
 import SessionProvider from '@/components/providers/SessionProvider'
 import Toaster from '@/components/Toaster'
 
@@ -22,6 +20,11 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 })
 
+export const metadata: Metadata = {
+  title: 'Axiom Finova — Enterprise SaaS',
+  description: 'Enterprise rent and financial management platform.',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,9 +41,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <SessionProvider>
             <Toaster />
-            <AppShell>
-              {children}
-            </AppShell>
+            {children}
           </SessionProvider>
         </ThemeProvider>
       </body>

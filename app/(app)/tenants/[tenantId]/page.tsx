@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
-import TenantProfileView from '@/app/tenants/[tenantId]/TenantProfileView'
+import TenantProfileView from '@/app/(app)/tenants/[tenantId]/TenantProfileView'
 
 export default async function TenantProfilePage({ params }: { params: Promise<{ tenantId: string }> }) {
   const { tenantId } = await params;
