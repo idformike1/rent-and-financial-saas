@@ -283,10 +283,11 @@ export async function getTaxPrep(year: number, propertyId?: string) {
 
 /**
  * RESTORED: MASTER LEDGER DRILL-DOWN
+ * Sanitizes Decimal -> Number for high-density surveillance overlays.
  */
 export async function getMasterLedger(query?: string) {
   return runSecureServerAction('MANAGER', async (session) => {
-    return prisma.ledgerEntry.findMany({
+    const entries = await prisma.ledgerEntry.findMany({
       where: {
         organizationId: session.organizationId,
         OR: query ? [
@@ -298,6 +299,38 @@ export async function getMasterLedger(query?: string) {
       orderBy: { transactionDate: 'desc' },
       take: 50
     });
+
+    return entries.map((e: any) => ({
+      ...e,
+      amount: Number(e.amount),
+      transactionDate: e.transactionDate.toISOString()
+    }));
+  });
+}
+
+/**
+ * NEW: PROPERTY-CENTRIC LEDGER DRILL-DOWN
+ * Poweres the Registry Surveillance overlay in the Pulse Terminal.
+ */
+export async function getPropertyLedgerEntries(propertyId: string, type?: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    const entries = await prisma.ledgerEntry.findMany({
+      where: {
+        propertyId,
+        expenseCategory: type ? {
+          ledger: { class: type === 'ADJ_NOI' ? 'EXPENSE' : type }
+        } : undefined
+      },
+      include: { expenseCategory: true },
+      orderBy: { transactionDate: 'desc' },
+      take: 20
+    });
+
+    return entries.map((e: any) => ({
+      ...e,
+      amount: Number(e.amount),
+      transactionDate: e.transactionDate.toISOString()
+    }));
   });
 }
 

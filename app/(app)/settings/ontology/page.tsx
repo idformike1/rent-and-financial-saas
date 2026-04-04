@@ -107,8 +107,26 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
       if (node.tenants?.length) childBranches.push({ id: `${node.id}-tenants`, name: `Tenants (${node.tenants.length})`, type: 'CATEGORY', children: node.tenants })
       if (node.expenses?.length) childBranches.push({ id: `${node.id}-expenses`, name: `Recent Expenses`, type: 'CATEGORY', children: node.expenses })
   }
+  
+  // Surgical Fix: Corporate Overhead Empty State
+  if (node.id === 'detached-expenses' && childBranches.length === 0) {
+      childBranches.push({ 
+        id: 'empty-detached', 
+        name: 'NO DETACHED EXPENSES DETECTED', 
+        type: 'EMPTY_STATE' 
+      })
+  }
 
   const hasChildren = childBranches.length > 0
+  
+  if (node.type === 'EMPTY_STATE') {
+      return (
+        <div className="min-w-[280px] p-5 bg-slate-950 border border-dashed border-white/5 font-mono text-[10px] text-zinc-500 text-center uppercase tracking-widest italic rounded-2xl">
+          {node.name}
+        </div>
+      )
+  }
+
   const colorKey = node.type as keyof typeof NODE_COLORS
   const colorClasses = NODE_COLORS[colorKey] || 'text-slate-400 border-white/10'
 

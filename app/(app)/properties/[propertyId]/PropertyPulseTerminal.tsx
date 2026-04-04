@@ -19,7 +19,7 @@ import {
   FileText,
   Plus
 } from 'lucide-react'
-import { getPropertyAssetPulse } from '@/actions/reports.actions'
+import { getPropertyAssetPulse, getPropertyLedgerEntries } from '@/actions/reports.actions'
 import { createUnit, updateUnit } from '@/actions/unit-mgmt.actions'
 import { Card, Badge, Button, RollingCounter } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
@@ -28,6 +28,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from '@/lib/toast'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const unitSchema = z.object({
   unitNumber: z.string().min(1, "Required"),
@@ -66,6 +67,8 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [drillDownType, setDrillDownType] = useState<string | null>(null)
+  const [drillDownEntries, setDrillDownEntries] = useState<any[]>([])
+  const [drillDownLoading, setDrillDownLoading] = useState(false)
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingUnit, setEditingUnit] = useState<any>(null)
@@ -93,9 +96,25 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
     }
   }
 
+  const fetchDrillDown = async (type: string) => {
+    setDrillDownLoading(true);
+    try {
+      const entries = await getPropertyLedgerEntries(propertyId, type);
+      setDrillDownEntries(entries);
+    } catch (e) {
+      toast.error("Failed to fetch drill-down records");
+    } finally {
+      setDrillDownLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadData()
   }, [propertyId])
+
+  useEffect(() => {
+    if (drillDownType) fetchDrillDown(drillDownType);
+  }, [drillDownType])
 
   const onAddUnit = async (formData: UnitForm) => {
     setIsSubmitting(true)
@@ -143,7 +162,13 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
     return (
       <div className="h-[600px] flex flex-col items-center justify-center space-y-6 opacity-40">
          <div className="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-         <span className="text-[10px] font-black uppercase tracking-[0.4em]">Calibrating Asset Pulse...</span>
+         <motion.span 
+           animate={{ opacity: [0.4, 1, 0.4] }}
+           transition={{ repeat: Infinity, duration: 2 }}
+           className="text-[10px] font-black uppercase tracking-[0.4em]"
+         >
+           Calibrating Asset Pulse...
+         </motion.span>
       </div>
     )
   }
@@ -367,12 +392,34 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                     </div>
                  </div>
 
-                 <div className="space-y-4">
+                 {drillDownLoading ? (
+                    <div className="h-64 flex flex-col items-center justify-center space-y-4 opacity-40">
+                       <div className="w-10 h-10 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                       <p className="text-[8px] font-black uppercase tracking-[0.4em]">Parsing Ledger Streams...</p>
+                    </div>
+                 ) : drillDownEntries.length === 0 ? (
                     <div className="flex items-center justify-center h-[300px] border-2 border-dashed border-white/5 opacity-10 rounded-[2.5rem] flex-col space-y-4">
                        <Search className="w-12 h-12" />
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em]">Mounting Direct Ledger Interface...</p>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em]">No Direct Records Found in Current Buffer</p>
                     </div>
-                 </div>
+                 ) : (
+                    <div className="space-y-4">
+                       {drillDownEntries.map((e: any) => (
+                         <div key={e.id} className="p-8 border border-white/5 bg-slate-950/50 rounded-3xl flex justify-between items-center group hover:border-white/10 transition-all">
+                            <div className="space-y-1">
+                               <div className="flex items-center gap-3">
+                                  <span className="text-[10px] font-mono text-slate-500">{new Date(e.transactionDate).toLocaleDateString()}</span>
+                                  <Badge className="bg-white/5 text-slate-400 border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
+                               </div>
+                               <p className="text-white font-bold text-xs uppercase tracking-tight">{e.description}</p>
+                            </div>
+                            <div className={cn("text-xl font-mono tabular-nums font-black", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
+                               {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString()}
+                            </div>
+                         </div>
+                       ))}
+                    </div>
+                 )}
               </div>
 
               <div className="p-12 bg-slate-950 border-t border-white/5 flex items-center justify-between">
@@ -404,20 +451,20 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                  </div>
                  <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Hardware Type</label>
-                      <input {...register('type')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="Apartment" />
+                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Hardware Type</label>
+                       <input {...register('type')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="Apartment" />
                     </div>
                     <div>
-                      <label className="text-9px font-black text-slate-500 uppercase tracking-widest block mb-3">Market Rent ($)</label>
-                      <input {...register('marketRent')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="0.00" type="number" step="0.01" />
+                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Market Rent ($)</label>
+                       <input {...register('marketRent')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="0.00" type="number" step="0.01" />
                     </div>
                  </div>
                  <div>
                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Atomic Category</label>
                     <select {...register('category')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl appearance-none">
-                      <option value="FLAT">FLAT (RESIDENTIAL)</option>
-                      <option value="STORE">STORE (COMMERCIAL)</option>
-                      <option value="SHUTTER">SHUTTER (RETAIL)</option>
+                       <option value="FLAT">FLAT (RESIDENTIAL)</option>
+                       <option value="STORE">STORE (COMMERCIAL)</option>
+                       <option value="SHUTTER">SHUTTER (RETAIL)</option>
                     </select>
                  </div>
                  <Button disabled={isSubmitting} className="w-full h-20 text-md font-black uppercase tracking-widest">
