@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -52,25 +52,35 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   const selectedType = watch('type');
   const selectedParentId = watch('parentCategoryId');
 
-  const activeLedger = allLedgers.find(l => l.id === selectedScopeId);
+  const activeLedger = allLedgers.find((l: any) => l.id === selectedScopeId);
   const showAssetContext = activeLedger?.name?.toUpperCase().includes('BUILDING');
 
   // TRIGGER: Filter Ledgers by flow type
-  const availableLedgers = allLedgers.filter(l => l.class === selectedType);
-  const availableParents = allCategories.filter((c: any) => 
-    c.ledgerId === selectedScopeId && 
-    c.ledger?.class === selectedType && 
-    !c.parentId
+  const availableLedgers = useMemo(() => 
+    allLedgers.filter(l => l.class === selectedType),
+    [allLedgers, selectedType]
+  );
+
+  const availableParents = useMemo(() => 
+    allCategories.filter((c: any) => 
+      c.ledgerId === selectedScopeId && 
+      c.ledger?.class === selectedType && 
+      !c.parentId
+    ),
+    [allCategories, selectedScopeId, selectedType]
   );
   
-  const availableSubs = allCategories.filter((c: any) => c.parentId === selectedParentId);
+  const availableSubs = useMemo(() => 
+    allCategories.filter((c: any) => c.parentId === selectedParentId),
+    [allCategories, selectedParentId]
+  );
 
   // LOGIC: Reset dependent fields when core states mutate
   useEffect(() => {
     setValue('parentCategoryId', '');
     setValue('subCategoryId', '');
     // If current scope is no longer valid for the selected type, reset it to the first available ledger of that type
-    if (selectedScopeId && !availableLedgers.find(l => l.id === selectedScopeId)) {
+    if (selectedScopeId && !availableLedgers.find((l: any) => l.id === selectedScopeId)) {
         setValue('scope', availableLedgers[0]?.id || '');
     }
   }, [selectedScopeId, selectedType, setValue, availableLedgers]);
@@ -185,7 +195,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
             <label className={labelClass}>Ledger Scope</label>
             <div className="relative">
               <select {...register('scope')} className={cn(inputClass(errors.scope), "appearance-none")}>
-                {availableLedgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                {availableLedgers.map((l: any) => <option key={l.id} value={l.id}>{l.name}</option>)}
               </select>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20"><Landmark className="w-4 h-4" /></div>
             </div>

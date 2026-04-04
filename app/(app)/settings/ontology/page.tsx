@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Layers,
 } from 'lucide-react'
+import Link from 'next/link'
 import { fetchDetailedOntology } from '@/actions/ontology.actions'
 import { Badge } from '@/components/ui-finova'
 
@@ -172,7 +173,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
                  <div className={`w-1 h-1 rounded-full ${isOpen ? 'bg-emerald-500' : 'bg-slate-700'}`} />
                  <span className="text-[7px] font-mono text-slate-600 uppercase tracking-tighter truncate max-w-[120px]">REF_{node.id.slice(0,12)}</span>
               </div>
-              <Link2 className="w-2.5 h-2.5 text-slate-800" />
+              <JumpToSource node={node} />
            </div>
          </div>
 
@@ -211,6 +212,42 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
       </AnimatePresence>
     </div>
   )
+}
+
+function JumpToSource({ node }: { node: any }) {
+  let href = '';
+  let label = '';
+
+  switch (node.type) {
+    case 'BUILDING':
+      href = `/properties/${node.id}`;
+      label = 'Property';
+      break;
+    case 'TENANT':
+      href = `/tenants/${node.id}`;
+      label = 'Tenant';
+      break;
+    case 'EXPENSE':
+      href = `/expenses?id=${node.id}`;
+      label = 'Expense';
+      break;
+    case 'INCOME':
+      href = `/treasury?id=${node.id}`;
+      label = 'Income';
+      break;
+    default:
+      return <Link2 className="w-2.5 h-2.5 text-slate-800" />;
+  }
+
+  return (
+    <Link 
+      href={href} 
+      title={`Jump to ${label} Source`}
+      className="p-1 hover:bg-brand/10 transition-all group/link rounded"
+    >
+      <Link2 className="w-3 h-3 text-slate-700 group-hover/link:text-brand transition-colors group-hover/link:drop-shadow-[0_0_5px_#10b981]" />
+    </Link>
+  );
 }
 
 function NodeIcon({ type, className }: { type: string, className?: string }) {
