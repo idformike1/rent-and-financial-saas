@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sun, Moon, Menu, ChevronDown,
   Users, LayoutDashboard, Database, Layers, Zap, Clock,
-  ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut
+  ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut, Orbit
 } from 'lucide-react'
 import GlobalSearch from './GlobalSearch'
 
@@ -39,6 +39,7 @@ const navigationSections = [
     label: 'Governance Control',
     items: [
       { name: 'Taxonomy Logic', href: '/settings/categories', icon: Settings },
+      { name: 'System Ontology',href: '/settings/ontology',   icon: Orbit },
       { name: 'Audit Protocol', href: '/settings/audit',      icon: ShieldCheck },
       { name: 'Data Ingestion', href: '/settings/ingestion',  icon: ArrowUpRight },
       { name: 'Team Command',   href: '/settings/team',       icon: Users },
