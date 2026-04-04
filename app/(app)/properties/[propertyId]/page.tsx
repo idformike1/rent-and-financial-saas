@@ -1,7 +1,8 @@
 import prisma from '@/lib/prisma'
-import UnitManagementClient from './UnitManagementClient'
 import Link from 'next/link'
-import { ChevronLeft, Building2 } from 'lucide-react'
+import { ChevronLeft, ShieldCheck, Zap, Layers, Navigation } from 'lucide-react'
+import PropertyPulseTerminal from './PropertyPulseTerminal'
+import { Badge } from '@/components/ui-finova'
 
 export default async function PropertyUnitsPage({ params }: { params: Promise<{ propertyId: string }> }) {
   const { propertyId } = await params;
@@ -10,49 +11,73 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
     where: { id: propertyId }
   });
 
-  if (!property) return <div className="p-10 text-xl font-bold bg-white text-red-500 border-2 border-red-500 rounded-3xl">INVALID_RESOURCE: PROPERTY_ID_NOT_FOUND</div>
-
-  const units = await prisma.unit.findMany({
-    where: { propertyId },
-    include: {
-      leases: {
-        where: { isActive: true },
-        include: { tenant: true }
-      }
-    },
-    orderBy: { unitNumber: 'asc' }
-  });
-
-  // Map to flat structure for the client component
-  const unitsWithOccupancy = units.map((u: any) => ({
-    id: u.id,
-    unitNumber: u.unitNumber,
-    type: u.type,
-    category: u.category,
-    maintenanceStatus: u.maintenanceStatus,
-    activeTenant: u.leases[0]?.tenant.name || null,
-    isOccupied: u.leases.length > 0
-  }));
+  if (!property) return (
+    <div className="min-h-screen flex items-center justify-center p-10">
+       <div className="bg-rose-500/10 border border-rose-500/20 p-12 rounded-[3.5rem] text-center space-y-6">
+          <Zap className="w-12 h-12 text-rose-500 mx-auto" strokeWidth={3} />
+          <h2 className="text-2xl font-black italic tracking-tighter text-white uppercase">NULL_RESOURCE_CONTEXT</h2>
+          <Link href="/properties" className="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-brand transition-colors">Return to Portfolio Registry</Link>
+       </div>
+    </div>
+  )
 
   return (
-    <div className="py-8 px-4 sm:px-6 h-full flex flex-col max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 border-b border-slate-100 pb-10">
-        <div>
-          <Link href="/properties" className="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-indigo-600 transition-colors mb-4 group">
-            <ChevronLeft className="w-3 h-3 mr-1 group-hover:-translate-x-1 transition-transform" /> Back to Portfolio
+    <div className="min-h-screen bg-slate-950 p-10 lg:p-14 space-y-16">
+      
+      {/* TERMINAL HEADER: SOVEREIGN AUDENCE */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-12">
+        <div className="space-y-6">
+          <Link 
+            href="/properties" 
+            className="flex items-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] hover:text-brand transition-colors mb-6 group"
+          >
+            <ChevronLeft className="w-3.5 h-3.5 mr-3 group-hover:-translate-x-2 transition-transform" /> 
+            PORTFOLIO_MASTER_INDEX
           </Link>
-          <div className="flex items-center space-x-3 mb-2">
-            <Building2 className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 uppercase">{property.name}</h1>
+          
+          <div className="flex items-center gap-4">
+             <Badge variant="success" className="rounded-none px-3 font-mono text-[8px] tracking-[0.4em]">ASSET_STATUS: ONLINE</Badge>
+             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
           </div>
-          <p className="text-slate-500 font-medium tracking-tight">Managing {units.length} structural assets at {property.address}.</p>
+
+          <div>
+            <h1 className="text-5xl font-light tracking-tighter text-white uppercase italic leading-none">
+              {property.name} <br/>
+              <span className="text-emerald-400">Pulse Terminal</span>
+            </h1>
+            <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-5">
+              <Navigation className="w-3.5 h-3.5 mr-3 text-brand" /> {property.address}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+           <div className="px-8 py-5 border border-white/10 bg-white/5 rounded-2xl flex flex-col justify-center">
+              <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Authorization Layer</span>
+              <span className="text-xs font-bold text-white flex items-center gap-2 italic uppercase">
+                 <ShieldCheck className="w-3 h-3 text-brand" /> Sovereignty_V3.0
+              </span>
+           </div>
         </div>
       </div>
 
-      <UnitManagementClient 
-        initialUnits={unitsWithOccupancy} 
-        propertyId={propertyId} 
-      />
+      {/* CORE ANALYTICAL TERMINAL */}
+      <PropertyPulseTerminal propertyId={propertyId} propertyName={property.name} />
+
+      {/* FOOTER ANCHOR */}
+      <div className="flex justify-between items-center opacity-30 pt-10 border-t border-white/5 text-slate-500">
+         <div className="flex items-center gap-6">
+            <Layers className="w-10 h-10" />
+            <div className="text-[8px] font-black uppercase tracking-[0.4em] leading-relaxed">
+               Axiom 2026 Sovereign Auditor <br/>
+               Physical_Asset_Persistence_Mapping
+            </div>
+         </div>
+         <div className="text-[9px] font-mono italic">
+            SEC_TOKEN: {property.id.split('-')[0].toUpperCase()}
+         </div>
+      </div>
+
     </div>
   )
 }

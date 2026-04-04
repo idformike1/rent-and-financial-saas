@@ -5,7 +5,7 @@ import { Card, Badge, Button } from '@/components/ui-finova'
 import TenantRegistryClient from './TenantRegistryClient'
 
 export default async function TenantsPage() {
-  const tenants = await prisma.tenant.findMany({
+  const tenantsRaw = await prisma.tenant.findMany({
     include: {
       leases: {
         include: {
@@ -14,6 +14,17 @@ export default async function TenantsPage() {
       }
     }
   });
+
+  const tenants = tenantsRaw.map((tenant: any) => ({
+    ...tenant,
+    leases: tenant.leases.map((lease: any) => ({
+      ...lease,
+      rentAmount: Number(lease.rentAmount),
+      depositAmount: Number(lease.depositAmount),
+      startDate: lease.startDate?.toISOString() || null,
+      endDate: lease.endDate?.toISOString() || null
+    }))
+  }));
 
   return (
     <div className="py-12 px-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">

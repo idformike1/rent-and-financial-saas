@@ -101,6 +101,133 @@ export async function getProfitAndLoss(dateRange: string, scope: string, propert
 }
 
 /**
+ * PROPERTY_ASSET_PULSE: ASYMMETRIC ANALYTIC ENGINE
+ * Computes NOI, Adjusted NOI (OPEX-only), Leakage, and Risk Profiles.
+ */
+export async function getPropertyAssetPulse(propertyId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const property = await prisma.property.findUnique({
+        where: { id: propertyId },
+        include: {
+          units: {
+            include: {
+              leases: {
+                where: { isActive: true },
+                include: { tenant: true, charges: true }
+              }
+            }
+          },
+          ledgerEntries: {
+            include: { 
+              expenseCategory: { include: { ledger: true } }
+            }
+          }
+        }
+      });
+
+      if (!property) throw new Error("Property Context Nullified");
+
+      // FISCAL HUD AGGREGATION
+      const entries = property.ledgerEntries;
+      
+      const revenueEntries = entries.filter((e: any) => e.expenseCategory?.ledger?.class === 'REVENUE');
+      const opexEntries = entries.filter((e: any) => e.expenseCategory?.ledger?.class === 'EXPENSE');
+      const capexEntries = entries.filter((e: any) => e.expenseCategory?.ledger?.class === 'CAPEX');
+
+      const grossRevenue = revenueEntries.reduce((sum: number, e: any) => sum + Number(e.amount), 0);
+      const operatingExpense = Math.abs(opexEntries.reduce((sum: number, e: any) => sum + Number(e.amount), 0));
+      const capitalExpense = Math.abs(capexEntries.reduce((sum: number, e: any) => sum + Number(e.amount), 0));
+
+      const noi = grossRevenue - operatingExpense - capitalExpense;
+      const adjustedNoi = grossRevenue - operatingExpense; // True Operational Health
+
+      // REVENUE LEAKAGE (GAP ANALYSIS)
+      let totalMarketPotential = 0;
+      let totalContractRevenue = 0;
+
+      property.units.forEach((u: any) => {
+        totalMarketPotential += Number(u.marketRent || 0);
+        const activeLease = u.leases[0];
+        if (activeLease) {
+          totalContractRevenue += Number(activeLease.rentAmount || 0);
+        }
+      });
+
+      const revenueLeakage = totalMarketPotential > 0 
+        ? ((totalMarketPotential - totalContractRevenue) / totalMarketPotential) * 100 
+        : 0;
+
+      // COLLECTION EFFICIENCY (CURRENT MONTH)
+      const now = new Date();
+      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      let expectedRent = 0;
+      
+      property.units.forEach((u: any) => {
+        const activeLease = u.leases[0];
+        if (activeLease) {
+          expectedRent += Number(activeLease.rentAmount || 0);
+        }
+      });
+      
+      const currentMonthRevenue = revenueEntries.filter((re: any) => new Date(re.transactionDate) >= currentMonthStart);
+      const totalCollectedThisMonth = currentMonthRevenue.reduce((sum: number, re: any) => sum + Math.abs(Number(re.amount)), 0);
+
+      const collectionEfficiency = expectedRent > 0 ? (totalCollectedThisMonth / expectedRent) * 100 : 100;
+
+      // RISK HEATMAP (BEHAVIORAL MATRICES)
+      const unitRiskGrid = property.units.map((u: any) => {
+        const activeLease = u.leases[0];
+        let risk: 'GREEN' | 'YELLOW' | 'RED' = 'GREEN';
+        
+        if (activeLease) {
+          const unpaidCharges = activeLease.charges.filter((c: any) => !c.isFullyPaid);
+          const hasBalance = unpaidCharges.length > 0;
+          
+          if (hasBalance) risk = 'RED';
+          else {
+            const overdue = activeLease.charges.find((c: any) => !c.isFullyPaid && new Date(c.dueDate) < now);
+            if (overdue) risk = 'RED';
+          }
+        } else {
+          risk = 'YELLOW'; // Vacant risk
+        }
+
+        return {
+          id: u.id,
+          unitNumber: u.unitNumber,
+          tenantName: activeLease?.tenant.name || 'VACANT',
+          riskScore: risk,
+          occupancy: !!activeLease
+        }
+      });
+
+      return {
+        success: true,
+        data: {
+          hud: {
+            noi,
+            adjustedNoi,
+            revenueLeakage,
+            collectionEfficiency
+          },
+          waterfall: {
+            revenue: grossRevenue,
+            opex: operatingExpense,
+            capex: capitalExpense,
+            netCash: grossRevenue - operatingExpense - capitalExpense
+          },
+          units: unitRiskGrid
+        }
+      };
+    } catch (e: any) {
+      return { success: false, error: e.message };
+    }
+  });
+}
+
+/**
  * RESTORED: DYNAMIC RENT ROLL
  */
 export async function getRentRoll(propertyId?: string) {

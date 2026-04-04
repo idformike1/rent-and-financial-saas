@@ -6,7 +6,7 @@ import { runSecureServerAction } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
 import { recordAuditLog } from '@/lib/audit-logger'
 
-export async function createUnit(data: { unitNumber: string, type: string, category: string, propertyId: string }) {
+export async function createUnit(data: { unitNumber: string, type: string, category: string, propertyId: string, marketRent?: number }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
       const unit = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
@@ -17,6 +17,7 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
             type: data.type,
             category: data.category,
             propertyId: data.propertyId,
+            marketRent: data.marketRent || 0,
             maintenanceStatus: 'OPERATIONAL'
           }
         });
@@ -34,36 +35,30 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
       });
 
       revalidatePath(`/properties/${data.propertyId}`);
-      return { success: true, data: unit };
+      return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
     } catch (e: any) {
       return { success: false, message: e.message };
     }
   });
 }
 
-export async function updateUnitStatus(unitId: string, status: MaintenanceStatus) {
+export async function updateUnit(unitId: string, data: { maintenanceStatus?: MaintenanceStatus, marketRent?: number, propertyId?: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
       const unit = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        if (status === 'DECOMMISSIONED') {
-          const activeLeases = await tx.lease.count({
-            where: { unitId, isActive: true, organizationId: session.organizationId }
-          });
-          if (activeLeases > 0) {
-            throw new Error(`Protocol Breach: Unit cannot be DECOMMISSIONED while ${activeLeases} active lease(s) exist.`);
-          }
-        }
-
         const u = await tx.unit.update({
           where: { id: unitId, organizationId: session.organizationId },
-          data: { maintenanceStatus: status }
+          data: {
+            maintenanceStatus: data.maintenanceStatus,
+            marketRent: data.marketRent
+          }
         });
 
         await recordAuditLog({
           action: 'UPDATE',
           entityType: 'UNIT',
           entityId: unitId,
-          metadata: { maintenanceStatus: status },
+          metadata: data,
           tx,
           userId: session.userId,
           organizationId: session.organizationId
@@ -71,10 +66,16 @@ export async function updateUnitStatus(unitId: string, status: MaintenanceStatus
         return u;
       });
 
+      if (data.propertyId) revalidatePath(`/properties/${data.propertyId}`);
       revalidatePath('/properties');
-      return { success: true, data: unit };
+      return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
     } catch (e: any) {
       return { success: false, message: e.message };
     }
   });
+}
+
+export async function updateUnitStatus(unitId: string, status: MaintenanceStatus) {
+  // Aliasing to updateUnit for compatibility if needed, but keeping original for now
+  return updateUnit(unitId, { maintenanceStatus: status });
 }

@@ -5,7 +5,7 @@ import RegistrySurveillanceClient from './RegistrySurveillanceClient'
 import { Badge } from '@/components/ui-finova'
 
 export default async function ExpenseRegistryPage() {
-  const entries = await (prisma as any).ledgerEntry.findMany({
+  const entriesRaw = await (prisma as any).ledgerEntry.findMany({
     include: {
       expenseCategory: {
         include: { 
@@ -16,6 +16,13 @@ export default async function ExpenseRegistryPage() {
     },
     orderBy: { transactionDate: 'desc' }
   });
+
+  const entries = entriesRaw.map((e: any) => ({
+    ...e,
+    amount: Number(e.amount),
+    transactionDate: e.transactionDate?.toISOString() || null,
+    date: e.date?.toISOString() || null
+  }));
 
   return (
     <div className="min-h-screen bg-slate-950 p-12 space-y-20 font-mono">

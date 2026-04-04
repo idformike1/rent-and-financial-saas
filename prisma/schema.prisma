@@ -36,6 +36,7 @@ model Unit {
   type              String            // e.g., "Apartment", "Parking", "Storage"
   category          String            @default("FLAT") // e.g., "FLAT", "STORE", "SHUTTER", "PARKING"
   maintenanceStatus MaintenanceStatus @default(OPERATIONAL)
+  marketRent        Decimal           @default(0.00) // Baseline market rate for leak analysis
   
   organization      Organization      @relation(fields: [organizationId], references: [id])
   property          Property          @relation(fields: [propertyId], references: [id])
