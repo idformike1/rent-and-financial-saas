@@ -33,7 +33,7 @@ export async function getTenantForensicDossier(tenantId: string) {
       });
 
       // DATA SANITIZATION (PRISMA DECIMAL -> NUMBER)
-      const sanitizedCharges = tenant.charges.map(c => ({
+      const sanitizedCharges = tenant.charges.map((c: any) => ({
         id: c.id,
         tenantId: c.tenantId,
         leaseId: c.leaseId,
@@ -44,7 +44,7 @@ export async function getTenantForensicDossier(tenantId: string) {
         isFullyPaid: c.isFullyPaid
       }));
 
-      const sanitizedLedger = ledgerEntries.map(e => ({
+      const sanitizedLedger = ledgerEntries.map((e: any) => ({
         id: e.id,
         amount: Math.abs(Number(e.amount)),
         transactionDate: e.transactionDate,
@@ -53,7 +53,7 @@ export async function getTenantForensicDossier(tenantId: string) {
         referenceText: e.referenceText
       }));
 
-      const sanitizedLeases = tenant.leases.map(l => ({
+      const sanitizedLeases = tenant.leases.map((l: any) => ({
         id: l.id,
         rentAmount: Number(l.rentAmount),
         depositAmount: Number(l.depositAmount),
@@ -69,31 +69,33 @@ export async function getTenantForensicDossier(tenantId: string) {
         }
       }));
 
-      // INTEGRITY SCORE CALCULATION
-      // Algorithm: Check all fully paid RENT charges. Calculate avg delay.
-      const paidRentCharges = sanitizedCharges.filter(c => c.type === 'RENT' && c.isFullyPaid);
-      let totalDelayDays = 0;
+      // INTEGRITY SCORE CALCULATION: V3.1 (RISK-ADJUSTED ALGORITHM)
+      // Logic: Base 100 - (Avg Delay * 2) - (Unpaid Rent Count * 25)
+      const paidRentCharges = sanitizedCharges.filter((c: any) => c.type === 'RENT' && c.isFullyPaid);
+      const unpaidRentCharges = sanitizedCharges.filter((c: any) => c.type === 'RENT' && !c.isFullyPaid);
       
-      paidRentCharges.forEach(charge => {
-        // Find the latest payment entry for this charge window
-        // Note: Direct linking would be better, but we'll use date proximity
-        const payment = sanitizedLedger.find(p => 
-          p.transactionDate >= charge.dueDate && 
-          p.transactionDate <= new Date(charge.dueDate.getTime() + 30 * 24 * 60 * 60 * 1000)
-        ) || sanitizedLedger.find(p => Math.abs(p.transactionDate.getTime() - charge.dueDate.getTime()) < 5 * 24 * 60 * 60 * 1000);
-        
-        if (payment) {
-          const delay = Math.max(0, (payment.transactionDate.getTime() - charge.dueDate.getTime()) / (1000 * 3600 * 24));
-          totalDelayDays += delay;
-        } else {
-           // If paid but no direct entry match found in the buffer, assume 0 for legacy or a default penalty if overdue
-           const now = new Date();
-           if (charge.dueDate < now) totalDelayDays += 2; // Slight penalty for untraceable legacy payments
+      let totalDelayDays = 0;
+      paidRentCharges.forEach((c: any) => {
+        const matchedEntry = ledgerEntries.find((e: any) => 
+           Math.abs(new Date(e.transactionDate).getTime() - new Date(c.dueDate).getTime()) < 30 * 24 * 60 * 60 * 1000
+        );
+
+        if (matchedEntry) {
+          const due = new Date(c.dueDate);
+          const paid = new Date(matchedEntry.transactionDate);
+          
+          const diffTime = paid.getTime() - due.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays > 0) totalDelayDays += diffDays;
         }
       });
 
       const avgDelay = paidRentCharges.length > 0 ? totalDelayDays / paidRentCharges.length : 0;
-      const integrityScore = Math.max(0, Math.min(100, 100 - (avgDelay * 3))); // 1 day late = -3 points
+      const historyPenalty = avgDelay * 2;
+      const defaultPenalty = unpaidRentCharges.length * 25;
+
+      const integrityScore = Math.max(0, 100 - historyPenalty - defaultPenalty);
 
       // STRIP-CHART GENERATION (LAST 12 MONTHS)
       const months = [];
@@ -103,7 +105,7 @@ export async function getTenantForensicDossier(tenantId: string) {
         const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
         const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0);
         
-        const monthCharge = sanitizedCharges.find(c => 
+        const monthCharge = sanitizedCharges.find((c: any) => 
           c.type === 'RENT' && 
           c.dueDate >= monthStart && 
           c.dueDate <= monthEnd
@@ -114,7 +116,7 @@ export async function getTenantForensicDossier(tenantId: string) {
           if (!monthCharge.isFullyPaid) {
             status = 'RED';
           } else {
-            const payment = sanitizedLedger.find(p => p.transactionDate >= monthStart && p.transactionDate <= monthEnd);
+            const payment = sanitizedLedger.find((p: any) => p.transactionDate >= monthStart && p.transactionDate <= monthEnd);
             const gracePeriod = new Date(monthStart);
             gracePeriod.setDate(5); // 5th of month grace period
             

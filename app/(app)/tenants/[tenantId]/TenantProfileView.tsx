@@ -370,7 +370,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
                                      <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{new Date(c.dueDate).toLocaleDateString()}</span>
                                   </td>
                                   <td className="px-10 py-8 text-center">
-                                     {c.paymentDate ? (
+                                     {(c.paymentDate && c.isFullyPaid) ? (
                                        <span className={cn(
                                          "text-[11px] font-black uppercase tracking-widest",
                                          isLate ? "text-amber-500" : "text-emerald-500"
@@ -383,7 +383,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
                                   </td>
                                   <td className="px-10 py-8 text-right">
                                      <span className="text-xl font-black text-white tracking-tighter italic tabular-nums">
-                                        ${(Number(c.amount) - Number(c.amountPaid)).toLocaleString()}
+                                        ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                      </span>
                                   </td>
                                   <td className="px-10 py-8 text-right">
