@@ -3,6 +3,76 @@
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { runSecureServerAction } from '@/lib/auth-utils'
+import { revalidatePath } from 'next/cache'
+
+export async function liquidateTenantDebt(tenantId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId, organizationId: session.organizationId },
+        include: {
+          charges: { orderBy: { dueDate: 'asc' } },
+          ledgerEntries: { 
+            where: { account: { category: 'INCOME' } } 
+          }
+        }
+      });
+      
+      if (!tenant) throw new Error("TENANT_RECORD_ABSENT");
+
+      // 1. DATA RECONCILIATION
+      const totalCharges = tenant.charges.reduce((acc: number, c: any) => acc + Number(c.amount), 0);
+      const totalIncome = tenant.ledgerEntries.reduce((acc: number, e: any) => acc + Math.abs(Number(e.amount)), 0);
+      const netBalance = totalCharges - totalIncome;
+
+      // If netBalance > 0, the tenant still owes more than they have ever paid (no surplus to redistribute)
+      if (netBalance > 0) {
+        throw new Error(`INSUFFICIENT_LIQUIDITY: $${netBalance.toFixed(2)} gap detected. Collect funds first.`);
+      }
+
+      // 2. FIFO CASCADE (REMAINING CREDIT TO DEBT)
+      const outstandingCharges = tenant.charges.filter((c: any) => !c.isFullyPaid);
+      const alreadyApplied = tenant.charges.reduce((acc: number, c: any) => acc + Number(c.amountPaid), 0);
+      let remainingCredit = totalIncome - alreadyApplied;
+
+      if (remainingCredit <= 0) {
+        return { success: true, message: "NO_UNALLOCATED_CREDITS_FOUND" };
+      }
+
+      const operations: any[] = [];
+      for (const charge of outstandingCharges) {
+        if (remainingCredit <= 0) break;
+
+        const amount = Number(charge.amount);
+        const paid = Number(charge.amountPaid);
+        const deficit = amount - paid;
+
+        if (remainingCredit >= deficit) {
+          operations.push(prisma.charge.update({
+            where: { id: charge.id },
+            data: { amountPaid: amount, isFullyPaid: true }
+          }));
+          remainingCredit -= deficit;
+        } else {
+          operations.push(prisma.charge.update({
+            where: { id: charge.id },
+            data: { amountPaid: paid + remainingCredit }
+          }));
+          remainingCredit = 0;
+        }
+      }
+
+      if (operations.length > 0) {
+        await prisma.$transaction(operations);
+      }
+
+      revalidatePath(`/tenants/${tenantId}`);
+      return { success: true, message: "FIFO_RECONCILIATION_SUCCESS" };
+    } catch (e: any) {
+      return { success: false, message: e.message };
+    }
+  });
+}
 
 export async function getTenantForensicDossier(tenantId: string) {
   return runSecureServerAction('MANAGER', async (session) => {

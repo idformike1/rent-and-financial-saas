@@ -6,6 +6,7 @@ import PaymentDrawer from '@/components/PaymentDrawer'
 import { Landmark, User, Calendar, Home, DollarSign, ArrowRight, ListChecks, Plus, Trash2, Mail, Phone, ShieldCheck, AlertTriangle, Layers, XCircle, Activity, CheckCircle2, AlertCircle } from 'lucide-react'
 import { updateTenantDetails, processMoveOut, softDeleteTenant, addAdditionalLease } from '@/actions/tenant-lifecycle.actions'
 import { getAvailableUnits } from '@/actions/unit.actions'
+import { liquidateTenantDebt } from '@/actions/tenant-forensics.actions'
 import { useForm } from 'react-hook-form'
 import { Card, Badge, Button } from '@/components/ui-finova'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -164,6 +165,25 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
     }
   };
 
+  const [isReconciling, setIsReconciling] = useState(false);
+
+  const onReconcileCredits = async () => {
+    setIsReconciling(true);
+    try {
+      const result = await liquidateTenantDebt(tenant.id);
+      if (result.success) {
+        toast.success("FIFO Reconciliation Matrix Synchronized");
+        router.refresh();
+      } else {
+        toast.error(result.message || "Reconciliation failed");
+      }
+    } catch (error) {
+       toast.error("Network synchronization failure");
+    } finally {
+       setIsReconciling(false);
+    }
+  };
+
   const totalBalance = charges.reduce((acc, c) => acc + (Number(c.amount) - Number(c.amountPaid)), 0);
 
   return (
@@ -204,18 +224,35 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                </div>
             </div>
             <div className="h-20 w-px bg-white/10 hidden lg:block" />
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-6">
                {!tenant.isDeleted && (
-                 <button onClick={() => setIsEditModalOpen(true)} className="bg-white/5 text-white border border-white/10 font-black px-8 py-3 rounded-2xl hover:bg-white/10 transition-all text-[10px] uppercase tracking-widest">
-                   Override Identity
+                 <div className="flex flex-col gap-2">
+                    <button 
+                      onClick={onReconcileCredits}
+                      disabled={isReconciling}
+                      className="bg-emerald-600 text-white font-black px-12 py-5 rounded-2xl shadow-[0_20px_40px_rgba(16,185,129,0.2)] hover:bg-emerald-500 active:scale-95 transition-all flex items-center uppercase italic tracking-widest text-[11px] h-20 min-w-[300px] justify-center disabled:opacity-50 font-mono"
+                    >
+                      {isReconciling ? '[ RECONCILING... ]' : (
+                        <span className="flex items-center uppercase tracking-[0.2em] font-black">SETTLE BALANCE <ArrowRight className="w-5 h-5 ml-4" /></span>
+                      )}
+                    </button>
+                    <button 
+                      onClick={() => setIsDrawerOpen(true)}
+                      className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3 uppercase font-black tracking-widest text-[9px] font-mono h-14"
+                    >
+                      <Plus className="w-4 h-4 text-emerald-500" /> RECORD PAYMENT
+                    </button>
+                 </div>
+               )}
+               
+               {!tenant.isDeleted && (
+                 <button 
+                    onClick={() => setIsEditModalOpen(true)} 
+                    className="bg-transparent text-slate-500 border border-white/5 px-8 py-3 rounded-xl hover:text-white hover:border-white/10 transition-all text-[9px] uppercase font-black tracking-[0.4em] font-mono h-12"
+                 >
+                    EDIT PROFILE
                  </button>
                )}
-               <button 
-                 onClick={() => setIsDrawerOpen(true)}
-                 className="bg-brand text-white font-black px-10 py-5 rounded-2xl shadow-[0_20px_40px_rgba(var(--brand-rgb),0.2)] hover:scale-105 active:scale-95 transition-all flex items-center uppercase italic tracking-widest text-[11px]"
-               >
-                 Liquidate Debt <ArrowRight className="w-4 h-4 ml-3" />
-               </button>
             </div>
          </div>
       </div>
