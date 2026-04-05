@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,6 +11,7 @@ import {
   ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut, Orbit
 } from 'lucide-react'
 import GlobalSearch from './GlobalSearch'
+import { cn } from '@/lib/utils'
 
 // ─── FULL 3-DOMAIN NAVIGATION REGISTRY ───────────────────────────────────────
 const navigationSections = [
@@ -48,10 +49,13 @@ const navigationSections = [
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  const { data: session } = useSession()
+  const userRole = session?.user?.role || 'MANAGER'
+  const userName = session?.user?.name || 'Sovereign Auditor'
+
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  // Default open: Core Operations only
   const [openSections, setOpenSections] = useState<string[]>(['Core Operations'])
   const pathname = usePathname()
 
@@ -65,43 +69,51 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     )
   }
 
+  // RESTRCTIVE FILTERING: Exclude Governance for Managers
+  const filteredSections = navigationSections.filter(section => {
+    if (section.label === 'Governance Control' && userRole === 'MANAGER') {
+      return false
+    }
+    return true
+  })
+
   if (!mounted) return null
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500 overflow-hidden">
+    <div className="flex h-screen bg-slate-950 transition-colors duration-500 overflow-hidden font-sans">
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
-      <aside className={`
+      <aside className={cn(`
         fixed inset-y-0 left-0 z-50 w-72 flex flex-col
-        finova-glass
-        transform transition-transform duration-500 ease-in-out
+        glass-panel m-6 rounded-[2.5rem]
+        transform transition-all duration-500 ease-in-out
         lg:relative lg:translate-x-0
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `, isMobileMenuOpen ? "m-0 inset-0 w-full rounded-none" : "")}>
 
         {/* Brand mark */}
-        <div className="shrink-0 px-8 pt-8 pb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-brand flex items-center justify-center shadow-lg shadow-brand/20">
+        <div className="shrink-0 px-10 pt-10 pb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-2xl bg-brand flex items-center justify-center glow-orange">
               <Zap className="text-white fill-white w-5 h-5" />
             </div>
-            <h2 className="text-xl font-black italic tracking-tighter dark:text-white">
+            <h2 className="text-xl font-black tracking-tighter text-white">
               AXIOM <span className="text-brand">2026</span>
             </h2>
           </div>
         </div>
 
         {/* Scrollable nav */}
-        <nav className="flex-1 overflow-y-auto px-6 pb-4 space-y-2">
-          {navigationSections.map((section) => (
-            <div key={section.label} className="space-y-1">
+        <nav className="flex-1 overflow-y-auto px-8 pb-4 space-y-4">
+          {filteredSections.map((section) => (
+            <div key={section.label} className="space-y-2">
               {/* Section toggle header */}
               <button
                 onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-colors"
               >
                 {section.label}
-                <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${openSections.includes(section.label) ? 'rotate-180' : ''}`} />
+                <ChevronDown className={cn("w-3 h-3 transition-transform duration-300", openSections.includes(section.label) ? 'rotate-180' : '')} />
               </button>
 
               {/* Collapsible items */}
@@ -112,8 +124,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="overflow-hidden space-y-1"
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden space-y-2 pt-2"
                   >
                     {section.items.map((item) => {
                       const isActive = pathname === item.href
@@ -122,15 +134,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                           key={item.name}
                           href={item.href}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className={`
-                            flex items-center px-5 py-3 text-[11px] font-bold uppercase tracking-[0.1em] rounded-2xl transition-all duration-200
+                          className={cn(`
+                            flex items-center px-6 py-4 text-[11px] font-bold uppercase tracking-[0.15em] rounded-full transition-all duration-300
                             ${isActive
-                              ? 'bg-brand text-white shadow-md shadow-brand/25'
-                              : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white'
+                              ? 'bg-brand text-white shadow-lg shadow-brand/30 glow-orange'
+                              : 'text-slate-400 hover:bg-white/5 hover:text-white'
                             }
-                          `}
+                          `)}
                         >
-                          <item.icon className="mr-3 h-4 w-4 shrink-0" />
+                          <item.icon className={cn("mr-4 h-4 w-4 shrink-0", isActive ? "text-white" : "text-brand")} />
                           {item.name}
                         </Link>
                       )
@@ -143,70 +155,82 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* ── PINNED FOOTER: Identity + Log Out ───────────────────────────── */}
-        <div className="shrink-0 px-6 py-6 border-t border-slate-200/50 dark:border-white/5">
+        <div className="shrink-0 px-8 py-8 border-t border-white/5">
           {/* User identity card */}
-          <div className="bg-slate-100/60 dark:bg-slate-800/40 rounded-2xl px-4 py-3 flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-brand/10 dark:bg-brand/20 flex items-center justify-center font-black text-brand text-xs shrink-0">
-              S
+          <div className="bg-white/5 rounded-[1.5rem] px-5 py-4 flex items-center gap-4 mb-4">
+            <div className="w-10 h-10 rounded-full bg-brand/20 flex items-center justify-center font-black text-brand text-xs shrink-0 border border-brand/20">
+              {userName.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black uppercase text-slate-800 dark:text-slate-200 leading-none mb-1 truncate">
-                Sovereign Auditor
+              <p className="text-[10px] font-black uppercase text-white leading-none mb-1.5 truncate">
+                {userName}
               </p>
-              <p className="text-[8px] font-bold uppercase tracking-widest text-emerald-500">
-                Admin
-              </p>
+              <Badge variant={userRole === 'MANAGER' ? 'warning' : 'success'} className="px-2 py-0.5 text-[7px]">
+                {userRole}
+              </Badge>
             </div>
           </div>
 
           {/* Log out trigger */}
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="w-full flex items-center justify-center gap-2 py-3 text-[9px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all duration-300"
+            className="w-full flex items-center justify-center gap-3 py-4 text-[9px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 rounded-full transition-all duration-300 border border-transparent hover:border-rose-500/20"
           >
-            <LogOut size={13} />
-            Sign Out
+            <LogOut size={14} />
+            Sign Out System
           </button>
         </div>
       </aside>
 
       {/* ── MAIN COLUMN ─────────────────────────────────────────────────────── */}
-      {/* FIX: explicit dark:bg-slate-950 prevents the white canvas bleed */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-950 transition-colors duration-500">
 
         {/* Header */}
-        <header className="h-20 finova-glass flex items-center justify-between px-8 shrink-0">
+        <header className="h-24 glass-panel border-none mx-6 mt-6 rounded-[2.5rem] flex items-center justify-between px-10 shrink-0">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-slate-500"
+            className="lg:hidden p-3 text-slate-400 hover:text-white"
           >
-            <Menu size={20} />
+            <Menu size={22} />
           </button>
 
           <GlobalSearch />
 
-          {/* Theme toggle */}
-          <button
-            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-            className="p-3 rounded-2xl bg-white/50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-white/10 transition-all hover:scale-105 active:scale-95"
-          >
-            <motion.div
-              animate={{ rotate: resolvedTheme === 'dark' ? 360 : 0 }}
-              transition={{ duration: 0.4 }}
+          {/* Theme toggle - Hidden in V3 forced dark mode but logic preserved */}
+          <div className="flex items-center gap-4">
+             <button
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+              className="p-4 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all hover:scale-105 active:scale-95"
             >
-              {resolvedTheme === 'dark'
-                ? <Moon size={18} className="text-slate-200" />
-                : <Sun size={18} className="text-amber-500" />
-              }
-            </motion.div>
-          </button>
+              {resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
+          </div>
         </header>
 
-        {/* Main canvas — FIX: dark:bg-slate-950 ensures full-viewport dark mode */}
-        <main className="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
-          {children}
+        {/* Main canvas */}
+        <main className="flex-1 overflow-y-auto p-12 bg-slate-950 transition-colors duration-500">
+          <div className="max-w-7xl mx-auto h-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>
   )
 }
+
+function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' }) {
+  const variants = {
+    default: "bg-white/5 text-slate-400 border border-white/10",
+    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold",
+    warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold",
+    danger: "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
+    brand: "bg-brand/10 text-brand border border-brand/20 font-bold",
+  };
+
+  return (
+    <span className={cn("px-4 py-1.5 rounded-full text-[10px] uppercase font-black tracking-widest inline-flex items-center gap-1.5", variants[variant], className)}>
+      {children}
+    </span>
+  )
+}
+

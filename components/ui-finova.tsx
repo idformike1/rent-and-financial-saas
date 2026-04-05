@@ -9,34 +9,36 @@ export { cn }
  * AXIOM 2026: CARD (QUIET CONFIDENCE STANDARD)
  * Implements Glassmorphism, backdrop-blur-xl, and subtle 1px border.
  */
+/**
+ * AXIOM 2026: CARD (V3 CINEMATIC GLASS)
+ */
 interface CardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   children: React.ReactNode;
-  variant?: 'elevated' | 'glass' | 'outline' | 'flat';
+  variant?: 'glass' | 'outline' | 'flat';
   isHoverable?: boolean;
 }
 
 export function Card({ 
   children, 
   className, 
-  variant = 'elevated', 
+  variant = 'glass', 
   isHoverable = false,
   ...props 
 }: CardProps) {
   const variants = {
-    elevated: "bg-white dark:bg-slate-900 shadow-premium border border-slate-100 dark:border-slate-800",
-    glass: "bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-premium",
-    outline: "bg-transparent border border-slate-200 dark:border-slate-800",
-    flat: "bg-slate-50 dark:bg-slate-950 border-none",
+    glass: "glass-panel shadow-2xl",
+    outline: "bg-transparent border border-white/10",
+    flat: "bg-white/5 border-none",
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       whileHover={isHoverable ? { y: -5, transition: { duration: 0.3 } } : undefined}
       className={cn(
-        "rounded-3xl p-8 transition-shadow duration-500",
+        "rounded-[2.5rem] p-10 transition-all duration-500",
         variants[variant],
         className
       )}
@@ -48,7 +50,7 @@ export function Card({
 }
 
 /**
- * AXIOM 2026: BUTTON (CALM MOTION)
+ * AXIOM 2026: BUTTON (V3 PILL)
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -65,22 +67,22 @@ export function Button({
   ...props 
 }: ButtonProps) {
   const variants = {
-    primary: "bg-brand text-white hover:bg-brand/90 shadow-md shadow-brand/20 dark:shadow-none",
-    secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100",
-    ghost: "bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/40",
-    danger: "bg-rose-500 text-white hover:bg-rose-600 shadow-md shadow-rose-500/20",
+    primary: "bg-brand text-white hover:bg-brand/90 shadow-lg shadow-brand/20 glow-orange border-none",
+    secondary: "bg-white/5 text-white hover:bg-white/10 border border-white/10",
+    ghost: "bg-transparent text-slate-400 hover:text-white hover:bg-white/5",
+    danger: "bg-rose-500 text-white hover:bg-rose-600 shadow-lg shadow-rose-500/20",
   };
 
   const sizes = {
-    sm: "px-5 py-2.5 text-[11px] font-bold uppercase tracking-wider",
-    md: "px-8 py-3.5 text-xs font-black tracking-tight",
-    lg: "px-10 py-5 text-sm font-black"
+    sm: "px-6 py-2.5 text-meta",
+    md: "px-10 py-4 text-xs font-black tracking-tight",
+    lg: "px-12 py-5 text-sm font-black"
   };
 
   return (
     <button 
       className={cn(
-        "inline-flex items-center justify-center rounded-2xl transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest leading-none",
+        "inline-flex items-center justify-center rounded-full transition-all duration-300 active:scale-[0.96] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest leading-none",
         variants[variant],
         sizes[size],
         className
@@ -97,15 +99,26 @@ export function Button({
 }
 
 /**
- * AXIOM 2026: BADGE (DATA DENSITY IMAGE 6)
+ * AXIOM 2026: LABEL (SOFT TEXT)
+ */
+export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <label className={cn("text-sm font-medium text-zinc-300 block mb-2", className)}>
+      {children}
+    </label>
+  )
+}
+
+/**
+ * AXIOM 2026: BADGE (DATA DENSITY)
  */
 export function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' }) {
   const variants = {
-    default: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-    success: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 font-bold",
-    warning: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 font-bold",
-    danger: "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 font-bold",
-    brand: "bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-foreground font-bold",
+    default: "bg-white/5 text-slate-400 border border-white/10",
+    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold",
+    warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold",
+    danger: "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
+    brand: "bg-brand/10 text-brand border border-brand/20 font-bold",
   };
 
   return (
@@ -122,13 +135,14 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input 
       className={cn(
-        "w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800/40 rounded-2xl px-6 py-4 text-sm focus:ring-2 focus:ring-brand/30 outline-none transition-all duration-500 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-900",
+        "w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-brand/50 outline-none transition-all duration-500 text-white placeholder:text-slate-500 focus:bg-white/10",
         className
       )}
       {...props}
     />
   )
 }
+
 
 /**
  * AXIOM 2026: ROLLING COUNTER (ANALYTICAL DOMINANCE)

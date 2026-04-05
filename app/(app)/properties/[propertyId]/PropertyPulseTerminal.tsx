@@ -17,7 +17,9 @@ import {
   Search,
   X,
   FileText,
-  Plus
+  Plus,
+  Edit2,
+  Trash2
 } from 'lucide-react'
 import { getPropertyAssetPulse, getPropertyLedgerEntries } from '@/actions/reports.actions'
 import { createUnit, updateUnit } from '@/actions/unit-mgmt.actions'
@@ -29,6 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from '@/lib/toast'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 
 const unitSchema = z.object({
   unitNumber: z.string().min(1, "Required"),
@@ -63,6 +66,10 @@ interface PulseData {
 }
 
 export default function PropertyPulseTerminal({ propertyId, propertyName }: { propertyId: string, propertyName: string }) {
+  const { data: session } = useSession()
+  const userRole = session?.user?.role || 'MANAGER'
+  const isSovereign = ['ADMIN', 'OWNER'].includes(userRole)
+
   const [data, setData] = useState<PulseData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -71,6 +78,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
   const [drillDownLoading, setDrillDownLoading] = useState(false)
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isEditPortfolioModalOpen, setIsEditPortfolioModalOpen] = useState(false)
   const [editingUnit, setEditingUnit] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -191,6 +199,50 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 pb-20">
       
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <Badge variant="brand" className="px-3 py-1 text-[9px] font-black tracking-[0.2em]">{propertyName}</Badge>
+            <Badge variant="default" className="px-3 py-1 text-[9px] font-black tracking-[0.2em]">ASSET_ID: {propertyId.slice(0, 8)}</Badge>
+          </div>
+          <h1 className="text-4xl font-black italic tracking-tighter text-white uppercase leading-none">
+            Property <span className="text-brand">Pulse</span> Terminal
+          </h1>
+          <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">Full-Spectrum Portfolio Intelligence & Unit Control</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {isSovereign && (
+            <>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="rounded-full"
+                onClick={() => setIsEditPortfolioModalOpen(true)}
+              >
+                <Edit2 className="w-3 h-3 mr-2" />
+                Edit Asset
+              </Button>
+              <Button 
+                variant="danger" 
+                size="sm" 
+                className="rounded-full opacity-50 hover:opacity-100"
+              >
+                <Trash2 className="w-3 h-3 mr-2" />
+                Archive Portfolio
+              </Button>
+            </>
+          )}
+          <Button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="glow-orange"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Provision New Unit
+          </Button>
+        </div>
+      </div>
+
       {/* STEP 1: FISCAL HUD */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-white/10 bg-slate-950 divide-x divide-white/10 overflow-hidden">
         

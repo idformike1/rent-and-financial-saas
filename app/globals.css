@@ -1,41 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── MODERN GROWTH: TEAL & EMERALD PALETTE ───────────────────────────── */
-  --color-brand:        #064E3B;
-  --color-brand-dark:   #34D399;
-  --color-accent:       #10B981;
+  /* ── V3 CINEMATIC: WARM PURPLE & PULSING ORANGE ────────────────────────── */
+  --color-brand:        #FF6B35;
+  --color-brand-dark:   #FF8C61;
+  --color-accent:       #FF6B35;
 
-  --color-success:      #16A34A;
-  --color-success-dark: #22C55E;
-  --color-danger:       #DC2626;
-  --color-danger-dark:  #EF4444;
+  --color-success:      #10B981;
+  --color-success-dark: #34D399;
+  --color-danger:       #F43F5E;
+  --color-danger-dark:  #FB7185;
 
-  /* ── DUAL TYPOGRAPHY ─────────────────────────────────────────────────── */
+  /* ── GEOMETRIC TYPOGRAPHY ────────────────────────────────────────────── */
   --font-sans: var(--font-inter), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 
-  /* ── RAZOR-SHARP GEOMETRY ────────────────────────────────────────────── */
-  --radius-xl:  2px;
-  --radius-2xl: 2px;
-  --radius-3xl: 4px;
+  /* ── ORGANIC GEOMETRY: V3 SOFT RADII ──────────────────────────────────── */
+  --radius-xl:  1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2.5rem;
 }
 
-/* ── LIGHT MODE TOKENS ───────────────────────────────────────────────────── */
+/* ── THEME TOKENS ────────────────────────────────────────────────────────── */
 :root {
-  --background: #F8FAFC;
+  --background: #FFFFFF;
   --foreground: #020617;
-  --card:       #FFFFFF;
+  --card:       #F8FAFC;
   --border:     #E2E8F0;
   --muted:      #64748B;
 }
 
-/* ── DARK MODE TOKENS ────────────────────────────────────────────────────── */
 .dark {
-  --background: #020617;
+  --background: #1A161F;
   --foreground: #F8FAFC;
-  --card:       #0F172A;
-  --border:     #1E293B;
+  --card:       #241F2B;
+  --border:     #ffffff0d;
   --muted:      #94A3B8;
 }
 
@@ -49,159 +48,82 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: 14px;       /* UI Base: 14px global shift */
-  line-height: 1.375;    /* leading-snug */
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   SCORCHED EARTH: COLOR OVERRIDE LAYER
-   Resolves hardcoded Tailwind utility color clashes sitewide.
-   The !important cascade defeats JIT-generated specificity on bg-/text- utilities.
-   CSS variables are live-updated by .dark class toggle, propagating theme instantly.
-   ══════════════════════════════════════════════════════════════════════════ */
+/* ── CINEMATIC UTILITIES ─────────────────────────────────────────────────── */
 
-/* 1. Main canvas — always inherits theme background */
-main {
-  background-color: var(--background) !important;
-  color: var(--foreground) !important;
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-/* 2. Cards, panels, tables inside main — force theme card color */
-/*    Catches: bg-white, bg-slate-50/100/800/900/950, finova-glass */
-main [class*="bg-white"],
-main [class*="bg-slate-"],
-.finova-glass {
-  background-color: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--foreground) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  border-radius: 4px !important;
+.glow-orange {
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
 }
 
-/* 3. Active nav items — preserve brand fill over the broad bg-slate- rule */
-[class*="bg-brand"] {
-  background-color: var(--color-brand) !important;
-  border-color: var(--color-brand) !important;
-  color: #ffffff !important;
+.glow-orange:hover {
+  box-shadow: 0 0 30px rgba(255, 107, 53, 0.25);
 }
 
-/* 4. ALL headings stay readable in both modes */
-h1, h2, h3, h4, h5, h6,
-[class*="text-slate-9"],
-[class*="text-slate-8"] {
-  color: var(--foreground) !important;
-}
-
-/* 5. Muted / label text */
-p[class*="text-slate-4"],
-p[class*="text-slate-5"],
-span[class*="text-slate-4"],
-span[class*="text-slate-5"] {
-  color: var(--muted) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   ARCHITECTURAL TYPE SCALE
-   Applied globally via attribute substring selectors.
-   No page edits required — all financial figures and structural text
-   automatically conform to the terminal-readout aesthetic.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-/* ── MICRO / META (10px): uppercase labels, badge text ───────────────────── */
-[class*="text-[10px]"],
-[class*="text-[9px]"],
-[class*="text-[8px]"] {
-  letter-spacing: 0.05em !important;    /* tracking-wider */
-  text-transform: uppercase;
-}
-
-/* ── DATA MATRIX (12px): all tabular + xs text → mono, lining nums ──────── */
-table,
-th,
-td,
-[class*="text-xs"] {
-  font-family: var(--font-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  line-height: 1 !important;            /* leading-none */
-}
-
-/* ── UI BASE (14px): inherited from body, no override needed ─────────────── */
-
-/* ── STRUCTURAL HEADERS (16px) ───────────────────────────────────────────── */
-[class*="text-base"],
-[class*="text-sm"][class*="font-semibold"] {
-  font-weight: 600;
-}
-
-/* ── KPI SUB-METRICS (24–32px): mono, tight tracking, lining nums ────────── */
-[class*="text-2xl"],
-[class*="text-3xl"] {
-  font-family: var(--font-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  letter-spacing: -0.025em !important;  /* tracking-tight */
-  line-height: 1 !important;
-}
-
-/* ── PRIMARY TELEMETRY (36px+): font-light for terminal density ──────────── */
-/*    At massive scale, light weight + tight tracking = data-terminal readout */
-[class*="text-4xl"],
-[class*="text-5xl"],
-[class*="text-6xl"] {
-  font-family: var(--font-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  letter-spacing: -0.05em !important;   /* tracking-tighter */
-  font-weight: 300 !important;          /* font-light: prevents heaviness at scale */
-  line-height: 1 !important;
-}
-
-/* ── SCROLLBAR: minimal, matches tight grid aesthetic ────────────────────── */
-::-webkit-scrollbar         { width: 3px; height: 3px; }
+/* ── SCROLLBAR: MINIMAL ──────────────────────────────────────────────────── */
+::-webkit-scrollbar         { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track   { background: transparent; }
-::-webkit-scrollbar-thumb   { background: var(--border); border-radius: 0; }
+::-webkit-scrollbar-thumb   { background: var(--border); border-radius: 10px; }
 
-/* =========================================
-   FORM CONTROL FIXES (Accessibility)
-========================================= */
+/* ── FORM ELEMENTS ───────────────────────────────────────────────────────── */
 input, select, textarea {
-  background-color: var(--background) !important;
+  background-color: rgba(255, 255, 255, 0.02) !important;
   color: var(--foreground) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 2px !important;
+  border-radius: 1rem !important;
+  padding: 0.75rem 1rem !important;
+  outline: none !important;
+  transition: all 0.3s ease;
 }
 
-input::placeholder, textarea::placeholder {
-  color: var(--muted) !important;
-  opacity: 1 !important;
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-brand) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Ensure form wrappers don't force white text */
-[class*="relative"] > input {
-  color: var(--foreground) !important;
+/* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground);
+  letter-spacing: -0.02em;
 }
 
-/* =========================================
-   NEO-BRUTALISM PURGE (Legacy Cleanup)
-   Removes massive offset shadows and skewed buttons
-========================================= */
-button, 
-[role="button"], 
-[class*="shadow-"],
-.technical-panel {
-  box-shadow: none !important;
-  transform: none !important; /* Strips harsh active:translate shifts */
+.text-meta {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
 }
 
-/* Normalize generic buttons to Modern Growth */
-button {
-  border-radius: var(--radius-xl) !important;
-  border: 1px solid var(--border) !important;
+/* Clean up legacy italics */
+[class*="italic"] {
+  font-style: normal !important;
 }
 
-/* Ensure primary CTA buttons remain highly visible */
+/* Force Geometric Sans on structure */
+body, button, input, select, textarea, div, span, p {
+  font-family: var(--font-sans);
+}
+
+/* Preserve Mono ONLY for numeric data */
+.font-mono, 
+[class*="tabular-nums"],
+[class*="text-digit"] {
+  font-family: var(--font-mono) !important;
+}
+
 button[class*="bg-brand"], 
 button[class*="bg-emerald"] {
   background-color: var(--color-brand) !important;
