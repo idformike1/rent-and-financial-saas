@@ -30,6 +30,8 @@ const addLeaseSchema = z.object({
 type TenantForm = z.infer<typeof tenantSchema>
 type AddLeaseForm = z.infer<typeof addLeaseSchema>
 
+import LedgerTerminal from './LedgerTerminal'
+
 interface TenantProfileViewProps {
   tenant: { 
     id: string; 
@@ -51,9 +53,10 @@ interface TenantProfileViewProps {
     isPrimary: boolean;
   }[];
   charges: any[];
+  ledgerEntries: any[];
 }
 
-export default function TenantProfileView({ tenant, activeLeases, charges }: TenantProfileViewProps) {
+export default function TenantProfileView({ tenant, activeLeases, charges, ledgerEntries }: TenantProfileViewProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -321,87 +324,9 @@ export default function TenantProfileView({ tenant, activeLeases, charges }: Ten
            </div>
         </div>
 
-        {/* STEP 3.3: FORENSIC LEDGER TABLE */}
+        {/* STEP 3.3: DUAL-LENS LEDGER TERMINAL */}
         <div className="md:col-span-8 space-y-8">
-           <div className="bg-slate-950 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl">
-              <div className="px-12 py-10 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
-                 <h3 className="text-2xl font-black text-white flex items-center tracking-tighter uppercase italic leading-none">
-                    <ListChecks className="w-10 h-10 mr-6 text-brand" /> Forensic Fiscal Ledger
-                 </h3>
-                 <div className="flex items-center gap-4">
-                    <div className="h-3 w-3 rounded-full bg-brand shadow-[0_0_10px_rgba(var(--brand-rgb),0.5)] animate-pulse" />
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Verified History</span>
-                 </div>
-              </div>
-              <div className="overflow-x-auto">
-                 <table className="w-full text-left border-collapse">
-                    <thead>
-                       <tr className="border-b border-white/5 bg-white/[0.01]">
-                          <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest italic">Description</th>
-                          <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest italic text-center">Due Date</th>
-                          <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest italic text-center">Payment Date</th>
-                          <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest italic text-right">Amount</th>
-                          <th className="px-10 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest italic text-right">Status</th>
-                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                       {charges.length === 0 ? (
-                          <tr>
-                             <td colSpan={5} className="p-32 text-center">
-                                <AlertTriangle className="w-20 h-20 text-white/5 mx-auto mb-8" />
-                                <p className="text-slate-600 font-black uppercase italic tracking-[0.4em] text-xs">NO FISCAL ENGAGEMENTS DETECTED IN ARCHIVE</p>
-                             </td>
-                          </tr>
-                       ) : (
-                          charges.map((c) => {
-                             const isLate = c.paymentDate && new Date(c.paymentDate) > new Date(new Date(c.dueDate).getTime() + 5 * 24 * 60 * 60 * 1000);
-                             
-                             return (
-                               <tr key={c.id} className="group hover:bg-white/[0.02] transition-colors font-mono">
-                                  <td className="px-10 py-8">
-                                     <div className="flex items-center gap-6">
-                                        <div className="bg-slate-900 h-14 w-14 rounded-2xl flex items-center justify-center text-brand shadow-xl group-hover:scale-110 transition-transform border border-white/5">
-                                           <DollarSign className="w-6 h-6" />
-                                        </div>
-                                        <span className="font-black text-white text-sm uppercase tracking-tighter italic">{c.type}</span>
-                                     </div>
-                                  </td>
-                                  <td className="px-10 py-8 text-center">
-                                     <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{new Date(c.dueDate).toLocaleDateString()}</span>
-                                  </td>
-                                  <td className="px-10 py-8 text-center">
-                                     {(c.paymentDate && c.isFullyPaid) ? (
-                                       <span className={cn(
-                                         "text-[11px] font-black uppercase tracking-widest",
-                                         isLate ? "text-amber-500" : "text-emerald-500"
-                                       )}>
-                                         {new Date(c.paymentDate).toLocaleDateString()}
-                                       </span>
-                                     ) : (
-                                       <span className="text-[10px] font-black text-rose-500/40 uppercase tracking-widest">PENDING</span>
-                                     )}
-                                  </td>
-                                  <td className="px-10 py-8 text-right">
-                                     <span className="text-xl font-black text-white tracking-tighter italic tabular-nums">
-                                        ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                     </span>
-                                  </td>
-                                  <td className="px-10 py-8 text-right">
-                                     <ForensicBadge className={cn(
-                                        "bg-transparent border-2 text-[8px] font-black tracking-widest uppercase py-1 px-4 rounded-full",
-                                        c.isFullyPaid ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
-                                     )}>
-                                        {c.isFullyPaid ? 'SETTLED' : 'OUTSTANDING'}
-                                     </ForensicBadge>
-                                  </td>
-                               </tr>
-                             )
-                          })
-                       )}
-                    </tbody>
-                 </table>
-              </div>
-           </div>
+           <LedgerTerminal charges={charges} ledgerEntries={ledgerEntries} />
         </div>
       </div>
 

@@ -36,29 +36,13 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
       isPrimary: l.isPrimary
     }));
 
-  const forensicLedger = tenant.charges.map((c: any) => {
-    // Find the entry that matches this charge
-    const matchedEntry = tenant.ledgerEntries.find((e: any) => 
-       Math.abs(new Date(e.transactionDate).getTime() - new Date(c.dueDate).getTime()) < 30 * 24 * 60 * 60 * 1000
-    );
-
-    return {
-      id: c.id,
-      type: c.type,
-      amount: c.amount,
-      amountPaid: c.amountPaid,
-      dueDate: c.dueDate,
-      paymentDate: matchedEntry?.transactionDate || null,
-      isFullyPaid: c.isFullyPaid
-    };
-  });
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617]">
       <TenantProfileView 
         tenant={JSON.parse(JSON.stringify(tenantDTO))} 
         activeLeases={JSON.parse(JSON.stringify(activeLeases))}
-        charges={JSON.parse(JSON.stringify(forensicLedger))}
+        charges={JSON.parse(JSON.stringify(tenant.charges))}
+        ledgerEntries={JSON.parse(JSON.stringify(tenant.ledgerEntries))}
       />
     </div>
   );
