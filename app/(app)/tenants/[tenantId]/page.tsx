@@ -1,46 +1,28 @@
-import prisma from '@/lib/prisma'
-import { notFound } from 'next/navigation'
 import TenantProfileView from '@/app/(app)/tenants/[tenantId]/TenantProfileView'
+import { getTenantForensicDossier } from '@/actions/tenant-forensics.actions'
+import { notFound } from 'next/navigation'
 
 export default async function TenantProfilePage({ params }: { params: Promise<{ tenantId: string }> }) {
   const { tenantId } = await params;
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    include: {
-      leases: {
-        include: { unit: true },
-        orderBy: { startDate: 'desc' }
-      },
-      charges: {
-        where: { isFullyPaid: false },
-        orderBy: { dueDate: 'asc' }
-      }
-    }
-  });
-
-  if (!tenant) {
+  const res: any = await getTenantForensicDossier(tenantId);
+  if (!res.success || !res.data) {
     notFound();
   }
 
-  // Map to DTOs for the client component
+  const { tenant, integrityScore, stripChart } = res.data;
+
+  // DATA RECONSTRUCTION FOR V3.0 INTERFACE
   const tenantDTO = {
     id: tenant.id,
     name: tenant.name,
     email: tenant.email,
     phone: tenant.phone,
     nationalId: tenant.nationalId,
-    isDeleted: tenant.isDeleted
+    isDeleted: tenant.isDeleted,
+    integrityScore,
+    stripChart
   };
-
-  const chargesDTO = tenant.charges.map((c: any) => ({
-    id: c.id,
-    type: c.type,
-    amount: c.amount.toNumber(),
-    amountPaid: c.amountPaid.toNumber(),
-    dueDate: c.dueDate,
-    isFullyPaid: c.isFullyPaid
-  }));
 
   const activeLeases = tenant.leases
     .filter((l: any) => l.isActive)
@@ -48,18 +30,35 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
       id: l.id,
       unitId: l.unit.id,
       unitNumber: l.unit.unitNumber,
-      rentAmount: l.rentAmount.toNumber(),
+      rentAmount: l.rentAmount,
       startDate: l.startDate,
       endDate: l.endDate,
       isPrimary: l.isPrimary
     }));
 
+  const forensicLedger = tenant.charges.map((c: any) => {
+    // Find the entry that matches this charge
+    const matchedEntry = tenant.ledgerEntries.find((e: any) => 
+       Math.abs(new Date(e.transactionDate).getTime() - new Date(c.dueDate).getTime()) < 30 * 24 * 60 * 60 * 1000
+    );
+
+    return {
+      id: c.id,
+      type: c.type,
+      amount: c.amount,
+      amountPaid: c.amountPaid,
+      dueDate: c.dueDate,
+      paymentDate: matchedEntry?.transactionDate || null,
+      isFullyPaid: c.isFullyPaid
+    };
+  });
+
   return (
-    <div className="py-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617]">
       <TenantProfileView 
-        tenant={tenantDTO} 
-        activeLeases={activeLeases}
-        charges={chargesDTO}
+        tenant={JSON.parse(JSON.stringify(tenantDTO))} 
+        activeLeases={JSON.parse(JSON.stringify(activeLeases))}
+        charges={JSON.parse(JSON.stringify(forensicLedger))}
       />
     </div>
   );

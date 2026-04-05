@@ -55,6 +55,7 @@ model Tenant {
   organization   Organization  @relation(fields: [organizationId], references: [id])
   leases         Lease[]
   charges        Charge[]
+  ledgerEntries  LedgerEntry[]
 }
 
 model Lease {
@@ -169,13 +170,15 @@ model LedgerEntry {
   // Unified Wealth Ledger Upgrades
   expenseCategoryId String?
   propertyId        String?
+  tenantId          String?          @map("tenant_id")
   payee             String?
   receiptUrl        String?
-
+  
   organization      Organization     @relation(fields: [organizationId], references: [id])
   account           Account          @relation(fields: [accountId], references: [id])
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
+  tenant            Tenant?          @relation(fields: [tenantId], references: [id])
 
   @@index([organizationId, transactionDate])
 }

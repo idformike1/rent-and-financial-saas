@@ -23,6 +23,9 @@ export async function getAvailableUnits() {
         unitNumber: 'asc'
       }
     });
-    return units;
+    return JSON.parse(JSON.stringify(units.map(u => ({
+      ...u,
+      marketRent: Number(u.marketRent)
+    }))));
   });
 }

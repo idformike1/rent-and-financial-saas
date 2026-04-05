@@ -22,7 +22,11 @@ export default async function TenantsPage() {
       rentAmount: Number(lease.rentAmount),
       depositAmount: Number(lease.depositAmount),
       startDate: lease.startDate?.toISOString() || null,
-      endDate: lease.endDate?.toISOString() || null
+      endDate: lease.endDate?.toISOString() || null,
+      unit: {
+        ...lease.unit,
+        marketRent: Number(lease.unit.marketRent)
+      }
     }))
   }));
 
