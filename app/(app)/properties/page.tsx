@@ -13,9 +13,9 @@ export default async function PropertiesPage() {
 
   return (
     <div className="py-8 px-4 sm:px-6 h-full flex flex-col max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 border-b border-slate-100 pb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 border-b border-border pb-10">
         <div>
-          <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Portfolio Management</h1>
+          <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase">Portfolio Management</h1>
           <p className="text-slate-500 font-medium tracking-tight">Parent-level oversight of all managed physical assets.</p>
         </div>
       </div>

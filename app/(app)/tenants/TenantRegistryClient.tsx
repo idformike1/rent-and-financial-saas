@@ -31,14 +31,14 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
       </Card>
 
       {/* CORE REGISTRY: FINOVA TABLE STANDARD */}
-      <Card className="p-0 overflow-hidden border-none shadow-premium-lg rounded-[2.5rem] bg-white dark:bg-slate-900/40 backdrop-blur-xl transition-all duration-700">
+      <Card className="p-0 overflow-hidden border-none shadow-premium-lg rounded-[2.5rem] bg-card dark:bg-slate-900/40 backdrop-blur-xl transition-all duration-700">
         {filteredTenants.length === 0 ? (
           <div className="p-32 text-center space-y-8 animate-in fade-in zoom-in-95 duration-500">
             <div className="w-24 h-24 bg-rose-500/10 rounded-[2rem] flex items-center justify-center mx-auto border border-rose-500/20 shadow-2xl shadow-rose-500/10 hover:rotate-12 transition-transform">
                <ShieldAlert className="w-12 h-12 text-rose-500" />
             </div>
             <div>
-               <p className="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter leading-none">Identity Signal Lost</p>
+               <p className="text-3xl font-black text-foreground dark:text-white uppercase italic tracking-tighter leading-none">Identity Signal Lost</p>
                <p className="text-slate-400 text-[10px] mt-4 font-black tracking-[0.4em] uppercase max-w-sm mx-auto leading-relaxed">The search parameters yielded zero matches within the encrypted occupant registry.</p>
             </div>
             <Button variant="secondary" onClick={() => setSearchTerm('')} className="h-12 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest">Reset Scan Parameters</Button>
@@ -46,7 +46,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-slate-50/50 dark:bg-black/20 border-b border-slate-100 dark:border-white/5">
+              <thead className="bg-slate-50/50 dark:bg-black/20 border-b border-border dark:border-white/5">
                 <tr>
                   <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">Identity Protocol</th>
                   <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">Lease Portfolio</th>
@@ -68,7 +68,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
                           </div>
                           <div className="flex flex-col gap-1.5">
-                            <span className="text-xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter leading-none group-hover:text-brand transition-colors">{tenant.name}</span>
+                            <span className="text-xl font-black text-foreground dark:text-white uppercase italic tracking-tighter leading-none group-hover:text-brand transition-colors">{tenant.name}</span>
                             <div className="flex items-center gap-2.5">
                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                                <span className="text-[10px] font-bold text-slate-400 tracking-tight truncate max-w-[200px] uppercase font-mono">{tenant.email || 'PROTOCOL_NULL'}</span>
@@ -78,11 +78,11 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                       </td>
                       <td className="px-8 py-10">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+                          <div className="w-10 h-10 rounded-xl bg-[var(--primary-muted)]0/10 flex items-center justify-center text-[var(--primary)] border border-[var(--primary)]/20">
                              <Building className="w-5 h-5" />
                           </div>
                           <div>
-                            <span className="text-lg font-black text-slate-700 dark:text-slate-200 uppercase italic tracking-tighter leading-none">
+                            <span className="text-lg font-black text-slate-400 dark:text-slate-200 uppercase italic tracking-tighter leading-none">
                                 {primaryLease?.unit.unitNumber || 'UNASSIGNED'}
                             </span>
                             <p className="text-[9px] font-black text-slate-400 mt-1 uppercase tracking-widest leading-none line-clamp-1">{primaryLease?.unit.type || 'STAGING_NODE'}</p>
@@ -99,7 +99,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                       </td>
                       <td className="px-8 py-10 text-right">
                         <Link href={`/tenants/${tenant.id}`}>
-                           <button className="h-12 w-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-brand group-hover:text-white transition-all shadow-premium ring-1 ring-slate-100 dark:ring-white/5 border-none">
+                           <button className="h-12 w-12 rounded-3xl bg-card dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-brand group-hover:text-white transition-all shadow-premium ring-1 ring-slate-100 dark:ring-white/5 border-none">
                               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                            </button>
                         </Link>

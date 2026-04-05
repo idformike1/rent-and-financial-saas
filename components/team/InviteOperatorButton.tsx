@@ -40,7 +40,7 @@ export default function InviteOperatorButton() {
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white border-8 border-black p-8 w-full max-w-md shadow-[16px_16px_0px_0px_rgba(255,61,0,1)] relative">
+          <div className="bg-card border-8 border-black p-8 w-full max-w-md shadow-[16px_16px_0px_0px_rgba(255,61,0,1)] relative">
             <button 
               onClick={() => setIsOpen(false)}
               className="absolute -top-6 -right-6 bg-black text-white p-2 border-4 border-white hover:bg-[#FF3D00] transition-colors"
@@ -80,7 +80,7 @@ export default function InviteOperatorButton() {
               <button
                 disabled={isPending}
                 type="submit"
-                className="w-full bg-black text-white py-6 font-black uppercase tracking-[0.2em] text-xl border-4 border-black hover:bg-white hover:text-black transition-all disabled:opacity-50"
+                className="w-full bg-black text-white py-6 font-black uppercase tracking-[0.2em] text-xl border-4 border-black hover:bg-card hover:text-black transition-all disabled:opacity-50"
               >
                 {isPending ? "AUTHORIZING..." : "INITIATE INVITE"}
               </button>

@@ -86,7 +86,7 @@ export default function AccessControlTable({
               <td className="px-6 py-4 text-center">
                 <button
                   onClick={() => handleAction(() => toggleUserEditPermission(member.id, !member.canEdit), member.canEdit ? "User muzzled" : "User unmuzzled")}
-                  className={`inline-flex items-center justify-center p-2 rounded-lg border transition-all ${
+                  className={`inline-flex items-center justify-center p-2 rounded-xl border transition-all ${
                     member.canEdit 
                       ? 'border-brand/20 bg-brand/5 text-brand hover:bg-brand/10' 
                       : 'border-muted/20 bg-slate-100 dark:bg-slate-800 text-muted hover:text-foreground'
@@ -101,9 +101,9 @@ export default function AccessControlTable({
                 <button
                   onClick={() => handleAction(() => toggleUserActivation(member.id, !member.isActive), member.isActive ? "User identity suspended" : "User identity restored")}
                   disabled={member.id === currentUserId}
-                  className={`inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
                     member.isActive 
-                      ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10' 
+                      ? 'border-[var(--primary)]/20 bg-[var(--primary)]/5 text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-muted)]' 
                       : 'border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10'
                   }`}
                 >
@@ -120,7 +120,7 @@ export default function AccessControlTable({
                     }
                   }}
                   disabled={member.id === currentUserId}
-                  className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg border border-transparent hover:border-rose-500/20 transition-all disabled:opacity-30"
+                  className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-xl border border-transparent hover:border-rose-500/20 transition-all disabled:opacity-30"
                   title="Purge Identity"
                 >
                   <UserMinus size={18} />
@@ -131,7 +131,7 @@ export default function AccessControlTable({
         </tbody>
       </table>
       {isPending && (
-        <div className="absolute inset-0 bg-white/50 dark:bg-slate-950/50 flex items-center justify-center z-10 backdrop-blur-[1px]">
+        <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/50 flex items-center justify-center z-10 backdrop-blur-[1px]">
           <Loader2 className="w-8 h-8 text-brand animate-spin" />
         </div>
       )}

@@ -46,7 +46,7 @@ export default function LoginPage() {
              <div className="w-20 h-20 bg-brand/10 rounded-3xl flex items-center justify-center mx-auto mb-8 transition-all hover:rotate-12 hover:scale-110 shadow-premium">
                 <Zap className="w-10 h-10 text-brand fill-brand" />
              </div>
-             <h1 className="text-5xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Axiom <br/><span className="text-brand">Finova</span></h1>
+             <h1 className="text-5xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">Axiom <br/><span className="text-brand">Finova</span></h1>
              <p className="text-[10px] font-black uppercase tracking-[0.45em] text-slate-400 mt-4 leading-relaxed">Enterprise SaaS Terminal</p>
           </div>
 
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-rose-500/10 text-rose-600 dark:text-rose-400 p-5 rounded-2xl text-center text-[10px] font-black uppercase tracking-widest animate-in shake duration-500">
+              <div className="bg-rose-500/10 text-rose-600 dark:text-rose-400 p-5 rounded-3xl text-center text-[10px] font-black uppercase tracking-widest animate-in shake duration-500">
                 {error}
               </div>
             )}
@@ -107,7 +107,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="pt-10 border-t border-slate-100 dark:border-slate-800/50 flex justify-between items-center text-[9px] font-black text-slate-300 uppercase tracking-widest">
+          <div className="pt-10 border-t border-border dark:border-slate-800/50 flex justify-between items-center text-[9px] font-black text-slate-300 uppercase tracking-widest">
             <span className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-500" /> V.3.1 Secure Pipeline</span>
             <span>Ref: 0xFINOVA</span>
           </div>

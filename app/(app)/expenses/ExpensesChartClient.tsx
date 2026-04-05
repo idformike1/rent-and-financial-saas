@@ -7,7 +7,7 @@ const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'
 export default function ExpensesChartClient({ data }: { data: any[] }) {
   if (data.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center border-4 border-dashed border-slate-100 rounded-3xl">
+      <div className="h-full flex items-center justify-center border-4 border-dashed border-border rounded-3xl">
         <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">No Data Nodes Found</p>
       </div>
     );

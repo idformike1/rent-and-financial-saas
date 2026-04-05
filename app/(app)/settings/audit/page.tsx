@@ -23,7 +23,7 @@ export default async function AuditLogPage() {
       case 'CREATE':
       case 'INVITE':
       case 'ACTIVATE':
-        return 'bg-emerald-500 text-white shadow-[2px_2px_0px_0px_rgba(5,150,105,1)]';
+        return 'bg-[var(--primary)] text-white shadow-[0_0_12px_rgba(255,87,51,0.2)]';
       case 'UPDATE':
       case 'ROLE_CHANGE':
         return 'bg-amber-500 text-white shadow-[2px_2px_0px_0px_rgba(217,119,6,1)]';
@@ -56,7 +56,7 @@ export default async function AuditLogPage() {
 
         <div className="flex gap-4">
             <div className="bg-black text-white px-6 py-3 rounded-xl border-4 border-black text-[10px] font-black uppercase tracking-widest flex items-center italic">
-                <Activity className="w-4 h-4 mr-2 text-indigo-400 animate-pulse" /> Live Monitoring
+                <Activity className="w-4 h-4 mr-2 text-[var(--primary)] animate-pulse" /> Live Monitoring
             </div>
         </div>
       </div>
@@ -65,10 +65,10 @@ export default async function AuditLogPage() {
         {[
             { label: 'Capture Points', value: logs.length, icon: <Database /> },
             { label: 'Threat Identity', value: session.user.organizationName, icon: <UserIcon /> },
-            { label: 'Grid Status', value: 'NOMINAL', icon: <Activity className="text-emerald-500" /> },
+            { label: 'Grid Status', value: 'NOMINAL', icon: <Activity className="text-[var(--primary)]" /> },
             { label: 'Archive Depth', value: '100 ITEMS', icon: <Clock /> }
         ].map(s => (
-            <div key={s.label} className="bg-white border-4 border-black p-6 rounded-3xl flex flex-col justify-between shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+            <div key={s.label} className="bg-card border-4 border-black p-6 rounded-3xl flex flex-col justify-between shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
                 <div className="text-zinc-400 font-bold text-[9px] uppercase tracking-widest flex items-center justify-between">
                     {s.label} {s.icon}
                 </div>
@@ -77,12 +77,12 @@ export default async function AuditLogPage() {
         ))}
       </div>
 
-      <div className="bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] rounded-[40px] overflow-hidden">
+      <div className="bg-card border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] rounded-[40px] overflow-hidden">
         <div className="bg-black text-white p-6 flex justify-between items-center italic">
             <span className="text-xs font-black uppercase tracking-widest">Chronological Forensic Feed</span>
             <div className="relative group">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-                <input type="text" placeholder="QUERY UUID OR ACTION..." className="bg-zinc-900 border-2 border-zinc-700 rounded-lg px-10 py-2 text-[10px] uppercase font-black tracking-widest outline-none focus:border-indigo-500 w-64 transition-all" />
+                <input type="text" placeholder="QUERY UUID OR ACTION..." className="bg-zinc-900 border-2 border-zinc-700 rounded-xl px-10 py-2 text-[10px] uppercase font-black tracking-widest outline-none focus:border-indigo-500 w-64 transition-all" />
             </div>
         </div>
         <div className="overflow-x-auto">
@@ -111,7 +111,7 @@ export default async function AuditLogPage() {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center font-black text-indigo-600 text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="w-8 h-8 rounded-xl bg-[var(--primary-muted)] flex items-center justify-center font-black text-[var(--primary)] text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                             {log.user.name?.[0].toUpperCase()}
                         </div>
                         <div className="flex flex-col">
@@ -121,7 +121,7 @@ export default async function AuditLogPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] italic ${getBadgeColor(log.action)}`}>
+                      <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] italic ${getBadgeColor(log.action)}`}>
                         {log.action}
                       </span>
                     </td>
@@ -138,7 +138,7 @@ export default async function AuditLogPage() {
                     <td className="px-8 py-6">
                       <div className="max-w-xs">
                          <div className="bg-black text-[9px] font-mono p-3 rounded-xl border-2 border-zinc-800 shadow-[4px_4px_0px_0px_rgba(79,70,229,1)] overflow-hidden">
-                            <pre className="text-indigo-400 leading-tight">
+                            <pre className="text-[var(--primary)] leading-tight">
                                 {JSON.stringify(log.metadata, null, 2) || '{}'}
                             </pre>
                          </div>

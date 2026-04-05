@@ -93,7 +93,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
     "flex items-center space-x-4 p-6 rounded-3xl border transition-all cursor-pointer",
     active 
       ? "bg-slate-900 text-white border-slate-900 shadow-brand/20 shadow-premium translate-x-1 translate-y-1" 
-      : "bg-white text-slate-900 border-slate-100 hover:bg-slate-50 shadow-premium"
+      : "bg-card text-foreground border-border hover:bg-slate-50 shadow-premium"
   );
 
   return (
@@ -102,10 +102,10 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
         {reports.map((r) => (
           <label key={r.id} className={btnClass(selectedReport === r.id)}>
             <input type="radio" value={r.id} {...register('reportType')} className="hidden" />
-            <div className={`p-4 rounded-xl ${selectedReport === r.id ? 'bg-indigo-600' : 'bg-slate-50'}`}>{r.icon}</div>
+            <div className={`p-4 rounded-xl ${selectedReport === r.id ? 'bg-[var(--primary)]' : 'bg-slate-50'}`}>{r.icon}</div>
             <div className="flex flex-col">
                 <span className="text-sm font-black uppercase italic tracking-tighter leading-none mb-1">{r.name}</span>
-                <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${selectedReport === r.id ? 'text-indigo-200' : 'text-slate-400'}`}>{r.desc}</span>
+                <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${selectedReport === r.id ? 'text-[var(--primary)]' : 'text-slate-400'}`}>{r.desc}</span>
             </div>
           </label>
         ))}
@@ -113,14 +113,14 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 
       <Card variant="glass" className="p-10 rounded-[2.5rem]">
         <h3 className="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center underline decoration-8 decoration-indigo-100 underline-offset-8">
-            <Activity className="w-6 h-6 mr-3 text-indigo-600" /> Analysis Parameter Configuration
+            <Activity className="w-6 h-6 mr-3 text-[var(--primary)]" /> Analysis Parameter Configuration
         </h3>
 
         <form onSubmit={handleSubmit(onGenerate)} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
             {selectedReport !== 'RENT_ROLL' && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Audit Interval</label>
-                    <select {...register('dateRange')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <select {...register('dateRange')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-border dark:border-slate-800 rounded-3xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="YTD">CURRENT FISCAL YTD</option>
                         <option value="LAST_YEAR">PRECEDING FISCAL YEAR</option>
                         <option value="ALL_TIME">HISTORICAL ARCHIVE</option>
@@ -131,7 +131,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {selectedReport !== 'TAX_PREPARATION' && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Governance Scope</label>
-                    <select {...register('scope')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <select {...register('scope')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-border dark:border-slate-800 rounded-3xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="GLOBAL">PORTFOLIO GLOBAL</option>
                         <option value="PROPERTY">BUSINESS (PROPERTY)</option>
                         <option value="HOME">RESIDENTIAL (HOME)</option>
@@ -143,7 +143,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {(selectedScope === 'PROPERTY' || selectedReport === 'TAX_PREPARATION' || selectedReport === 'RENT_ROLL') && (
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Asset Specific Identifier</label>
-                    <select {...register('propertyId')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <select {...register('propertyId')} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-border dark:border-slate-800 rounded-3xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="">SELECT PROPERTY</option>
                         {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
@@ -154,9 +154,9 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
                 type="submit" 
                 variant="primary"
                 disabled={isGenerating}
-                className="w-full h-14 rounded-2xl shadow-brand/20 tracking-[0.2em] text-[11px] italic"
+                className="w-full h-14 rounded-3xl shadow-brand/20 tracking-[0.2em] text-[11px] italic"
             >
-                {isGenerating ? <Loader2 className="w-5 h-5 animate-spin text-indigo-400" /> : <Database className="w-5 h-5 mr-3 text-indigo-400 group-hover:rotate-12 transition-transform" /> }
+                {isGenerating ? <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" /> : <Database className="w-5 h-5 mr-3 text-[var(--primary)] group-hover:rotate-12 transition-transform" /> }
                 {isGenerating ? "MATERIALIZING ANALYTICS" : "Launch Engine Analysis"}
             </Button>
         </form>
@@ -183,24 +183,24 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 }
 
 function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, onShare: () => void, isSharing: boolean, onDrillDown: (cat: string) => void }) {
-    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 dark:border-slate-800";
+    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-border dark:border-slate-800";
     const cellClass = "px-6 py-5 text-sm font-bold text-black uppercase italic tracking-tighter border-b border-zinc-100";
 
     return (
         <Card variant="glass" className="p-12 rounded-[2.5rem] space-y-12 shadow-premium-lg">
-            <div className="flex justify-between items-center pb-12 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex justify-between items-center pb-12 border-b border-border dark:border-slate-800">
                 <div className="space-y-1">
                     <h3 className="text-3xl font-black italic uppercase tracking-tighter">
-                       Materialized Record: <span className="text-indigo-600">{data.type} ARCHIVE</span>
+                       Materialized Record: <span className="text-[var(--primary)]">{data.type} ARCHIVE</span>
                     </h3>
                     <p className="text-[10px] font-black uppercase text-zinc-400 tracking-[0.3em]">Governance Timestamp: {new Date().toISOString()}</p>
                 </div>
                 <div className="flex gap-4">
-                    <Button onClick={onShare} disabled={isSharing} variant="primary" className="px-8 py-4 rounded-2xl text-[10px] italic">
+                    <Button onClick={onShare} disabled={isSharing} variant="primary" className="px-8 py-4 rounded-3xl text-[10px] italic">
                         {isSharing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Share2 className="w-4 h-4 mr-2" />} 
                         Generate Share Link
                     </Button>
-                    <Button variant="secondary" className="px-8 py-4 rounded-2xl text-[10px] italic bg-slate-900 text-white border-none">
+                    <Button variant="secondary" className="px-8 py-4 rounded-3xl text-[10px] italic bg-slate-900 text-white border-none">
                         <Download className="w-4 h-4 mr-2" /> PDF Export
                     </Button>
                 </div>
@@ -209,13 +209,13 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
             {data.type === 'PL' && (
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-8 rounded-3xl">
+                        <div className="bg-slate-50 dark:bg-slate-900/50 border border-border dark:border-slate-800 p-8 rounded-3xl">
                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
-                             <p className="text-3xl font-black text-slate-900 dark:text-white italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
+                             <p className="text-3xl font-black text-foreground dark:text-white italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
                         </div>
-                        <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 p-8 rounded-3xl">
+                        <div className="bg-[var(--primary-muted)] dark:bg-[var(--primary-muted)] border border-[var(--primary)]/20 dark:border-[var(--primary)]/20 p-8 rounded-3xl">
                              <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
-                             <p className="text-3xl font-black text-emerald-900 dark:text-emerald-400 italic tracking-tighter">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
+                             <p className="text-3xl font-black text-emerald-900 dark:text-[var(--primary)] italic tracking-tighter">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
                         </div>
                         <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800 p-8 rounded-3xl">
                              <p className="text-[9px] font-black text-rose-700 uppercase tracking-widest mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
@@ -258,11 +258,11 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                         <div>
                            <h4 className="text-xs font-black uppercase text-zinc-400 mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Efficiency & Yield Ratios</h4>
                            <div className="space-y-4">
-                              <div className="p-6 border-4 border-black rounded-2xl flex justify-between items-center bg-zinc-50">
+                              <div className="p-6 border-4 border-black rounded-3xl flex justify-between items-center bg-zinc-50">
                                   <span className="text-[10px] font-black uppercase italic">Operating Expense Ratio (OER)</span>
                                   <span className="text-xl font-black italic">{data.payload.metrics.operatingExpenseRatio.toFixed(2)}%</span>
                               </div>
-                              <div className="p-6 border-4 border-black rounded-2xl flex justify-between items-center">
+                              <div className="p-6 border-4 border-black rounded-3xl flex justify-between items-center">
                                   <span className="text-[10px] font-black uppercase italic">Vacancy Impact Score</span>
                                   <span className="text-xl font-black italic text-red-600">{( (data.payload.revenue.vacancyLoss / data.payload.revenue.grossPotentialRent) * 100 || 0).toFixed(2)}%</span>
                               </div>
@@ -298,7 +298,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                                 {isUnpaid ? (
                                                     <span className="bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] animate-pulse">VAL_DELINQUENT</span>
                                                 ) : (
-                                                    <span className="bg-green-100 text-green-700 text-[8px] font-black px-2 py-1 rounded">GOV_STABLE</span>
+                                                    <span className="bg-[var(--primary-muted)] text-[var(--primary)] text-[8px] font-black px-2 py-1 rounded">GOV_STABLE</span>
                                                 )}
                                                 {l.rentAmount < 1000 && <span className="bg-yellow-400 text-black text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">VAC_WARNING</span>}
                                             </div>
@@ -313,15 +313,15 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
 
             {data.type === 'TAX' && (
                 <div className="space-y-8">
-                     <div className="p-8 border-4 border-indigo-600 rounded-3xl bg-indigo-50 flex items-center justify-between">
+                     <div className="p-8 border-4 border-[var(--primary)] rounded-3xl bg-[var(--primary)] flex items-center justify-between">
                          <div className="flex items-center gap-4">
-                            <div className="p-4 bg-indigo-600 text-white rounded-2xl"><FileText className="w-8 h-8" /></div>
+                            <div className="p-4 bg-[var(--primary)] text-white rounded-3xl"><FileText className="w-8 h-8" /></div>
                             <div>
                                 <h4 className="text-sm font-black uppercase italic italic tracking-tighter">IRC Section 162 Compliance Engine</h4>
-                                <p className="text-[10px] font-bold text-indigo-400 uppercase">Automated Deductible Mapping Phase Active</p>
+                                <p className="text-[10px] font-bold text-[var(--primary)] uppercase">Automated Deductible Mapping Phase Active</p>
                             </div>
                          </div>
-                         <button className="bg-black text-white text-[10px] font-black px-8 py-4 rounded-2xl hover:bg-indigo-600 transition-all uppercase tracking-widest italic">
+                         <button className="bg-black text-white text-[10px] font-black px-8 py-4 rounded-3xl hover:bg-[var(--primary)] transition-all uppercase tracking-widest italic">
                             Verify Deductions
                          </button>
                      </div>

@@ -65,7 +65,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
   }
 
   return (
-    <div className="border-4 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+    <div className="border-4 border-black bg-card overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       <table className="w-full text-left border-collapse">
         <thead className="bg-black text-white uppercase text-xs tracking-widest font-black">
           <tr>
@@ -100,7 +100,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
               <td className="p-4 text-center border-r-2 border-black">
                 <button 
                   onClick={() => handleToggleEdit(user.id, user.canEdit)}
-                  className={`p-2 border-2 border-black transition-all ${user.canEdit ? 'bg-black text-white' : 'bg-white text-zinc-300'}`}
+                  className={`p-2 border-2 border-black transition-all ${user.canEdit ? 'bg-black text-white' : 'bg-card text-zinc-300'}`}
                   title={user.canEdit ? "Can Edit (Shield Active)" : "View-Only (Muzzled)"}
                 >
                   <Shield size={18} fill={user.canEdit ? "white" : "none"} />
@@ -110,7 +110,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 <button 
                   disabled={user.id === currentUserId}
                   onClick={() => handleToggleActive(user.id, user.isActive)}
-                  className={`p-2 border-2 border-black transition-all ${user.isActive ? 'bg-green-500 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-red-500 text-white opacity-50'} disabled:opacity-20`}
+                  className={`p-2 border-2 border-black transition-all ${user.isActive ? 'bg-[var(--primary-muted)] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-red-500 text-white opacity-50'} disabled:opacity-20`}
                 >
                   <Power size={18} />
                 </button>
@@ -132,7 +132,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
       {/* Delete Confirmation Modal */}
       {deleteModal.open && deleteModal.user && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-white border-8 border-black p-8 max-w-md w-full shadow-[16px_16px_0px_0px_rgba(255,0,0,0.5)]">
+          <div className="bg-card border-8 border-black p-8 max-w-md w-full shadow-[16px_16px_0px_0px_rgba(255,0,0,0.5)]">
             <div className="flex justify-between items-start mb-6">
               <h2 className="text-3xl font-black uppercase tracking-tighter leading-none italic text-red-600">
                 NUCLEAR STRIKE

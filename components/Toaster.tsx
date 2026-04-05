@@ -26,14 +26,14 @@ export default function Toaster() {
           key={t.id} 
           className={`
             pointer-events-auto
-            flex items-center gap-4 p-5 rounded-2xl shadow-premium backdrop-blur-md border border-white/10
+            flex items-center gap-4 p-5 rounded-3xl shadow-premium backdrop-blur-md border border-white/10
             animate-in slide-in-from-right-full duration-500
-            ${t.type === 'success' ? 'bg-emerald-600 text-white shadow-emerald-500/20' : ''}
+            ${t.type === 'success' ? 'bg-[var(--primary)] text-white shadow-[var(--primary)]/20' : ''}
             ${t.type === 'error' ? 'bg-rose-600 text-white shadow-rose-500/20' : ''}
-            ${t.type === 'info' ? 'bg-blue-600 text-white shadow-blue-500/20' : ''}
+            ${t.type === 'info' ? 'glass-panel text-white' : ''}
           `}
         >
-          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-xl bg-white/20">
+          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-xl bg-card/20">
             {t.type === 'success' && <CheckCircle2 className="w-6 h-6 text-white" />}
             {t.type === 'error' && <AlertCircle className="w-6 h-6 text-white" />}
             {t.type === 'info' && <Info className="w-6 h-6 text-white" />}
@@ -45,7 +45,7 @@ export default function Toaster() {
           </div>
           <button 
             onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
-            className="absolute top-4 right-4 p-1 hover:bg-white/10 rounded-lg transition-colors"
+            className="absolute top-4 right-4 p-1 hover:bg-white/5 rounded-xl transition-colors"
           >
             <X className="w-4 h-4 text-white/60 hover:text-white transition-colors" />
           </button>

@@ -18,10 +18,10 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
   return (
     <div className="flex flex-col md:flex-row gap-8">
       {/* Left Column: Profile */}
-      <div className="w-full md:w-1/3 bg-white border border-slate-200 shadow-sm sm:rounded-lg p-6 h-fit">
+      <div className="w-full md:w-1/3 bg-card border border-border shadow-premium sm:rounded-xl p-6 h-fit">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">{tenant.name}</h2>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 uppercase tracking-wide">
+          <h2 className="text-xl font-bold text-white">{tenant.name}</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-[var(--primary-muted)] text-[var(--primary)] uppercase tracking-wider border border-[var(--primary)]/20">
             Active
           </span>
         </div>
@@ -29,7 +29,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
         <div className="space-y-4">
           <button 
             onClick={() => setDrawerOpen(true)}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors"
+            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,#E64A19)] text-white shadow-premium flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Receive Payment
@@ -38,9 +38,9 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
       </div>
 
       {/* Right Column: Ledger / Charges */}
-      <div className="w-full md:w-2/3 bg-white border border-slate-200 shadow-sm sm:rounded-lg overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-          <h3 className="text-lg leading-6 font-medium text-slate-900 flex items-center">
+      <div className="w-full md:w-2/3 bg-card border border-border shadow-premium sm:rounded-xl overflow-hidden">
+        <div className="px-6 py-5 border-b border-border flex justify-between items-center bg-slate-50">
+          <h3 className="text-lg leading-6 font-medium text-foreground flex items-center">
             <FileText className="mr-2 h-5 w-5 text-slate-500" />
             Outstanding Charges
           </h3>
@@ -59,7 +59,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
               <li key={charge.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-900 truncate uppercase tracking-wider">
+                    <p className="text-sm font-medium text-foreground truncate uppercase tracking-wider">
                       {charge.type}
                     </p>
                     <p className="text-xs text-slate-500 mt-1">
@@ -67,7 +67,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-foreground">
                       ${(charge.amount - charge.amountPaid).toFixed(2)}
                     </p>
                   </div>

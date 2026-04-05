@@ -6,11 +6,8 @@ import { cn } from '@/lib/utils'
 export { cn }
 
 /**
- * AXIOM 2026: CARD (QUIET CONFIDENCE STANDARD)
- * Implements Glassmorphism, backdrop-blur-xl, and subtle 1px border.
- */
-/**
- * AXIOM 2026: CARD (V3 CINEMATIC GLASS)
+ * AXIOM 2026: CARD (SLATE & EMBER — V3 SOVEREIGN)
+ * Glass surface, 3xl radius, subtle ember depth.
  */
 interface CardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   children: React.ReactNode;
@@ -18,17 +15,17 @@ interface CardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   isHoverable?: boolean;
 }
 
-export function Card({ 
-  children, 
-  className, 
-  variant = 'glass', 
+export function Card({
+  children,
+  className,
+  variant = 'glass',
   isHoverable = false,
-  ...props 
+  ...props
 }: CardProps) {
   const variants = {
     glass: "glass-panel shadow-2xl",
-    outline: "bg-transparent border border-white/10",
-    flat: "bg-white/5 border-none",
+    outline: "bg-transparent border border-white/5",
+    flat: "bg-white/30 border-none",
   };
 
   return (
@@ -36,9 +33,9 @@ export function Card({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={isHoverable ? { y: -5, transition: { duration: 0.3 } } : undefined}
+      whileHover={isHoverable ? { y: -4, transition: { duration: 0.3 } } : undefined}
       className={cn(
-        "rounded-[2.5rem] p-10 transition-all duration-500",
+        "rounded-3xl p-8 transition-all duration-500",
         variants[variant],
         className
       )}
@@ -50,7 +47,8 @@ export function Card({
 }
 
 /**
- * AXIOM 2026: BUTTON (V3 PILL)
+ * AXIOM 2026: BUTTON (SLATE & EMBER — PILL SOVEREIGN)
+ * Primary = Ember glow. Every button rounded-full.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -58,40 +56,40 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-export function Button({ 
-  children, 
-  className, 
-  variant = 'primary', 
-  size = 'md', 
-  isLoading, 
-  ...props 
+export function Button({
+  children,
+  className,
+  variant = 'primary',
+  size = 'md',
+  isLoading,
+  ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-brand text-white hover:bg-brand/90 shadow-lg shadow-brand/20 glow-orange border-none",
-    secondary: "bg-white/5 text-white hover:bg-white/10 border border-white/10",
-    ghost: "bg-transparent text-slate-400 hover:text-white hover:bg-white/5",
-    danger: "bg-rose-500 text-white hover:bg-rose-600 shadow-lg shadow-rose-500/20",
+    primary: "bg-[var(--primary)] text-white hover:bg-[var(--primary-dark,#E64A19)] shadow-[0_0_15px_rgba(255,87,51,0.2)] hover:shadow-[0_0_25px_rgba(255,87,51,0.35)] border-none glow-primary",
+    secondary: "bg-white/3 text-white hover:bg-white/5 border border-white/10",
+    ghost: "bg-transparent text-[var(--muted)] hover:text-white hover:bg-white/3",
+    danger: "bg-[#F43F5E] text-white hover:bg-[#E11D48] shadow-[0_0_15px_rgba(244,63,94,0.2)]",
   };
 
   const sizes = {
-    sm: "px-6 py-2.5 text-meta",
-    md: "px-10 py-4 text-xs font-black tracking-tight",
-    lg: "px-12 py-5 text-sm font-black"
+    sm:  "px-5 py-2 text-[10px] font-black tracking-widest",
+    md:  "px-8 py-3.5 text-[11px] font-black tracking-widest",
+    lg:  "px-10 py-4 text-xs font-black tracking-widest"
   };
 
   return (
-    <button 
+    <button
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-all duration-300 active:scale-[0.96] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest leading-none",
+        "inline-flex items-center justify-center rounded-full transition-all duration-300 active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none uppercase leading-none",
         variants[variant],
         sizes[size],
         className
       )}
-      disabled={isLoading}
+      disabled={isLoading || props.disabled}
       {...props}
     >
       {isLoading && (
-        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
+        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2.5" />
       )}
       {children}
     </button>
@@ -99,30 +97,42 @@ export function Button({
 }
 
 /**
- * AXIOM 2026: LABEL (SOFT TEXT)
+ * AXIOM 2026: LABEL (SOFT METADATA)
  */
 export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <label className={cn("text-sm font-medium text-zinc-300 block mb-2", className)}>
+    <label className={cn("text-sm font-semibold text-[var(--muted)] block mb-2 uppercase tracking-wider text-[10px]", className)}>
       {children}
     </label>
   )
 }
 
 /**
- * AXIOM 2026: BADGE (DATA DENSITY)
+ * AXIOM 2026: BADGE (DATA DENSITY — EMBER STANDARD)
+ * All status badges align to Ember palette or neutral Slate.
  */
-export function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' }) {
+export function Badge({
+  children,
+  className,
+  variant = 'default'
+}: {
+  children: React.ReactNode,
+  className?: string,
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' | 'primary'
+}) {
   const variants = {
-    default: "bg-white/5 text-slate-400 border border-white/10",
-    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold",
+    default: "bg-white/3 text-[var(--muted)] border border-white/10",
+    // Ember-tinted for primary/brand actions
+    primary: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
+    brand:   "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
+    // Status semantics — kept distinct for data clarity
+    success: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
     warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold",
-    danger: "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
-    brand: "bg-brand/10 text-brand border border-brand/20 font-bold",
+    danger:  "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
   };
 
   return (
-    <span className={cn("px-4 py-1.5 rounded-full text-[10px] uppercase font-black tracking-widest inline-flex items-center gap-1.5", variants[variant], className)}>
+    <span className={cn("px-3 py-1 rounded-full text-[9px] uppercase font-black tracking-widest inline-flex items-center gap-1.5", variants[variant], className)}>
       {children}
     </span>
   )
@@ -133,9 +143,9 @@ export function Badge({ children, className, variant = 'default' }: { children: 
  */
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <input 
+    <input
       className={cn(
-        "w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:border-brand/50 outline-none transition-all duration-500 text-white placeholder:text-slate-500 focus:bg-white/10",
+        "w-full bg-card/[0.03] border border-[var(--border)] rounded-xl px-5 py-3.5 text-sm focus:border-[var(--primary)]/50 focus:ring-2 focus:ring-[var(--primary)]/10 outline-none transition-all duration-300 text-white placeholder:text-[var(--muted)]",
         className
       )}
       {...props}
@@ -143,9 +153,8 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   )
 }
 
-
 /**
- * AXIOM 2026: ROLLING COUNTER (ANALYTICAL DOMINANCE)
+ * AXIOM 2026: ROLLING COUNTER (FINANCIAL TELEMETRY)
  */
 export function RollingCounter({ value, prefix = "", suffix = "" }: { value: number, prefix?: string, suffix?: string }) {
   const [displayValue, setDisplayValue] = React.useState(0);
@@ -169,7 +178,7 @@ export function RollingCounter({ value, prefix = "", suffix = "" }: { value: num
   }, [value]);
 
   return (
-    <span className="font-black italic tracking-tighter">
+    <span className="font-black tracking-tighter">
       {prefix}{displayValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{suffix}
     </span>
   );

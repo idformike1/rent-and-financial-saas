@@ -125,11 +125,11 @@ export default function OnboardingWizard() {
   if (step === 4) {
     return (
       <div className="max-w-3xl mx-auto py-12 px-6 animate-in zoom-in-95 duration-500">
-        <Card className="p-16 text-center space-y-12 rounded-[4rem] border-none shadow-premium-lg bg-white/80 backdrop-blur-xl">
-          <div className="w-24 h-24 bg-emerald-50 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-premium-sm">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+        <Card className="p-16 text-center space-y-12 rounded-[4rem] border-none shadow-premium-lg bg-card/80 backdrop-blur-xl">
+          <div className="w-24 h-24 bg-[var(--primary-muted)] rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-premium-sm">
+            <CheckCircle2 className="w-12 h-12 text-[var(--primary)]" />
           </div>
-          <h2 className="text-5xl font-black italic tracking-tighter uppercase text-slate-900 border-b-2 border-slate-50 pb-10">Materialized</h2>
+          <h2 className="text-5xl font-black italic tracking-tighter uppercase text-foreground border-b-2 border-slate-50 pb-10">Materialized</h2>
           <p className="text-slate-500 font-medium text-lg leading-relaxed max-w-lg mx-auto">The agreement and master ledger entries have been successfully cashed into the registry.</p>
           
           <div className="bg-slate-900 rounded-[2.5rem] p-10 text-left space-y-8 relative overflow-hidden shadow-2xl">
@@ -140,13 +140,13 @@ export default function OnboardingWizard() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
                      <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Fiscal Lease Identifier</p>
-                     <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+                     <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
                         <p className="font-mono text-sm text-white truncate font-bold">{successData?.leaseId}</p>
                      </div>
                   </div>
                   <div className="space-y-3">
                      <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Master Tenant Hash</p>
-                     <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+                     <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
                         <p className="font-mono text-sm text-white truncate font-bold">{successData?.tenantId}</p>
                      </div>
                   </div>
@@ -160,7 +160,7 @@ export default function OnboardingWizard() {
             </Button>
             <button 
                onClick={() => { reset(); setStep(1); }} 
-               className="h-14 rounded-2xl font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center group"
+               className="h-14 rounded-3xl font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center group"
             >
                <AlertCircle className="w-4 h-4 mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                Reset Activation Wizard
@@ -174,11 +174,11 @@ export default function OnboardingWizard() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-6">
       <div className="mb-16 flex items-center gap-6">
-         <div className="w-14 h-14 bg-brand rounded-2xl flex items-center justify-center shadow-premium group-hover:rotate-12 transition-transform">
+         <div className="w-14 h-14 bg-brand rounded-3xl flex items-center justify-center shadow-premium group-hover:rotate-12 transition-transform">
             <Zap className="w-7 h-7 text-white fill-white" />
          </div>
          <div>
-            <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 uppercase leading-none">Activation <span className="text-brand">Wizard</span></h1>
+            <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase leading-none">Activation <span className="text-brand">Wizard</span></h1>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Enterprise Provisioning v3.1</p>
          </div>
       </div>
@@ -187,14 +187,14 @@ export default function OnboardingWizard() {
          <div className="absolute left-12 right-12 top-7 h-0.5 bg-slate-100 -z-0" />
          {[User, DollarSign, CheckCircle2].map((Icon, i) => (
            <div key={i} className="relative z-10">
-              <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center transition-all duration-300 ${step > i + 1 ? 'bg-slate-900 border-slate-900 text-white' : step === i + 1 ? 'bg-brand border-brand text-white shadow-premium' : 'bg-white border-slate-100 text-slate-200'}`}>
+              <div className={`w-14 h-14 rounded-3xl border-2 flex items-center justify-center transition-all duration-300 ${step > i + 1 ? 'bg-slate-900 border-slate-900 text-white' : step === i + 1 ? 'bg-brand border-brand text-white shadow-premium' : 'bg-card border-border text-slate-200'}`}>
                  <Icon className="w-6 h-6" />
               </div>
            </div>
          ))}
       </div>
 
-      <Card className="rounded-[3rem] border-none shadow-premium-lg overflow-hidden bg-white">
+      <Card className="rounded-[3rem] border-none shadow-premium-lg overflow-hidden bg-card">
         <form onSubmit={handleSubmit(onSubmit)} className="p-12 space-y-12">
           {step === 1 && (
             <div className="space-y-10 animate-in slide-in-from-right-8 duration-500">
@@ -227,7 +227,7 @@ export default function OnboardingWizard() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="md:col-span-2 space-y-4">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Allocation</label>
-                     <select {...register('unitId')} className={cn("w-full bg-slate-50 border-2 rounded-2xl px-6 py-5 font-black text-lg h-16 outline-none appearance-none focus:ring-2 focus:ring-brand", errors.unitId ? 'border-rose-500' : 'border-slate-100')}>
+                     <select {...register('unitId')} className={cn("w-full bg-slate-50 border-2 rounded-3xl px-6 py-5 font-black text-lg h-16 outline-none appearance-none focus:ring-2 focus:ring-brand", errors.unitId ? 'border-rose-500' : 'border-border')}>
                         <option value="">Select Target Unit</option>
                         {units.map(u => <option key={u.id} value={u.id}>Unit {u.unitNumber} // {u.type}</option>)}
                      </select>
@@ -260,12 +260,12 @@ export default function OnboardingWizard() {
                      <span className="text-4xl font-black italic tracking-tighter text-white">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                   </div>
                </Card>
-               {serverError && <div className="bg-rose-50 p-6 rounded-2xl border-l-8 border-rose-500 text-rose-600 font-bold text-xs uppercase">{serverError}</div>}
+               {serverError && <div className="bg-rose-50 p-6 rounded-3xl border-l-8 border-rose-500 text-rose-600 font-bold text-xs uppercase">{serverError}</div>}
             </div>
           )}
 
           {serverError && (
-            <div className="bg-rose-500/10 border-2 border-rose-500 p-6 rounded-2xl flex items-center gap-4 text-rose-500 animate-in shake duration-500">
+            <div className="bg-rose-500/10 border-2 border-rose-500 p-6 rounded-3xl flex items-center gap-4 text-rose-500 animate-in shake duration-500">
                <AlertCircle className="w-5 h-5 flex-shrink-0" />
                <p className="text-[10px] font-black uppercase tracking-widest">{serverError}</p>
             </div>
@@ -273,13 +273,13 @@ export default function OnboardingWizard() {
 
           <div className="flex justify-between items-center pt-10 border-t border-slate-50">
              {step > 1 ? (
-               <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center transition-colors"><ChevronLeft className="w-4 h-4 mr-2" /> Reverse</button>
+               <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground flex items-center transition-colors"><ChevronLeft className="w-4 h-4 mr-2" /> Reverse</button>
              ) : <div />}
              
              {step < 3 ? (
-               <Button type="button" variant="primary" onClick={nextStep} className="px-10 h-16 rounded-2xl font-black uppercase italic tracking-tighter shadow-brand/40">Proceed <ChevronRight className="w-4 h-4 ml-2" /></Button>
+               <Button type="button" variant="primary" onClick={nextStep} className="px-10 h-16 rounded-3xl font-black uppercase italic tracking-tighter shadow-brand/40">Proceed <ChevronRight className="w-4 h-4 ml-2" /></Button>
              ) : (
-               <Button type="submit" variant="primary" disabled={isSubmitting} className="px-12 h-16 rounded-2xl font-black uppercase italic tracking-tighter bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/40">
+               <Button type="submit" variant="primary" disabled={isSubmitting} className="px-12 h-16 rounded-3xl font-black uppercase italic tracking-tighter bg-[var(--primary)] hover:bg-[var(--primary)] shadow-[var(--primary)]/20">
                   {isSubmitting ? (
                     <div className="flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" /> Provisioning...</div>
                   ) : 'Activate Tenancy'}

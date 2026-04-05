@@ -42,7 +42,7 @@ const TRANSLATION_MAP: TranslationNode[] = [
     axiom_model: "LedgerEntry (categoryId → FinancialLedger.class: 'REVENUE')",
     axiom_fields: ['LedgerEntry.amount', 'FinancialLedger.name: "RENTAL INCOME"', 'Account.category: INCOME'],
     server_actions: ['actions/ledger.actions.ts::processPayment', 'actions/reports.actions.ts::generateGAAPSnpashot'],
-    color_css: 'bg-emerald-500',
+    color_css: 'bg-[var(--primary)]',
     icon: TrendingUp,
     category: 'REVENUE'
   },
@@ -53,7 +53,7 @@ const TRANSLATION_MAP: TranslationNode[] = [
     axiom_model: 'Tenant.Lease.Charges (Aggregate Unpaid Balance)',
     axiom_fields: ['Charge.amount - Charge.amountPaid', 'Charge.isFullyPaid: false', 'Lease.isActive: true'],
     server_actions: ['actions/tenant-lifecycle.actions.ts::materializeCharges', 'actions/reports.actions.ts::calculateDelinquency'],
-    color_css: 'bg-indigo-500',
+    color_css: 'bg-[var(--primary)]',
     icon: Users,
     category: 'ASSET'
   },
@@ -88,17 +88,17 @@ export default function FinanceTranslationHub() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 lg:p-12 space-y-12 animate-in fade-in duration-700">
       
       {/* HEADER SECTION: FINOVA RECONSTRUCTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-surface-800 pb-12 gap-8 relative overflow-hidden group">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border dark:border-surface-800 pb-12 gap-8 relative overflow-hidden group">
         <div className="flex items-center space-x-6 relative z-10">
-          <div className="w-16 h-16 bg-brand/10 rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
+          <div className="w-16 h-16 bg-brand/10 rounded-3xl flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
              <Layers className="w-8 h-8 text-brand" />
           </div>
           <div>
-            <h1 className="text-5xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">
+            <h1 className="text-5xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">
               Finance <br/><span className="text-brand">Translation Hub</span>
             </h1>
             <div className="flex items-center space-x-4 mt-2">
-               <ShieldCheck className="w-4 h-4 text-emerald-500" />
+               <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
                <p className="text-slate-400 font-bold tracking-[0.3em] uppercase text-[10px]">
                  AXIOM V.3 Architecture ↔ GAAP Regulatory Standards
                </p>
@@ -114,8 +114,8 @@ export default function FinanceTranslationHub() {
         
         {/* HIERARCHY VISUALIZER (LEFT) */}
         <div className="lg:col-span-7 space-y-8 animate-in slide-in-from-left-8 duration-700">
-          <Card className="rounded-[2.5rem] p-10 border-none shadow-premium-lg bg-white dark:bg-slate-900">
-            <h2 className="text-xl font-black uppercase italic tracking-tighter mb-10 flex items-center text-slate-900 dark:text-white border-b border-slate-50 dark:border-surface-800 pb-6">
+          <Card className="rounded-[2.5rem] p-10 border-none shadow-premium-lg bg-card dark:bg-slate-900">
+            <h2 className="text-xl font-black uppercase italic tracking-tighter mb-10 flex items-center text-foreground dark:text-white border-b border-slate-50 dark:border-surface-800 pb-6">
                Hierarchical Translation Map
                <GitBranch className="w-5 h-5 ml-4 text-brand animate-pulse" />
             </h2>
@@ -128,14 +128,14 @@ export default function FinanceTranslationHub() {
                   <button
                     key={node.id}
                     onClick={() => setSelected(node)}
-                    className={`flex items-center text-left p-5 rounded-2xl transition-all relative z-10 ${
+                    className={`flex items-center text-left p-5 rounded-3xl transition-all relative z-10 ${
                       isActive 
                         ? 'bg-slate-900 dark:bg-brand text-white shadow-premium -translate-y-1' 
-                        : 'bg-slate-50 dark:bg-surface-800/50 hover:bg-white dark:hover:bg-surface-800 text-slate-500 hover:text-slate-900'
+                        : 'bg-slate-50 dark:bg-surface-800/50 hover:bg-card dark:hover:bg-surface-800 text-slate-500 hover:text-foreground'
                     }`}
                   >
                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center mr-6 transition-all ${
-                      isActive ? 'bg-white/20' : 'bg-slate-100 dark:bg-surface-700'
+                      isActive ? 'bg-card/20' : 'bg-slate-100 dark:bg-surface-700'
                     }`}>
                       <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                     </div>
@@ -143,7 +143,7 @@ export default function FinanceTranslationHub() {
                       <span className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1 block ${isActive ? 'text-white/60' : 'text-slate-400'}`}>
                         {node.category} COMPONENT
                       </span>
-                      <h3 className={`text-lg font-black uppercase tracking-tighter ${isActive ? 'text-white' : 'text-slate-800 dark:text-slate-200'}`}>
+                      <h3 className={`text-lg font-black uppercase tracking-tighter ${isActive ? 'text-white' : 'text-foreground dark:text-slate-200'}`}>
                         {node.label}
                       </h3>
                     </div>
@@ -155,7 +155,7 @@ export default function FinanceTranslationHub() {
           </Card>
 
           <Card className="bg-brand border-none rounded-3xl p-8 shadow-premium flex items-center justify-between text-white overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
+             <div className="absolute top-0 right-0 w-32 h-32 bg-white/3 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
              <div className="space-y-2 relative z-10">
                 <div className="flex items-center space-x-3">
                    <Zap className="w-5 h-5 text-white animate-pulse" />
@@ -173,9 +173,9 @@ export default function FinanceTranslationHub() {
         <div className="lg:col-span-5 animate-in slide-in-from-right-8 duration-700 delay-100">
            <div className="sticky top-28 space-y-8">
               
-              <Card className="rounded-3xl p-10 border-none shadow-premium bg-white dark:bg-slate-900 border-l-8 border-brand">
+              <Card className="rounded-3xl p-10 border-none shadow-premium bg-card dark:bg-slate-900 border-l-8 border-brand">
                 <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">GAAP Logical Proxy</h4>
-                <p className="text-xl font-black italic tracking-tighter text-slate-900 dark:text-white leading-relaxed">
+                <p className="text-xl font-black italic tracking-tighter text-foreground dark:text-white leading-relaxed">
                   "{selected.gaap_definition}"
                 </p>
               </Card>
@@ -204,7 +204,7 @@ export default function FinanceTranslationHub() {
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
                            <div key={i} className="flex items-center space-x-4 bg-surface-800/40 p-4 rounded-xl border border-surface-700/50">
-                              <ArrowRight className="w-3 h-3 text-slate-600" />
+                              <ArrowRight className="w-3 h-3 text-slate-400" />
                               <span className="text-[11px] font-bold tracking-tight text-slate-400">{f}</span>
                            </div>
                         ))}
@@ -213,14 +213,14 @@ export default function FinanceTranslationHub() {
 
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
-                        <Code2 className="w-4 h-4 text-emerald-500" />
+                        <Code2 className="w-4 h-4 text-[var(--primary)]" />
                         <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Instruction Pathway</h5>
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
                            <div key={i} className="flex items-center justify-between bg-surface-800 p-4 rounded-xl border-l-[4px] border-emerald-500 group cursor-default">
-                              <span className="font-mono text-[10px] text-emerald-400/80">{act}</span>
-                              <Badge className="bg-emerald-500/10 text-emerald-500 text-[8px] px-1.5 py-0">Active</Badge>
+                              <span className="font-mono text-[10px] text-[var(--primary)]/80">{act}</span>
+                              <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] text-[8px] px-1.5 py-0">Active</Badge>
                            </div>
                          ))}
                       </div>
@@ -228,13 +228,13 @@ export default function FinanceTranslationHub() {
                  </div>
               </Card>
 
-              <Card className="rounded-3xl p-6 flex items-center justify-between transition-all cursor-pointer group shadow-premium hover:shadow-premium-lg bg-white dark:bg-slate-900 border-none">
+              <Card className="rounded-3xl p-6 flex items-center justify-between transition-all cursor-pointer group shadow-premium hover:shadow-premium-lg bg-card dark:bg-slate-900 border-none">
                  <div className="flex items-center space-x-6">
                     <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-surface-800 flex items-center justify-center group-hover:scale-110 transition-transform">
                        <Activity className="w-6 h-6 text-brand" />
                     </div>
                     <div>
-                       <h6 className="text-lg font-black uppercase tracking-tighter text-slate-900 dark:text-white">Trace In Log</h6>
+                       <h6 className="text-lg font-black uppercase tracking-tighter text-foreground dark:text-white">Trace In Log</h6>
                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Global Monitor</p>
                     </div>
                  </div>

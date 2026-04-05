@@ -67,7 +67,7 @@ export default function WaterfallAnalyticsPage() {
       <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-8 gap-8 border-none bg-surface-900 text-white shadow-premium-lg">
          <div>
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-brand/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-3xl bg-brand/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Zap className="w-7 h-7 text-brand fill-brand" />
               </div>
               <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">
@@ -75,7 +75,7 @@ export default function WaterfallAnalyticsPage() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-               <Badge className="bg-white/10 text-white border-white/10">GAAP V.3 Protocol</Badge>
+               <Badge className="bg-white/5 text-white border-white/10">GAAP V.3 Protocol</Badge>
                <button 
                  onClick={fetchWaterfall}
                  className="text-[10px] font-black text-brand uppercase tracking-widest hover:text-white transition-colors flex items-center"
@@ -86,19 +86,19 @@ export default function WaterfallAnalyticsPage() {
          </div>
 
          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 w-full md:w-auto">
-            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+            <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Gross Intent</p>
-               <h3 className="text-2xl font-black text-emerald-400 tracking-tighter italic">
+               <h3 className="text-2xl font-black text-[var(--primary)] tracking-tighter italic">
                   +${data?.stats.totalRevenue.toLocaleString() || '0.00'}
                </h3>
             </div>
-            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+            <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Cost Realization</p>
                <h3 className="text-2xl font-black text-rose-400 tracking-tighter italic">
                   -${data?.stats.totalExpense.toLocaleString() || '0.00'}
                </h3>
             </div>
-            <div className="bg-brand/20 border border-brand/30 p-5 rounded-2xl col-span-2 lg:col-span-1">
+            <div className="bg-brand/20 border border-brand/30 p-5 rounded-3xl col-span-2 lg:col-span-1">
                <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-2">Net Liquidity (NOI)</p>
                <h3 className="text-2xl font-black text-white tracking-tighter italic">
                   ${data?.stats.noi.toLocaleString() || '0.00'}
@@ -108,15 +108,15 @@ export default function WaterfallAnalyticsPage() {
       </Card>
 
       {/* DYNAMIC WATERFALL CANVAS: ENSURING DARK MODE CONTRAST ADHERENCE */}
-      <Card className="p-0 overflow-hidden h-[750px] relative border-none bg-white dark:bg-surface-900 shadow-premium">
+      <Card className="p-0 overflow-hidden h-[750px] relative border-none bg-card dark:bg-surface-900 shadow-premium">
          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-            <Layers className="w-96 h-96 text-slate-900 dark:text-white" />
+            <Layers className="w-96 h-96 text-foreground dark:text-white" />
          </div>
 
          {!hasData ? (
            <div className="h-full flex flex-col items-center justify-center p-16 space-y-8">
               <div className="w-20 h-20 rounded-full bg-surface-50 dark:bg-surface-800 flex items-center justify-center">
-                 <AlertCircle className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+                 <AlertCircle className="w-10 h-10 text-slate-300 dark:text-slate-400" />
               </div>
               <div className="text-center">
                  <h2 className="text-2xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-white">Null Revenue Detected</h2>
@@ -134,7 +134,7 @@ export default function WaterfallAnalyticsPage() {
                     <div key={node.id} className="group">
                        <div className="flex items-center justify-end space-x-3">
                           <span className="text-[10px] font-black uppercase tracking-tighter text-slate-400 truncate max-w-[100px]">{node.name}</span>
-                          <div className="w-2 h-10 bg-surface-100 dark:bg-surface-800 rounded-full group-hover:bg-brand transition-all shadow-sm" />
+                          <div className="w-2 h-10 bg-surface-100 dark:bg-surface-800 rounded-full group-hover:bg-brand transition-all shadow-premium" />
                        </div>
                     </div>
                  ))}
@@ -150,10 +150,10 @@ export default function WaterfallAnalyticsPage() {
                  {/* CORE NODES */}
                  <div className="absolute inset-x-0 inset-y-0 flex items-center justify-between pointer-events-none p-12">
                     <div className="space-y-48">
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 px-8 py-4 rounded-2xl backdrop-blur-sm">
-                           <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest text-center">Gross Revenue</p>
+                        <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/20 px-8 py-4 rounded-3xl backdrop-blur-sm">
+                           <p className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest text-center">Gross Revenue</p>
                         </div>
-                        <div className="bg-rose-500/10 border border-rose-500/20 px-8 py-4 rounded-2xl backdrop-blur-sm">
+                        <div className="bg-rose-500/10 border border-rose-500/20 px-8 py-4 rounded-3xl backdrop-blur-sm">
                            <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest text-center">Total Costs</p>
                         </div>
                     </div>
@@ -183,7 +183,7 @@ export default function WaterfallAnalyticsPage() {
       {/* FOOTER INTELLIGENCE STRIP */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
          <Card className="md:col-span-2 flex items-center p-8 gap-8">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 rounded-3xl bg-[var(--primary)] dark:bg-[var(--primary)]/20 flex items-center justify-center shrink-0">
                <PieChart className="w-8 h-8 text-brand" />
             </div>
             <div>

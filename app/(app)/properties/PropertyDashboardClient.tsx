@@ -49,9 +49,9 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
         <Button 
           variant="primary"
           onClick={() => setIsAddModalOpen(true)}
-          className="h-14 px-8 rounded-2xl font-black uppercase italic tracking-tighter shadow-premium flex items-center group overflow-hidden relative"
+          className="h-14 px-8 rounded-3xl font-black uppercase italic tracking-tighter shadow-premium flex items-center group overflow-hidden relative"
         >
-          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+          <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
           <Building2 className="w-5 h-5 mr-3 relative z-10" /> 
           <span className="relative z-10">Materialize Asset</span>
         </Button>
@@ -64,7 +64,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
             href={`/properties/${p.id}`}
             className="group"
           >
-            <Card className="p-8 rounded-[2.5rem] border-none shadow-premium hover:shadow-premium-lg hover:-translate-y-2 transition-all relative overflow-hidden bg-white dark:bg-slate-900 h-full">
+            <Card className="p-8 rounded-[2.5rem] border-none shadow-premium hover:shadow-premium-lg hover:-translate-y-2 transition-all relative overflow-hidden bg-card dark:bg-slate-900 h-full">
               <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all duration-700">
                  <Building2 className="w-32 h-32 text-brand" />
               </div>
@@ -74,7 +74,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
                    <Badge className="bg-brand/5 text-brand border-brand/20 text-[8px] px-2 py-0">Asset ID: {p.id.slice(0,4)}</Badge>
                    <Badge variant="success" className="text-[8px] px-2 py-0">Status: Active</Badge>
                 </div>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic leading-tight group-hover:text-brand transition-colors">{p.name}</h2>
+                <h2 className="text-2xl font-black text-foreground dark:text-white uppercase tracking-tighter italic leading-tight group-hover:text-brand transition-colors">{p.name}</h2>
                 <div className="flex items-center text-slate-400 text-[10px] font-black uppercase tracking-widest leading-relaxed">
                   <Navigation className="w-3 h-3 mr-2 text-brand" /> {p.address}
                 </div>
@@ -84,12 +84,12 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
                  <div className="flex items-center space-x-6">
                     <div className="flex flex-col">
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Deployment Count</span>
-                      <span className="text-xl font-black text-slate-900 dark:text-white flex items-center mt-1">
+                      <span className="text-xl font-black text-foreground dark:text-white flex items-center mt-1">
                         <Hash className="w-4 h-4 mr-1.5 text-brand" /> {p._count.units}
                       </span>
                     </div>
                  </div>
-                 <div className="w-12 h-12 bg-slate-50 dark:bg-surface-800 rounded-2xl flex items-center justify-center group-hover:bg-brand group-hover:text-white group-hover:shadow-premium transition-all">
+                 <div className="w-12 h-12 bg-slate-50 dark:bg-surface-800 rounded-3xl flex items-center justify-center group-hover:bg-brand group-hover:text-white group-hover:shadow-premium transition-all">
                     <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                  </div>
               </div>
@@ -101,14 +101,14 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
       {/* Add Property Modal: FINOVA STANDARD */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-           <Card className="border-none rounded-[3rem] shadow-premium-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 bg-white dark:bg-slate-900">
+           <Card className="border-none rounded-[3rem] shadow-premium-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 bg-card dark:bg-slate-900">
              <div className="p-10 bg-slate-900 flex justify-between items-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/3 rounded-full -mr-16 -mt-16" />
                 <div className="relative z-10">
                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic leading-none">Asset Registration</h2>
                    <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.3em] mt-2">Phase 1: Domain Mapping</p>
                 </div>
-                <button onClick={() => setIsAddModalOpen(false)} className="bg-white/10 hover:bg-white/20 text-white rounded-xl p-3 transition-colors relative z-10">
+                <button onClick={() => setIsAddModalOpen(false)} className="bg-white/5 hover:bg-card/20 text-white rounded-xl p-3 transition-colors relative z-10">
                   <X className="w-5 h-5" />
                 </button>
              </div>
@@ -134,7 +134,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
                 <Button 
                   disabled={isSubmitting} 
                   variant="primary"
-                  className="w-full h-16 rounded-2xl font-black uppercase italic tracking-tighter shadow-premium"
+                  className="w-full h-16 rounded-3xl font-black uppercase italic tracking-tighter shadow-premium"
                 >
                    {isSubmitting ? <><Loader2 className="w-5 h-5 mr-3 animate-spin"/> Syncing Registry...</> : <><Sparkles className="w-5 h-5 mr-3"/> Finalize Deployment</>}
                 </Button>

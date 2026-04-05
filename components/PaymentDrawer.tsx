@@ -109,20 +109,20 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   return (
     <>
       <div className="fixed inset-0 bg-slate-900/40 z-40 transition-opacity" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out border-l-4 border-slate-900">
+      <div className="fixed inset-y-0 right-0 w-full max-w-md bg-card shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out border-l-4 border-slate-900">
         <div className="px-8 py-6 border-b-2 border-slate-900 bg-slate-50 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-black text-slate-900 uppercase italic tracking-tighter">Liquidate Liabilities</h2>
+            <h2 className="text-xl font-black text-foreground uppercase italic tracking-tighter">Liquidate Liabilities</h2>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Enterprise Ledger Entry</p>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-foreground rounded-full transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
-          <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg">
-            <h3 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-4">Target Identity</h3>
+          <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-lg">
+            <h3 className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-[0.2em] mb-4">Target Identity</h3>
             <p className="text-2xl font-black tracking-tight italic">{tenant.name}</p>
           </div>
 
@@ -136,7 +136,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                     type="number" 
                     step="0.01"
                     {...register('amountPaid', { valueAsNumber: true })} 
-                    className="block w-full pl-12 pr-4 py-5 text-2xl font-black border-2 border-slate-100 rounded-2xl focus:border-slate-900 focus:bg-white bg-slate-50 transition-all outline-none" 
+                    className="block w-full pl-12 pr-4 py-5 text-2xl font-black border-2 border-border rounded-3xl focus:border-slate-900 focus:bg-card bg-slate-50 transition-all outline-none" 
                     placeholder="0.00"
                   />
                 </div>
@@ -147,7 +147,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Fiscal Mode</label>
                 <select 
                   {...register('paymentMode')}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-4 text-xs font-black uppercase outline-none focus:border-slate-900 appearance-none cursor-pointer"
+                  className="w-full bg-slate-50 border-2 border-border rounded-xl px-4 py-4 text-xs font-black uppercase outline-none focus:border-slate-900 appearance-none cursor-pointer"
                 >
                   <option value="CASH">CASH TRANSFER</option>
                   <option value="BANK">BANK WIRE/EFT</option>
@@ -159,7 +159,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 <input 
                   type="date"
                   {...register('transactionDate')}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-4 text-xs font-black uppercase outline-none focus:border-slate-900"
+                  className="w-full bg-slate-50 border-2 border-border rounded-xl px-4 py-4 text-xs font-black uppercase outline-none focus:border-slate-900"
                 />
               </div>
             </div>
@@ -170,28 +170,28 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 {...register('referenceText')}
                 rows={3}
                 placeholder="e.g. Bank Ref #12345 or Cash receipt serial"
-                className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-xs font-medium outline-none focus:border-slate-900 transition-all"
+                className="w-full bg-slate-50 border-2 border-border rounded-xl p-4 text-xs font-medium outline-none focus:border-slate-900 transition-all"
               />
               {errors.referenceText && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase">{errors.referenceText.message}</p>}
             </div>
 
-            <div className="pt-6 border-t-2 border-slate-100">
-              <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-4">Waterfall Preview (Algorithm A)</h4>
+            <div className="pt-6 border-t-2 border-border">
+              <h4 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em] mb-4">Waterfall Preview (Algorithm A)</h4>
               <div className="space-y-2">
                 {previewData.length === 0 ? (
-                  <div className="p-8 border-2 border-dashed border-slate-100 rounded-2xl text-center">
+                  <div className="p-8 border-2 border-dashed border-border rounded-3xl text-center">
                     <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No outstanding fiscal records found.</p>
                   </div>
                 ) : (
                   previewData.map((charge) => (
-                    <div key={charge.id} className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border-2 border-slate-100 group hover:border-slate-300 transition-all">
+                    <div key={charge.id} className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border-2 border-border group hover:border-slate-300 transition-all">
                       <div>
-                        <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{charge.type}</p>
+                        <p className="text-[10px] font-black text-foreground uppercase tracking-widest">{charge.type}</p>
                         <p className="text-[10px] font-bold text-slate-400">Due: {new Date(charge.dueDate).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Applied</p>
-                        <p className={`text-sm font-black ${charge.applied > 0 ? 'text-indigo-600 animate-pulse' : 'text-slate-300'}`}>
+                        <p className={`text-sm font-black ${charge.applied > 0 ? 'text-[var(--primary)] animate-pulse' : 'text-slate-300'}`}>
                           {charge.applied > 0 ? `+ $${charge.applied.toFixed(2)}` : '$0.00'}
                         </p>
                       </div>
@@ -200,13 +200,13 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 )}
 
                 {overpayment > 0 && (
-                  <div className="flex justify-between items-center bg-indigo-50 p-4 rounded-xl border-2 border-indigo-200 mt-2">
+                  <div className="flex justify-between items-center bg-[var(--primary-muted)] p-4 rounded-xl border-2 border-[var(--primary)]/20 mt-2">
                     <div>
-                      <p className="text-[10px] font-black text-indigo-900 uppercase tracking-widest">Automatic Credit</p>
-                      <p className="text-[10px] font-bold text-indigo-400 uppercase leading-none">Unapplied Surplus Materialized</p>
+                      <p className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest">Automatic Credit</p>
+                      <p className="text-[10px] font-bold text-[var(--primary)] uppercase leading-none">Unapplied Surplus Materialized</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-black text-indigo-600">+ ${overpayment.toFixed(2)}</p>
+                      <p className="text-sm font-black text-[var(--primary)]">+ ${overpayment.toFixed(2)}</p>
                     </div>
                   </div>
                 )}
@@ -215,12 +215,12 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
           </form>
         </div>
 
-        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+        <div className="px-6 py-4 border-t border-border bg-slate-50">
           <button 
             type="submit" 
             form="payment-form"
             disabled={isPending || isSubmitting} 
-            className="w-full bg-slate-900 text-white font-medium py-3 rounded-md shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-slate-900 text-white font-medium py-3 rounded-xl shadow-premium hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? 'Executing Transaction...' : 'Process Payment'}
           </button>

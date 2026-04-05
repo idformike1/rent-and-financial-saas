@@ -35,7 +35,7 @@ export default async function CategoriesManagementPage() {
              <Info className="w-10 h-10 text-brand" />
           </div>
           <div className="space-y-4 relative z-10">
-              <h3 className="text-slate-900 dark:text-white font-black uppercase italic tracking-tighter text-3xl">Financial Governance Protocol V.3</h3>
+              <h3 className="text-foreground dark:text-white font-black uppercase italic tracking-tighter text-3xl">Financial Governance Protocol V.3</h3>
               <p className="text-slate-500 dark:text-slate-400 font-medium text-xs tracking-widest leading-relaxed max-w-3xl uppercase">
                   This hub orchestrates the immutable hierarchy of your Chart of Accounts. 
                   Enforced Strict Depth: Ledgers can contain exactly 2 levels of sub-taxonomy (Root Categories and Child Nodes).

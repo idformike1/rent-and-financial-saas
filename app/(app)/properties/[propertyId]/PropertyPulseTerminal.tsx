@@ -249,63 +249,63 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
         {/* NOI */}
         <button 
           onClick={() => setDrillDownType('NOI')}
-          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Net Operating Income</span>
-             <TrendingUp className="w-3.5 h-3.5 text-slate-600 group-hover:text-emerald-500 transition-colors" />
+             <TrendingUp className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </div>
           <div className={cn("text-3xl font-mono tracking-tighter tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
              <RollingCounter value={data.hud.noi} prefix="$" />
           </div>
           <div className="mt-3 flex items-center gap-2">
-             <Badge className="bg-emerald-500/10 text-emerald-500 border-none text-[8px] py-0 px-2 font-mono">REALIZED_VALUE_v3</Badge>
+             <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-none text-[8px] py-0 px-2 font-mono">REALIZED_VALUE_v3</Badge>
           </div>
         </button>
 
         {/* ADJUSTED NOI */}
         <button 
           onClick={() => setDrillDownType('ADJ_NOI')}
-          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Adjusted NOI (OPEX-Only)</span>
-             <Activity className="w-3.5 h-3.5 text-slate-600 group-hover:text-brand transition-colors" />
+             <Activity className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand transition-colors" />
           </div>
           <div className="text-3xl font-mono text-white tracking-tighter tabular-nums">
              <RollingCounter value={data.hud.adjustedNoi} prefix="$" />
           </div>
-          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-3 underline decoration-slate-800">Operational Health Index</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3 underline decoration-slate-800">Operational Health Index</p>
         </button>
 
         {/* REVENUE LEAKAGE */}
         <button 
           onClick={() => setDrillDownType('LEAKAGE')}
-          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Revenue Leakage (Gap)</span>
-             <AlertCircle className="w-3.5 h-3.5 text-slate-600 group-hover:text-rose-500 transition-colors" />
+             <AlertCircle className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-500 transition-colors" />
           </div>
           <div className={cn("text-3xl font-mono tracking-tighter tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-slate-300")}>
              <RollingCounter value={data.hud.revenueLeakage} suffix="%" />
           </div>
-          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-3">Market vs Contract Delta</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3">Market vs Contract Delta</p>
         </button>
 
         {/* COLLECTION EFFICIENCY */}
         <button 
           onClick={() => setDrillDownType('COLLECTION')}
-          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Collection Efficiency</span>
-             <ShieldCheck className="w-3.5 h-3.5 text-slate-600 group-hover:text-emerald-500 transition-colors" />
+             <ShieldCheck className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </div>
           <div className={cn("text-3xl font-mono tracking-tighter tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
              <RollingCounter value={data.hud.collectionEfficiency} suffix="%" />
           </div>
-          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-3">Current_Month_Inflow_Ratio</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3">Current_Month_Inflow_Ratio</p>
         </button>
 
       </div>
@@ -362,7 +362,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                    <Plus className="w-3 h-3 mr-2" /> Materialize
                  </button>
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <div className="w-2 h-2 rounded-full bg-[var(--primary)]" />
                     <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Prime</span>
                  </div>
                  <div className="flex items-center gap-2">
@@ -390,13 +390,13 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                        <span className="text-xl font-bold font-mono text-white tracking-tighter italic">{unit.unitNumber}</span>
                        <div className={cn(
                          "w-2 h-2 rounded-full",
-                         unit.riskScore === 'GREEN' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" :
+                         unit.riskScore === 'GREEN' ? "bg-[var(--primary)] shadow-[0_0_8px_rgba(255,87,51,0.4)]" :
                          unit.riskScore === 'YELLOW' ? "bg-amber-500" :
                          "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)] animate-pulse"
                        )} />
                     </div>
                     <div className="space-y-1">
-                       <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest truncate">{unit.tenantName}</p>
+                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest truncate">{unit.tenantName}</p>
                        <div className="flex items-center justify-between">
                          <span className={cn(
                            "text-[7px] font-black uppercase tracking-widest",
@@ -427,7 +427,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                  </div>
                  <button 
                   onClick={() => setDrillDownType(null)}
-                  className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="w-14 h-14 rounded-3xl bg-white/3 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors"
                  >
                     <X className="w-6 h-6 text-slate-400" />
                  </button>
@@ -436,10 +436,10 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
               <div className="flex-1 p-12 overflow-y-auto space-y-12">
                  <div className="flex items-center gap-6 mb-8">
                     <div className="relative flex-1">
-                       <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                       <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                        <input 
                          placeholder="SCAN DRILL-DOWN RECORDS..." 
-                         className="w-full bg-slate-950 border border-white/5 h-16 pl-16 pr-6 text-[10px] uppercase font-black tracking-widest text-white outline-none focus:border-brand/40 transition-all rounded-2xl"
+                         className="w-full bg-slate-950 border border-white/5 h-16 pl-16 pr-6 text-[10px] uppercase font-black tracking-widest text-white outline-none focus:border-brand/40 transition-all rounded-3xl"
                        />
                     </div>
                  </div>
@@ -461,7 +461,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                             <div className="space-y-1">
                                <div className="flex items-center gap-3">
                                   <span className="text-[10px] font-mono text-slate-500">{new Date(e.transactionDate).toLocaleDateString()}</span>
-                                  <Badge className="bg-white/5 text-slate-400 border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
+                                  <Badge className="bg-white/3 text-slate-400 border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
                                </div>
                                <p className="text-white font-bold text-xs uppercase tracking-tight">{e.description}</p>
                             </div>
@@ -499,21 +499,21 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
               <form onSubmit={handleSubmit(onAddUnit)} className="space-y-8">
                  <div>
                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Structural Index Mapping</label>
-                    <input {...register('unitNumber')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="e.g. N-101" />
+                    <input {...register('unitNumber')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl" placeholder="e.g. N-101" />
                  </div>
                  <div className="grid grid-cols-2 gap-6">
                     <div>
                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Hardware Type</label>
-                       <input {...register('type')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="Apartment" />
+                       <input {...register('type')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl" placeholder="Apartment" />
                     </div>
                     <div>
                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Market Rent ($)</label>
-                       <input {...register('marketRent')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl" placeholder="0.00" type="number" step="0.01" />
+                       <input {...register('marketRent')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl" placeholder="0.00" type="number" step="0.01" />
                     </div>
                  </div>
                  <div>
                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Atomic Category</label>
-                    <select {...register('category')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl appearance-none">
+                    <select {...register('category')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl appearance-none">
                        <option value="FLAT">FLAT (RESIDENTIAL)</option>
                        <option value="STORE">STORE (COMMERCIAL)</option>
                        <option value="SHUTTER">SHUTTER (RETAIL)</option>
@@ -555,7 +555,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                            key={s.id} 
                            onClick={() => onUpdateUnit(s.id)}
                            className={cn(
-                             "w-full h-16 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-widest flex items-center justify-between px-8 hover:bg-white/5 transition-all",
+                             "w-full h-16 rounded-3xl border border-white/5 text-[10px] font-black uppercase tracking-widest flex items-center justify-between px-8 hover:bg-white/3 transition-all",
                              editingUnit.maintenanceStatus === s.id ? "border-brand bg-brand/5" : ""
                            )}
                          >
@@ -572,7 +572,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                       type="number"
                       defaultValue={editingUnit.marketRent || 0}
                       onBlur={(e) => onUpdateUnit(undefined, Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-2xl"
+                      className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl"
                     />
                  </div>
               </div>

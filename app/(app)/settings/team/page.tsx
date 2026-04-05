@@ -29,7 +29,7 @@ export default async function TeamPage() {
 
       {/* Stats Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-black p-6 bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex justify-between items-start mb-2">
             <Users size={32} />
             <span className="text-4xl font-black">{stats.total}</span>
@@ -37,15 +37,15 @@ export default async function TeamPage() {
           <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Total Deployment</span>
         </div>
 
-        <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-black p-6 bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex justify-between items-start mb-2">
-            <UserCheck size={32} className="text-green-600" />
+            <UserCheck size={32} className="text-[var(--primary)]" />
             <span className="text-4xl font-black">{stats.active}</span>
           </div>
           <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Active Duty</span>
         </div>
 
-        <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border-4 border-black p-6 bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex justify-between items-start mb-2">
             <ShieldAlert size={32} className="text-amber-500" />
             <span className="text-4xl font-black">{stats.viewOnly}</span>

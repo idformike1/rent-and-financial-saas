@@ -36,14 +36,14 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
           </Link>
           
           <div className="flex items-center gap-4">
-             <Badge variant="success" className="rounded-none px-3 font-mono text-[8px] tracking-[0.4em]">ASSET_STATUS: ONLINE</Badge>
-             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+             <Badge variant="success" className="rounded-xl px-3 font-mono text-[8px] tracking-[0.4em]">ASSET_STATUS: ONLINE</Badge>
+             <div className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-pulse" />
           </div>
 
           <div>
             <h1 className="text-5xl font-light tracking-tighter text-white uppercase italic leading-none">
               {property.name} <br/>
-              <span className="text-emerald-400">Pulse Terminal</span>
+              <span className="text-[var(--primary)]">Pulse Terminal</span>
             </h1>
             <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-5">
               <Navigation className="w-3.5 h-3.5 mr-3 text-brand" /> {property.address}
@@ -52,7 +52,7 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-           <div className="px-8 py-5 border border-white/10 bg-white/5 rounded-2xl flex flex-col justify-center">
+           <div className="px-8 py-5 border border-white/10 bg-white/3 rounded-3xl flex flex-col justify-center">
               <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Authorization Layer</span>
               <span className="text-xs font-bold text-white flex items-center gap-2 italic uppercase">
                  <ShieldCheck className="w-3 h-3 text-brand" /> Sovereignty_V3.0

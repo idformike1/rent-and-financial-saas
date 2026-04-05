@@ -1,104 +1,124 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── V3 CINEMATIC: WARM PURPLE & PULSING ORANGE ────────────────────────── */
-  --color-brand:        #FF6B35;
-  --color-brand-dark:   #FF8C61;
-  --color-accent:       #FF6B35;
+  /* ── SLATE & EMBER V3: DESIGN SYSTEM FOUNDATION ──────────────────────────── */
+  --color-primary:       #FF5733;
+  --color-primary-light: #FF7555;
 
-  --color-success:      #10B981;
-  --color-success-dark: #34D399;
-  --color-danger:       #F43F5E;
-  --color-danger-dark:  #FB7185;
+  /* Legacy alias so `text-brand`, `bg-brand` classes still resolve */
+  --color-brand:         #FF5733;
 
-  /* ── GEOMETRIC TYPOGRAPHY ────────────────────────────────────────────── */
+  --color-success:  #10B981;
+  --color-warning:  #F59E0B;
+  --color-danger:   #F43F5E;
+
+  /* ── SURFACE PALETTE ─────────────────────────────────────────────────────── */
+  --color-background:  #0B0F17;
+  --color-card:        #1A2030;
+  --color-card-raised: #202840;
+  --color-border:      rgba(255, 255, 255, 0.10);
+  --color-muted:       #94A3B8;
+
+  /* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 
-  /* ── ORGANIC GEOMETRY: V3 SOFT RADII ──────────────────────────────────── */
+  /* ── GEOMETRY ────────────────────────────────────────────────────────────── */
   --radius-xl:  1rem;
   --radius-2xl: 1.5rem;
-  --radius-3xl: 2.5rem;
+  --radius-3xl: 1.875rem;
 }
 
-/* ── THEME TOKENS ────────────────────────────────────────────────────────── */
+/* ── LIGHT MODE ──────────────────────────────────────────────────────────── */
 :root {
-  --background: #FFFFFF;
-  --foreground: #020617;
-  --card:       #F8FAFC;
-  --border:     #E2E8F0;
-  --muted:      #64748B;
+  --background:         #F1F5F9;
+  --foreground:         #0F172A;
+  --card:               #FFFFFF;
+  --card-raised:        #F8FAFC;
+  --card-foreground:    #0F172A;
+  --primary:            #E64A19;
+  --primary-muted:      rgba(230, 74, 25, 0.12);
+  --primary-foreground: #FFFFFF;
+  --border:             #CBD5E1;
+  --muted:              #64748B;
+  --radius:             1.5rem;
 }
 
+/* ── DARK MODE ───────────────────────────────────────────────────────────── */
 .dark {
-  --background: #1A161F;
-  --foreground: #F8FAFC;
-  --card:       #241F2B;
-  --border:     #ffffff0d;
-  --muted:      #94A3B8;
+  --background:         #0B0F17;
+  --foreground:         #F1F5F9;
+  --card:               #1A2030;
+  --card-raised:        #202840;
+  --card-foreground:    #F1F5F9;
+  --primary:            #FF5733;
+  --primary-muted:      rgba(255, 87, 51, 0.12);
+  --primary-foreground: #FFFFFF;
+  --border:             rgba(255, 255, 255, 0.10);
+  --muted:              #94A3B8;
+  --radius:             1.5rem;
 }
 
-/* ── BASE BODY ───────────────────────────────────────────────────────────── */
-html {
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
-body {
+/* ── BASE ────────────────────────────────────────────────────────────────── */
+html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
 }
 
-/* ── CINEMATIC UTILITIES ─────────────────────────────────────────────────── */
-
+/* ── GLASS PANEL — The universal elevated surface ────────────────────────── */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
+  background:           var(--card);
+  backdrop-filter:      blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  border:               1px solid var(--border);
+  box-shadow:           0 4px 24px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.glow-orange {
-  box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+/* ── PRIMARY EMBER GLOW ──────────────────────────────────────────────────── */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(255, 87, 51, 0.25),
+              0 4px 12px rgba(255, 87, 51, 0.15);
 }
-
-.glow-orange:hover {
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.25);
+.glow-primary:hover {
+  box-shadow: 0 0 35px rgba(255, 87, 51, 0.40),
+              0 8px 20px rgba(255, 87, 51, 0.25);
+  transition: box-shadow 0.3s ease;
 }
+/* Legacy alias */
+.glow-orange { box-shadow: 0 0 20px rgba(255, 87, 51, 0.25); }
+.glow-orange:hover { box-shadow: 0 0 35px rgba(255, 87, 51, 0.40); }
 
-/* ── SCROLLBAR: MINIMAL ──────────────────────────────────────────────────── */
-::-webkit-scrollbar         { width: 4px; height: 4px; }
-::-webkit-scrollbar-track   { background: transparent; }
-::-webkit-scrollbar-thumb   { background: var(--border); border-radius: 10px; }
+/* ── SCROLLBAR ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; height: 4px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 10px; }
 
 /* ── FORM ELEMENTS ───────────────────────────────────────────────────────── */
 input, select, textarea {
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  background-color: var(--card) !important;
   color: var(--foreground) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 1rem !important;
+  border-radius: var(--radius-xl) !important;
   padding: 0.75rem 1rem !important;
   outline: none !important;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
-
 input:focus, select:focus, textarea:focus {
-  border-color: var(--color-brand) !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-muted) !important;
 }
 
 /* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
   color: var(--foreground);
   letter-spacing: -0.02em;
+  font-style: normal;
 }
-
 .text-meta {
   font-size: 10px;
   font-weight: 800;
@@ -107,75 +127,26 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--muted);
 }
 
-/* Clean up legacy italics */
-[class*="italic"] {
-  font-style: normal !important;
-}
-
-/* Force Geometric Sans on structure */
+/* ── FONT STANDARDIZATION ────────────────────────────────────────────────── */
 body, button, input, select, textarea, div, span, p {
   font-family: var(--font-sans);
 }
-
-/* Preserve Mono ONLY for numeric data */
-.font-mono, 
-[class*="tabular-nums"],
-[class*="text-digit"] {
+.font-mono, [class*="tabular-nums"], [class*="text-digit"] {
   font-family: var(--font-mono) !important;
 }
-
-button[class*="bg-brand"], 
-button[class*="bg-emerald"] {
-  background-color: var(--color-brand) !important;
-  color: #FFFFFF !important;
-  border-color: var(--color-brand) !important;
-}
-
-/* =========================================
-   TYPOGRAPHY NORMALIZATION
-========================================= */
-/* Strip legacy heavy italics from structural headers */
-h1, h2, h3 {
-  font-style: normal !important;
-}
-
-/* =========================================
-   THE FINAL EXORCISM (Deep Utility Purge)
-========================================= */
-
-/* 1. Kill All Hardcoded Italics */
-[class*="italic"] {
-  font-style: normal !important;
-}
-
-/* 2. Eradicate Organic Blobs & Asymmetrical Radii */
-/* Targets decorative shapes and forces them into the brutalist grid */
-[class*="rounded-full"], 
-[class*="rounded-tl-"], 
-[class*="rounded-tr-"], 
-[class*="rounded-bl-"], 
-[class*="rounded-br-"] {
-  border-radius: var(--radius-xl) !important;
-}
-
-/* 3. Strip Rogue Text Highlights & Ghost Backgrounds */
-[class*="bg-blue-1"], 
-[class*="bg-blue-500/"],
-[class*="bg-white/"],
-mark {
-  background-color: transparent !important;
-  text-shadow: none !important;
-}
-
-/* 4. Fix Faint/Invisible Decorative Text */
-[class*="text-slate-200"], 
-[class*="text-slate-300"], 
-[class*="text-white/"] {
-  color: var(--muted) !important;
-}
-
-/* 5. Force Mono on Treasury/Metric Cards specifically if missed */
 [class*="text-5xl"], [class*="text-4xl"] {
   font-family: var(--font-mono) !important;
   font-style: normal !important;
+}
+
+/* ── SOVEREIGN OVERRIDES ─────────────────────────────────────────────────── */
+[class*="italic"] { font-style: normal !important; }
+
+/* Prevent any legacy green/blue buttons from leaking through */
+button[class*="bg-green"],
+button[class*="bg-emerald"],
+button[class*="bg-blue-6"],
+button[class*="bg-blue-5"] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
 }

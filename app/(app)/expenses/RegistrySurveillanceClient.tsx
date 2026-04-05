@@ -42,7 +42,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
     <div className="space-y-12">
       
       {/* GLOBAL TELEMETRY BAR */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-slate-900 overflow-hidden rounded-none divide-x divide-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-slate-900 overflow-hidden rounded-xl divide-x divide-white/10">
         <div className="p-8 space-y-4">
            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Global Net Outflow</span>
            <div className={cn("text-4xl font-mono tracking-tighter tabular-nums", netPosition < 0 ? "text-rose-500" : "text-emerald-500")}>
@@ -100,7 +100,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
             </thead>
             <tbody className="divide-y divide-white/5">
               {filtered.map((entry: any) => (
-                <tr key={entry.id} className="hover:bg-white/[0.02] transition-all group">
+                <tr key={entry.id} className="hover:bg-card/[0.02] transition-all group">
                   <td className="px-6 py-4 border-r border-white/5">
                     <span className="text-[10px] font-mono text-slate-500">
                       {new Date(entry.transactionDate || entry.date).toISOString().split('T')[0]}
@@ -128,7 +128,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                     {entry.propertyId ? (
                       <Link 
                         href={`/properties/${entry.propertyId}`}
-                        className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors group/link"
+                        className="flex items-center gap-2 text-[var(--primary)] hover:text-[var(--primary)] transition-colors group/link"
                       >
                          <Building2 className="w-3.5 h-3.5 opacity-50 group-hover/link:opacity-100" />
                          <span className="text-[9px] font-black uppercase tracking-widest truncate max-w-[120px]">

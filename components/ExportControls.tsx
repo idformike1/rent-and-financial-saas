@@ -26,7 +26,7 @@ export default function ExportControls() {
     <div className="flex gap-4">
       <button 
         onClick={handleCSVExport} 
-        className="bg-brand text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-brand/20 hover:-translate-y-1 transition-transform flex items-center uppercase tracking-widest text-[10px]"
+        className="bg-brand text-white font-black px-6 py-3 rounded-3xl shadow-lg shadow-brand/20 hover:-translate-y-1 transition-transform flex items-center uppercase tracking-widest text-[10px]"
       >
         <Download className="w-4 h-4 mr-3" /> Export CSV
       </button>

@@ -32,11 +32,11 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="lg:col-span-2 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 shadow-premium"
+        className="lg:col-span-2 bg-card/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 shadow-premium"
       >
         <div className="flex items-center justify-between mb-10">
            <div>
-              <h3 className="text-xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Historical EGR Velocity</h3>
+              <h3 className="text-xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">Historical EGR Velocity</h3>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Gross realization over 6 months</p>
            </div>
            <div className="flex items-center gap-4">
@@ -101,10 +101,10 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 shadow-premium flex flex-col"
+        className="bg-card/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 shadow-premium flex flex-col"
       >
         <div className="mb-8">
-           <h3 className="text-xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">NOI Allocation</h3>
+           <h3 className="text-xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">NOI Allocation</h3>
            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Operating Breakdown</p>
         </div>
         
@@ -130,7 +130,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-             <span className="text-3xl font-black italic tracking-tighter text-slate-900 dark:text-white">84%</span>
+             <span className="text-3xl font-black italic tracking-tighter text-foreground dark:text-white">84%</span>
              <span className="text-[8px] font-black uppercase text-slate-400 tracking-[0.2em] mt-1">Efficiency</span>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.name}</span>
                 </div>
-                <span className="text-[10px] font-black text-slate-900 dark:text-white">${item.value.toLocaleString()}</span>
+                <span className="text-[10px] font-black text-foreground dark:text-white">${item.value.toLocaleString()}</span>
              </div>
            ))}
         </div>

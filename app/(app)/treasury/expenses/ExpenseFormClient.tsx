@@ -123,7 +123,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   }
 
   const inputClass = (error?: any) => cn(
-    "w-full bg-white dark:bg-slate-800 border-2 rounded-2xl px-6 h-16 text-slate-900 dark:text-white font-black outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px] uppercase tracking-tight placeholder-slate-300 dark:placeholder-slate-600 shadow-sm",
+    "w-full bg-card dark:bg-slate-800 border-2 rounded-3xl px-6 h-16 text-foreground dark:text-white font-black outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px] uppercase tracking-tight placeholder-slate-300 dark:placeholder-slate-600 shadow-premium",
     error ? "border-rose-500 bg-rose-50/10" : "border-transparent focus:border-brand/20"
   );
   const labelClass = "text-[10px] font-black text-slate-400 uppercase tracking-[0.25rem] mb-3 ml-1 block";
@@ -131,36 +131,36 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   return (
     <div className="space-y-10">
       {sessionCount > 0 && lastEntry && (
-        <div className="rounded-[2.5rem] px-10 py-8 flex items-center justify-between shadow-2xl bg-emerald-950/90 border border-emerald-500/20 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
+        <div className="rounded-[2.5rem] px-10 py-8 flex items-center justify-between shadow-2xl bg-[var(--card)] border border-[var(--primary)]/20 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
-            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-black/20", lastEntry.type === 'REVENUE' ? 'bg-emerald-500' : 'bg-rose-500')}>
+            <div className={cn("w-14 h-14 rounded-3xl flex items-center justify-center border-4 border-black/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-rose-500')}>
                {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-white" /> : <ArrowDownCircle className="w-7 h-7 text-white" />}
             </div>
             <div>
               <p className="font-black italic uppercase tracking-tighter text-2xl text-white leading-none">
                 Entry #{sessionCount}: Materialized
               </p>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400 mt-3 animate-pulse">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)] mt-3 animate-pulse">
                 {lastEntry.payee} — ${parseFloat(lastEntry.amount).toLocaleString(undefined, {minimumFractionDigits: 2})} // AUDITED
               </p>
             </div>
           </div>
-          <div className="bg-emerald-500/20 p-3 rounded-full">
-            <CheckCircle className="w-8 h-8 text-emerald-500" />
+          <div className="bg-[var(--primary)]/20 p-3 rounded-full">
+            <CheckCircle className="w-8 h-8 text-[var(--primary)]" />
           </div>
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-        <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-100 dark:border-white/5 shadow-premium rounded-[3.5rem] p-12 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="bg-card/40 dark:bg-slate-900/40 backdrop-blur-xl border border-border dark:border-white/5 shadow-premium rounded-[3.5rem] p-12 grid grid-cols-1 md:grid-cols-2 gap-10">
           
           {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
-          <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-slate-100/50 dark:bg-white/5 rounded-[1.75rem]">
+          <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-slate-100/50 dark:bg-white/3 rounded-[1.75rem]">
              <button 
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
-               className={cn("py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'EXPENSE' ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+               className={cn("py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+                 selectedType === 'EXPENSE' ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/20' : 'text-slate-400 hover:text-slate-400 dark:hover:text-slate-200'
                )}
              >
                 <ArrowDownCircle className="w-4 h-4" /> Outflow / Out-Take
@@ -168,8 +168,8 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
              <button 
                type="button" 
                onClick={() => setValue('type', 'REVENUE')}
-               className={cn("py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'REVENUE' ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+               className={cn("py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+                 selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-white shadow-xl shadow-[var(--primary)]/20' : 'text-slate-400 hover:text-slate-400 dark:hover:text-slate-200'
                )}
              >
                 <ArrowUpCircle className="w-4 h-4" /> Inflow / Revenue
@@ -255,10 +255,10 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               type="submit"
               disabled={isSubmitting}
               className={cn("w-full text-white font-black h-20 rounded-[1.5rem] transition-all flex items-center justify-center uppercase tracking-[0.5rem] text-[12px] italic group relative overflow-hidden active:translate-y-[1px] hover:shadow-premium-lg transition-transform",
-                selectedType === 'REVENUE' ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-rose-500 shadow-rose-500/20'
+                selectedType === 'REVENUE' ? 'bg-[var(--primary)] shadow-[var(--primary)]/20' : 'bg-rose-500 shadow-rose-500/20'
               )}
             >
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               {isSubmitting ? <Loader2 className="w-6 h-6 mr-4 animate-spin" /> : <Landmark className="w-6 h-6 mr-4" />}
               {isSubmitting ? "Processing Ledger..." : `Authorize Treasury ${selectedType === 'REVENUE' ? 'Inflow' : 'Outflow'}`}
             </button>

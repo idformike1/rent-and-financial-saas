@@ -89,12 +89,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         transform transition-all duration-500 ease-in-out
         lg:relative lg:translate-x-0
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `, isMobileMenuOpen ? "m-0 inset-0 w-full rounded-none" : "")}>
+      `, isMobileMenuOpen ? "m-0 inset-0 w-full rounded-xl" : "")}>
 
         {/* Brand mark */}
         <div className="shrink-0 px-10 pt-10 pb-8">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-brand flex items-center justify-center glow-orange">
+            <div className="w-10 h-10 rounded-3xl bg-brand flex items-center justify-center glow-orange">
               <Zap className="text-white fill-white w-5 h-5" />
             </div>
             <h2 className="text-xl font-black tracking-tighter text-white">
@@ -138,7 +138,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                             flex items-center px-6 py-4 text-[11px] font-bold uppercase tracking-[0.15em] rounded-full transition-all duration-300
                             ${isActive
                               ? 'bg-brand text-white shadow-lg shadow-brand/30 glow-orange'
-                              : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                              : 'text-slate-400 hover:bg-white/3 hover:text-white'
                             }
                           `)}
                         >
@@ -157,7 +157,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* ── PINNED FOOTER: Identity + Log Out ───────────────────────────── */}
         <div className="shrink-0 px-8 py-8 border-t border-white/5">
           {/* User identity card */}
-          <div className="bg-white/5 rounded-[1.5rem] px-5 py-4 flex items-center gap-4 mb-4">
+          <div className="bg-white/3 rounded-[1.5rem] px-5 py-4 flex items-center gap-4 mb-4">
             <div className="w-10 h-10 rounded-full bg-brand/20 flex items-center justify-center font-black text-brand text-xs shrink-0 border border-brand/20">
               {userName.charAt(0)}
             </div>
@@ -200,7 +200,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
              <button
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="p-4 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all hover:scale-105 active:scale-95"
+              className="p-4 rounded-full bg-white/3 border border-white/10 text-slate-400 hover:text-white transition-all hover:scale-105 active:scale-95"
             >
               {resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
@@ -208,7 +208,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Main canvas */}
-        <main className="flex-1 overflow-y-auto p-12 bg-slate-950 transition-colors duration-500">
+        <main className="flex-1 overflow-y-auto p-12 bg-[var(--background)] transition-colors duration-500">
           <div className="max-w-7xl mx-auto h-full">
             {children}
           </div>
@@ -220,11 +220,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
 function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' }) {
   const variants = {
-    default: "bg-white/5 text-slate-400 border border-white/10",
-    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold",
+    default: "bg-white/3 text-slate-400 border border-white/10",
+    success: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
     warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold",
-    danger: "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
-    brand: "bg-brand/10 text-brand border border-brand/20 font-bold",
+    danger:  "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
+    brand:   "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
   };
 
   return (

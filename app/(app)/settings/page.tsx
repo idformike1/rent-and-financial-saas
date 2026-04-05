@@ -97,11 +97,11 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-4">
-               <div className="flex justify-between items-center p-5 rounded-2xl bg-white/5 border border-white/5">
+               <div className="flex justify-between items-center p-5 rounded-3xl bg-white/3 border border-white/5">
                   <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Compliance Status</span>
                   <Badge variant="success">Active_Audit_Locked</Badge>
                </div>
-               <div className="flex justify-between items-center p-5 rounded-2xl bg-white/5 border border-white/5">
+               <div className="flex justify-between items-center p-5 rounded-3xl bg-white/3 border border-white/5">
                   <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Data Retention Policy</span>
                   <Badge variant="default">GAAP_7_YEAR_PERSISTENCE</Badge>
                </div>

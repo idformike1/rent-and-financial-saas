@@ -42,7 +42,7 @@ export default async function DelinquencyReport() {
     <div className="py-6 max-w-7xl mx-auto">
       <div className="mb-8 flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Delinquency Report</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Delinquency Report</h1>
           <p className="text-slate-500 mt-1">Ranking of outstanding balances and aging metrics.</p>
         </div>
         <div className="bg-red-50 text-red-700 font-medium px-4 py-2 border border-red-200 rounded text-sm flex items-center">
@@ -51,7 +51,7 @@ export default async function DelinquencyReport() {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 shadow-sm sm:rounded-lg overflow-hidden">
+      <div className="bg-card border border-border shadow-premium sm:rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-slate-200">
             <thead className="bg-slate-50">
@@ -62,7 +62,7 @@ export default async function DelinquencyReport() {
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
+            <tbody className="bg-card divide-y divide-slate-200">
               {reportData.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center text-sm text-slate-500 italic">No delinquencies recorded. Operations are current.</td>
@@ -70,10 +70,10 @@ export default async function DelinquencyReport() {
               ) : (
                 reportData.map((tenant: any) => (
                   <tr key={tenant.id} className={tenant.isSevere ? 'bg-red-50/50' : 'hover:bg-slate-50 transition-colors'}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                       {tenant.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-foreground">
                       ${tenant.totalDue.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 flex items-center">

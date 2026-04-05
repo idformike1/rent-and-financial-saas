@@ -21,9 +21,9 @@ import { Badge } from '@/components/ui-finova'
 
 // High-fidelity node color definitions
 const NODE_COLORS = {
-  ORGANIZATION: 'text-emerald-400 border-emerald-400/30',
+  ORGANIZATION: 'text-[var(--primary)] border-emerald-400/30',
   CATEGORY: 'text-slate-400 border-white/10',
-  BUILDING: 'text-indigo-400 border-indigo-400/20',
+  BUILDING: 'text-[var(--primary)] border-[var(--primary)]/20',
   TENANT: 'text-amber-400 border-amber-400/20',
   EXPENSE: 'text-rose-400 border-rose-400/20',
 }
@@ -38,7 +38,7 @@ export default function OntologyMapPage() {
   }, [])
 
   if (!tree) return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-950 font-mono text-emerald-400 border-none">
+    <div className="flex items-center justify-center min-h-screen bg-slate-950 font-mono text-[var(--primary)] border-none">
       <div className="flex flex-col items-center">
         <Zap className="animate-pulse mb-4 w-8 h-8" />
         <span className="text-[10px] tracking-[0.3em] uppercase">Initializing Recon Protocol...</span>
@@ -47,7 +47,7 @@ export default function OntologyMapPage() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-950 font-mono p-8 lg:p-12 overflow-x-auto selection:bg-emerald-500/30 border-none scrollbar-hide">
+    <div className="min-h-screen bg-slate-950 font-mono p-8 lg:p-12 overflow-x-auto selection:bg-[var(--primary-muted)] border-none scrollbar-hide">
       
       {/* GRID OVERLAY */}
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-20" />
@@ -59,16 +59,16 @@ export default function OntologyMapPage() {
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-white/5 pb-10 gap-6">
         <div>
           <div className="flex items-center space-x-3 mb-2">
-            <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[8px] rounded-none px-2 py-0.5">SYST_REC_v3.5</Badge>
-            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
+            <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20 text-[8px] rounded-xl px-2 py-0.5">SYST_REC_v3.5</Badge>
+            <div className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-pulse shadow-[0_0_8px_var(--primary)]" />
           </div>
-          <h1 className="text-5xl font-light tracking-tighter text-white uppercase italic">System Recon <span className="text-emerald-400">Ontology Tree</span></h1>
+          <h1 className="text-5xl font-light tracking-tighter text-white uppercase italic">System Recon <span className="text-[var(--primary)]">Ontology Tree</span></h1>
           <p className="text-[10px] text-slate-500 tracking-[0.2em] mt-3 uppercase">Dynamic persistence layer mapping for <span className="text-white font-bold tracking-normal">{tree.name}</span></p>
         </div>
         <div className="hidden md:flex flex-col items-end opacity-40">
-           <span className="text-[8px] text-emerald-500 uppercase tracking-widest font-black mb-1">DATA_INTEGRITY: 100%</span>
+           <span className="text-[8px] text-[var(--primary)] uppercase tracking-widest font-black mb-1">DATA_INTEGRITY: 100%</span>
            <div className="w-32 h-[2px] bg-slate-900 overflow-hidden relative">
-              <div className="absolute inset-0 bg-emerald-500 animate-progress origin-left" />
+              <div className="absolute inset-0 bg-[var(--primary)] animate-progress origin-left" />
            </div>
         </div>
       </div>
@@ -79,14 +79,14 @@ export default function OntologyMapPage() {
       </div>
 
       {/* FOOTER TERMINAL */}
-      <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-slate-600 uppercase tracking-[0.2em] border-t border-white/5 pt-10 pointer-events-none bg-slate-950/80 backdrop-blur-sm z-30">
+      <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-slate-400 uppercase tracking-[0.2em] border-t border-white/5 pt-10 pointer-events-none bg-slate-950/80 backdrop-blur-sm z-30">
          <div className="flex items-center space-x-10">
             <div className="flex items-center space-x-3">
-               <HardDrive className="w-3.5 h-3.5 text-emerald-500/50" />
+               <HardDrive className="w-3.5 h-3.5 text-[var(--primary)]/50" />
                <span className="text-[8px]">LAYER: <span className="text-slate-400">PERSISTENCE_GRAPH</span></span>
             </div>
             <div className="flex items-center space-x-3">
-               <Cpu className="w-3.5 h-3.5 text-emerald-500/50" />
+               <Cpu className="w-3.5 h-3.5 text-[var(--primary)]/50" />
                <span className="text-[8px]">PROTOCOL: <span className="text-slate-400">RECURSIVE_EXPANSION</span></span>
             </div>
          </div>
@@ -121,7 +121,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
   
   if (node.type === 'EMPTY_STATE') {
       return (
-        <div className="min-w-[280px] p-5 bg-slate-950 border border-dashed border-white/5 font-mono text-[10px] text-zinc-500 text-center uppercase tracking-widest italic rounded-2xl">
+        <div className="min-w-[280px] p-5 bg-slate-950 border border-dashed border-white/5 font-mono text-[10px] text-zinc-500 text-center uppercase tracking-widest italic rounded-3xl">
           {node.name}
         </div>
       )
@@ -171,7 +171,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
               {node.amount && (
                  <div className="flex items-center justify-between">
                     <span className="text-[8px] text-slate-500 uppercase font-black tracking-widest">VALUE</span>
-                    <span className="text-emerald-400 font-mono text-[11px] tabular-nums font-bold">
+                    <span className="text-[var(--primary)] font-mono text-[11px] tabular-nums font-bold">
                         {Number(node.amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                     </span>
                  </div>
@@ -188,8 +188,8 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
            {/* DATA FINGERPRINT */}
            <div className="mt-5 border-t border-white/5 pt-3 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                 <div className={`w-1 h-1 rounded-full ${isOpen ? 'bg-emerald-500' : 'bg-slate-700'}`} />
-                 <span className="text-[7px] font-mono text-slate-600 uppercase tracking-tighter truncate max-w-[120px]">REF_{node.id.slice(0,12)}</span>
+                 <div className={`w-1 h-1 rounded-full ${isOpen ? 'bg-[var(--primary)]' : 'bg-slate-700'}`} />
+                 <span className="text-[7px] font-mono text-slate-400 uppercase tracking-tighter truncate max-w-[120px]">REF_{node.id.slice(0,12)}</span>
               </div>
               <JumpToSource node={node} />
            </div>
@@ -213,14 +213,14 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
           >
             {/* HORIZONTAL CONNECTOR (SMART LINE APPROXIMATION) */}
             {childBranches.length > 1 && (
-               <div className="absolute top-0 left-[140px] right-[140px] h-px bg-white/5" />
+               <div className="absolute top-0 left-[140px] right-[140px] h-px bg-white/3" />
             )}
             
             {childBranches.map((child: any) => (
                <div key={child.id} className="relative pt-0">
                   {/* RE-VERTICAL CONNECTOR */}
                   {childBranches.length > 1 && (
-                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-10 bg-white/5" />
+                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-10 bg-white/3" />
                   )}
                   <TreeNode node={child} />
                </div>
@@ -254,7 +254,7 @@ function JumpToSource({ node }: { node: any }) {
       label = 'Income';
       break;
     default:
-      return <Link2 className="w-2.5 h-2.5 text-slate-800" />;
+      return <Link2 className="w-2.5 h-2.5 text-foreground" />;
   }
 
   return (
@@ -263,7 +263,7 @@ function JumpToSource({ node }: { node: any }) {
       title={`Jump to ${label} Source`}
       className="p-1 hover:bg-brand/10 transition-all group/link rounded"
     >
-      <Link2 className="w-3 h-3 text-slate-700 group-hover/link:text-brand transition-colors group-hover/link:drop-shadow-[0_0_5px_#10b981]" />
+      <Link2 className="w-3 h-3 text-slate-400 group-hover/link:text-brand transition-colors group-hover/link:drop-shadow-[0_0_5px_#10b981]" />
     </Link>
   );
 }
