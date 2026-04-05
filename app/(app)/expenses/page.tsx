@@ -4,15 +4,35 @@ import { Plus, Landmark, ShieldCheck, Zap, ArrowLeft, History } from 'lucide-rea
 import RegistrySurveillanceClient from './RegistrySurveillanceClient'
 import { Badge } from '@/components/ui-finova'
 
+import { getCurrentSession } from '@/lib/auth-utils'
+import { redirect } from 'next/navigation'
+
 export default async function ExpenseRegistryPage() {
-  const entriesRaw = await (prisma as any).ledgerEntry.findMany({
-    include: {
+  const session = await getCurrentSession();
+  if (!session) redirect('/login');
+
+  const entriesRaw = await prisma.ledgerEntry.findMany({
+    where: { organizationId: session.organizationId },
+    select: {
+      id: true,
+      amount: true,
+      date: true,
+      transactionDate: true,
+      description: true,
+      paymentMode: true,
+      referenceText: true,
       expenseCategory: {
-        include: { 
-          parent: true 
+        select: {
+          id: true,
+          name: true,
+          parent: {
+            select: { id: true, name: true }
+          }
         }
       },
-      property: true
+      property: {
+        select: { id: true, name: true }
+      }
     },
     orderBy: { transactionDate: 'desc' }
   });

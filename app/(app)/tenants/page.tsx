@@ -4,8 +4,15 @@ import { Plus, User, Building, ArrowRight, Search, ShieldCheck } from 'lucide-re
 import { Card, Badge, Button } from '@/components/ui-finova'
 import TenantRegistryClient from './TenantRegistryClient'
 
+import { getCurrentSession } from '@/lib/auth-utils'
+import { redirect } from 'next/navigation'
+
 export default async function TenantsPage() {
+  const session = await getCurrentSession();
+  if (!session) redirect('/login');
+
   const tenantsRaw = await prisma.tenant.findMany({
+    where: { organizationId: session.organizationId },
     include: {
       leases: {
         include: {
