@@ -16,17 +16,30 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-:root, .dark {
+:root {
+  --background: #F5F6F8;
+  --foreground: #14161A;
+  --card: #FFFFFF;
+  --card-foreground: #14161A;
+  --muted: #F0F1F3;
+  --muted-foreground: #5C6470;
+  --border: #E5E7EB;
+  --primary: #0047FF;
+  --primary-foreground: #FFFFFF;
+  --radius: 8px;
+}
+
+.dark {
   --background: #0B0D10;
-  --foreground: #FFFFFF;
+  --foreground: #E8E9EB;
   --card: #14161A;
   --card-foreground: #FFFFFF;
   --muted: #1A1D24;
-  --muted-foreground: #8A919E;
+  --muted-foreground: #868991;
   --border: #23252A;
-  --primary: #E8E9EB;
-  --primary-foreground: #0B0D10;
-  --radius: 6px;
+  --primary: #0047FF;
+  --primary-foreground: #FFFFFF;
+  --radius: 8px;
 }
 
 html, body {

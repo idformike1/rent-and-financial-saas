@@ -170,7 +170,7 @@ export default function MassIngestionClient() {
             {data.length > 0 ? (
               <div className="max-h-[600px] overflow-y-auto w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
-                  <thead className="sticky top-0 bg-[var(--card)]/90 backdrop-blur border-b border-[var(--border)] z-10 shadow-sm">
+                  <thead className="sticky top-0 bg-[var(--card)]/90 border-b border-[var(--border)] z-10 shadow-sm">
                     <tr>
                       <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Date</th>
                       <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Payee</th>
@@ -220,7 +220,7 @@ export default function MassIngestionClient() {
                 className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 transition-all ${
                   data.length > 0 && !isProcessing && !errorStatus
                     ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[0_0_20px_rgba(255,87,51,0.2)] hover:shadow-none hover:translate-y-[1px]'
-                    : 'bg-[var(--muted)]/10 text-[var(--muted)] cursor-not-allowed border border-white/5 disabled:opacity-50'
+                    : 'bg-[var(--muted)]/10 text-[var(--muted)] cursor-not-allowed border border-border disabled:opacity-50'
                 }`}
               >
                 {isProcessing ? (

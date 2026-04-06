@@ -64,12 +64,13 @@ export default function GlobalSearch() {
   }
 
   // All result types now use Ember-tinted styling — no legacy emerald/blue
+  // Mercury: Result types now use variable-based styling
   const getTypeStyle = (type: string) => {
     switch (type) {
-      case 'TENANT':     return 'bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20'
-      case 'ASSET':      return 'bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20'
-      case 'GOVERNANCE': return 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-      default:           return 'bg-white/3 text-[var(--muted)] border-border'
+      case 'TENANT':     return 'bg-primary/10 text-primary border-primary/20'
+      case 'ASSET':      return 'bg-primary/10 text-primary border-primary/20'
+      case 'GOVERNANCE': return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+      default:           return 'bg-muted border-border text-muted-foreground'
     }
   }
 
@@ -77,14 +78,14 @@ export default function GlobalSearch() {
     <div className="relative flex-1 max-w-xl mx-8" ref={dropdownRef}>
       {/* Search Input Bar */}
       <div className={cn(
-        "flex items-center gap-4 h-11 px-5 rounded-xl glass-panel transition-all duration-500",
+        "flex items-center gap-4 h-11 px-5 rounded-[8px] bg-muted/50 border border-border transition-all duration-200",
         isOpen
-          ? "border-[var(--primary)]/50 ring-4 ring-[var(--primary)]/10"
-          : "hover:border-border"
+          ? "bg-card border-primary ring-2 ring-primary/10"
+          : "hover:border-muted-foreground/30"
       )}>
         {isSearching
-          ? <Loader2 className="w-4 h-4 animate-spin text-[var(--primary)]" />
-          : <Search className="w-4 h-4 text-[var(--muted)]" />
+          ? <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          : <Search className="w-4 h-4 text-muted-foreground" />
         }
         <input
           type="text"
@@ -92,11 +93,11 @@ export default function GlobalSearch() {
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="Search Assets & Tenants..."
-          className="flex-1 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-foreground placeholder:text-[var(--muted)]/50 outline-none"
+          className="flex-1 bg-transparent border-none text-[13px] font-bold text-foreground placeholder:text-muted-foreground outline-none uppercase tracking-tight"
         />
         <div className="flex items-center gap-1 opacity-40">
-          <span className="text-[8px] font-bold border border-border px-1.5 py-0.5 rounded">⌘</span>
-          <span className="text-[8px] font-bold border border-border px-1.5 py-0.5 rounded">K</span>
+          <span className="text-[10px] font-bold border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">⌘</span>
+          <span className="text-[10px] font-bold border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">K</span>
         </div>
       </div>
 
@@ -107,18 +108,18 @@ export default function GlobalSearch() {
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-14 left-0 right-0 max-h-[480px] overflow-hidden rounded-3xl glass-panel shadow-2xl z-50 flex flex-col"
+            transition={{ duration: 0.1, ease: "easeOut" }}
+            className="absolute top-14 left-0 right-0 max-h-[520px] overflow-hidden rounded-[12px] bg-card border border-border z-50 flex flex-col"
           >
-            <div className="p-6 overflow-y-auto flex-1 space-y-8">
+            <div className="p-4 overflow-y-auto flex-1 space-y-8 scrollbar-hide">
 
               {/* Search Results Section */}
               <div className="space-y-3">
-                <p className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.3em] pl-2 border-l-2 border-[var(--primary)] ml-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-3 border-l-2 border-primary">
                   Quantum Suggestions
                 </p>
                 {results.length === 0 && !isSearching ? (
-                  <p className="p-5 text-center text-[10px] font-black text-[var(--muted)] uppercase tracking-widest bg-card/[0.02] rounded-3xl border border-dashed border-white/5">
+                  <p className="p-10 text-center text-[12px] font-bold text-muted-foreground bg-muted/50 rounded-[8px] border border-dashed border-border uppercase tracking-widest">
                     No signals detected for search parameters.
                   </p>
                 ) : (
@@ -127,26 +128,26 @@ export default function GlobalSearch() {
                       <Link
                         key={`${r.type}-${r.id}`}
                         href={r.href}
-                        className="flex items-center justify-between p-4 rounded-3xl hover:bg-[var(--primary-muted)] transition-all group border border-transparent hover:border-[var(--primary)]/10"
+                        className="flex items-center justify-between p-3 rounded-[8px] hover:bg-foreground/[0.03] transition-none group border border-transparent hover:border-border"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border transition-transform group-hover:scale-105", getTypeStyle(r.type))}>
+                          <div className={cn("w-10 h-10 rounded-[8px] flex items-center justify-center border transition-none bg-muted text-muted-foreground border-border", getTypeStyle(r.type))}>
                             {getIcon(r.type)}
                           </div>
                           <div>
-                            <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-[var(--primary)] transition-colors">
+                            <h4 className="text-[13px] font-bold text-foreground tracking-tight leading-none mb-1 transition-none uppercase">
                               {r.title}
                             </h4>
-                            <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-widest">
+                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
                               {r.description || r.type}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className={cn("text-[8px] font-black px-2 py-0.5 rounded-full border uppercase tracking-widest", getTypeStyle(r.type))}>
+                        <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-none">
+                          <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-[4px] border uppercase tracking-widest", getTypeStyle(r.type))}>
                             {r.type}
                           </span>
-                          <ArrowRight className="w-4 h-4 text-[var(--primary)]" />
+                          <ArrowRight className="w-4 h-4 text-primary" />
                         </div>
                       </Link>
                     ))}
@@ -156,7 +157,7 @@ export default function GlobalSearch() {
 
               {/* Sovereign Shortcuts Section */}
               <div className="space-y-3">
-                <p className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.3em] pl-2 border-l-2 border-[var(--primary)]/40 ml-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-3 border-l-2 border-border">
                   Sovereign Shortcuts
                 </p>
                 <div className="grid grid-cols-1 gap-1">
@@ -164,17 +165,17 @@ export default function GlobalSearch() {
                     <Link
                       key={s.title}
                       href={s.href}
-                      className="flex items-center justify-between p-4 rounded-3xl hover:bg-[var(--primary-muted)] transition-all border border-transparent hover:border-[var(--primary)]/10 group"
+                      className="flex items-center justify-between p-3 rounded-[8px] hover:bg-foreground/[0.03] transition-none border border-transparent hover:border-border group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-9 h-9 rounded-xl bg-white/3 flex items-center justify-center text-[var(--muted)] group-hover:text-[var(--primary)] transition-colors border border-white/5">
+                        <div className="w-10 h-10 rounded-[8px] bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-none border border-border">
                           <s.icon className="w-4 h-4" />
                         </div>
-                        <h4 className="text-[11px] font-black text-[var(--muted)] group-hover:text-foreground uppercase tracking-[0.1em] transition-colors">
+                        <h4 className="text-[12px] font-bold text-muted-foreground group-hover:text-foreground uppercase tracking-widest transition-none">
                           {s.title}
                         </h4>
                       </div>
-                      <Target className="w-4 h-4 text-[var(--primary)] opacity-0 group-hover:opacity-100 transition-all" />
+                      <Target className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-none" />
                     </Link>
                   ))}
                 </div>
@@ -183,13 +184,19 @@ export default function GlobalSearch() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-white/5 flex justify-between items-center px-8">
-              <span className="text-[8px] font-black text-[var(--muted)] uppercase tracking-widest">
-                Axiom 2026 Deep Scan
+            <div className="p-4 border-t border-border flex justify-between items-center px-6 bg-muted/50">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                Mercury Deep Scan
               </span>
-              <span className="text-[8px] font-black text-[var(--muted)] uppercase tracking-widest">
-                <kbd className="bg-white/3 px-1.5 py-0.5 rounded border border-border not-italic mr-1">ESC</kbd>
-                CLOSE
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-4">
+                <span className="flex items-center gap-1.5 opacity-60">
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-italic font-bold shadow-sm">ESC</kbd>
+                  CLOSE
+                </span>
+                <span className="flex items-center gap-1.5 opacity-60">
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-italic font-bold shadow-sm">⏎</kbd>
+                  NAVIGATE
+                </span>
               </span>
             </div>
           </motion.div>

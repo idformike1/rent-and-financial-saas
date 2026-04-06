@@ -26,10 +26,10 @@ export default function Toaster() {
           key={t.id} 
           className={`
             pointer-events-auto
-            flex items-center gap-4 p-5 rounded-3xl shadow-premium backdrop-blur-md border border-border
+            flex items-center gap-4 p-5 rounded-3xl border border-border
             animate-in slide-in-from-right-full duration-500
-            ${t.type === 'success' ? 'bg-[var(--primary)] text-foreground shadow-[var(--primary)]/20' : ''}
-            ${t.type === 'error' ? 'bg-rose-600 text-foreground shadow-rose-500/20' : ''}
+            ${t.type === 'success' ? 'bg-[var(--primary)] text-foreground' : ''}
+            ${t.type === 'error' ? 'bg-rose-600 text-foreground' : ''}
             ${t.type === 'info' ? 'glass-panel text-foreground' : ''}
           `}
         >
@@ -45,7 +45,7 @@ export default function Toaster() {
           </div>
           <button 
             onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
-            className="absolute top-4 right-4 p-1 hover:bg-white/5 rounded-xl transition-colors"
+            className="absolute top-4 right-4 p-1 hover:bg-muted rounded-xl transition-colors"
           >
             <X className="w-4 h-4 text-foreground/60 hover:text-foreground transition-colors" />
           </button>

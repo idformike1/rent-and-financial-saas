@@ -59,72 +59,72 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
 
   return (
     <div className="w-full relative">
-      <div className="w-full overflow-x-auto border border-[#23252A] rounded-[6px]">
+      <div className="w-full overflow-x-auto border border-border rounded-[8px] bg-card">
         <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
-          <thead className="border-b border-[#23252A]">
-            <tr className="bg-transparent">
-              <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">Identity</th>
-              <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">Role Allocation</th>
-              <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-center">Perms</th>
-              <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-center">Status</th>
-              <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-right">Nuclear</th>
+          <thead className="bg-muted/50 border-b border-border">
+            <tr>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Identity</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Role Allocation</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-center">Perms</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-center">Status</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-none">
+          <tbody className="divide-y divide-border">
             {users.map((user) => (
-              <tr key={user.id} className="border-b border-[#23252A] hover:bg-[#14161A] group transition-none cursor-pointer">
-                <td className="px-4 py-4">
+              <tr key={user.id} className="h-[52px] hover:bg-foreground/[0.02] group transition-none cursor-pointer">
+                <td className="px-4 py-3">
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-white tracking-tight">
+                    <span className="text-[13px] font-bold text-foreground tracking-tight">
                       {user.name || 'UNNAMED OPERATOR'}
                     </span>
-                    <span className="text-[10px] text-[#8A919E] font-mono lowercase">{user.email}</span>
+                    <span className="text-[10px] text-muted-foreground font-bold lowercase">{user.email}</span>
                   </div>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-3">
                   <Select 
                     value={user.role}
                     disabled={user.id === currentUserId}
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    className="w-32 py-1 h-8"
+                    className="w-32 py-1 h-8 text-[11px] font-bold"
                   >
                     <option value="OWNER">OWNER</option>
                     <option value="ADMIN">ADMIN</option>
                     <option value="MANAGER">MANAGER</option>
                   </Select>
                 </td>
-                <td className="px-4 py-4 text-center">
+                <td className="px-4 py-3 text-center">
                   <button 
                     onClick={() => handleToggleEdit(user.id, user.canEdit)}
                     className={cn(
-                      "p-1.5 rounded-[4px] border transition-none",
+                      "p-1.5 rounded-[6px] border transition-none",
                       user.canEdit 
-                        ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-400" 
-                        : "border-[#23252A] bg-transparent text-[#8A919E]"
+                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                        : "border-border bg-muted/50 text-muted-foreground"
                     )}
                   >
                     <Shield size={14} fill={user.canEdit ? "currentColor" : "none"} />
                   </button>
                 </td>
-                <td className="px-4 py-4 text-center">
+                <td className="px-4 py-3 text-center">
                   <button 
                     disabled={user.id === currentUserId}
                     onClick={() => handleToggleActive(user.id, user.isActive)}
                     className={cn(
                       "inline-flex items-center gap-2 px-2 py-0.5 rounded-[4px] border text-[10px] font-bold uppercase transition-none disabled:opacity-10",
                       user.isActive 
-                        ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400' 
-                        : 'border-rose-500/20 bg-rose-500/5 text-rose-500'
+                        ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+                        : 'border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400'
                     )}
                   >
                     {user.isActive ? 'ACTIVE' : 'LOCKED'}
                   </button>
                 </td>
-                <td className="px-4 py-4 text-right">
+                <td className="px-4 py-3 text-right">
                   <button 
                     disabled={user.id === currentUserId}
                     onClick={() => setDeleteModal({ open: true, user })}
-                    className="p-1.5 text-rose-500 hover:bg-rose-500/10 rounded-[4px] transition-none disabled:opacity-10"
+                    className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-[6px] transition-none disabled:opacity-10"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -135,32 +135,32 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
         </table>
       </div>
 
-      {/* ── STEP 10: MERCURY MODAL ─────────────────────────────────────────── */}
+      {/* ── MERCURY MODAL (DUAL-THEME) ─────────────────────────────────────────── */}
       {deleteModal.open && deleteModal.user && (
         <>
-          <div className="fixed inset-0 z-50 bg-[#0B0D10]/90" />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-[#14161A] border border-[#23252A] rounded-[8px] shadow-none p-6 flex flex-col">
+          <div className="fixed inset-0 z-50 bg-background/80" />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[12px] p-8 flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Authorize Nuclear Purge</h2>
+              <h2 className="text-sm font-bold text-foreground uppercase tracking-widest">Authorize Nuclear Purge</h2>
               <button 
                 onClick={() => setDeleteModal({ open: false, user: null })} 
-                className="text-[#8A919E] hover:text-white transition-none"
+                className="text-muted-foreground hover:text-foreground transition-none"
               >
                 <X size={16} />
               </button>
             </div>
             
-            <div className="bg-rose-500/5 border border-rose-500/10 p-4 mb-6 rounded-[6px] flex items-start gap-4">
-              <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+            <div className="bg-red-500/10 border border-red-500/20 p-4 mb-8 rounded-[8px] flex items-start gap-4">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p className="text-xs font-medium text-white italic tracking-tight">Vaporizing identity: {deleteModal.user.email}</p>
-                <p className="text-[10px] text-[#8A919E] uppercase tracking-widest leading-relaxed">This action is irreversible. All access tokens will be invalidated immediately.</p>
+                <p className="text-xs font-bold text-foreground">Vaporizing identity: {deleteModal.user.email}</p>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-tight leading-relaxed font-bold">This action is irreversible. All access tokens will be invalidated immediately.</p>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="text-[10px] font-medium text-[#8A919E] uppercase tracking-widest block mb-2">
+                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block mb-2">
                   Type "CONFIRM" to validate
                 </label>
                 <Input 
@@ -168,7 +168,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                   placeholder="CONFIRM"
                   value={confirmEmail}
                   onChange={(e) => setConfirmEmail(e.target.value)}
-                  className="font-mono text-xs uppercase"
+                  className="font-mono text-[13px] uppercase h-12"
                 />
               </div>
               
@@ -176,7 +176,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 variant="primary"
                 disabled={confirmEmail !== 'CONFIRM'}
                 onClick={handleDelete}
-                className="w-full bg-rose-500 text-[#0B0D10] hover:bg-rose-400 border-none h-12"
+                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 rounded-[8px]"
               >
                 EXECUTE PURGE
               </Button>

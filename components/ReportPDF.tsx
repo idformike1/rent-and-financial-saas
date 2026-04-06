@@ -1,10 +1,26 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 
+// ── MERCURY PRINT PALETTE ───────────────────────────────────────────────────
+// PDF renderers cannot consume CSS variables.
+// These constants mirror the Mercury Light Mode ground truth exactly.
+const P = {
+  bg:         '#FFFFFF',
+  surface:    '#F5F6F8',
+  border:     '#E5E7EB',
+  header:     '#14161A',
+  body:       '#3D4249',
+  muted:      '#5C6470',
+  subtle:     '#8A919E',
+  positive:   '#059669',  // emerald-600
+  negative:   '#DC2626',  // rose-600
+  stripe:     '#F9FAFB',
+};
+
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    backgroundColor: '#ffffff',
+    backgroundColor: P.bg,
     fontFamily: 'Helvetica',
   },
   header: {
@@ -13,31 +29,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
     borderBottomWidth: 2,
-    borderBottomColor: '#0f172a',
+    borderBottomColor: P.header,
     paddingBottom: 20,
   },
   titleContainer: {
     flexDirection: 'column',
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#0f172a',
-    textTransform: 'uppercase',
-  },
-  subtitle: {
-    fontSize: 10,
-    color: '#64748b',
-    marginTop: 4,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    marginBottom: 15,
-    marginTop: 25,
+    color: P.header,
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  subtitle: {
+    fontSize: 9,
+    color: P.subtle,
+    marginTop: 5,
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: P.muted,
+    marginBottom: 12,
+    marginTop: 24,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
   statsRow: {
     flexDirection: 'row',
@@ -47,49 +65,55 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    padding: 15,
-    backgroundColor: '#f8fafc',
-    borderRadius: 8,
+    padding: 14,
+    backgroundColor: P.surface,
+    borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: P.border,
   },
   statLabel: {
-    fontSize: 8,
-    color: '#64748b',
+    fontSize: 7,
+    color: P.subtle,
     textTransform: 'uppercase',
-    marginBottom: 5,
+    letterSpacing: 1,
+    marginBottom: 6,
   },
   statValue: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: P.header,
   },
   table: {
     display: 'flex',
     width: 'auto',
-    marginTop: 20,
+    marginTop: 16,
+    borderRadius: 6,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: P.border,
   },
   tableRow: {
     flexDirection: 'row',
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: P.border,
     borderBottomWidth: 1,
     alignItems: 'center',
     minHeight: 30,
   },
   tableHeader: {
-    backgroundColor: '#0f172a',
-    minHeight: 35,
+    backgroundColor: P.header,
+    minHeight: 32,
   },
   headerText: {
-    fontSize: 8,
-    color: '#94a3b8',
+    fontSize: 7,
+    color: P.subtle,
     fontWeight: 'bold',
     textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   tableCell: {
     fontSize: 8,
     padding: 8,
-    color: '#334155',
+    color: P.body,
   },
   dateCol: { width: '15%' },
   idCol: { width: '25%' },
@@ -102,14 +126,16 @@ const styles = StyleSheet.create({
     left: 40,
     right: 40,
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
+    borderTopColor: P.border,
     paddingTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   footerText: {
-    fontSize: 8,
-    color: '#94a3b8',
+    fontSize: 7,
+    color: P.subtle,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   }
 });
 
@@ -127,7 +153,7 @@ export const ReportPDF = ({ data, entries }: { data: any, entries: any[] }) => (
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
           <Text style={styles.statLabel}>Net Operating Income</Text>
-          <Text style={[styles.statValue, { color: '#16a34a' }]}>${data.netRealizableRevenue.toLocaleString()}</Text>
+          <Text style={[styles.statValue, { color: P.positive }]}>${data.netRealizableRevenue.toLocaleString()}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statLabel}>Total Collected Income</Text>
@@ -135,7 +161,7 @@ export const ReportPDF = ({ data, entries }: { data: any, entries: any[] }) => (
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statLabel}>Operational Delta</Text>
-          <Text style={[styles.statValue, { color: '#dc2626' }]}>-${data.totalOperationalExpense.toLocaleString()}</Text>
+          <Text style={[styles.statValue, { color: P.negative }]}>-${data.totalOperationalExpense.toLocaleString()}</Text>
         </View>
       </View>
 
@@ -152,12 +178,12 @@ export const ReportPDF = ({ data, entries }: { data: any, entries: any[] }) => (
         {entries.map((e, i) => {
           const isDebit = Number(e.amount) > 0;
           return (
-            <View key={e.id} style={[styles.tableRow, { backgroundColor: i % 2 === 0 ? '#ffffff' : '#f8fafc' }]}>
+            <View key={e.id} style={[styles.tableRow, { backgroundColor: i % 2 === 0 ? P.bg : P.stripe }]}>
               <View style={[styles.tableCell, styles.dateCol]}><Text>{e.date.toISOString().split('T')[0]}</Text></View>
               <View style={[styles.tableCell, styles.idCol]}><Text>{e.transactionId}</Text></View>
               <View style={[styles.tableCell, styles.accountCol]}><Text>{e.account.name}</Text></View>
-              <View style={[styles.tableCell, styles.debitCol]}><Text style={{ color: '#16a34a', fontWeight: 'bold' }}>{isDebit ? `$${Number(e.amount).toFixed(2)}` : ''}</Text></View>
-              <View style={[styles.tableCell, styles.creditCol]}><Text style={{ color: '#dc2626', fontWeight: 'bold' }}>{!isDebit ? `$${Math.abs(Number(e.amount)).toFixed(2)}` : ''}</Text></View>
+              <View style={[styles.tableCell, styles.debitCol]}><Text style={{ color: P.positive, fontWeight: 'bold' }}>{isDebit ? `$${Number(e.amount).toFixed(2)}` : ''}</Text></View>
+              <View style={[styles.tableCell, styles.creditCol]}><Text style={{ color: P.negative, fontWeight: 'bold' }}>{!isDebit ? `$${Math.abs(Number(e.amount)).toFixed(2)}` : ''}</Text></View>
             </View>
           );
         })}

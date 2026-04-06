@@ -18,7 +18,7 @@ export default async function ReportsPage() {
             </div>
             <div>
                <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">Intelligence <span className="text-brand">Hub</span></h1>
-               <p className="text-slate-400 font-bold tracking-[0.3em] uppercase text-[10px] mt-2">Strategic Fiscal Analysis & Reporting Engine</p>
+               <p className="text-muted-foreground font-bold tracking-[0.3em] uppercase text-[10px] mt-2">Strategic Fiscal Analysis & Reporting Engine</p>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@ export default async function ReportsPage() {
       </div>
 
       {/* AUDIT BUMPER: FINOVA STANDARD */}
-      <Card className="bg-surface-900 dark:bg-surface-900 border-none rounded-[3rem] p-12 flex flex-col md:flex-row items-center justify-between gap-10 shadow-premium-lg group overflow-hidden relative">
+      <Card className="bg-surface-900 dark:bg-surface-900 border-none rounded-[3rem] p-12 flex flex-col md:flex-row items-center justify-between gap-10 group overflow-hidden relative">
           <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 rounded-full -mr-40 -mt-40 transition-transform duration-700 group-hover:scale-110" />
           <div className="flex items-center space-x-8 relative z-10">
              <div className="w-20 h-20 rounded-[2rem] bg-[var(--primary-muted)]0/10 flex items-center justify-center">
@@ -44,10 +44,10 @@ export default async function ReportsPage() {
              </div>
              <div className="space-y-2">
                 <p className="text-foreground font-black uppercase italic tracking-tighter text-2xl leading-none">Predictive Audit Readiness</p>
-                <p className="text-slate-400 font-medium text-xs tracking-wide uppercase opacity-70">Engineered for 100% GAAP compliance and IRS reporting integrity.</p>
+                <p className="text-muted-foreground font-medium text-xs tracking-wide uppercase opacity-70">Engineered for 100% GAAP compliance and IRS reporting integrity.</p>
              </div>
           </div>
-          <Button variant="primary" className="h-14 px-10 rounded-3xl bg-card text-foreground hover:bg-slate-50 transition-all font-black uppercase tracking-widest relative z-10 shadow-xl">
+          <Button variant="primary" className="h-14 px-10 rounded-3xl bg-card text-foreground hover:bg-muted transition-all font-black uppercase tracking-widest relative z-10">
              Enter Audit Mode <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" />
           </Button>
       </Card>

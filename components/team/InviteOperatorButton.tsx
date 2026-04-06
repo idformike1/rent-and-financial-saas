@@ -39,7 +39,7 @@ export default function InviteOperatorButton() {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-[var(--background)]/60 z-50 flex items-center justify-center p-4 backdrop-blur-md transition-all duration-500">
+        <div className="fixed inset-0 bg-[var(--background)]/60 z-50 flex items-center justify-center p-4 transition-all duration-500">
           <div className="glass-panel p-12 w-full max-w-md shadow-[0_0_40px_rgba(255,87,51,0.15)] rounded-[2.5rem] relative overflow-hidden border border-[var(--primary)]/10 animate-in zoom-in-95 duration-300">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full -mr-32 -mt-32 pointer-events-none" />
             <button 

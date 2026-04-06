@@ -18,7 +18,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
   return (
     <div className="flex flex-col md:flex-row gap-8">
       {/* Left Column: Profile */}
-      <div className="w-full md:w-1/3 bg-card border border-border shadow-premium sm:rounded-xl p-6 h-fit">
+      <div className="w-full md:w-1/3 bg-card border border-border sm:rounded-xl p-6 h-fit">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-foreground">{tenant.name}</h2>
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-[var(--primary-muted)] text-[var(--primary)] uppercase tracking-wider border border-[var(--primary)]/20">
@@ -29,7 +29,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
         <div className="space-y-4">
           <button 
             onClick={() => setDrawerOpen(true)}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,#E64A19)] text-foreground shadow-premium flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
+            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,#E64A19)] text-foreground flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Receive Payment
@@ -38,31 +38,31 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
       </div>
 
       {/* Right Column: Ledger / Charges */}
-      <div className="w-full md:w-2/3 bg-card border border-border shadow-premium sm:rounded-xl overflow-hidden">
-        <div className="px-6 py-5 border-b border-border flex justify-between items-center bg-slate-50">
+      <div className="w-full md:w-2/3 bg-card border border-border sm:rounded-xl overflow-hidden">
+        <div className="px-6 py-5 border-b border-border flex justify-between items-center bg-muted">
           <h3 className="text-lg leading-6 font-medium text-foreground flex items-center">
-            <FileText className="mr-2 h-5 w-5 text-slate-500" />
+            <FileText className="mr-2 h-5 w-5 text-muted-foreground" />
             Outstanding Charges
           </h3>
-          <span className="text-sm font-medium text-slate-500">
+          <span className="text-sm font-medium text-muted-foreground">
             Total Due: ${charges.reduce((acc, c) => acc + (c.amount - c.amountPaid), 0).toFixed(2)}
           </span>
         </div>
         
         <ul className="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
           {charges.length === 0 ? (
-            <li className="px-6 py-10 text-center text-slate-500 text-sm italic">
+            <li className="px-6 py-10 text-center text-muted-foreground text-sm italic">
               No outstanding charges found.
             </li>
           ) : (
             charges.map((charge) => (
-              <li key={charge.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
+              <li key={charge.id} className="px-6 py-4 hover:bg-muted transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-foreground truncate uppercase tracking-wider">
                       {charge.type}
                     </p>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Due: {new Date(charge.dueDate).toLocaleDateString()}
                     </p>
                   </div>

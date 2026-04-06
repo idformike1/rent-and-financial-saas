@@ -64,7 +64,7 @@ export default function WaterfallAnalyticsPage() {
     <div className="p-8 lg:p-12 space-y-12 bg-surface-50 dark:bg-surface-950 min-h-screen">
       
       {/* HEADER COMMAND STRIP (PHASE 3 MANDATE: FINOVA CARD WRAPPER) */}
-      <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-8 gap-8 border-none bg-surface-900 text-foreground shadow-premium-lg">
+      <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-8 gap-8 border-none bg-surface-900 text-foreground">
          <div>
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-14 h-14 rounded-3xl bg-brand/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -75,7 +75,7 @@ export default function WaterfallAnalyticsPage() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-               <Badge className="bg-white/5 text-foreground border-border">GAAP V.3 Protocol</Badge>
+               <Badge className="bg-muted text-foreground border-border">GAAP V.3 Protocol</Badge>
                <button 
                  onClick={fetchWaterfall}
                  className="text-[10px] font-black text-brand uppercase tracking-widest hover:text-foreground transition-colors flex items-center"
@@ -86,13 +86,13 @@ export default function WaterfallAnalyticsPage() {
          </div>
 
          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 w-full md:w-auto">
-            <div className="bg-white/3 border border-border p-5 rounded-3xl">
+            <div className="bg-muted/50 border border-border p-5 rounded-3xl">
                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-2">Gross Intent</p>
                <h3 className="text-2xl font-black text-[var(--primary)] tracking-tighter italic">
                   +${data?.stats.totalRevenue.toLocaleString() || '0.00'}
                </h3>
             </div>
-            <div className="bg-white/3 border border-border p-5 rounded-3xl">
+            <div className="bg-muted/50 border border-border p-5 rounded-3xl">
                <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-2">Cost Realization</p>
                <h3 className="text-2xl font-black text-rose-400 tracking-tighter italic">
                   -${data?.stats.totalExpense.toLocaleString() || '0.00'}
@@ -108,19 +108,19 @@ export default function WaterfallAnalyticsPage() {
       </Card>
 
       {/* DYNAMIC WATERFALL CANVAS: ENSURING DARK MODE CONTRAST ADHERENCE */}
-      <Card className="p-0 overflow-hidden h-[750px] relative border-none bg-card dark:bg-surface-900 shadow-premium">
+      <Card className="p-0 overflow-hidden h-[750px] relative border-none bg-card dark:bg-surface-900">
          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
             <Layers className="w-96 h-96 text-foreground dark:text-foreground" />
          </div>
 
          {!hasData ? (
            <div className="h-full flex flex-col items-center justify-center p-16 space-y-8">
-              <div className="w-20 h-20 rounded-full bg-surface-50 dark:bg-surface-800 flex items-center justify-center">
-                 <AlertCircle className="w-10 h-10 text-slate-300 dark:text-slate-400" />
+              <div className="w-20 h-20 rounded-full bg-surface-50 dark:bg-muted flex items-center justify-center">
+                 <AlertCircle className="w-10 h-10 text-muted-foreground dark:text-muted-foreground" />
               </div>
               <div className="text-center">
                  <h2 className="text-2xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-foreground">Null Revenue Detected</h2>
-                 <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-3 max-w-xs leading-relaxed">
+                 <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest mt-3 max-w-xs leading-relaxed">
                    The Waterfall Engine requires at least one 'REVENUE' class ledger with linked 'LedgerEntries'.
                  </p>
               </div>
@@ -133,8 +133,8 @@ export default function WaterfallAnalyticsPage() {
                  {data?.nodes.filter(n => n.id.length > 25 && !['GROSS_REVENUE', 'OPERATING_EXPENSES', 'NOI'].includes(n.id)).slice(0, 6).map(node => (
                     <div key={node.id} className="group">
                        <div className="flex items-center justify-end space-x-3">
-                          <span className="text-[10px] font-black uppercase tracking-tighter text-slate-400 truncate max-w-[100px]">{node.name}</span>
-                          <div className="w-2 h-10 bg-surface-100 dark:bg-surface-800 rounded-full group-hover:bg-brand transition-all shadow-premium" />
+                          <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground truncate max-w-[100px]">{node.name}</span>
+                          <div className="w-2 h-10 bg-surface-100 dark:bg-muted rounded-full group-hover:bg-brand transition-all" />
                        </div>
                     </div>
                  ))}
@@ -150,17 +150,17 @@ export default function WaterfallAnalyticsPage() {
                  {/* CORE NODES */}
                  <div className="absolute inset-x-0 inset-y-0 flex items-center justify-between pointer-events-none p-12">
                     <div className="space-y-48">
-                        <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/20 px-8 py-4 rounded-3xl backdrop-blur-sm">
+                        <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/20 px-8 py-4 rounded-3xl">
                            <p className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest text-center">Gross Revenue</p>
                         </div>
-                        <div className="bg-rose-500/10 border border-rose-500/20 px-8 py-4 rounded-3xl backdrop-blur-sm">
+                        <div className="bg-rose-500/10 border border-rose-500/20 px-8 py-4 rounded-3xl">
                            <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest text-center">Total Costs</p>
                         </div>
                     </div>
                     
-                    <div className="bg-surface-900 border border-brand/50 p-12 rounded-[3.5rem] shadow-premium-lg flex flex-col items-center">
+                    <div className="bg-surface-900 border border-brand/50 p-12 rounded-[3.5rem] flex flex-col items-center">
                        <Pulse className="w-10 h-10 text-brand mb-6 animate-pulse" />
-                       <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">GAAP Realization</h5>
+                       <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground mb-2">GAAP Realization</h5>
                        <h4 className="text-4xl font-black uppercase italic tracking-tighter text-foreground">NET PROFIT</h4>
                     </div>
                  </div>
@@ -168,8 +168,8 @@ export default function WaterfallAnalyticsPage() {
 
               {/* TERMINAL SINK DETAILS */}
               <div className="w-[180px] flex flex-col justify-center space-y-6">
-                 <div className="p-6 bg-surface-50 dark:bg-surface-800 rounded-3xl space-y-4">
-                    <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-surface-100 dark:border-surface-700 pb-2">Yield Metrics</h6>
+                 <div className="p-6 bg-surface-50 dark:bg-muted rounded-3xl space-y-4">
+                    <h6 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground border-b border-surface-100 dark:border-surface-700 pb-2">Yield Metrics</h6>
                     <div className="space-y-3">
                        <p className="text-xs font-black text-surface-900 dark:text-foreground">Margin: 64%</p>
                        <p className="text-xs font-black text-surface-900 dark:text-foreground">NOI: +12%</p>
@@ -188,7 +188,7 @@ export default function WaterfallAnalyticsPage() {
             </div>
             <div>
                <h5 className="text-xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-foreground">Distribution Logic Protocol</h5>
-               <p className="text-sm font-medium text-slate-400 mt-2 leading-relaxed">
+               <p className="text-sm font-medium text-muted-foreground mt-2 leading-relaxed">
                  Financial data is autonomously routed via class discriminators. The red cost streams are calibrated to ensure peak readability in dark mode without color vibration.
                </p>
             </div>

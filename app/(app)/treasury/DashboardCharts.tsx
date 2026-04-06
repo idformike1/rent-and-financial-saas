@@ -21,129 +21,137 @@ interface DashboardChartsProps {
   recoveryData: { name: string; value: number }[];
 }
 
-const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
+// Mercury chart palette — intentional semantic colors for data visualization.
+// These are kept as explicit hex values because they represent DATA series
+// colours (not UI chrome) and must remain consistent across both themes.
+const CHART_SERIES = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 
 export default function DashboardCharts({ trendData, recoveryData }: DashboardChartsProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      {/* HISTORICAL EGR LINE CHART (PHASE 2) */}
+      {/* HISTORICAL EGR AREA CHART */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="lg:col-span-2 bg-card/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 shadow-premium"
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="lg:col-span-2 bg-card border border-border rounded-[8px] p-8"
       >
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-8">
            <div>
-              <h3 className="text-xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">Historical EGR Velocity</h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Gross realization over 6 months</p>
+              <h3 className="text-[14px] font-bold text-foreground uppercase tracking-tight leading-none">Historical EGR Velocity</h3>
+              <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-2">Gross realization over 6 months</p>
            </div>
-           <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                 <div className="w-2 h-2 rounded-full bg-brand" />
-                 <span className="text-[9px] font-bold text-slate-500 uppercase">Gross Revenue</span>
-              </div>
+           <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#4f46e5' }} />
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Gross Revenue</span>
            </div>
         </div>
         
-        <div className="h-80 w-full">
+        <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={trendData}>
+            <AreaChart data={trendData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
               <defs>
                 <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15}/>
+                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/>
                   <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" opacity={0.5} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={1} />
               <XAxis 
                 dataKey="month" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 900}} 
-                dy={16} 
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 700 }} 
+                dy={12} 
               />
               <YAxis 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 900}} 
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 700 }} 
                 tickFormatter={(val) => `$${val/1000}k`} 
               />
               <Tooltip 
                 contentStyle={{ 
-                  borderRadius: '1.5rem', 
-                  border: 'none', 
-                  backgroundColor: 'rgba(15, 23, 42, 0.9)', 
-                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                  padding: '1rem',
-                  backdropFilter: 'blur(10px)'
+                  borderRadius: '8px', 
+                  border: '1px solid var(--border)', 
+                  backgroundColor: 'var(--card)', 
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                  padding: '12px 16px',
                 }} 
-                itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                labelStyle={{ color: '#64748b', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase' }}
+                itemStyle={{ color: 'var(--foreground)', fontSize: '12px', fontWeight: 700 }}
+                labelStyle={{ color: 'var(--muted-foreground)', fontSize: '10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
               />
               <Area 
                 type="monotone" 
                 dataKey="income" 
                 stroke="#4f46e5" 
-                strokeWidth={4} 
+                strokeWidth={2.5} 
                 fillOpacity={1} 
                 fill="url(#colorIncome)" 
-                activeDot={{ r: 8, fill: '#4f46e5', stroke: '#fff', strokeWidth: 2 }} 
+                activeDot={{ r: 6, fill: '#4f46e5', stroke: 'var(--card)', strokeWidth: 2 }} 
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </motion.div>
 
-      {/* OPERATING BREAKDOWN (NOI) PIE CHART (PHASE 2) */}
+      {/* NOI PIE CHART */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="bg-card/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 shadow-premium flex flex-col"
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="bg-card border border-border rounded-[8px] p-8 flex flex-col"
       >
-        <div className="mb-8">
-           <h3 className="text-xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">NOI Allocation</h3>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Operating Breakdown</p>
+        <div className="mb-6">
+           <h3 className="text-[14px] font-bold text-foreground uppercase tracking-tight leading-none">NOI Allocation</h3>
+           <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-2">Operating Breakdown</p>
         </div>
         
-        <div className="flex-1 relative">
+        <div className="flex-1 relative min-h-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={recoveryData}
-                innerRadius={70}
-                outerRadius={100}
-                paddingAngle={8}
+                innerRadius={60}
+                outerRadius={85}
+                paddingAngle={6}
                 dataKey="value"
                 stroke="none"
-                cornerRadius={8}
+                cornerRadius={4}
               >
                 {recoveryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={CHART_SERIES[index % CHART_SERIES.length]} />
                 ))}
               </Pie>
               <Tooltip 
-                contentStyle={{ borderRadius: '1.5rem', border: 'none', backgroundColor: 'rgba(15, 23, 42, 0.9)', color: '#fff' }} 
-                itemStyle={{ color: '#fff', fontSize: '12px' }}
+                contentStyle={{ 
+                  borderRadius: '8px', 
+                  border: '1px solid var(--border)', 
+                  backgroundColor: 'var(--card)', 
+                  color: 'var(--foreground)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                }} 
+                itemStyle={{ color: 'var(--foreground)', fontSize: '11px', fontWeight: 700 }}
               />
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-             <span className="text-3xl font-black italic tracking-tighter text-foreground dark:text-foreground">84%</span>
-             <span className="text-[8px] font-black uppercase text-slate-400 tracking-[0.2em] mt-1">Efficiency</span>
+             <span className="font-finance text-2xl font-bold text-foreground">84%</span>
+             <span className="text-[9px] font-bold uppercase text-muted-foreground tracking-[0.2em] mt-1">Efficiency</span>
           </div>
         </div>
 
-        <div className="mt-8 space-y-3">
+        <div className="mt-6 space-y-3 border-t border-border pt-6">
            {recoveryData.map((item, idx) => (
              <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
-                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.name}</span>
+                   <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CHART_SERIES[idx % CHART_SERIES.length] }} />
+                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.name}</span>
                 </div>
-                <span className="text-[10px] font-black text-foreground dark:text-foreground">${item.value.toLocaleString()}</span>
+                <span className="font-finance text-[12px] font-bold text-foreground">${item.value.toLocaleString()}</span>
              </div>
            ))}
         </div>

@@ -76,20 +76,20 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (!mounted) return null
 
   return (
-    <div className="flex h-screen w-full bg-[#0B0D10] overflow-hidden font-sans selection:bg-white/10">
+    <div className="flex h-screen w-full bg-background overflow-hidden font-sans selection:bg-primary/10 text-foreground">
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-[#0B0D10] border-r border-[#23252A] flex flex-col transform transition-transform duration-300 lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r border-border flex flex-col transform transition-transform duration-300 lg:translate-x-0",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
 
         {/* Brand bar */}
-        <div className="h-14 flex items-center px-6 border-b border-[#23252A] shrink-0">
+        <div className="h-16 flex items-center px-6 border-b border-border shrink-0 bg-card dark:bg-background">
           <div className="flex items-center gap-3">
-            <Zap className="text-white w-4 h-4 fill-white" />
-            <h2 className="text-sm font-bold tracking-tight text-white uppercase italic">
-              Mercury <span className="text-[#8A919E] font-normal not-italic">OS</span>
+            <Zap className="text-primary w-4 h-4 fill-primary" />
+            <h2 className="text-sm font-bold tracking-tight text-foreground uppercase">
+              Mercury <span className="text-muted-foreground font-normal">OS</span>
             </h2>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div key={section.label} className="space-y-1">
               <button
                 onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-3 py-1 text-[11px] font-medium text-[#8A919E] uppercase tracking-wider hover:text-white transition-colors"
+                className="w-full flex items-center justify-between px-3 py-1 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.1em] hover:text-foreground transition-colors"
               >
                 {section.label}
                 <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", openSections.includes(section.label) ? 'rotate-180' : '')} />
@@ -116,13 +116,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center w-full px-3 py-1.5 text-sm font-medium rounded-[6px] transition-none my-0.5",
+                          "flex items-center w-full px-3 py-1.5 text-[13px] font-semibold rounded-[8px] transition-none my-0.5",
                           isActive
-                            ? "text-white bg-[#14161A] border border-[#23252A]/50"
-                            : "text-[#8A919E] hover:text-white hover:bg-[#14161A]/50"
+                            ? "text-foreground bg-foreground/[0.08] border border-border"
+                            : "text-muted-foreground hover:text-foreground hover:bg-foreground/[0.04]"
                         )}
                       >
-                        <item.icon className={cn("mr-3 h-4 w-4 shrink-0", isActive ? "text-white" : "text-[#8A919E]")} />
+                        <item.icon className={cn("mr-3 h-4 w-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />
                         {item.name}
                       </Link>
                     )
@@ -134,52 +134,52 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
-        <div className="mt-auto p-4 border-t border-[#23252A] flex items-center gap-3 bg-[#0B0D10]">
-          <div className="w-8 h-8 rounded-[4px] bg-[#23252A] flex items-center justify-center text-xs font-bold text-white shrink-0">
+        <div className="mt-auto p-4 border-t border-border flex items-center gap-3 bg-card">
+          <div className="w-8 h-8 rounded-[6px] bg-foreground text-background flex items-center justify-center text-xs font-bold shrink-0">
             {userName.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-white truncate leading-none mb-1">
+            <p className="text-[12px] font-bold text-foreground truncate leading-none mb-1">
               {userName}
             </p>
-            <p className="text-[10px] text-[#8A919E] truncate uppercase tracking-wider">
+            <p className="text-[10px] text-muted-foreground truncate uppercase tracking-widest font-bold">
               {userRole}
             </p>
           </div>
           <button 
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="p-1.5 text-[#8A919E] hover:text-white transition-colors"
+            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <LogOut size={14} />
+            <LogOut size={16} />
           </button>
         </div>
       </aside>
 
       {/* ── MAIN COLUMN ─────────────────────────────────────────────────────── */}
-      <div className="flex-1 ml-64 h-screen overflow-hidden flex flex-col bg-[#0B0D10]">
+      <div className="flex-1 ml-64 h-screen overflow-hidden flex flex-col bg-background">
 
         {/* ── TOP BAR / HEADER ─────────────────────────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-14 px-8 flex items-center justify-between bg-[#0B0D10] border-b border-[#23252A] shadow-none shrink-0">
+        <header className="sticky top-0 z-40 w-full h-16 px-8 flex items-center justify-between bg-card dark:bg-background border-b border-border shadow-none shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-[#8A919E] hover:text-white"
+              className="lg:hidden p-2 text-muted-foreground hover:text-foreground"
             >
               <Menu size={18} />
             </button>
-            <div className="text-sm font-medium text-white uppercase tracking-tight">
+            <div className="text-[14px] font-bold text-foreground uppercase tracking-tight">
               {pathname.split('/').pop()?.replace(/-/g, ' ') || 'Workstation'}
             </div>
           </div>
 
           <div className="flex items-center gap-6">
             <GlobalSearch />
-            <div className="h-4 w-px bg-[#23252A]" />
+            <div className="h-4 w-px bg-border" />
             <button
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="text-[#8A919E] hover:text-white transition-none"
+              className="text-muted-foreground hover:text-foreground transition-none p-2 rounded-[8px] hover:bg-foreground/[0.05]"
             >
-              {resolvedTheme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
+              {resolvedTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
         </header>
@@ -197,15 +197,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
 function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' }) {
   const variants = {
-    default: "border-[#23252A] text-[#8A919E] bg-[#1A1D24]",
-    success: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10",
-    warning: "border-amber-500/30 text-amber-400 bg-amber-500/10",
-    danger:  "border-rose-500/30 text-rose-400 bg-rose-500/10",
+    default: "border-border text-muted-foreground bg-muted",
+    success: "border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10",
+    warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
+    danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",
   };
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0.5 rounded-[4px] border text-[11px] font-medium leading-none",
+      "inline-flex items-center px-2 py-0.5 rounded-[4px] border text-[11px] font-bold leading-none uppercase tracking-tight",
       variants[variant],
       className
     )}>

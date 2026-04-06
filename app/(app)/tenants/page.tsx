@@ -48,11 +48,11 @@ export default async function TenantsPage() {
            </div>
            <div>
               <h1 className="text-4xl font-black tracking-widest text-foreground dark:text-foreground uppercase leading-none">Occupant <br/><span className="text-brand">Directory</span></h1>
-              <p className="text-slate-400 font-bold tracking-widest uppercase text-[10px] mt-2">Master Index of Portfolio Identity</p>
+              <p className="text-muted-foreground font-bold tracking-widest uppercase text-[10px] mt-2">Master Index of Portfolio Identity</p>
            </div>
         </div>
         <Link href="/onboarding">
-          <Button className="bg-[var(--primary)] text-[var(--primary-foreground)] h-12 px-6 rounded-3xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,87,51,0.2)] hover:shadow-none hover:translate-y-[1px] transition-all flex items-center gap-2 group border border-white/5">
+          <Button className="bg-[var(--primary)] text-[var(--primary-foreground)] h-12 px-6 rounded-3xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,87,51,0.2)] hover:shadow-none hover:translate-y-[1px] transition-all flex items-center gap-2 group border border-border">
             <Plus className="w-5 h-5" /> New Provisioning
           </Button>
         </Link>

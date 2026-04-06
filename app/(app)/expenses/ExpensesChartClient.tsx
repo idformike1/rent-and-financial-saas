@@ -2,13 +2,16 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 
+// Mercury chart palette — intentional semantic data-viz colours.
+// Kept as explicit hex values because they represent DATA series, not UI chrome,
+// and must remain consistent across both Light and Dark themes.
 const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
 
 export default function ExpensesChartClient({ data }: { data: any[] }) {
   if (data.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center border-4 border-dashed border-border rounded-3xl">
-        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">No Data Nodes Found</p>
+      <div className="h-full flex items-center justify-center border border-dashed border-border rounded-[8px]">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No Data Nodes Found</p>
       </div>
     );
   }
@@ -26,25 +29,27 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
           dataKey="value"
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={3} stroke="#fff" />
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={2} stroke="var(--card)" />
           ))}
         </Pie>
         <Tooltip 
           contentStyle={{ 
-            backgroundColor: '#0F172A', 
-            border: 'none', 
-            borderRadius: '12px',
-            fontSize: '10px',
-            color: '#fff',
-            fontStyle: 'italic',
-            fontWeight: '900',
-            textTransform: 'uppercase'
-          }} cursor={false} 
+            backgroundColor: 'var(--card)', 
+            border: '1px solid var(--border)', 
+            borderRadius: '8px',
+            fontSize: '11px',
+            color: 'var(--foreground)',
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }} 
+          itemStyle={{ color: 'var(--foreground)', fontWeight: 700 }}
+          cursor={false} 
         />
         <Legend 
             verticalAlign="bottom" 
             height={36} 
-            formatter={(value) => <span className="text-[9px] font-black uppercase text-slate-400 italic tracking-tighter ml-2">{value}</span>}
+            formatter={(value) => <span className="text-[9px] font-bold uppercase text-muted-foreground tracking-widest ml-2">{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>

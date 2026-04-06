@@ -70,7 +70,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
   }, [charges, ledgerEntries]);
 
   return (
-    <div className="bg-background border border-border rounded-[3rem] overflow-hidden shadow-2xl">
+    <div className="bg-background border border-border rounded-[3rem] overflow-hidden">
       
       {/* TAB NAVIGATION: TACTICAL TOGGLE */}
       <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-8 bg-card/[0.02]">
@@ -79,12 +79,12 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
            <h3 className="text-xl font-black text-foreground italic tracking-tighter uppercase leading-none font-mono">Forensic Unified Ledger</h3>
         </div>
 
-        <div className="flex p-1.5 bg-slate-900 rounded-3xl border border-white/5 font-mono">
+        <div className="flex p-1.5 bg-card rounded-3xl border border-border font-mono">
            <button 
              onClick={() => setActiveTab('timeline')}
              className={cn(
                "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-               activeTab === 'timeline' ? "bg-white/5 text-foreground shadow-xl" : "text-slate-500 hover:text-slate-300"
+               activeTab === 'timeline' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
              )}
            >
              [ CHRONOLOGICAL_LEDGER ]
@@ -93,7 +93,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
              onClick={() => setActiveTab('compliance')}
              className={cn(
                "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-               activeTab === 'compliance' ? "bg-white/5 text-foreground shadow-xl" : "text-slate-500 hover:text-slate-300"
+               activeTab === 'compliance' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
              )}
            >
              [ COMPLIANCE_MATRIX ]
@@ -105,19 +105,19 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
         {activeTab === 'timeline' ? (
           <table className="w-full text-left border-collapse font-mono">
             <thead>
-              <tr className="border-b border-white/5 bg-card/[0.01]">
-                <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Date</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Description</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-right">Debit (+)</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-right">Credit (-)</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-right">Net_Balance</th>
+              <tr className="border-b border-border bg-card/[0.01]">
+                <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Date</th>
+                <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Description</th>
+                <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-right">Debit (+)</th>
+                <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-right">Credit (-)</th>
+                <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-right">Net_Balance</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {unifiedTimeline.map((row, idx) => (
                 <tr key={idx} className="group hover:bg-card/[0.02] transition-colors">
                   <td className="px-10 py-6 whitespace-nowrap">
-                    <span className="text-[10px] font-black text-slate-500 uppercase">{row.date.toLocaleDateString()}</span>
+                    <span className="text-[10px] font-black text-muted-foreground uppercase">{row.date.toLocaleDateString()}</span>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-4">
@@ -154,12 +154,12 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
         ) : (
           <table className="w-full text-left border-collapse font-mono">
             <thead>
-              <tr className="border-b border-white/5 bg-card/[0.01]">
-                 <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Charge Node</th>
-                 <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-center">Due Date</th>
-                 <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-center">Payment Date</th>
-                 <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-right">Assessment</th>
-                 <th className="px-10 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest italic text-right">Status</th>
+              <tr className="border-b border-border bg-card/[0.01]">
+                 <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Charge Node</th>
+                 <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-center">Due Date</th>
+                 <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-center">Payment Date</th>
+                 <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-right">Assessment</th>
+                 <th className="px-10 py-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest italic text-right">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -173,14 +173,14 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                     <tr key={c.id} className="group hover:bg-card/[0.02] transition-colors">
                        <td className="px-10 py-8">
                           <div className="flex items-center gap-6">
-                             <div className="bg-slate-900 h-10 w-10 rounded-xl flex items-center justify-center text-brand border border-white/5">
+                             <div className="bg-card h-10 w-10 rounded-xl flex items-center justify-center text-brand border border-border">
                                 <DollarSign className="w-4 h-4" />
                              </div>
                              <span className="font-black text-foreground text-xs uppercase tracking-tighter italic">{c.type}</span>
                           </div>
                        </td>
                        <td className="px-10 py-8 text-center">
-                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{new Date(c.dueDate).toLocaleDateString()}</span>
+                          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{new Date(c.dueDate).toLocaleDateString()}</span>
                        </td>
                        <td className="px-10 py-8 text-center">
                           {(matchedEntry && c.isFullyPaid) ? (

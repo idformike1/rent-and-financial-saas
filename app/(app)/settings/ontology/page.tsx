@@ -112,7 +112,7 @@ export default function OntologyMapPage() {
       </div>
 
       {/* FOOTER TERMINAL */}
-      <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-[var(--muted)] uppercase tracking-[0.2em] border-t border-[var(--border)] pt-10 pointer-events-none bg-[var(--background)]/80 backdrop-blur-sm z-30">
+      <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-[var(--muted)] uppercase tracking-[0.2em] border-t border-[var(--border)] pt-10 pointer-events-none bg-[var(--background)]/80 z-30">
          <div className="flex items-center space-x-10">
             <div className="flex items-center space-x-3">
                <HardDrive className="w-3.5 h-3.5 text-[var(--primary)]/50" />
@@ -203,7 +203,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
               
               {node.amount && (
                  <div className="flex items-center justify-between">
-                    <span className="text-[8px] text-slate-500 uppercase font-black tracking-widest">VALUE</span>
+                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">VALUE</span>
                     <span className="text-[var(--primary)] font-mono text-[11px] font-finance tabular-nums font-bold">
                         {Number(node.amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                     </span>

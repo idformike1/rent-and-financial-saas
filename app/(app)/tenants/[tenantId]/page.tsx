@@ -43,7 +43,7 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
     }));
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#020617]">
+      <div className="min-h-screen bg-background">
         <TenantProfileView 
           tenant={JSON.parse(JSON.stringify(tenantDTO || {}))} 
           activeLeases={JSON.parse(JSON.stringify(activeLeases || []))}

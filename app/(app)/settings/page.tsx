@@ -13,7 +13,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-border pb-10">
         <div>
            <Badge variant="brand" className="mb-4">System Governance</Badge>
            <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase leading-none">Master Settings</h1>
@@ -65,7 +65,7 @@ export default function SettingsPage() {
 
             {/* Sovereign Lockdown Overlay */}
             {!isSovereign && (
-              <div className="absolute inset-0 z-50 glass-panel flex flex-col items-center justify-center space-y-4 backdrop-blur-xl bg-background/40">
+              <div className="absolute inset-0 z-50 glass-panel flex flex-col items-center justify-center space-y-4 bg-background/40">
                 <div className="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center border border-rose-500/30">
                   <Lock className="w-8 h-8 text-rose-500" />
                 </div>

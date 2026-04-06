@@ -16,7 +16,7 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
        <div className="bg-rose-500/10 border border-rose-500/20 p-12 rounded-[3.5rem] text-center space-y-6">
           <Zap className="w-12 h-12 text-rose-500 mx-auto" strokeWidth={3} />
           <h2 className="text-2xl font-black italic tracking-tighter text-foreground uppercase">NULL_RESOURCE_CONTEXT</h2>
-          <Link href="/properties" className="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-brand transition-colors">Return to Portfolio Registry</Link>
+          <Link href="/properties" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-brand transition-colors">Return to Portfolio Registry</Link>
        </div>
     </div>
   )
@@ -25,11 +25,11 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
     <div className="min-h-screen bg-background p-10 lg:p-14 space-y-16">
       
       {/* TERMINAL HEADER: SOVEREIGN AUDENCE */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-border pb-12">
         <div className="space-y-6">
           <Link 
             href="/properties" 
-            className="flex items-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] hover:text-brand transition-colors mb-6 group"
+            className="flex items-center text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] hover:text-brand transition-colors mb-6 group"
           >
             <ChevronLeft className="w-3.5 h-3.5 mr-3 group-hover:-translate-x-2 transition-transform" /> 
             PORTFOLIO_MASTER_INDEX
@@ -45,15 +45,15 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
               {property.name} <br/>
               <span className="text-[var(--primary)]">Pulse Terminal</span>
             </h1>
-            <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-5">
+            <div className="flex items-center text-muted-foreground text-[10px] font-black uppercase tracking-[0.4em] mt-5">
               <Navigation className="w-3.5 h-3.5 mr-3 text-brand" /> {property.address}
             </div>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-           <div className="px-8 py-5 border border-border bg-white/3 rounded-3xl flex flex-col justify-center">
-              <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Authorization Layer</span>
+           <div className="px-8 py-5 border border-border bg-muted/50 rounded-3xl flex flex-col justify-center">
+              <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">Authorization Layer</span>
               <span className="text-xs font-bold text-foreground flex items-center gap-2 italic uppercase">
                  <ShieldCheck className="w-3 h-3 text-brand" /> Sovereignty_V3.0
               </span>
@@ -65,7 +65,7 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
       <PropertyPulseTerminal propertyId={propertyId} propertyName={property.name} />
 
       {/* FOOTER ANCHOR */}
-      <div className="flex justify-between items-center opacity-30 pt-10 border-t border-white/5 text-slate-500">
+      <div className="flex justify-between items-center opacity-30 pt-10 border-t border-border text-muted-foreground">
          <div className="flex items-center gap-6">
             <Layers className="w-10 h-10" />
             <div className="text-[8px] font-black uppercase tracking-[0.4em] leading-relaxed">
