@@ -42,7 +42,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
     <div className="space-y-12">
       
       {/* GLOBAL TELEMETRY BAR */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-slate-900 overflow-hidden rounded-xl divide-x divide-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-card overflow-hidden rounded-xl divide-x divide-white/10">
         <div className="p-8 space-y-4">
            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Global Net Outflow</span>
            <div className={cn("text-4xl font-mono tracking-tighter font-finance tabular-nums", netPosition < 0 ? "text-rose-500" : "text-emerald-500")}>
@@ -70,7 +70,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
           <input 
             type="text" 
             placeholder="FILTER SURVEILLANCE DATA..."
-            className="w-full bg-slate-900 border border-border h-12 pl-12 pr-4 text-[10px] font-mono text-foreground placeholder-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:border-emerald-500/50 transition-all uppercase tracking-widest"
+            className="w-full bg-card border border-border h-12 pl-12 pr-4 text-[10px] font-mono text-foreground placeholder-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:border-emerald-500/50 transition-all uppercase tracking-widest"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -85,7 +85,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       </div>
 
       {/* THE REGISTRY TABLE */}
-      <div className="border border-border bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+      <div className="border border-border bg-card/50 backdrop-blur-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-background/50 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-border">

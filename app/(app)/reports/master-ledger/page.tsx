@@ -65,7 +65,7 @@ export default function MasterLedgerPage() {
     window.open(`/api/reports/word?${params.toString()}`, '_blank');
   };
 
-  const exportBtnClass = "bg-slate-900 text-foreground font-black px-6 py-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(15,23,42,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center uppercase tracking-widest text-[10px]";
+  const exportBtnClass = "bg-[var(--card)] text-foreground font-black px-6 py-3 rounded-3xl border border-[var(--border)] shadow-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center uppercase tracking-widest text-[10px]";
 
   return (
     <div className="py-8 px-4 sm:px-6 h-full flex flex-col max-w-7xl mx-auto">
@@ -85,7 +85,7 @@ export default function MasterLedgerPage() {
           <button onClick={handleWordExport} className={exportBtnClass}>
             <FileText className="w-4 h-4 mr-3" /> Word
           </button>
-          <button onClick={handlePDFExport} className="bg-[var(--primary)] text-foreground font-black px-6 py-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(67,56,202,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center uppercase tracking-widest text-[10px]">
+          <button onClick={handlePDFExport} className="bg-[var(--primary)] text-foreground font-black px-6 py-3 rounded-3xl shadow-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center uppercase tracking-widest text-[10px]">
             <FileText className="w-4 h-4 mr-3" /> PDF Report
           </button>
         </div>

@@ -48,10 +48,10 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
             <table className="min-w-full">
               <thead className="bg-slate-50/50 dark:bg-black/20 border-b border-border dark:border-white/5">
                 <tr>
-                  <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">Identity Protocol</th>
-                  <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">Lease Portfolio</th>
-                  <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">Risk Matrix</th>
-                  <th className="px-8 py-8 text-right text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">Action Domain</th>
+                  <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Identity Protocol</th>
+                  <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Lease Portfolio</th>
+                  <th className="px-8 py-8 text-left text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Risk Matrix</th>
+                  <th className="px-8 py-8 text-right text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">Action Domain</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-white/5">

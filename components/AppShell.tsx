@@ -84,11 +84,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside className={cn(`
-        fixed inset-y-0 left-0 z-50 w-72 flex flex-col
+        fixed inset-y-0 left-0 z-50 w-72 flex-col
         glass-panel m-6 rounded-[2.5rem]
         transform transition-all duration-500 ease-in-out
         lg:relative lg:translate-x-0
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        ${isMobileMenuOpen ? 'flex translate-x-0' : 'hidden md:flex -translate-x-full lg:translate-x-0'}
       `, isMobileMenuOpen ? "m-0 inset-0 w-full rounded-xl" : "")}>
 
         {/* Brand mark */}

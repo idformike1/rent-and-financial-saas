@@ -49,7 +49,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
         <Button 
           variant="primary"
           onClick={() => setIsAddModalOpen(true)}
-          className="h-14 px-8 rounded-3xl font-black uppercase italic tracking-tighter shadow-premium flex items-center group overflow-hidden relative"
+          className="h-14 px-8 rounded-3xl font-black uppercase tracking-widest shadow-premium flex items-center group overflow-hidden relative"
         >
           <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
           <Building2 className="w-5 h-5 mr-3 relative z-10" /> 
@@ -134,7 +134,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
                 <Button 
                   disabled={isSubmitting} 
                   variant="primary"
-                  className="w-full h-16 rounded-3xl font-black uppercase italic tracking-tighter shadow-premium"
+                  className="w-full h-16 rounded-3xl font-black uppercase tracking-widest shadow-premium"
                 >
                    {isSubmitting ? <><Loader2 className="w-5 h-5 mr-3 animate-spin"/> Syncing Registry...</> : <><Sparkles className="w-5 h-5 mr-3"/> Finalize Deployment</>}
                 </Button>
