@@ -136,14 +136,14 @@ export default function GovernanceRegistryClient({
   return (
     <div className="space-y-16">
       {/* HEADER COMMAND STRIP (PHASE 3) */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 mb-6 pb-12 border-b border-[var(--border)]">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6 pb-12 border-b border-[var(--border)]">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <div className="flex items-center gap-6 mb-4">
             <div className="w-16 h-16 rounded-[1.75rem] bg-brand/10 flex items-center justify-center">
               <Command className="w-8 h-8 text-brand" />
             </div>
             <div>
-              <h1 className="text-4xl font-black text-[var(--foreground)] uppercase tracking-tighter italic leading-none">Governance Hub</h1>
+              <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">Governance Hub</h1>
               <div className="flex items-center gap-3 mt-3">
                  <Badge variant="brand" className="px-3 py-1 text-[8px]">Precision Protocol 2026</Badge>
                  <Badge variant="success" className="px-3 py-1 text-[8px]">Signal Locked</Badge>
@@ -155,7 +155,7 @@ export default function GovernanceRegistryClient({
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4">
           <Button 
             variant="secondary" 
-            className={cn("rounded-3xl h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-foreground" : "bg-[var(--card)] text-[var(--foreground)]")} 
+            className={cn("rounded-[8px] h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-foreground" : "bg-[var(--card)] text-[var(--foreground)]")} 
             onClick={() => {
               setIsLedgerEditorVisible(!isLedgerEditorVisible);
               setIsCommandCenterVisible(false);
@@ -166,7 +166,7 @@ export default function GovernanceRegistryClient({
           </Button>
           <Button 
             variant="primary" 
-            className="rounded-3xl h-14 px-8 shadow-[0_0_20px_rgba(255,87,51,0.2)] bg-[var(--primary)] text-foreground" 
+            className="rounded-[8px] h-14 px-8 shadow-none bg-[var(--primary)] text-foreground" 
             onClick={() => {
               setIsCommandCenterVisible(!isCommandCenterVisible);
               setIsLedgerEditorVisible(false);
@@ -181,35 +181,35 @@ export default function GovernanceRegistryClient({
       <AnimatePresence>
         {isLedgerEditorVisible && (
           <motion.div initial={{ opacity: 0, y: -20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -20, scale: 0.98 }}>
-            <Card className="p-10 rounded-[3rem] relative overflow-hidden border border-[var(--border)] bg-[var(--card)]">
+            <Card className="p-6 rounded-[8px] relative overflow-hidden border border-[var(--border)] bg-[var(--card)]">
                <div className="flex justify-between items-center mb-10 border-b border-[var(--border)] pb-8">
                   <div>
-                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-[var(--foreground)] flex items-center">
+                    <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
                        <Zap className="w-8 h-8 mr-4 text-brand" /> Provision Financial Partition
                     </h3>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-3">Level 0: Master Ledger Inode</p>
+                    <p className="text-[10px] text-muted-foreground  tracking-[0.3em] mt-3">Level 0: Master Ledger Inode</p>
                   </div>
-                  <button onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-3 rounded-3xl hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
+                  <button onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-3 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
                     <X className="w-6 h-6 text-muted-foreground group-hover:text-rose-500 transition-colors"/>
                   </button>
                </div>
                <form onSubmit={handleCreateLedger} className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Partition Hash</label>
+                    <label className="text-[10px] text-muted-foreground  ml-1">Partition Hash</label>
                     <Input 
                       value={newLedgerName}
                       onChange={(e) => setNewLedgerName(e.target.value)}
                       required 
                       placeholder="e.g. OPERATIONS" 
-                      className="h-16 text-lg font-black uppercase italic tracking-tighter bg-[var(--card)] border-none"
+                      className="h-16 text-lg  bg-[var(--card)] border-none"
                     />
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Classification Logic</label>
+                    <label className="text-[10px] text-muted-foreground  ml-1">Classification Logic</label>
                     <select 
                       value={newLedgerClass}
                       onChange={(e) => setNewLedgerClass(e.target.value)}
-                      className="w-full bg-[var(--card)] border-none rounded-3xl px-6 h-16 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand/30 appearance-none"
+                      className="w-full bg-[var(--card)] border-none rounded-[8px] px-6 h-16 text-[10px]  outline-none focus:ring-2 focus:ring-brand/30 appearance-none"
                     >
                       <option value="EXPENSE">EXPENSE STREAM</option>
                       <option value="REVENUE">REVENUE FLOW</option>
@@ -217,7 +217,7 @@ export default function GovernanceRegistryClient({
                     </select>
                   </div>
                   <div className="flex items-end">
-                    <Button type="submit" variant="primary" className="h-16 w-full rounded-[1.25rem] font-black uppercase italic tracking-tighter">Initialize Nexus</Button>
+                    <Button type="submit" variant="primary" className="h-16 w-full rounded-[8px] ">Initialize Nexus</Button>
                   </div>
                </form>
             </Card>
@@ -226,37 +226,37 @@ export default function GovernanceRegistryClient({
 
         {isCommandCenterVisible && (
           <motion.div initial={{ opacity: 0, y: -20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -20, scale: 0.98 }}>
-            <Card className="p-10 rounded-[3rem] border border-[var(--border)] bg-[var(--card)] relative overflow-hidden">
+            <Card className="p-6 rounded-[8px] border border-[var(--border)] bg-[var(--card)] relative overflow-hidden">
                <div className="flex justify-between items-center mb-10 border-b border-[var(--border)] pb-8">
                   <div>
-                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-[var(--foreground)] flex items-center">
+                    <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
                        <Layers className="w-8 h-8 mr-4 text-brand" /> Provision Account Node
                     </h3>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-3">Recursive Logic Definition</p>
+                    <p className="text-[10px] text-muted-foreground  tracking-[0.3em] mt-3">Recursive Logic Definition</p>
                   </div>
-                  <button onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-3 rounded-3xl hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
+                  <button onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-3 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
                     <X className="w-6 h-6 text-muted-foreground group-hover:text-rose-500 transition-colors"/>
                   </button>
                </div>
-               <form ref={formRef} action={handleMaterializeNode} className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-end">
+               <form ref={formRef} action={handleMaterializeNode} className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-end">
                   <div className="space-y-4 lg:col-span-2">
-                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Node Registry Label</label>
-                      <Input name="name" required placeholder="Marketing Matrix" className="h-16 italic font-black uppercase tracking-tighter bg-[var(--card)] border-none px-8" />
+                      <label className="text-[10px] text-muted-foreground  ml-1">Node Registry Label</label>
+                      <Input name="name" required placeholder="Marketing Matrix" className="h-16  bg-[var(--card)] border-none px-8" />
                   </div>
                   <div className="space-y-4">
-                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Target Cluster</label>
-                      <select name="ledgerId" value={formLedgerId} onChange={(e) => setFormLedgerId(e.target.value)} className="w-full bg-[var(--card)] border-none rounded-3xl px-6 h-16 text-[10px] font-black uppercase tracking-widest outline-none appearance-none focus:ring-2 focus:ring-brand/30">
+                      <label className="text-[10px] text-muted-foreground  ml-1">Target Cluster</label>
+                      <select name="ledgerId" value={formLedgerId} onChange={(e) => setFormLedgerId(e.target.value)} className="w-full bg-[var(--card)] border-none rounded-[8px] px-6 h-16 text-[10px]  outline-none appearance-none focus:ring-2 focus:ring-brand/30">
                           {ledgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                       </select>
                   </div>
                   <div className="space-y-4">
-                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Inheritance Logic</label>
-                      <select name="parentId" className="w-full bg-[var(--card)] border-none rounded-3xl px-6 h-16 text-[10px] font-black uppercase tracking-widest outline-none appearance-none focus:ring-2 focus:ring-brand/30">
+                      <label className="text-[10px] text-muted-foreground  ml-1">Inheritance Logic</label>
+                      <select name="parentId" className="w-full bg-[var(--card)] border-none rounded-[8px] px-6 h-16 text-[10px]  outline-none appearance-none focus:ring-2 focus:ring-brand/30">
                           <option value="">[ROOT SEED]</option>
                           {validParentNodes.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
                       </select>
                   </div>
-                  <Button type="submit" variant="primary" className="h-16 rounded-[1.25rem] font-black uppercase italic tracking-tighter">Commit Trace</Button>
+                  <Button type="submit" variant="primary" className="h-16 rounded-[8px] ">Commit Trace</Button>
                </form>
             </Card>
           </motion.div>
@@ -271,21 +271,21 @@ export default function GovernanceRegistryClient({
            return (
             <Card 
               key={ledger.id} 
-              className="group min-h-[500px] flex flex-col p-10 bg-[var(--card)] border border-border rounded-[2.5rem] hover:border-[var(--primary)]/30 transition-all duration-300"
+              className="group min-h-[500px] flex flex-col p-6 bg-[var(--card)] border border-border rounded-[8px] hover:border-[var(--primary)]/30 transition-all duration-300"
             >
               <div className="flex flex-col items-center text-center mb-10">
                  <div className="w-20 h-20 rounded-[1.75rem] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
                     <Icon className="w-10 h-10 text-brand fill-brand/10" />
                  </div>
-                 <h2 className="text-2xl font-black italic text-[var(--foreground)] uppercase tracking-tighter leading-none">{ledger.name}</h2>
+                 <h2 className="text-2xl text-[var(--foreground)] leading-none">{ledger.name}</h2>
                  <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'brand'} className="mt-4 px-4 py-1.5 text-[8px] tracking-[0.2em]">{ledger.class}</Badge>
               </div>
 
               <div className="flex-1 space-y-4">
                 {scopeRoots.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center border border-dashed border-[var(--primary)]/20 rounded-[2rem] p-10">
+                  <div className="h-full flex flex-col items-center justify-center border border-dashed border-[var(--primary)]/20 rounded-[8px] p-6">
                      <Sparkles className="w-10 h-10 text-foreground mb-4" />
-                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center italic leading-relaxed">Available Logic Domain</p>
+                     <p className="text-[10px] text-muted-foreground  text-center leading-relaxed">Available Logic Domain</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -309,11 +309,11 @@ export default function GovernanceRegistryClient({
 
               {/* PREDICTIVE MINIMALISM: HOVER REVEAL */}
               <div className="mt-10 pt-8 border-t border-[var(--border)] flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                 <button onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[10px] font-black uppercase tracking-widest">
+                 <button onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[10px] ">
                     <Trash2 className="w-4 h-4" /> Vaporize Registry
                  </button>
                  <div className="flex justify-between items-center px-2">
-                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Hash::{ledger.id!.slice(0,8)}</span>
+                    <span className="text-[8px] text-muted-foreground ">Hash::{ledger.id!.slice(0,8)}</span>
                     <Lock className="w-3 h-3 text-muted-foreground" />
                  </div>
               </div>
@@ -359,7 +359,7 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
   return (
     <div className="group/node animate-in fade-in slide-in-from-left-2 duration-300">
       <div className={cn(
-        "flex items-center justify-between p-3.5 rounded-3xl transition-all duration-500",
+        "flex items-center justify-between p-3.5 rounded-[8px] transition-all duration-500",
         isEditing ? "bg-[var(--primary)]/5 ring-1 ring-[var(--primary)]/20" : "hover:bg-muted"
       )}>
         <div className="flex items-center flex-1 min-w-0">
@@ -375,11 +375,11 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
             <input 
               value={editName} 
               onChange={(e) => setEditName(e.target.value)} 
-              className="h-14 py-1 px-6 text-[12px] font-black uppercase italic tracking-tight border-2 border-brand/20 bg-card dark:bg-card rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-foreground" 
+              className="h-14 py-1 px-6 text-[12px]  tracking-tight border-2 border-brand/20 bg-card dark:bg-card rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-foreground" 
               autoFocus 
             />
           ) : (
-            <span className="text-[12px] font-black text-muted-foreground dark:text-muted-foreground uppercase tracking-tight truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
+            <span className="text-[12px] text-muted-foreground dark:text-muted-foreground  tracking-tight truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
           )}
         </div>
 

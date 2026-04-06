@@ -47,8 +47,8 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
                <div>
-                  <p className="text-[12px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{s.label}</p>
-                  <p className="text-[10px] text-muted-foreground/60 uppercase tracking-[0.2em] font-bold">{s.subtitle}</p>
+                  <p className="text-[12px] font-bold text-muted-foreground  mb-1">{s.label}</p>
+                  <p className="text-[10px] text-muted-foreground/60  tracking-[0.2em] font-bold">{s.subtitle}</p>
                </div>
                 <Badge variant={s.inverse ? (s.delta > 0 ? 'danger' : 'success') : (s.delta >= 0 ? 'success' : 'danger')} className="text-[10px] font-bold px-2 py-0.5">
                   {s.delta >= 0 ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
@@ -57,7 +57,7 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
             </div>
 
             <div className="mt-8">
-              <span className="font-finance text-3xl font-bold text-foreground tracking-tighter leading-none block">
+              <span className="font-finance text-display font-weight-display font-bold text-foreground leading-none block">
                 {s.isPercent ? "" : "$"}{s.val.toLocaleString()}{s.isPercent ? "%" : ""}
               </span>
             </div>

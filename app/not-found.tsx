@@ -3,8 +3,8 @@ import { Home, Zap, AlertTriangle } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-8">
-      <div className="bg-card rounded-[8px] p-16 max-w-xl w-full text-center space-y-10 border border-border">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="bg-card rounded-[8px] p-6 max-w-xl w-full text-center space-y-10 border border-border">
         
         {/* Icon */}
         <div className="w-16 h-16 bg-background border border-border rounded-[8px] flex items-center justify-center mx-auto mb-8">
@@ -13,13 +13,13 @@ export default function NotFound() {
 
         {/* Code */}
         <div className="space-y-4">
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">
+          <p className="text-[10px] font-bold text-muted-foreground  tracking-[0.3em]">
             System Error // Routing Protocol Failure
           </p>
-          <h1 className="text-7xl font-bold tracking-tighter text-foreground leading-none">
+          <h1 className="text-7xl font-bold text-foreground leading-none">
             4<span className="text-muted-foreground">0</span>4
           </h1>
-          <p className="text-lg font-bold uppercase tracking-widest text-foreground">
+          <p className="text-lg font-bold text-foreground">
             Coordinates Lost
           </p>
           <p className="text-sm text-muted-foreground font-bold leading-relaxed max-w-sm mx-auto">
@@ -33,13 +33,13 @@ export default function NotFound() {
         {/* CTA */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[11px] px-8 py-4 rounded-[8px] hover:bg-primary/90 transition-none active:scale-95"
+          className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold  text-[11px] px-8 py-4 rounded-[8px] hover:bg-primary/90 transition-none active:scale-95"
         >
           <Zap className="w-4 h-4" />
           Return to Command Hub
         </Link>
 
-        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+        <p className="text-[9px] font-bold text-muted-foreground ">
           Axiom 2026 // Sovereign Navigation Protocol
         </p>
       </div>

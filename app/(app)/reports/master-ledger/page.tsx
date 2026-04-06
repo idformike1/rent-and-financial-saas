@@ -65,7 +65,7 @@ export default function MasterLedgerPage() {
     window.open(`/api/reports/word?${params.toString()}`, '_blank');
   };
 
-  const exportBtnClass = "bg-[var(--card)] text-foreground font-black px-6 py-3 rounded-3xl border border-[var(--border)] shadow-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center uppercase tracking-widest text-[10px]";
+  const exportBtnClass = "bg-[var(--card)] text-foreground px-6 py-3 rounded-[8px] border border-[var(--border)] shadow-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center  text-[10px]";
 
   return (
     <div className="py-8 px-4 sm:px-6 h-full flex flex-col max-w-7xl mx-auto">
@@ -73,7 +73,7 @@ export default function MasterLedgerPage() {
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <Landmark className="w-8 h-8 text-[var(--primary)]" />
-            <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase">Master Ledger Registry</h1>
+            <h1 className="text-display font-weight-display text-foreground ">Master Ledger Registry</h1>
           </div>
           <p className="text-muted-foreground font-medium tracking-tight">The immutable source of truth for all transactional fiscal events.</p>
         </div>
@@ -85,13 +85,13 @@ export default function MasterLedgerPage() {
           <button onClick={handleWordExport} className={exportBtnClass}>
             <FileText className="w-4 h-4 mr-3" /> Word
           </button>
-          <button onClick={handlePDFExport} className="bg-[var(--primary)] text-foreground font-black px-6 py-3 rounded-3xl shadow-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center uppercase tracking-widest text-[10px]">
+          <button onClick={handlePDFExport} className="bg-[var(--primary)] text-foreground px-6 py-3 rounded-[8px] shadow-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center  text-[10px]">
             <FileText className="w-4 h-4 mr-3" /> PDF Report
           </button>
         </div>
       </div>
 
-      <div className="flex-1 bg-card border-2 border-foreground shadow-[10px_10px_0px_0px_rgba(15,23,42,1)] rounded-3xl overflow-hidden flex flex-col mb-8">
+      <div className="flex-1 bg-card border-2 border-foreground shadow-none rounded-[8px] overflow-hidden flex flex-col mb-8">
         <div className="bg-muted border-b border-border p-6 space-y-4">
            <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
               <div className="relative group w-full lg:w-96">
@@ -106,7 +106,7 @@ export default function MasterLedgerPage() {
                     placeholder="Search entries, accounts, or IDs..." 
                   />
               </div>
-              <div className="flex items-center space-x-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              <div className="flex items-center space-x-4 text-xs font-bold text-muted-foreground ">
                   <span className="flex items-center"><Activity className="w-3 h-3 mr-2 text-[var(--primary)]" /> MATCH RESULTS: {filteredEntries.length}</span>
                   <span className="h-4 w-[1px] bg-muted" />
                   <span>PAGE {page} OF {totalPages || 1}</span>
@@ -115,7 +115,7 @@ export default function MasterLedgerPage() {
 
            <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-border">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Date Range</span>
+                <span className="text-[10px] text-muted-foreground ">Date Range</span>
                 <input 
                   type="date" 
                   value={startDate}
@@ -134,7 +134,7 @@ export default function MasterLedgerPage() {
               <div className="h-6 w-[1px] bg-muted mx-2 hidden sm:block" />
 
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Category Filter</span>
+                <span className="text-[10px] text-muted-foreground ">Category Filter</span>
                 <select 
                   value={category}
                   onChange={(e) => { setCategory(e.target.value); setPage(1); }}
@@ -155,7 +155,7 @@ export default function MasterLedgerPage() {
                   setCategory('ALL');
                   setPage(1);
                 }}
-                className="ml-auto text-[10px] font-black text-[var(--primary)] uppercase tracking-widest hover:underline"
+                className="ml-auto text-[10px] text-[var(--primary)]  hover:underline"
               >
                 Clear All Filters
               </button>
@@ -164,7 +164,7 @@ export default function MasterLedgerPage() {
 
         <div className="flex-1 overflow-x-auto overflow-y-auto min-h-[500px]">
           <table className="min-w-full border-collapse">
-            <thead className="bg-card text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em] sticky top-0 z-10">
+            <thead className="bg-card text-muted-foreground text-[10px]  tracking-[0.2em] sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-5 text-left border-r border-border">Posting Date</th>
                 <th className="px-6 py-5 text-left border-r border-border">Transaction ID</th>
@@ -179,11 +179,11 @@ export default function MasterLedgerPage() {
             <tbody className="divide-y divide-slate-100 bg-card font-mono text-sm">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-20 text-center italic text-muted-foreground">Querying ledger registry...</td>
+                  <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">Querying ledger registry...</td>
                 </tr>
               ) : paginatedEntries.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-20 text-center italic text-muted-foreground">No fiscal engagements recorded. System is current.</td>
+                  <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">No fiscal engagements recorded. System is current.</td>
                 </tr>
               ) : (
                 paginatedEntries.map((e, i) => {
@@ -191,26 +191,26 @@ export default function MasterLedgerPage() {
                   return (
                     <tr key={e.id} className={`${i % 2 === 0 ? 'bg-card' : 'bg-muted'} hover:bg-muted transition-colors group cursor-default`}>
                       <td className="px-6 py-4 whitespace-nowrap text-muted-foreground font-sans">{new Date(e.date).toISOString().split('T')[0]}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[11px] font-bold tracking-tight text-muted-foreground uppercase">{e.transactionId}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-[11px] font-bold tracking-tight text-muted-foreground ">{e.transactionId}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                            <div className={`w-1.5 h-1.5 rounded-full mr-2 ${isDebit ? 'bg-[var(--primary-muted)]' : 'bg-red-500'}`} />
                            <span className="font-bold text-foreground">{e.account.name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-black text-[var(--primary)] border-r border-border/30">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-[var(--primary)] border-r border-border/30">
                         {isDebit ? `$ ${Math.abs(Number(e.amount)).toLocaleString(undefined, {minimumFractionDigits: 2})}` : ''}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-black text-red-600 border-r border-border/30">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-red-600 border-r border-border/30">
                         {!isDebit ? `$ ${Math.abs(Number(e.amount)).toLocaleString(undefined, {minimumFractionDigits: 2})}` : ''}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[10px] font-black uppercase text-muted-foreground border-r border-border/30">
+                      <td className="px-6 py-4 whitespace-nowrap text-[10px]  text-muted-foreground border-r border-border/30">
                         {e.paymentMode || 'N/A'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[10px] font-bold text-muted-foreground font-mono italic border-r border-border/30 truncate max-w-[120px]">
+                      <td className="px-6 py-4 whitespace-nowrap text-[10px] font-bold text-muted-foreground font-mono border-r border-border/30 truncate max-w-[120px]">
                         {e.referenceText || '---'}
                       </td>
-                      <td className="px-6 py-4 text-xs font-medium text-muted-foreground italic max-w-xs truncate font-sans">
+                      <td className="px-6 py-4 text-xs font-medium text-muted-foreground max-w-xs truncate font-sans">
                         {e.description}
                       </td>
                     </tr>
@@ -222,7 +222,7 @@ export default function MasterLedgerPage() {
         </div>
 
         <div className="bg-muted border-t border-border p-6 flex items-center justify-between">
-           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none">Powered by double-entry acid engine v3.0</p>
+           <p className="text-xs font-bold text-muted-foreground leading-none">Powered by double-entry acid engine v3.0</p>
            <div className="flex gap-2">
              <button 
               disabled={page === 1}
@@ -242,7 +242,7 @@ export default function MasterLedgerPage() {
         </div>
       </div>
       
-      <div className="flex items-center justify-center space-x-8 text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] mt-2">
+      <div className="flex items-center justify-center space-x-8 text-[10px] text-muted-foreground  tracking-[0.4em] mt-2">
         <span className="flex items-center"><TrendingUp className="w-3.5 h-3.5 mr-2 text-[var(--primary)]" /> System Integrity Certified</span>
         <span className="flex items-center"><TrendingDown className="w-3.5 h-3.5 mr-2 text-red-500" /> Balanced Status Check: Pass</span>
       </div>

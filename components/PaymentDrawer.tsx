@@ -104,8 +104,8 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
         {/* Header */}
         <div className="px-6 py-5 border-b border-border flex items-center justify-between shrink-0">
           <div>
-            <h2 className="text-[13px] font-bold text-foreground uppercase tracking-widest">Liquidate Liabilities</h2>
-            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Enterprise Ledger Entry</p>
+            <h2 className="text-[13px] font-bold text-foreground uppercase">Liquidate Liabilities</h2>
+            <p className="text-[11px] font-bold text-muted-foreground uppercase mt-1">Enterprise Ledger Entry</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-muted-foreground hover:text-foreground transition-none">
             <X className="w-5 h-5" />
@@ -125,13 +125,13 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             
             {/* Amount Entry (Large Financial Input) */}
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block">Recognition Amount ($)</label>
+              <label className="text-[11px] font-bold text-muted-foreground uppercase block">Recognition Amount ($)</label>
               <div className="relative group">
                 <Input 
                   type="number" 
                   step="0.01"
                   {...register('amountPaid', { valueAsNumber: true })} 
-                  className="pl-4 pr-4 py-6 text-3xl font-finance tracking-tight h-16 border-border bg-muted/30" 
+                  className="pl-4 pr-4 py-6 text-display font-weight-display font-finance tracking-tight h-16 border-border bg-muted/30" 
                   placeholder="0.00"
                 />
               </div>
@@ -140,7 +140,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block">Fiscal Mode</label>
+                <label className="text-[11px] font-bold text-muted-foreground uppercase block">Fiscal Mode</label>
                 <div className="relative">
                   <Select {...register('paymentMode')} className="pl-9 h-11">
                     <option value="CASH">CASH</option>
@@ -153,7 +153,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block">Value Date</label>
+                <label className="text-[11px] font-bold text-muted-foreground uppercase block">Value Date</label>
                 <Input 
                   type="date"
                   {...register('transactionDate')}
@@ -163,7 +163,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             </div>
 
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block">Audit Reference</label>
+              <label className="text-[11px] font-bold text-muted-foreground uppercase block">Audit Reference</label>
               <textarea 
                 {...register('referenceText')}
                 rows={2}
@@ -175,17 +175,17 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
 
             {/* Waterfall Preview Area */}
             <div className="pt-6 border-t border-border">
-              <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4">Allocation Preview (Waterfall)</h4>
+              <h4 className="text-[11px] font-bold text-muted-foreground uppercase mb-4">Allocation Preview (Waterfall)</h4>
               <div className="space-y-0.5">
                 {previewData.length === 0 ? (
-                  <div className="p-8 border border-dashed border-border rounded-[8px] text-center">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">No outstanding liabilities available for liquidation.</p>
+                  <div className="p-6 border border-dashed border-border rounded-[8px] text-center">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">No outstanding liabilities available for liquidation.</p>
                   </div>
                 ) : (
                   previewData.map((charge) => (
                     <div key={charge.id} className="flex justify-between items-center py-3 border-b border-border/50 px-1">
                       <div>
-                        <p className="text-[11px] font-bold text-foreground uppercase tracking-widest">{charge.type}</p>
+                        <p className="text-[11px] font-bold text-foreground uppercase">{charge.type}</p>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Due: {new Date(charge.dueDate).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
@@ -203,7 +203,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 {overpayment > 0 && (
                   <div className="flex justify-between items-center py-4 bg-emerald-500/5 px-3 rounded-[6px] mt-2 border border-emerald-500/10">
                     <div>
-                      <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Automatic Credit</p>
+                      <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">Automatic Credit</p>
                       <p className="text-[9px] text-emerald-600/60 dark:text-emerald-400/60 uppercase">Unapplied surplus materialized</p>
                     </div>
                     <div className="text-right">

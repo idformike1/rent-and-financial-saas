@@ -11,17 +11,17 @@ interface ChartData {
 export default function IncomeStatementChart({ data }: { data: ChartData[] }) {
   if (!data?.length) return (
     <div className="h-64 flex items-center justify-center border border-dashed border-border rounded-[8px] bg-muted/30">
-       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Insufficient historical data for MoM projection</span>
+       <span className="text-[10px] font-bold uppercase text-muted-foreground">Insufficient historical data for MoM projection</span>
     </div>
   );
 
   return (
     <div className="h-[400px] w-full bg-card p-6 border border-border rounded-[8px] overflow-hidden">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
-        <h4 className="text-[13px] font-bold text-foreground uppercase tracking-widest">MoM Performance Matrix (Revenue vs OpEx)</h4>
+        <h4 className="text-[13px] font-bold text-foreground uppercase">MoM Performance Matrix (Revenue vs OpEx)</h4>
         <div className="flex gap-4">
-             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-emerald-500 rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Growth Revenue</span></div>
-             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-rose-500 rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Operational Loss</span></div>
+             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-emerald-500 rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase">Growth Revenue</span></div>
+             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-rose-500 rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase">Operational Loss</span></div>
         </div>
       </div>
       

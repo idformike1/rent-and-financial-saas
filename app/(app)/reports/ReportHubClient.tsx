@@ -90,7 +90,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
   ] as const;
 
   const btnClass = (active: boolean) => cn(
-    "flex items-center space-x-4 p-6 rounded-3xl border transition-all cursor-pointer",
+    "flex items-center space-x-4 p-6 rounded-[8px] border transition-all cursor-pointer",
     active 
       ? "bg-card text-foreground border-foreground translate-x-1 translate-y-1" 
       : "bg-card text-foreground border-border hover:bg-muted"
@@ -104,23 +104,23 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             <input type="radio" value={r.id} {...register('reportType')} className="hidden" />
             <div className={`p-4 rounded-xl ${selectedReport === r.id ? 'bg-[var(--primary)]' : 'bg-muted'}`}>{r.icon}</div>
             <div className="flex flex-col">
-                <span className="text-sm font-black uppercase italic tracking-tighter leading-none mb-1">{r.name}</span>
-                <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${selectedReport === r.id ? 'text-[var(--primary)]' : 'text-muted-foreground'}`}>{r.desc}</span>
+                <span className="text-sm leading-none mb-1">{r.name}</span>
+                <span className={`text-[9px] font-bold leading-none ${selectedReport === r.id ? 'text-[var(--primary)]' : 'text-muted-foreground'}`}>{r.desc}</span>
             </div>
           </label>
         ))}
       </div>
 
-      <Card variant="glass" className="p-10 rounded-[2.5rem]">
-        <h3 className="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center underline decoration-8 decoration-indigo-100 underline-offset-8">
+      <Card variant="glass" className="p-6 rounded-[8px]">
+        <h3 className="text-xl  mb-8 flex items-center underline decoration-8 decoration-indigo-100 underline-offset-8">
             <Activity className="w-6 h-6 mr-3 text-[var(--primary)]" /> Analysis Parameter Configuration
         </h3>
 
-        <form onSubmit={handleSubmit(onGenerate)} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+        <form onSubmit={handleSubmit(onGenerate)} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
             {selectedReport !== 'RENT_ROLL' && (
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Audit Interval</label>
-                    <select {...register('dateRange')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-3xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <label className="text-[10px] text-muted-foreground  block">Audit Interval</label>
+                    <select {...register('dateRange')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="YTD">CURRENT FISCAL YTD</option>
                         <option value="LAST_YEAR">PRECEDING FISCAL YEAR</option>
                         <option value="ALL_TIME">HISTORICAL ARCHIVE</option>
@@ -130,8 +130,8 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 
             {selectedReport !== 'TAX_PREPARATION' && (
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Governance Scope</label>
-                    <select {...register('scope')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-3xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <label className="text-[10px] text-muted-foreground  block">Governance Scope</label>
+                    <select {...register('scope')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="GLOBAL">PORTFOLIO GLOBAL</option>
                         <option value="PROPERTY">BUSINESS (PROPERTY)</option>
                         <option value="HOME">RESIDENTIAL (HOME)</option>
@@ -142,8 +142,8 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 
             {(selectedScope === 'PROPERTY' || selectedReport === 'TAX_PREPARATION' || selectedReport === 'RENT_ROLL') && (
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Asset Specific Identifier</label>
-                    <select {...register('propertyId')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-3xl px-4 py-4 text-xs font-black italic uppercase tracking-tighter outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <label className="text-[10px] text-muted-foreground  block">Asset Specific Identifier</label>
+                    <select {...register('propertyId')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="">SELECT PROPERTY</option>
                         {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
@@ -154,7 +154,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
                 type="submit" 
                 variant="primary"
                 disabled={isGenerating}
-                className="w-full h-14 rounded-3xl tracking-[0.2em] text-[11px] italic"
+                className="w-full h-14 rounded-[8px] tracking-[0.2em] text-[11px]"
             >
                 {isGenerating ? <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" /> : <Database className="w-5 h-5 mr-3 text-[var(--primary)] group-hover:rotate-12 transition-transform" /> }
                 {isGenerating ? "MATERIALIZING ANALYTICS" : "Launch Engine Analysis"}
@@ -183,24 +183,24 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
 }
 
 function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, onShare: () => void, isSharing: boolean, onDrillDown: (cat: string) => void }) {
-    const headerClass = "px-6 py-5 text-left text-[10px] font-black uppercase tracking-widest text-muted-foreground border-b border-border border-border";
-    const cellClass = "px-6 py-5 text-sm font-bold text-foreground uppercase italic tracking-tighter border-b border-border";
+    const headerClass = "px-6 py-5 text-left text-[10px]  text-muted-foreground border-b border-border border-border";
+    const cellClass = "px-6 py-5 text-sm font-bold text-foreground  border-b border-border";
 
     return (
-        <Card variant="glass" className="p-12 rounded-[2.5rem] space-y-12">
+        <Card variant="glass" className="p-6 rounded-[8px] space-y-6">
             <div className="flex justify-between items-center pb-12 border-b border-border border-border">
                 <div className="space-y-1">
-                    <h3 className="text-3xl font-black italic uppercase tracking-tighter">
+                    <h3 className="text-display font-weight-display ">
                        Materialized Record: <span className="text-[var(--primary)]">{data.type} ARCHIVE</span>
                     </h3>
-                    <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">Governance Timestamp: {new Date().toISOString()}</p>
+                    <p className="text-[10px]  text-muted-foreground tracking-[0.3em]">Governance Timestamp: {new Date().toISOString()}</p>
                 </div>
                 <div className="flex gap-4">
-                    <Button onClick={onShare} disabled={isSharing} variant="primary" className="px-8 py-4 rounded-3xl text-[10px] italic">
+                    <Button onClick={onShare} disabled={isSharing} variant="primary" className="px-8 py-4 rounded-[8px] text-[10px]">
                         {isSharing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Share2 className="w-4 h-4 mr-2" />} 
                         Generate Share Link
                     </Button>
-                    <Button variant="secondary" className="px-8 py-4 rounded-3xl text-[10px] italic bg-card text-foreground border-none">
+                    <Button variant="secondary" className="px-8 py-4 rounded-[8px] text-[10px] bg-card text-foreground border-none">
                         <Download className="w-4 h-4 mr-2" /> PDF Export
                     </Button>
                 </div>
@@ -209,21 +209,21 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
             {data.type === 'PL' && (
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div className="bg-muted dark:bg-card border border-border border-border p-8 rounded-3xl">
-                             <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
-                             <p className="text-3xl font-black text-foreground dark:text-foreground italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
+                        <div className="bg-muted dark:bg-card border border-border border-border p-6 rounded-[8px]">
+                             <p className="text-[9px] text-muted-foreground  mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
+                             <p className="text-display font-weight-display text-foreground dark:text-foreground">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
                         </div>
-                        <div className="bg-[var(--primary-muted)] dark:bg-[var(--primary-muted)] border border-[var(--primary)]/20 dark:border-[var(--primary)]/20 p-8 rounded-3xl">
-                             <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
-                             <p className="text-3xl font-black text-emerald-900 dark:text-[var(--primary)] italic tracking-tighter">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
+                        <div className="bg-[var(--primary-muted)] dark:bg-[var(--primary-muted)] border border-[var(--primary)]/20 dark:border-[var(--primary)]/20 p-6 rounded-[8px]">
+                             <p className="text-[9px] text-emerald-700  mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
+                             <p className="text-display font-weight-display text-emerald-900 dark:text-[var(--primary)]">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
                         </div>
-                        <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800 p-8 rounded-3xl">
-                             <p className="text-[9px] font-black text-rose-700 uppercase tracking-widest mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
-                             <p className="text-3xl font-black text-rose-900 dark:text-rose-400 italic tracking-tighter">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
+                        <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800 p-6 rounded-[8px]">
+                             <p className="text-[9px] text-rose-700  mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
+                             <p className="text-display font-weight-display text-rose-900 dark:text-rose-400">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
                         </div>
-                        <div className="bg-card p-8 rounded-3xl ">
-                             <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
-                             <p className="text-3xl font-black text-foreground italic tracking-tighter">$ {data.payload.metrics.netOperatingIncome.toLocaleString()}</p>
+                        <div className="bg-card p-6 rounded-[8px] ">
+                             <p className="text-[9px] text-muted-foreground  mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
+                             <p className="text-display font-weight-display text-foreground">$ {data.payload.metrics.netOperatingIncome.toLocaleString()}</p>
                         </div>
                     </div>
 
@@ -232,9 +232,9 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                         { name: 'YTD', revenue: data.payload.revenue.effectiveGrossRevenue, expense: data.payload.expenses.operating.total }
                     ]} />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
                         <div>
-                           <h4 className="text-xs font-black uppercase text-muted-foreground mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Operating Expense Distribution</h4>
+                           <h4 className="text-xs  text-muted-foreground mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Operating Expense Distribution</h4>
                            <table className="w-full border-4 border-foreground">
                                 <thead className="bg-black text-foreground">
                                     <tr>
@@ -246,7 +246,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                     {Object.entries(data.payload.expenses.operating.categories).map(([name, total]) => (
                                         <tr key={name} onClick={() => onDrillDown(name)} className="hover:bg-muted cursor-pointer group transition-colors">
                                             <td className={cellClass}>{name}</td>
-                                            <td className={`${cellClass} text-right text-red-600 font-mono tracking-tighter flex items-center justify-end`}>
+                                            <td className={`${cellClass} text-right text-red-600 font-mono flex items-center justify-end`}>
                                                 -$ {(total as number).toLocaleString()}
                                                 <ArrowRight className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0" />
                                             </td>
@@ -256,15 +256,15 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                            </table>
                         </div>
                         <div>
-                           <h4 className="text-xs font-black uppercase text-muted-foreground mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Efficiency & Yield Ratios</h4>
+                           <h4 className="text-xs  text-muted-foreground mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Efficiency & Yield Ratios</h4>
                            <div className="space-y-4">
-                              <div className="p-6 border-4 border-foreground rounded-3xl flex justify-between items-center bg-muted">
-                                  <span className="text-[10px] font-black uppercase italic">Operating Expense Ratio (OER)</span>
-                                  <span className="text-xl font-black italic">{data.payload.metrics.operatingExpenseRatio.toFixed(2)}%</span>
+                              <div className="p-6 border-4 border-foreground rounded-[8px] flex justify-between items-center bg-muted">
+                                  <span className="text-[10px] ">Operating Expense Ratio (OER)</span>
+                                  <span className="text-xl">{data.payload.metrics.operatingExpenseRatio.toFixed(2)}%</span>
                               </div>
-                              <div className="p-6 border-4 border-foreground rounded-3xl flex justify-between items-center">
-                                  <span className="text-[10px] font-black uppercase italic">Vacancy Impact Score</span>
-                                  <span className="text-xl font-black italic text-red-600">{( (data.payload.revenue.vacancyLoss / data.payload.revenue.grossPotentialRent) * 100 || 0).toFixed(2)}%</span>
+                              <div className="p-6 border-4 border-foreground rounded-[8px] flex justify-between items-center">
+                                  <span className="text-[10px] ">Vacancy Impact Score</span>
+                                  <span className="text-xl text-red-600">{( (data.payload.revenue.vacancyLoss / data.payload.revenue.grossPotentialRent) * 100 || 0).toFixed(2)}%</span>
                               </div>
                            </div>
                         </div>
@@ -296,11 +296,11 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                         <td className={cellClass}>
                                             <div className="flex gap-2">
                                                 {isUnpaid ? (
-                                                    <span className="bg-red-600 text-foreground text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] animate-pulse">VAL_DELINQUENT</span>
+                                                    <span className="bg-red-600 text-foreground text-[8px] px-2 py-1 rounded shadow-none animate-pulse">VAL_DELINQUENT</span>
                                                 ) : (
-                                                    <span className="bg-[var(--primary-muted)] text-[var(--primary)] text-[8px] font-black px-2 py-1 rounded">GOV_STABLE</span>
+                                                    <span className="bg-[var(--primary-muted)] text-[var(--primary)] text-[8px] px-2 py-1 rounded">GOV_STABLE</span>
                                                 )}
-                                                {l.rentAmount < 1000 && <span className="bg-yellow-400 text-foreground text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">VAC_WARNING</span>}
+                                                {l.rentAmount < 1000 && <span className="bg-yellow-400 text-foreground text-[8px] px-2 py-1 rounded shadow-none">VAC_WARNING</span>}
                                             </div>
                                         </td>
                                     </tr>
@@ -313,15 +313,15 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
 
             {data.type === 'TAX' && (
                 <div className="space-y-8">
-                     <div className="p-8 border-4 border-[var(--primary)] rounded-3xl bg-[var(--primary)] flex items-center justify-between">
+                     <div className="p-6 border-4 border-[var(--primary)] rounded-[8px] bg-[var(--primary)] flex items-center justify-between">
                          <div className="flex items-center gap-4">
-                            <div className="p-4 bg-[var(--primary)] text-foreground rounded-3xl"><FileText className="w-8 h-8" /></div>
+                            <div className="p-4 bg-[var(--primary)] text-foreground rounded-[8px]"><FileText className="w-8 h-8" /></div>
                             <div>
-                                <h4 className="text-sm font-black uppercase italic italic tracking-tighter">IRC Section 162 Compliance Engine</h4>
-                                <p className="text-[10px] font-bold text-[var(--primary)] uppercase">Automated Deductible Mapping Phase Active</p>
+                                <h4 className="text-sm ">IRC Section 162 Compliance Engine</h4>
+                                <p className="text-[10px] font-bold text-[var(--primary)] ">Automated Deductible Mapping Phase Active</p>
                             </div>
                          </div>
-                         <button className="bg-black text-foreground text-[10px] font-black px-8 py-4 rounded-3xl hover:bg-[var(--primary)] transition-all uppercase tracking-widest italic">
+                         <button className="bg-black text-foreground text-[10px] px-8 py-4 rounded-[8px] hover:bg-[var(--primary)] transition-all ">
                             Verify Deductions
                          </button>
                      </div>
@@ -336,7 +336,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                             {data.payload.map((e: any) => (
                                 <tr key={e.category} className="hover:bg-muted transition-colors">
                                     <td className={cellClass}>{e.category}</td>
-                                    <td className={`${cellClass} text-right text-red-600 font-mono italic tracking-tighter`}>-$ {e.amount.toLocaleString()}</td>
+                                    <td className={`${cellClass} text-right text-red-600 font-mono`}>-$ {e.amount.toLocaleString()}</td>
                                 </tr>
                             ))}
                         </tbody>

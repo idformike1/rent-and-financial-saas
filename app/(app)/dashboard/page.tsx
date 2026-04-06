@@ -30,7 +30,7 @@ async function ReconTerminal() {
   const data = telemetry.success ? telemetry.data : null;
 
   if (!data) return (
-    <div className="h-[200px] border border-dashed border-border rounded-[8px] bg-muted/30 flex items-center justify-center font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
+    <div className="h-[200px] border border-dashed border-border rounded-[8px] bg-muted/30 flex items-center justify-center font-mono text-[9px]  text-muted-foreground">
        [ TELEMETRY_PROTOCOL_FAILURE ]
     </div>
   );
@@ -40,17 +40,19 @@ async function ReconTerminal() {
 
 export default async function FinovaDashboard() {
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight uppercase">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
+        <div className="space-y-1">
+          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
             Treasury Oversight
           </h1>
-          <p className="text-[12px] font-bold text-muted-foreground uppercase tracking-widest mt-2">Portfolio-Level Macro Analysis</p>
+          <p className="text-[15px] font-[400] text-muted-foreground">
+            Portfolio-level macro analysis and risk aggregation
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="default" className="px-3 py-1.5 font-bold">
-            <Zap size={12} className="mr-2 inline-block" /> LIVE SYNC
+          <Badge variant="default" className="px-3 py-1.5 font-bold h-10 border border-border bg-muted/50 text-muted-foreground flex items-center">
+            <Zap size={12} className="mr-2" /> LIVE SYNC
           </Badge>
           <ExportControls />
         </div>

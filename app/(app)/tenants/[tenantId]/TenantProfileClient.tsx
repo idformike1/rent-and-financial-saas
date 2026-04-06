@@ -21,7 +21,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
       <div className="w-full md:w-1/3 bg-card border border-border sm:rounded-xl p-6 h-fit">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-foreground">{tenant.name}</h2>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-[var(--primary-muted)] text-[var(--primary)] uppercase tracking-wider border border-[var(--primary)]/20">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-[var(--primary-muted)] text-[var(--primary)]  tracking-wider border border-[var(--primary)]/20">
             Active
           </span>
         </div>
@@ -51,7 +51,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
         
         <ul className="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
           {charges.length === 0 ? (
-            <li className="px-6 py-10 text-center text-muted-foreground text-sm italic">
+            <li className="px-6 py-10 text-center text-muted-foreground text-sm">
               No outstanding charges found.
             </li>
           ) : (
@@ -59,7 +59,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
               <li key={charge.id} className="px-6 py-4 hover:bg-muted transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-foreground truncate uppercase tracking-wider">
+                    <p className="text-sm font-medium text-foreground truncate  tracking-wider">
                       {charge.type}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">

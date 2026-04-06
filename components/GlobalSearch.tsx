@@ -115,11 +115,11 @@ export default function GlobalSearch() {
 
               {/* Search Results Section */}
               <div className="space-y-3">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-3 border-l-2 border-primary">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase pl-3 border-l-2 border-primary">
                   Quantum Suggestions
                 </p>
                 {results.length === 0 && !isSearching ? (
-                  <p className="p-10 text-center text-[12px] font-bold text-muted-foreground bg-muted/50 rounded-[8px] border border-dashed border-border uppercase tracking-widest">
+                  <p className="p-6 text-center text-[12px] font-bold text-muted-foreground bg-muted/50 rounded-[8px] border border-dashed border-border uppercase">
                     No signals detected for search parameters.
                   </p>
                 ) : (
@@ -138,13 +138,13 @@ export default function GlobalSearch() {
                             <h4 className="text-[13px] font-bold text-foreground tracking-tight leading-none mb-1 transition-none uppercase">
                               {r.title}
                             </h4>
-                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
+                            <p className="text-[11px] font-bold text-muted-foreground uppercase opacity-60">
                               {r.description || r.type}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-none">
-                          <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-[4px] border uppercase tracking-widest", getTypeStyle(r.type))}>
+                          <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-[4px] border uppercase", getTypeStyle(r.type))}>
                             {r.type}
                           </span>
                           <ArrowRight className="w-4 h-4 text-primary" />
@@ -157,7 +157,7 @@ export default function GlobalSearch() {
 
               {/* Sovereign Shortcuts Section */}
               <div className="space-y-3">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-3 border-l-2 border-border">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase pl-3 border-l-2 border-border">
                   Sovereign Shortcuts
                 </p>
                 <div className="grid grid-cols-1 gap-1">
@@ -171,7 +171,7 @@ export default function GlobalSearch() {
                         <div className="w-10 h-10 rounded-[8px] bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-none border border-border">
                           <s.icon className="w-4 h-4" />
                         </div>
-                        <h4 className="text-[12px] font-bold text-muted-foreground group-hover:text-foreground uppercase tracking-widest transition-none">
+                        <h4 className="text-[12px] font-bold text-muted-foreground group-hover:text-foreground uppercase transition-none">
                           {s.title}
                         </h4>
                       </div>
@@ -188,13 +188,13 @@ export default function GlobalSearch() {
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
                 Mercury Deep Scan
               </span>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-4">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-4">
                 <span className="flex items-center gap-1.5 opacity-60">
-                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-italic font-bold shadow-sm">ESC</kbd>
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold shadow-sm">ESC</kbd>
                   CLOSE
                 </span>
                 <span className="flex items-center gap-1.5 opacity-60">
-                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-italic font-bold shadow-sm">⏎</kbd>
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold shadow-sm">⏎</kbd>
                   NAVIGATE
                 </span>
               </span>

@@ -75,7 +75,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center transition-none disabled:opacity-40 disabled:pointer-events-none leading-none uppercase tracking-widest",
+        "inline-flex items-center justify-center transition-none disabled:opacity-40 disabled:pointer-events-none leading-none uppercase",
         variants[variant],
         sizes[size],
         className
@@ -96,7 +96,7 @@ export function Button({
  */
 export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <label className={cn("text-[12px] font-bold text-muted-foreground block mb-2 uppercase tracking-widest", className)}>
+    <label className={cn("text-[12px] font-bold text-muted-foreground block mb-2 uppercase", className)}>
       {children}
     </label>
   )

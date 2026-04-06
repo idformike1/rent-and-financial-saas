@@ -16,6 +16,7 @@ import {
   Plus
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Card, Badge, Button } from '@/components/ui-finova'
 
 interface RegistryTableProps {
   entries: any[]
@@ -52,122 +53,110 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
   const netPosition = totalInflow - totalOutflow
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-6">
       
       {/* GLOBAL TELEMETRY BAR */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-card overflow-hidden rounded-xl divide-x divide-white/10">
-        <div className="p-8 space-y-4">
-           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Global Net Outflow</span>
-           <div className={cn("text-4xl font-mono tracking-tighter font-finance tabular-nums", netPosition < 0 ? "text-rose-500" : "text-emerald-500")}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-5 space-y-1">
+           <span className="text-[12px] font-bold text-muted-foreground  tracking-widest">Global Net Outflow</span>
+           <div className={cn("text-[28px] font-[380] font-finance tabular-nums leading-none", netPosition < 0 ? "text-rose-600" : "text-emerald-600")}>
               ${Math.abs(netPosition).toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
-        </div>
-        <div className="p-8 space-y-4 opacity-50">
-           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Volume: Inflow</span>
-           <div className="text-2xl font-mono text-emerald-400 font-finance tabular-nums">
+        </Card>
+        <Card className="p-5 space-y-1 bg-muted/30">
+           <span className="text-[12px] font-bold text-muted-foreground  tracking-widest">Aggregate Inflow</span>
+           <div className="text-[20px] font-bold font-finance tabular-nums text-emerald-600">
               +${totalInflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
-        </div>
-        <div className="p-8 space-y-4 opacity-50">
-           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Volume: Outflow</span>
-           <div className="text-2xl font-mono text-rose-400 font-finance tabular-nums">
+        </Card>
+        <Card className="p-5 space-y-1 bg-muted/30">
+           <span className="text-[12px] font-bold text-muted-foreground  tracking-widest">Aggregate Outflow</span>
+           <div className="text-[20px] font-bold font-finance tabular-nums text-rose-600">
               -${totalOutflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
-        </div>
+        </Card>
       </div>
 
       {/* REGISTRY TERMINAL HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-border pb-8">
-        <div className="relative w-full max-w-md group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-emerald-500 transition-colors" />
+      <Card className="p-2 flex items-center gap-2">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors" />
           <input 
             type="text" 
-            placeholder="FILTER SURVEILLANCE DATA..."
-            className="w-full bg-card border border-border h-12 pl-12 pr-4 text-[10px] font-mono text-foreground placeholder-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:border-emerald-500/50 transition-all uppercase tracking-widest"
+            placeholder="Search registry records..."
+            className="w-full bg-transparent h-10 pl-10 pr-4 text-[13px] text-foreground placeholder-muted-foreground outline-none border-none"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-4">
-           <div className="h-12 px-6 bg-background border border-border flex items-center gap-4 text-[9px] font-black tracking-widest text-muted-foreground">
-              <Filter className="w-3.5 h-3.5" />
-              <span>MATCHED_RECORDS:</span>
-              <span className="text-emerald-500 font-mono italic">{filtered.length.toString().padStart(3, '0')}</span>
-           </div>
+        <div className="flex items-center gap-3 pr-2">
+           <Badge variant="brand" className="h-8 flex items-center font-bold">
+              {filtered.length} MATCHES
+           </Badge>
         </div>
-      </div>
+      </Card>
 
       {/* THE REGISTRY TABLE */}
-      <div className="border border-border bg-card/50 overflow-hidden">
+      <Card className="p-0 overflow-hidden border border-border">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-background/50 text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em] border-b border-border">
+            <thead className="bg-muted/50 text-[10px] text-muted-foreground  tracking-widest border-b border-border">
               <tr>
-                <th className="px-6 py-5 font-black border-r border-border">Date</th>
-                <th className="px-6 py-5 font-black border-r border-border">Entity/Payee</th>
-                <th className="px-6 py-5 font-black border-r border-border">Description</th>
-                <th className="px-6 py-5 font-black border-r border-border">Category</th>
-                <th className="px-6 py-5 font-black border-r border-border">Scope</th>
-                <th className="px-6 py-5 font-black text-right">Amount</th>
+                <th className="px-5 py-3 font-bold">Execution Date</th>
+                <th className="px-5 py-3 font-bold">Payee / Entity</th>
+                <th className="px-5 py-3 font-bold">Description</th>
+                <th className="px-5 py-3 font-bold">Categorization</th>
+                <th className="px-5 py-3 font-bold">Asset Scope</th>
+                <th className="px-5 py-3 font-bold text-right">Value</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {filtered.map((entry: any) => (
-                <tr key={entry.id} className="hover:bg-card/[0.02] transition-all group">
-                  <td className="px-6 py-4 border-r border-border">
-                    <span className="text-[10px] font-mono text-muted-foreground">
+                <tr key={entry.id} className="hover:bg-muted/50 transition-colors h-[52px]">
+                  <td className="px-5">
+                    <span className="text-[12px] text-muted-foreground font-finance">
                       {new Date(entry.transactionDate || entry.date).toISOString().split('T')[0]}
                     </span>
                   </td>
-                  <td className="px-6 py-4 border-r border-border">
-                    <span className="text-[11px] font-bold text-foreground uppercase italic tracking-tight">
+                  <td className="px-5">
+                    <span className="text-[14px] font-bold text-foreground">
                        {entry.payee || "INTERNAL_TRANSFER"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 border-r border-border relative group/desc">
-                    <span className="text-[10px] text-muted-foreground capitalize truncate max-w-[200px] block">
+                  <td className="px-5">
+                    <span className="text-[13px] text-muted-foreground truncate max-w-[200px] block">
                        {entry.description || "N/A"}
                     </span>
-                    {entry.description && entry.description.length > 20 && (
-                      <div className="absolute left-6 top-0 -translate-y-full mb-2 hidden group-hover/desc:block z-50 bg-card border border-border p-3 rounded-xl text-[10px] text-foreground w-[300px] pointer-events-none animate-in fade-in slide-in-from-bottom-2">
-                        <p className="font-mono text-muted-foreground uppercase tracking-widest text-[8px] mb-2 font-black">SURVEILLANCE_DETAIL</p>
-                        {entry.description}
-                      </div>
-                    )}
                   </td>
-                  <td className="px-6 py-4 border-r border-border">
-                    <div className="flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-muted" />
-                       <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">
-                         {entry.expenseCategory?.name || "UNCLASSIFIED"}
-                       </span>
-                    </div>
+                  <td className="px-5">
+                    <Badge variant="default" className="bg-muted text-muted-foreground border-none">
+                      {entry.expenseCategory?.name || "UNCLASSIFIED"}
+                    </Badge>
                   </td>
-                  <td className="px-6 py-4 border-r border-border">
+                  <td className="px-5">
                     {entry.propertyId ? (
                       <Link 
                         href={`/properties/${entry.propertyId}`}
-                        className="flex items-center gap-2 text-[var(--primary)] hover:text-[var(--primary)] transition-colors group/link"
+                        className="flex items-center gap-2 text-primary hover:underline transition-all"
                       >
-                         <Building2 className="w-3.5 h-3.5 opacity-50 group-hover/link:opacity-100" />
-                         <span className="text-[9px] font-black uppercase tracking-widest truncate max-w-[120px]">
+                         <Building2 className="w-3.5 h-3.5 opacity-60" />
+                         <span className="text-[12px] truncate max-w-[120px]">
                             {entry.property?.name}
                          </span>
-                         <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover/link:opacity-40 transition-opacity" />
                       </Link>
                     ) : (
-                      <div className="flex items-center gap-2 opacity-40 grayscale">
+                      <div className="flex items-center gap-2 opacity-40">
                          <Layers className="w-3.5 h-3.5" />
-                         <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest font-mono">
-                            CORPORATE/GENERAL
+                         <span className="text-[11px] ">
+                            CORPORATE
                          </span>
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-5 text-right">
                     <span className={cn(
-                      "text-[13px] font-mono font-bold font-finance tabular-nums italic tracking-tighter",
-                      Number(entry.amount) < 0 ? "text-rose-500" : "text-emerald-400"
+                      "text-[14px] font-bold font-finance tabular-nums",
+                      Number(entry.amount) < 0 ? "text-rose-600" : "text-emerald-600"
                     )}>
                       {Number(entry.amount) < 0 ? '-' : '+'}${Math.abs(Number(entry.amount)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
@@ -177,13 +166,13 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="py-20 flex flex-col items-center justify-center opacity-20">
-               <FileText className="w-12 h-12 mb-4" />
-               <span className="text-[10px] font-black uppercase tracking-[0.3em]">No Surveillance Data Found</span>
+            <div className="py-20 flex flex-col items-center justify-center text-muted-foreground">
+               <FileText className="w-12 h-12 mb-4 opacity-20" />
+               <span className="text-[12px]  tracking-widest font-bold">No Transaction Data</span>
             </div>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

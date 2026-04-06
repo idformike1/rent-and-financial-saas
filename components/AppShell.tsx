@@ -142,7 +142,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <p className="text-[12px] font-bold text-foreground truncate leading-none mb-1">
               {userName}
             </p>
-            <p className="text-[10px] text-muted-foreground truncate uppercase tracking-widest font-bold">
+            <p className="text-[10px] text-muted-foreground truncate uppercase font-bold">
               {userRole}
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* ── MAIN CANVAS ───────────────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto p-8 lg:p-12">
+        <main className="flex-1 overflow-y-auto p-6 lg:p-12">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

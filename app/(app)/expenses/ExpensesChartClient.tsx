@@ -11,7 +11,7 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
   if (data.length === 0) {
     return (
       <div className="h-full flex items-center justify-center border border-dashed border-border rounded-[8px]">
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No Data Nodes Found</p>
+        <p className="text-[10px] font-bold text-muted-foreground ">No Data Nodes Found</p>
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
         <Legend 
             verticalAlign="bottom" 
             height={36} 
-            formatter={(value) => <span className="text-[9px] font-bold uppercase text-muted-foreground tracking-widest ml-2">{value}</span>}
+            formatter={(value) => <span className="text-[9px] font-bold  text-muted-foreground ml-2">{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>

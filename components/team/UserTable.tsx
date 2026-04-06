@@ -63,11 +63,11 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
         <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Identity</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Role Allocation</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-center">Perms</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-center">Status</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-right">Actions</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Identity</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Role Allocation</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Perms</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Status</th>
+              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -139,9 +139,9 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
       {deleteModal.open && deleteModal.user && (
         <>
           <div className="fixed inset-0 z-50 bg-background/80" />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[12px] p-8 flex flex-col">
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[12px] p-6 flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-sm font-bold text-foreground uppercase tracking-widest">Authorize Nuclear Purge</h2>
+              <h2 className="text-sm font-bold text-foreground uppercase">Authorize Nuclear Purge</h2>
               <button 
                 onClick={() => setDeleteModal({ open: false, user: null })} 
                 className="text-muted-foreground hover:text-foreground transition-none"
@@ -160,7 +160,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
 
             <div className="space-y-6">
               <div>
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block mb-2">
+                <label className="text-[11px] font-bold text-muted-foreground uppercase block mb-2">
                   Type "CONFIRM" to validate
                 </label>
                 <Input 

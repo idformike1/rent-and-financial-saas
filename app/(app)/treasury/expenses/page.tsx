@@ -22,20 +22,20 @@ export default async function ExpenseLoggingPage() {
           <div>
             <Link
               href="/expenses"
-              className="inline-flex items-center text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-brand transition-colors mb-3 group"
+              className="inline-flex items-center text-[9px]  text-muted-foreground hover:text-brand transition-colors mb-3 group"
             >
               <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to Wealth Ledger
             </Link>
-            <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">Treasury Entry Hub</h1>
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-3">Fiscal Materialization v3.1</p>
+            <h1 className="text-display font-weight-display text-foreground dark:text-foreground leading-none">Treasury Entry Hub</h1>
+            <p className="text-[10px] text-muted-foreground  tracking-[0.3em] mt-3">Fiscal Materialization v3.1</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-[var(--primary)]/10 px-4 py-2 rounded-3xl border border-[var(--primary)]/20">
+          <div className="flex items-center bg-[var(--primary)]/10 px-4 py-2 rounded-[8px] border border-[var(--primary)]/20">
             <ShieldAlert className="w-4 h-4 mr-3 text-[var(--primary)]" />
-            <span className="text-[9px] font-black uppercase text-[var(--primary)] dark:text-[var(--primary)] tracking-widest leading-none">Governance Signal: Active</span>
+            <span className="text-[9px]  text-[var(--primary)] dark:text-[var(--primary)] leading-none">Governance Signal: Active</span>
           </div>
         </div>
       </div>
@@ -45,30 +45,30 @@ export default async function ExpenseLoggingPage() {
       </div>
 
       {/* Footer panel — Glassmorphic Integrity Anchor */}
-      <div className="bg-card/40 dark:bg-card border border-border border-border rounded-[3rem] p-12 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="bg-card/40 dark:bg-card border border-border border-border rounded-[8px] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
         <div className="flex items-center gap-8">
           <div className="w-16 h-16 rounded-[1.75rem] bg-muted dark:bg-card flex items-center justify-center shrink-0">
              <History className="w-8 h-8 text-muted-foreground" />
           </div>
           <div>
-            <p className="text-2xl font-black uppercase italic tracking-tighter text-foreground dark:text-foreground leading-none">System Integrity Anchored</p>
+            <p className="text-2xl text-foreground dark:text-foreground leading-none">System Integrity Anchored</p>
             <div className="flex items-center gap-3 mt-3">
                <Zap className="w-3 h-3 text-brand" />
-               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Double-Entry Ledger Verified</p>
+               <p className="text-[10px] text-muted-foreground ">Double-Entry Ledger Verified</p>
             </div>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
           <Link
             href="/expenses"
-            className="h-14 px-8 bg-card dark:bg-card border border-border border-border text-[10px] font-black rounded-3xl hover:bg-muted dark:hover:bg-muted transition-all uppercase tracking-widest italic flex items-center justify-center"
+            className="h-14 px-8 bg-card dark:bg-card border border-border border-border text-[10px] rounded-[8px] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
           >
             <ArrowLeft className="w-4 h-4 mr-3 text-muted-foreground" />
             Wealth Registry
           </Link>
           <Link
             href="/settings/audit"
-            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] font-black rounded-3xl hover:shadow-brand/60 transition-all uppercase tracking-widest italic flex items-center justify-center"
+            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[8px] hover:shadow-brand/60 transition-all  flex items-center justify-center"
           >
             <Shield className="w-4 h-4 mr-3" />
             View Audit Trail

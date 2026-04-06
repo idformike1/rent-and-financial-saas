@@ -85,21 +85,21 @@ export default function FinanceTranslationHub() {
   const [selected, setSelected] = useState<TranslationNode>(TRANSLATION_MAP[0])
 
   return (
-    <div className="min-h-screen bg-muted dark:bg-background p-8 lg:p-12 space-y-12 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-muted dark:bg-background p-6 lg:p-6 space-y-6 animate-in fade-in duration-700">
       
       {/* HEADER SECTION: FINOVA RECONSTRUCTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border border-border pb-12 gap-8 relative overflow-hidden group">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border border-border pb-12 gap-6 relative overflow-hidden group">
         <div className="flex items-center space-x-6 relative z-10">
-          <div className="w-16 h-16 bg-brand/10 rounded-3xl flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
+          <div className="w-16 h-16 bg-brand/10 rounded-[8px] flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
              <Layers className="w-8 h-8 text-brand" />
           </div>
           <div>
-            <h1 className="text-5xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">
+            <h1 className="text-display font-weight-display text-foreground dark:text-foreground leading-none">
               Finance <br/><span className="text-brand">Translation Hub</span>
             </h1>
             <div className="flex items-center space-x-4 mt-2">
                <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
-               <p className="text-muted-foreground font-bold tracking-[0.3em] uppercase text-[10px]">
+               <p className="text-muted-foreground font-bold tracking-[0.3em]  text-[10px]">
                  AXIOM V.3 Architecture ↔ GAAP Regulatory Standards
                </p>
             </div>
@@ -114,8 +114,8 @@ export default function FinanceTranslationHub() {
         
         {/* HIERARCHY VISUALIZER (LEFT) */}
         <div className="lg:col-span-7 space-y-8 animate-in slide-in-from-left-8 duration-700">
-          <Card className="rounded-[2.5rem] p-10 border-none bg-card dark:bg-card">
-            <h2 className="text-xl font-black uppercase italic tracking-tighter mb-10 flex items-center text-foreground dark:text-foreground border-b border-border border-border pb-6">
+          <Card className="rounded-[8px] p-6 border-none bg-card dark:bg-card">
+            <h2 className="text-xl  mb-10 flex items-center text-foreground dark:text-foreground border-b border-border border-border pb-6">
                Hierarchical Translation Map
                <GitBranch className="w-5 h-5 ml-4 text-brand animate-pulse" />
             </h2>
@@ -128,7 +128,7 @@ export default function FinanceTranslationHub() {
                   <button
                     key={node.id}
                     onClick={() => setSelected(node)}
-                    className={`flex items-center text-left p-5 rounded-3xl transition-all relative z-10 ${
+                    className={`flex items-center text-left p-5 rounded-[8px] transition-all relative z-10 ${
                       isActive 
                         ? 'bg-card dark:bg-brand text-foreground -translate-y-1' 
                         : 'bg-muted dark:bg-muted hover:bg-card dark:hover:bg-surface-800 text-muted-foreground hover:text-foreground'
@@ -140,10 +140,10 @@ export default function FinanceTranslationHub() {
                       <Icon className={`w-6 h-6 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="flex-1">
-                      <span className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1 block ${isActive ? 'text-foreground/60' : 'text-muted-foreground'}`}>
+                      <span className={`text-[9px]  tracking-[0.2em] mb-1 block ${isActive ? 'text-foreground/60' : 'text-muted-foreground'}`}>
                         {node.category} COMPONENT
                       </span>
-                      <h3 className={`text-lg font-black uppercase tracking-tighter ${isActive ? 'text-foreground' : 'text-foreground dark:text-foreground'}`}>
+                      <h3 className={`text-lg  ${isActive ? 'text-foreground' : 'text-foreground dark:text-foreground'}`}>
                         {node.label}
                       </h3>
                     </div>
@@ -154,14 +154,14 @@ export default function FinanceTranslationHub() {
             </div>
           </Card>
 
-          <Card className="bg-brand border-none rounded-3xl p-8 flex items-center justify-between text-foreground overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
+          <Card className="bg-brand border-none rounded-[8px] p-6 flex items-center justify-between text-foreground overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-full -mr-16 -mt-8 group-hover:scale-150 transition-transform" />
              <div className="space-y-2 relative z-10">
                 <div className="flex items-center space-x-3">
                    <Zap className="w-5 h-5 text-foreground animate-pulse" />
-                   <h4 className="text-lg font-black uppercase italic tracking-widest">Protocol Velocity</h4>
+                   <h4 className="text-lg ">Protocol Velocity</h4>
                 </div>
-                <p className="text-foreground/70 text-xs font-medium max-w-md italic tracking-wide uppercase">
+                <p className="text-foreground/70 text-xs font-medium max-w-md tracking-wide ">
                   Mutation cascading at 0.04ms. Every payment triggers a 4-point validation sequence.
                 </p>
              </div>
@@ -173,15 +173,15 @@ export default function FinanceTranslationHub() {
         <div className="lg:col-span-5 animate-in slide-in-from-right-8 duration-700 delay-100">
            <div className="sticky top-28 space-y-8">
               
-              <Card className="rounded-3xl p-10 border-none bg-card dark:bg-card border-l-8 border-brand">
-                <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-6">GAAP Logical Proxy</h4>
-                <p className="text-xl font-black italic tracking-tighter text-foreground dark:text-foreground leading-relaxed">
+              <Card className="rounded-[8px] p-6 border-none bg-card dark:bg-card border-l-8 border-brand">
+                <h4 className="text-[9px]  tracking-[0.3em] text-muted-foreground mb-6">GAAP Logical Proxy</h4>
+                <p className="text-xl text-foreground dark:text-foreground leading-relaxed">
                   "{selected.gaap_definition}"
                 </p>
               </Card>
 
-              <Card className="bg-surface-900 border-none p-10 rounded-[2.5rem] text-foreground relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform">
+              <Card className="bg-surface-900 border-none p-6 rounded-[8px] text-foreground relative overflow-hidden group">
+                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-transform">
                     <Database className="w-48 h-48 text-brand" />
                  </div>
 
@@ -189,7 +189,7 @@ export default function FinanceTranslationHub() {
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
                         <Link className="w-4 h-4 text-brand" />
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Persistence Model</h5>
+                        <h5 className="text-[10px]  tracking-[0.2em] text-muted-foreground">Persistence Model</h5>
                       </div>
                       <div className="bg-surface-800/80 border border-surface-700 px-5 py-4 rounded-xl font-mono text-xs text-brand/80">
                         {selected.axiom_model}
@@ -199,7 +199,7 @@ export default function FinanceTranslationHub() {
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
                         <FileJson className="w-4 h-4 text-amber-500" />
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Materialization</h5>
+                        <h5 className="text-[10px]  tracking-[0.2em] text-muted-foreground">Materialization</h5>
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
@@ -214,7 +214,7 @@ export default function FinanceTranslationHub() {
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
                         <Code2 className="w-4 h-4 text-[var(--primary)]" />
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Instruction Pathway</h5>
+                        <h5 className="text-[10px]  tracking-[0.2em] text-muted-foreground">Instruction Pathway</h5>
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
@@ -228,14 +228,14 @@ export default function FinanceTranslationHub() {
                  </div>
               </Card>
 
-              <Card className="rounded-3xl p-6 flex items-center justify-between transition-all cursor-pointer group bg-card dark:bg-card border-none">
+              <Card className="rounded-[8px] p-6 flex items-center justify-between transition-all cursor-pointer group bg-card dark:bg-card border-none">
                  <div className="flex items-center space-x-6">
                     <div className="w-12 h-12 rounded-xl bg-muted dark:bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
                        <Activity className="w-6 h-6 text-brand" />
                     </div>
                     <div>
-                       <h6 className="text-lg font-black uppercase tracking-tighter text-foreground dark:text-foreground">Trace In Log</h6>
-                       <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Global Monitor</p>
+                       <h6 className="text-lg text-foreground dark:text-foreground">Trace In Log</h6>
+                       <p className="text-[9px]  text-muted-foreground">Global Monitor</p>
                     </div>
                  </div>
                  <ArrowRight className="w-6 h-6 text-foreground group-hover:text-brand group-hover:translate-x-2 transition-all" />

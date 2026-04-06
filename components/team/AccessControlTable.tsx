@@ -46,11 +46,11 @@ export default function AccessControlTable({
       <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
         <thead className="bg-muted/50 border-b border-border">
           <tr>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">User Identity</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Overarching Role</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-center">Permissions</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-center">Status</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-right">Actions</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">User Identity</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Overarching Role</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Permissions</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Status</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

@@ -38,24 +38,23 @@ export default async function TenantsPage() {
   }));
 
   return (
-    <div className="py-12 px-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
-      
-      {/* HEADER: DIRECTORY IDENTITY */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border dark:border-surface-800 pb-10 gap-8">
-        <div className="flex items-center gap-6">
-           <div className="w-14 h-14 bg-brand/10 rounded-3xl flex items-center justify-center shrink-0">
-              <User className="w-7 h-7 text-brand fill-brand" />
-           </div>
-           <div>
-              <h1 className="text-4xl font-black tracking-widest text-foreground dark:text-foreground uppercase leading-none">Occupant <br/><span className="text-brand">Directory</span></h1>
-              <p className="text-muted-foreground font-bold tracking-widest uppercase text-[10px] mt-2">Master Index of Portfolio Identity</p>
-           </div>
+    <div className="py-6 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
+        <div className="space-y-1">
+          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
+            Occupant Directory
+          </h1>
+          <p className="text-[15px] font-[400] text-muted-foreground">
+            Master index of portfolio identity and lease governance
+          </p>
         </div>
-        <Link href="/onboarding">
-          <Button className="bg-[var(--primary)] text-[var(--primary-foreground)] h-12 px-6 rounded-3xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,87,51,0.2)] hover:shadow-none hover:translate-y-[1px] transition-all flex items-center gap-2 group border border-border">
-            <Plus className="w-5 h-5" /> New Provisioning
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/onboarding">
+            <Button className="bg-primary text-primary-foreground h-10 px-4 rounded-[8px] font-bold  tracking-widest text-[10px] flex items-center">
+              <Plus className="w-4 h-4 mr-2" /> New Provisioning
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <TenantRegistryClient tenants={tenants} />

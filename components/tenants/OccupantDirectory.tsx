@@ -41,7 +41,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
             <User className="w-10 h-10 text-border mx-auto" />
             <div>
                <p className="text-xl font-bold text-foreground tracking-tight">Identity Void</p>
-               <p className="text-muted-foreground text-[11px] mt-2 uppercase tracking-widest leading-relaxed font-bold">No active signals found matching your current search parameters.</p>
+               <p className="text-muted-foreground text-[11px] mt-2 uppercase leading-relaxed font-bold">No active signals found matching your current search parameters.</p>
             </div>
           </div>
         ) : (
@@ -49,10 +49,10 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
             <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
               <thead className="bg-muted/50 border-b border-border">
                 <tr>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Identity Protocol</th>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Lease Portfolio</th>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest">Status Flag</th>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase tracking-widest text-right">Domain Access</th>
+                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Identity Protocol</th>
+                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Lease Portfolio</th>
+                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Status Flag</th>
+                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-right">Domain Access</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -69,7 +69,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                           </div>
                           <div className="flex flex-col">
                             <span className="text-[14px] font-bold text-foreground tracking-tight">{tenant.name}</span>
-                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{tenant.email || 'PROTOCOL_NULL'}</span>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">{tenant.email || 'PROTOCOL_NULL'}</span>
                           </div>
                         </div>
                       </td>
@@ -80,7 +80,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                             {primaryLease?.unit.unitNumber || 'UNASSIGNED'}
                           </span>
                         </div>
-                        <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest font-bold">{activeLeases.length} ACTIVE</p>
+                        <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold">{activeLeases.length} ACTIVE</p>
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={activeLeases.length > 0 ? 'success' : 'default'} className="text-[10px] font-bold">

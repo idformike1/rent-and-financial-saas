@@ -11,13 +11,13 @@ export default function SettingsPage() {
   const isSovereign = ['ADMIN', 'OWNER'].includes(userRole)
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000">
+    <div className="space-y-6 animate-in fade-in duration-1000">
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-border pb-10">
         <div>
            <Badge variant="brand" className="mb-4">System Governance</Badge>
-           <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase leading-none">Master Settings</h1>
-           <p className="text-[var(--muted)] text-[10px] font-black uppercase tracking-[0.4em] mt-4">Corporate Treasury & Identity Logic</p>
+           <h1 className="text-display font-weight-display text-foreground leading-none">Master Settings</h1>
+           <p className="text-[var(--muted)] text-[10px]  tracking-[0.4em] mt-4">Corporate Treasury & Identity Logic</p>
         </div>
       </div>
 
@@ -27,10 +27,10 @@ export default function SettingsPage() {
         <div className="space-y-6 relative">
           <div className="flex items-center gap-3 mb-2">
             <Landmark className="w-4 h-4 text-[var(--primary)]" />
-            <h3 className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.4em]">Master Bank Account</h3>
+            <h3 className="text-[10px] text-[var(--muted)]  tracking-[0.4em]">Master Bank Account</h3>
           </div>
 
-          <div className={cn("relative overflow-hidden glass-panel p-8 rounded-3xl border border-[var(--border)]", !isSovereign && "opacity-80")}>
+          <div className={cn("relative overflow-hidden glass-panel p-6 rounded-[8px] border border-[var(--border)]", !isSovereign && "opacity-80")}>
             <div className="space-y-8">
               <div className="grid grid-cols-1 gap-6">
                 <div>
@@ -70,8 +70,8 @@ export default function SettingsPage() {
                   <Lock className="w-8 h-8 text-rose-500" />
                 </div>
                 <div className="text-center">
-                  <h4 className="text-xl font-black italic tracking-tighter text-foreground uppercase">[ RESTRICTED CLEARANCE ]</h4>
-                  <p className="text-[8px] font-black text-rose-400 uppercase tracking-[0.3em] mt-2">Requires ADMIN or OWNER Authorization</p>
+                  <h4 className="text-xl text-foreground ">[ RESTRICTED CLEARANCE ]</h4>
+                  <p className="text-[8px] text-rose-400  tracking-[0.3em] mt-2">Requires ADMIN or OWNER Authorization</p>
                 </div>
               </div>
             )}
@@ -82,27 +82,27 @@ export default function SettingsPage() {
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
-            <h3 className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.4em]">Organization Identity</h3>
+            <h3 className="text-[10px] text-[var(--muted)]  tracking-[0.4em]">Organization Identity</h3>
           </div>
 
-          <div className="space-y-8 glass-panel p-8 rounded-3xl border border-[var(--border)]">
+          <div className="space-y-8 glass-panel p-6 rounded-[8px] border border-[var(--border)]">
             <div className="flex items-center gap-6 pb-8 border-b border-[var(--border)]">
-               <div className="w-20 h-20 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/20 flex items-center justify-center text-3xl font-black text-[var(--primary)] italic">
+               <div className="w-20 h-20 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/20 flex items-center justify-center text-display font-weight-display text-[var(--primary)]">
                  {session?.user?.organizationName?.charAt(0) || 'A'}
                </div>
                <div>
-                  <h4 className="text-2xl font-black italic tracking-tighter text-[var(--foreground)] uppercase">{session?.user?.organizationName || 'Axiom Global'}</h4>
-                  <p className="text-[8px] font-black text-[var(--muted)] uppercase tracking-widest mt-1">Tenant ID: {session?.user?.organizationId || 'unverified'}</p>
+                  <h4 className="text-2xl text-[var(--foreground)] ">{session?.user?.organizationName || 'Axiom Global'}</h4>
+                  <p className="text-[8px] text-[var(--muted)]  mt-1">Tenant ID: {session?.user?.organizationId || 'unverified'}</p>
                </div>
             </div>
 
             <div className="space-y-4">
-               <div className="flex justify-between items-center p-5 rounded-2xl bg-[var(--card)]/50 border border-[var(--border)]">
-                  <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Compliance Status</span>
+               <div className="flex justify-between items-center p-5 rounded-[8px] bg-[var(--card)]/50 border border-[var(--border)]">
+                  <span className="text-[9px] text-[var(--muted)] ">Compliance Status</span>
                   <Badge variant="success">Active_Audit_Locked</Badge>
                </div>
-               <div className="flex justify-between items-center p-5 rounded-2xl bg-[var(--card)]/50 border border-[var(--border)]">
-                  <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Data Retention Policy</span>
+               <div className="flex justify-between items-center p-5 rounded-[8px] bg-[var(--card)]/50 border border-[var(--border)]">
+                  <span className="text-[9px] text-[var(--muted)] ">Data Retention Policy</span>
                   <Badge variant="brand">GAAP_7_YEAR_PERSISTENCE</Badge>
                </div>
             </div>

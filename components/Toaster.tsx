@@ -20,13 +20,13 @@ export default function Toaster() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-8 right-8 z-[9999] flex flex-col gap-4 max-w-sm pointer-events-none">
+    <div className="fixed top-6 right-8 z-[9999] flex flex-col gap-4 max-w-sm pointer-events-none">
       {toasts.map((t) => (
         <div 
           key={t.id} 
           className={`
             pointer-events-auto
-            flex items-center gap-4 p-5 rounded-3xl border border-border
+            flex items-center gap-4 p-5 rounded-[8px] border border-border
             animate-in slide-in-from-right-full duration-500
             ${t.type === 'success' ? 'bg-[var(--primary)] text-foreground' : ''}
             ${t.type === 'error' ? 'bg-rose-600 text-foreground' : ''}
@@ -39,7 +39,7 @@ export default function Toaster() {
             {t.type === 'info' && <Info className="w-6 h-6 text-foreground" />}
           </div>
           <div className="flex-1 pr-6">
-            <p className="text-[12px] font-black uppercase italic tracking-widest text-foreground leading-tight">
+            <p className="text-[12px] uppercase text-foreground leading-tight">
               {t.message}
             </p>
           </div>

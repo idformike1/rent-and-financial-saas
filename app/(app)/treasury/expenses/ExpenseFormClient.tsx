@@ -123,24 +123,24 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   }
 
   const inputClass = (error?: any) => cn(
-    "w-full bg-card dark:bg-card border-2 rounded-3xl px-6 h-16 text-foreground dark:text-foreground font-black outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px] uppercase tracking-tight placeholder-muted-foreground dark:placeholder-muted-foreground",
+    "w-full bg-card dark:bg-card border-2 rounded-[8px] px-6 h-16 text-foreground dark:text-foreground outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px]  tracking-tight placeholder-muted-foreground dark:placeholder-muted-foreground",
     error ? "border-rose-500 bg-rose-50/10" : "border-transparent focus:border-brand/20"
   );
-  const labelClass = "text-[10px] font-black text-muted-foreground uppercase tracking-[0.25rem] mb-3 ml-1 block";
+  const labelClass = "text-[10px] text-muted-foreground  tracking-[0.25rem] mb-3 ml-1 block";
 
   return (
     <div className="space-y-10">
       {sessionCount > 0 && lastEntry && (
-        <div className="rounded-[2.5rem] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
+        <div className="rounded-[8px] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
-            <div className={cn("w-14 h-14 rounded-3xl flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-rose-500')}>
+            <div className={cn("w-14 h-14 rounded-[8px] flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-rose-500')}>
                {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-foreground" /> : <ArrowDownCircle className="w-7 h-7 text-foreground" />}
             </div>
             <div>
-              <p className="font-black italic uppercase tracking-tighter text-2xl text-foreground leading-none">
+              <p className=" text-2xl text-foreground leading-none">
                 Entry #{sessionCount}: Materialized
               </p>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)] mt-3 animate-pulse">
+              <p className="text-[10px]  tracking-[0.3em] text-[var(--primary)] mt-3 animate-pulse">
                 {lastEntry.payee} — ${parseFloat(lastEntry.amount).toLocaleString(undefined, {minimumFractionDigits: 2})} // AUDITED
               </p>
             </div>
@@ -152,14 +152,14 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-        <div className="bg-card/40 dark:bg-card border border-border border-border rounded-[3.5rem] p-12 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="bg-card/40 dark:bg-card border border-border border-border rounded-[8px] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
           
           {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
           <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-muted dark:bg-muted/50 rounded-[1.75rem]">
              <button 
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
-               className={cn("py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+               className={cn("py-5 rounded-[8px]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
                  selectedType === 'EXPENSE' ? 'bg-rose-500 text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
                )}
              >
@@ -168,7 +168,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
              <button 
                type="button" 
                onClick={() => setValue('type', 'REVENUE')}
-               className={cn("py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+               className={cn("py-5 rounded-[8px]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
                  selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
                )}
              >
@@ -179,16 +179,16 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           <div className="space-y-1">
             <label className={labelClass}>Materialization Date</label>
             <input type="date" {...register('date')} className={inputClass(errors.date)} />
-            {errors.date && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.date.message}</p>}
+            {errors.date && <p className="text-[9px]  text-rose-500 mt-2 ml-1">{errors.date.message}</p>}
           </div>
 
           <div className="space-y-1">
             <label className={labelClass}>Liquid Volume (Amount)</label>
             <div className="relative">
-              <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-muted-foreground">$</span>
-              <input type="text" {...register('amount')} className={cn(inputClass(errors.amount), "pl-12 text-2xl tracking-tighter italic")} placeholder="00.00" />
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+              <input type="text" {...register('amount')} className={cn(inputClass(errors.amount), "pl-12 text-2xl")} placeholder="00.00" />
             </div>
-            {errors.amount && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.amount.message}</p>}
+            {errors.amount && <p className="text-[9px]  text-rose-500 mt-2 ml-1">{errors.amount.message}</p>}
           </div>
 
           <div className="space-y-1">
@@ -217,7 +217,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               <option value="">SELECT ACCOUNT</option>
               {availableParents.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            {errors.parentCategoryId && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.parentCategoryId.message}</p>}
+            {errors.parentCategoryId && <p className="text-[9px]  text-rose-500 mt-2 ml-1">{errors.parentCategoryId.message}</p>}
           </div>
 
           {availableSubs.length > 0 && (
@@ -233,7 +233,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           <div className="space-y-1">
             <label className={labelClass}>{selectedType === 'REVENUE' ? 'Payer Identity' : 'Payee Identity'}</label>
             <input {...register('payee')} className={inputClass(errors.payee)} placeholder="Legal Entity Name" />
-            {errors.payee && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.payee.message}</p>}
+            {errors.payee && <p className="text-[9px]  text-rose-500 mt-2 ml-1">{errors.payee.message}</p>}
           </div>
 
           <div className="space-y-1">
@@ -247,14 +247,14 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           <div className="md:col-span-2 space-y-4 pt-4 border-t border-border border-border">
             <label className={labelClass}>Substantive Narrative (Description)</label>
             <textarea rows={3} {...register('description')} className={cn(inputClass(errors.description), "normal-case h-32 py-6")} placeholder="Enter fiscal reasoning narrative..." />
-            {errors.description && <p className="text-[9px] font-black uppercase text-rose-500 mt-2 ml-1">{errors.description.message}</p>}
+            {errors.description && <p className="text-[9px]  text-rose-500 mt-2 ml-1">{errors.description.message}</p>}
           </div>
 
           <div className="md:col-span-2 pt-10">
             <button
               type="submit"
               disabled={isSubmitting}
-              className={cn("w-full text-foreground font-black h-20 rounded-[1.5rem] transition-all flex items-center justify-center uppercase tracking-[0.5rem] text-[12px] italic group relative overflow-hidden active:translate-y-[1px] transition-transform",
+              className={cn("w-full text-foreground h-20 rounded-[8px] transition-all flex items-center justify-center  tracking-[0.5rem] text-[12px] group relative overflow-hidden active:translate-y-[1px] transition-transform",
                 selectedType === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-rose-500'
               )}
             >
