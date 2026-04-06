@@ -80,7 +80,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (!mounted) return null
 
   return (
-    <div className="flex h-screen bg-slate-950 transition-colors duration-500 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[var(--background)] transition-colors duration-500 overflow-hidden font-sans">
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside className={cn(`
@@ -97,8 +97,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div className="w-10 h-10 rounded-3xl bg-brand flex items-center justify-center glow-orange">
               <Zap className="text-white fill-white w-5 h-5" />
             </div>
-            <h2 className="text-xl font-black tracking-tighter text-white">
-              AXIOM <span className="text-brand">2026</span>
+            <h2 className="text-xl font-black tracking-tighter text-[var(--foreground)]">
+              AXIOM <span className="text-[var(--primary)]">2026</span>
             </h2>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {/* Section toggle header */}
               <button
                 onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.4em] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
               >
                 {section.label}
                 <ChevronDown className={cn("w-3 h-3 transition-transform duration-300", openSections.includes(section.label) ? 'rotate-180' : '')} />
@@ -137,12 +137,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                           className={cn(`
                             flex items-center px-6 py-4 text-[11px] font-bold uppercase tracking-[0.15em] rounded-full transition-all duration-300
                             ${isActive
-                              ? 'bg-brand text-white shadow-lg shadow-brand/30 glow-orange'
-                              : 'text-slate-400 hover:bg-white/3 hover:text-white'
+                              ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-lg shadow-[var(--primary)]/30 glow-primary'
+                              : 'text-[var(--muted)] hover:bg-[var(--foreground)]/5 hover:text-[var(--foreground)]'
                             }
                           `)}
                         >
-                          <item.icon className={cn("mr-4 h-4 w-4 shrink-0", isActive ? "text-white" : "text-brand")} />
+                          <item.icon className={cn("mr-4 h-4 w-4 shrink-0", isActive ? "text-[var(--primary-foreground)]" : "text-[var(--primary)]")} />
                           {item.name}
                         </Link>
                       )
@@ -162,7 +162,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {userName.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black uppercase text-white leading-none mb-1.5 truncate">
+              <p className="text-[10px] font-black uppercase text-[var(--foreground)] leading-none mb-1.5 truncate">
                 {userName}
               </p>
               <Badge variant={userRole === 'MANAGER' ? 'warning' : 'success'} className="px-2 py-0.5 text-[7px]">
@@ -183,13 +183,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── MAIN COLUMN ─────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-950 transition-colors duration-500">
+      <div className="flex-1 flex flex-col min-w-0 bg-[var(--background)] transition-colors duration-500">
 
         {/* Header */}
         <header className="h-24 glass-panel border-none mx-6 mt-6 rounded-[2.5rem] flex items-center justify-between px-10 shrink-0">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-3 text-slate-400 hover:text-white"
+            className="lg:hidden p-3 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
             <Menu size={22} />
           </button>
@@ -200,7 +200,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
              <button
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="p-4 rounded-full bg-white/3 border border-white/10 text-slate-400 hover:text-white transition-all hover:scale-105 active:scale-95"
+              className="p-4 rounded-full bg-[var(--foreground)]/5 border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] transition-all hover:scale-105 active:scale-95"
             >
               {resolvedTheme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
             </button>

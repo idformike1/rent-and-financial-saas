@@ -31,7 +31,7 @@
 
 /* ── LIGHT MODE ──────────────────────────────────────────────────────────── */
 :root {
-  --background:         #F1F5F9;
+  --background:         #F8FAFC;
   --foreground:         #0F172A;
   --card:               #FFFFFF;
   --card-raised:        #F8FAFC;
@@ -39,7 +39,7 @@
   --primary:            #E64A19;
   --primary-muted:      rgba(230, 74, 25, 0.12);
   --primary-foreground: #FFFFFF;
-  --border:             #CBD5E1;
+  --border:             #E2E8F0;
   --muted:              #64748B;
   --radius:             1.5rem;
 }
@@ -47,14 +47,14 @@
 /* ── DARK MODE ───────────────────────────────────────────────────────────── */
 .dark {
   --background:         #0B0F17;
-  --foreground:         #F1F5F9;
-  --card:               #1A2030;
+  --foreground:         #F8FAFC;
+  --card:               #161B26;
   --card-raised:        #202840;
-  --card-foreground:    #F1F5F9;
+  --card-foreground:    #F8FAFC;
   --primary:            #FF5733;
   --primary-muted:      rgba(255, 87, 51, 0.12);
   --primary-foreground: #FFFFFF;
-  --border:             rgba(255, 255, 255, 0.10);
+  --border:             rgba(255, 255, 255, 0.05);
   --muted:              #94A3B8;
   --radius:             1.5rem;
 }
