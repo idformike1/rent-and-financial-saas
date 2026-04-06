@@ -12,7 +12,7 @@ export default function TreasuryRedirect() {
   }, [router])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-background">
       <div className="w-16 h-16 rounded-3xl bg-brand/10 flex items-center justify-center shadow-premium animate-spin mb-6">
         <Loader2 className="w-8 h-8 text-brand" />
       </div>

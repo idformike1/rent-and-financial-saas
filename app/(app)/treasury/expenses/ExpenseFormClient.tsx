@@ -123,7 +123,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   }
 
   const inputClass = (error?: any) => cn(
-    "w-full bg-card dark:bg-slate-800 border-2 rounded-3xl px-6 h-16 text-foreground dark:text-white font-black outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px] uppercase tracking-tight placeholder-slate-300 dark:placeholder-slate-600 shadow-premium",
+    "w-full bg-card dark:bg-slate-800 border-2 rounded-3xl px-6 h-16 text-foreground dark:text-foreground font-black outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px] uppercase tracking-tight placeholder-slate-300 dark:placeholder-slate-600 shadow-premium",
     error ? "border-rose-500 bg-rose-50/10" : "border-transparent focus:border-brand/20"
   );
   const labelClass = "text-[10px] font-black text-slate-400 uppercase tracking-[0.25rem] mb-3 ml-1 block";
@@ -134,10 +134,10 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
         <div className="rounded-[2.5rem] px-10 py-8 flex items-center justify-between shadow-2xl bg-[var(--card)] border border-[var(--primary)]/20 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
             <div className={cn("w-14 h-14 rounded-3xl flex items-center justify-center border-4 border-black/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-rose-500')}>
-               {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-white" /> : <ArrowDownCircle className="w-7 h-7 text-white" />}
+               {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-foreground" /> : <ArrowDownCircle className="w-7 h-7 text-foreground" />}
             </div>
             <div>
-              <p className="font-black italic uppercase tracking-tighter text-2xl text-white leading-none">
+              <p className="font-black italic uppercase tracking-tighter text-2xl text-foreground leading-none">
                 Entry #{sessionCount}: Materialized
               </p>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)] mt-3 animate-pulse">
@@ -160,7 +160,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
                className={cn("py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'EXPENSE' ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/20' : 'text-slate-400 hover:text-slate-400 dark:hover:text-slate-200'
+                 selectedType === 'EXPENSE' ? 'bg-rose-500 text-foreground shadow-xl shadow-rose-500/20' : 'text-slate-400 hover:text-slate-400 dark:hover:text-slate-200'
                )}
              >
                 <ArrowDownCircle className="w-4 h-4" /> Outflow / Out-Take
@@ -169,7 +169,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
                type="button" 
                onClick={() => setValue('type', 'REVENUE')}
                className={cn("py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-white shadow-xl shadow-[var(--primary)]/20' : 'text-slate-400 hover:text-slate-400 dark:hover:text-slate-200'
+                 selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-foreground shadow-xl shadow-[var(--primary)]/20' : 'text-slate-400 hover:text-slate-400 dark:hover:text-slate-200'
                )}
              >
                 <ArrowUpCircle className="w-4 h-4" /> Inflow / Revenue
@@ -254,7 +254,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
             <button
               type="submit"
               disabled={isSubmitting}
-              className={cn("w-full text-white font-black h-20 rounded-[1.5rem] transition-all flex items-center justify-center uppercase tracking-[0.5rem] text-[12px] italic group relative overflow-hidden active:translate-y-[1px] hover:shadow-premium-lg transition-transform",
+              className={cn("w-full text-foreground font-black h-20 rounded-[1.5rem] transition-all flex items-center justify-center uppercase tracking-[0.5rem] text-[12px] italic group relative overflow-hidden active:translate-y-[1px] hover:shadow-premium-lg transition-transform",
                 selectedType === 'REVENUE' ? 'bg-[var(--primary)] shadow-[var(--primary)]/20' : 'bg-rose-500 shadow-rose-500/20'
               )}
             >

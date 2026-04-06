@@ -26,20 +26,20 @@ export default function Toaster() {
           key={t.id} 
           className={`
             pointer-events-auto
-            flex items-center gap-4 p-5 rounded-3xl shadow-premium backdrop-blur-md border border-white/10
+            flex items-center gap-4 p-5 rounded-3xl shadow-premium backdrop-blur-md border border-border
             animate-in slide-in-from-right-full duration-500
-            ${t.type === 'success' ? 'bg-[var(--primary)] text-white shadow-[var(--primary)]/20' : ''}
-            ${t.type === 'error' ? 'bg-rose-600 text-white shadow-rose-500/20' : ''}
-            ${t.type === 'info' ? 'glass-panel text-white' : ''}
+            ${t.type === 'success' ? 'bg-[var(--primary)] text-foreground shadow-[var(--primary)]/20' : ''}
+            ${t.type === 'error' ? 'bg-rose-600 text-foreground shadow-rose-500/20' : ''}
+            ${t.type === 'info' ? 'glass-panel text-foreground' : ''}
           `}
         >
           <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-xl bg-card/20">
-            {t.type === 'success' && <CheckCircle2 className="w-6 h-6 text-white" />}
-            {t.type === 'error' && <AlertCircle className="w-6 h-6 text-white" />}
-            {t.type === 'info' && <Info className="w-6 h-6 text-white" />}
+            {t.type === 'success' && <CheckCircle2 className="w-6 h-6 text-foreground" />}
+            {t.type === 'error' && <AlertCircle className="w-6 h-6 text-foreground" />}
+            {t.type === 'info' && <Info className="w-6 h-6 text-foreground" />}
           </div>
           <div className="flex-1 pr-6">
-            <p className="text-[12px] font-black uppercase italic tracking-widest text-white leading-tight">
+            <p className="text-[12px] font-black uppercase italic tracking-widest text-foreground leading-tight">
               {t.message}
             </p>
           </div>
@@ -47,7 +47,7 @@ export default function Toaster() {
             onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
             className="absolute top-4 right-4 p-1 hover:bg-white/5 rounded-xl transition-colors"
           >
-            <X className="w-4 h-4 text-white/60 hover:text-white transition-colors" />
+            <X className="w-4 h-4 text-foreground/60 hover:text-foreground transition-colors" />
           </button>
         </div>
       ))}

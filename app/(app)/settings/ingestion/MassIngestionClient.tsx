@@ -102,7 +102,7 @@ export default function MassIngestionClient() {
           {file ? (
             <div className="space-y-6 animate-in zoom-in-90 duration-500">
               <div className="w-20 h-20 bg-[var(--primary)] rounded-full flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(255,87,51,0.3)]">
-                <CheckCircle2 className="w-10 h-10 text-white" />
+                <CheckCircle2 className="w-10 h-10 text-foreground" />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-[var(--foreground)] uppercase">{file.name}</h3>
@@ -188,7 +188,7 @@ export default function MassIngestionClient() {
               disabled={data.length === 0 || isProcessing}
               className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 transition-all active:scale-95 ${
                 data.length > 0 && !isProcessing
-                  ? 'bg-[var(--primary)] text-white hover:shadow-[0_0_20px_rgba(255,87,51,0.4)]'
+                  ? 'bg-[var(--primary)] text-foreground hover:shadow-[0_0_20px_rgba(255,87,51,0.4)]'
                   : 'bg-white/5 text-[var(--muted)] cursor-not-allowed'
               }`}
             >

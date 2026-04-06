@@ -31,32 +31,29 @@
 
 /* ── LIGHT MODE ──────────────────────────────────────────────────────────── */
 :root {
-  --background:         #F8FAFC;
-  --foreground:         #0F172A;
-  --card:               #FFFFFF;
-  --card-raised:        #F8FAFC;
-  --card-foreground:    #0F172A;
-  --primary:            #E64A19;
-  --primary-muted:      rgba(230, 74, 25, 0.12);
+  --background: #F8FAFC; 
+  --foreground: #0F172A;
+  --card: rgba(255, 255, 255, 0.8); 
+  --card-foreground: #0F172A;
+  --primary: #E64A19; 
   --primary-foreground: #FFFFFF;
-  --border:             #E2E8F0;
-  --muted:              #64748B;
-  --radius:             1.5rem;
+  --muted: #64748B; 
+  --muted-foreground: #475569;
+  --border: #E2E8F0; 
+  --radius: 1.5rem;
 }
 
 /* ── DARK MODE ───────────────────────────────────────────────────────────── */
 .dark {
-  --background:         #0B0F17;
-  --foreground:         #F8FAFC;
-  --card:               #161B26;
-  --card-raised:        #202840;
-  --card-foreground:    #F8FAFC;
-  --primary:            #FF5733;
-  --primary-muted:      rgba(255, 87, 51, 0.12);
+  --background: #0B0F17; 
+  --foreground: #F8FAFC;
+  --card: rgba(22, 27, 38, 0.7); 
+  --card-foreground: #F8FAFC;
+  --primary: #FF5733; 
   --primary-foreground: #FFFFFF;
-  --border:             rgba(255, 255, 255, 0.05);
-  --muted:              #94A3B8;
-  --radius:             1.5rem;
+  --muted: #1E293B; 
+  --muted-foreground: #94A3B8;
+  --border: rgba(255, 255, 255, 0.1);
 }
 
 /* ── BASE ────────────────────────────────────────────────────────────────── */
@@ -71,12 +68,8 @@ html, body {
 
 /* ── GLASS PANEL — The universal elevated surface ────────────────────────── */
 .glass-panel {
-  background:           var(--card);
-  backdrop-filter:      blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border:               1px solid var(--border);
-  box-shadow:           0 4px 24px rgba(0, 0, 0, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  @apply backdrop-blur-xl border border-border shadow-sm;
+  background: var(--card);
 }
 
 /* ── PRIMARY EMBER GLOW ──────────────────────────────────────────────────── */

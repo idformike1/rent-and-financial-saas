@@ -33,7 +33,7 @@ export default async function AuditLogPage() {
       case 'NUCLEAR_PURGE':
         return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
       default:
-        return 'bg-white/5 text-[var(--muted)] border-white/10';
+        return 'bg-white/5 text-[var(--muted)] border-border';
     }
   };
 

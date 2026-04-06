@@ -95,7 +95,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="shrink-0 px-10 pt-10 pb-8">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-3xl bg-brand flex items-center justify-center glow-orange">
-              <Zap className="text-white fill-white w-5 h-5" />
+              <Zap className="text-foreground fill-white w-5 h-5" />
             </div>
             <h2 className="text-xl font-black tracking-tighter text-[var(--foreground)]">
               AXIOM <span className="text-[var(--primary)]">2026</span>
@@ -220,7 +220,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
 function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' }) {
   const variants = {
-    default: "bg-white/3 text-slate-400 border border-white/10",
+    default: "bg-white/3 text-slate-400 border border-border",
     success: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
     warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold",
     danger:  "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",

@@ -188,7 +188,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             <AlertCircle className="w-10 h-10 text-rose-500" />
          </div>
          <div>
-            <h3 className="text-2xl font-black italic tracking-tighter text-white uppercase">Sovereign_Audit_Halt</h3>
+            <h3 className="text-2xl font-black italic tracking-tighter text-foreground uppercase">Sovereign_Audit_Halt</h3>
             <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-2">{error || 'Unknown Pipeline Interruption'}</p>
          </div>
          <Button variant="secondary" onClick={() => window.location.reload()} className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10">Re-Initialize Pipeline</Button>
@@ -205,7 +205,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             <Badge variant="brand" className="px-3 py-1 text-[9px] font-black tracking-[0.2em]">{propertyName}</Badge>
             <Badge variant="default" className="px-3 py-1 text-[9px] font-black tracking-[0.2em]">ASSET_ID: {propertyId.slice(0, 8)}</Badge>
           </div>
-          <h1 className="text-4xl font-black italic tracking-tighter text-white uppercase leading-none">
+          <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase leading-none">
             Property <span className="text-brand">Pulse</span> Terminal
           </h1>
           <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">Full-Spectrum Portfolio Intelligence & Unit Control</p>
@@ -244,7 +244,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       </div>
 
       {/* STEP 1: FISCAL HUD */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-white/10 bg-slate-950 divide-x divide-white/10 overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-background divide-x divide-white/10 overflow-hidden">
         
         {/* NOI */}
         <button 
@@ -272,7 +272,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Adjusted NOI (OPEX-Only)</span>
              <Activity className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand transition-colors" />
           </div>
-          <div className="text-3xl font-mono text-white tracking-tighter tabular-nums">
+          <div className="text-3xl font-mono text-foreground tracking-tighter tabular-nums">
              <RollingCounter value={data.hud.adjustedNoi} prefix="$" />
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3 underline decoration-slate-800">Operational Health Index</p>
@@ -317,7 +317,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 flex items-center gap-3">
                <History className="w-3.5 h-3.5" /> Fiscal Materialization Flow
             </h3>
-            <Card className="bg-slate-950 border-white/10 p-10 h-[450px] flex flex-col justify-between relative overflow-hidden group">
+            <Card className="bg-background border-border p-10 h-[450px] flex flex-col justify-between relative overflow-hidden group">
                <div className="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none group-hover:opacity-20 transition-opacity">
                   <svg width="100%" height="100%" viewBox="0 0 200 200" className="rotate-90">
                      <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="0.5" fill="none" className="text-brand" />
@@ -341,7 +341,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
 
                <div className="pt-10 border-t border-brand/30 relative z-10">
                   <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Net Cash Realization</p>
-                  <div className="text-4xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                  <div className="text-4xl font-black text-foreground italic tracking-tighter tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                      ${data.waterfall.netCash.toLocaleString()}
                   </div>
                </div>
@@ -357,7 +357,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
               <div className="flex gap-4">
                  <button 
                    onClick={() => setIsAddModalOpen(true)}
-                   className="bg-brand text-white font-black text-[9px] px-6 py-2 rounded-xl flex items-center hover:bg-brand/80 transition-all uppercase tracking-widest mr-4"
+                   className="bg-brand text-foreground font-black text-[9px] px-6 py-2 rounded-xl flex items-center hover:bg-brand/80 transition-all uppercase tracking-widest mr-4"
                  >
                    <Plus className="w-3 h-3 mr-2" /> Materialize
                  </button>
@@ -382,12 +382,12 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                    key={unit.id}
                    onClick={() => setEditingUnit(unit)}
                    className={cn(
-                     "border border-white/10 bg-slate-950 p-6 flex flex-col justify-between h-[140px] text-left group relative transition-all active:scale-[0.98]",
+                     "border border-border bg-background p-6 flex flex-col justify-between h-[140px] text-left group relative transition-all active:scale-[0.98]",
                      unit.occupancy ? "hover:border-white/30" : "opacity-40 grayscale grayscale hover:grayscale-0 transition-all cursor-not-allowed"
                    )}
                  >
                     <div className="flex justify-between items-start">
-                       <span className="text-xl font-bold font-mono text-white tracking-tighter italic">{unit.unitNumber}</span>
+                       <span className="text-xl font-bold font-mono text-foreground tracking-tighter italic">{unit.unitNumber}</span>
                        <div className={cn(
                          "w-2 h-2 rounded-full",
                          unit.riskScore === 'GREEN' ? "bg-[var(--primary)] shadow-[0_0_8px_rgba(255,87,51,0.4)]" :
@@ -420,14 +420,14 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       {drillDownType && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex justify-end p-4 lg:p-10 animate-in fade-in duration-300">
            <Card className="w-full max-w-4xl h-full border-none bg-slate-900 shadow-2xl rounded-[3rem] flex flex-col overflow-hidden animate-in slide-in-from-right-10 duration-500">
-              <div className="p-12 border-b border-white/5 flex justify-between items-center bg-slate-950">
+              <div className="p-12 border-b border-white/5 flex justify-between items-center bg-background">
                  <div>
-                    <h2 className="text-3xl font-black italic tracking-tighter text-white uppercase leading-none">Registry Surveillance</h2>
+                    <h2 className="text-3xl font-black italic tracking-tighter text-foreground uppercase leading-none">Registry Surveillance</h2>
                     <p className="text-[10px] font-black text-brand uppercase tracking-[0.3em] mt-3">{propertyName} // Drill-Down: {drillDownType}</p>
                  </div>
                  <button 
                   onClick={() => setDrillDownType(null)}
-                  className="w-14 h-14 rounded-3xl bg-white/3 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors"
+                  className="w-14 h-14 rounded-3xl bg-white/3 border border-border flex items-center justify-center hover:bg-white/5 transition-colors"
                  >
                     <X className="w-6 h-6 text-slate-400" />
                  </button>
@@ -439,7 +439,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                        <input 
                          placeholder="SCAN DRILL-DOWN RECORDS..." 
-                         className="w-full bg-slate-950 border border-white/5 h-16 pl-16 pr-6 text-[10px] uppercase font-black tracking-widest text-white outline-none focus:border-brand/40 transition-all rounded-3xl"
+                         className="w-full bg-background border border-white/5 h-16 pl-16 pr-6 text-[10px] uppercase font-black tracking-widest text-foreground outline-none focus:border-brand/40 transition-all rounded-3xl"
                        />
                     </div>
                  </div>
@@ -457,13 +457,13 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                  ) : (
                     <div className="space-y-4">
                        {drillDownEntries.map((e: any) => (
-                         <div key={e.id} className="p-8 border border-white/5 bg-slate-950/50 rounded-3xl flex justify-between items-center group hover:border-white/10 transition-all">
+                         <div key={e.id} className="p-8 border border-white/5 bg-background/50 rounded-3xl flex justify-between items-center group hover:border-border transition-all">
                             <div className="space-y-1">
                                <div className="flex items-center gap-3">
                                   <span className="text-[10px] font-mono text-slate-500">{new Date(e.transactionDate).toLocaleDateString()}</span>
                                   <Badge className="bg-white/3 text-slate-400 border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
                                </div>
-                               <p className="text-white font-bold text-xs uppercase tracking-tight">{e.description}</p>
+                               <p className="text-foreground font-bold text-xs uppercase tracking-tight">{e.description}</p>
                             </div>
                             <div className={cn("text-xl font-mono tabular-nums font-black", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
                                {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString()}
@@ -474,7 +474,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                  )}
               </div>
 
-              <div className="p-12 bg-slate-950 border-t border-white/5 flex items-center justify-between">
+              <div className="p-12 bg-background border-t border-white/5 flex items-center justify-between">
                  <div className="flex items-center gap-6 opacity-40">
                     <History className="w-6 h-6" />
                     <span className="text-[10px] font-black uppercase tracking-widest italic">Immutable Audit Data Verified</span>
@@ -488,32 +488,32 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       {/* ADD UNIT MODAL */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-           <Card className="w-full max-w-lg border border-white/10 bg-slate-900 p-12 rounded-[3.5rem] shadow-2xl relative">
+           <Card className="w-full max-w-lg border border-border bg-slate-900 p-12 rounded-[3.5rem] shadow-2xl relative">
               <button 
                 onClick={() => setIsAddModalOpen(false)} 
-                className="absolute top-10 right-10 text-slate-500 hover:text-white"
+                className="absolute top-10 right-10 text-slate-500 hover:text-foreground"
               >
                  <X className="w-6 h-6" />
               </button>
-              <h2 className="text-3xl font-black italic tracking-tighter text-white uppercase mb-10">Resource Materialization</h2>
+              <h2 className="text-3xl font-black italic tracking-tighter text-foreground uppercase mb-10">Resource Materialization</h2>
               <form onSubmit={handleSubmit(onAddUnit)} className="space-y-8">
                  <div>
                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Structural Index Mapping</label>
-                    <input {...register('unitNumber')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl" placeholder="e.g. N-101" />
+                    <input {...register('unitNumber')} className="w-full bg-background border border-white/5 h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-3xl" placeholder="e.g. N-101" />
                  </div>
                  <div className="grid grid-cols-2 gap-6">
                     <div>
                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Hardware Type</label>
-                       <input {...register('type')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl" placeholder="Apartment" />
+                       <input {...register('type')} className="w-full bg-background border border-white/5 h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-3xl" placeholder="Apartment" />
                     </div>
                     <div>
                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Market Rent ($)</label>
-                       <input {...register('marketRent')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl" placeholder="0.00" type="number" step="0.01" />
+                       <input {...register('marketRent')} className="w-full bg-background border border-white/5 h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-3xl" placeholder="0.00" type="number" step="0.01" />
                     </div>
                  </div>
                  <div>
                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Atomic Category</label>
-                    <select {...register('category')} className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl appearance-none">
+                    <select {...register('category')} className="w-full bg-background border border-white/5 h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-3xl appearance-none">
                        <option value="FLAT">FLAT (RESIDENTIAL)</option>
                        <option value="STORE">STORE (COMMERCIAL)</option>
                        <option value="SHUTTER">SHUTTER (RETAIL)</option>
@@ -530,15 +530,15 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       {/* EDIT UNIT MODAL */}
       {editingUnit && (
         <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-           <Card className="w-full max-w-md border border-white/10 bg-slate-900 p-12 rounded-[3.5rem] shadow-2xl relative">
+           <Card className="w-full max-w-md border border-border bg-slate-900 p-12 rounded-[3.5rem] shadow-2xl relative">
               <button 
                 onClick={() => setEditingUnit(null)} 
-                className="absolute top-10 right-10 text-slate-500 hover:text-white"
+                className="absolute top-10 right-10 text-slate-500 hover:text-foreground"
               >
                  <X className="w-6 h-6" />
               </button>
               <div className="mb-10">
-                 <h2 className="text-3xl font-black italic tracking-tighter text-white uppercase leading-none">Asset {editingUnit.unitNumber}</h2>
+                 <h2 className="text-3xl font-black italic tracking-tighter text-foreground uppercase leading-none">Asset {editingUnit.unitNumber}</h2>
                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-2">Clinical Override Protocol</p>
               </div>
               
@@ -572,7 +572,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                       type="number"
                       defaultValue={editingUnit.marketRent || 0}
                       onBlur={(e) => onUpdateUnit(undefined, Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/5 h-16 px-6 text-sm font-bold text-white outline-none focus:border-brand transition-all rounded-3xl"
+                      className="w-full bg-background border border-white/5 h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-3xl"
                     />
                  </div>
               </div>

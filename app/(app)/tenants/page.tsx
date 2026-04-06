@@ -47,7 +47,7 @@ export default async function TenantsPage() {
               <User className="w-7 h-7 text-brand fill-brand" />
            </div>
            <div>
-              <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">Occupant <br/><span className="text-brand">Directory</span></h1>
+              <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">Occupant <br/><span className="text-brand">Directory</span></h1>
               <p className="text-slate-400 font-bold tracking-[0.3em] uppercase text-[10px] mt-2">Master Index of Portfolio Identity</p>
            </div>
         </div>

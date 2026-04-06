@@ -70,13 +70,13 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
   }, [charges, ledgerEntries]);
 
   return (
-    <div className="bg-slate-950 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl">
+    <div className="bg-background border border-border rounded-[3rem] overflow-hidden shadow-2xl">
       
       {/* TAB NAVIGATION: TACTICAL TOGGLE */}
-      <div className="px-12 py-10 border-b border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 bg-card/[0.02]">
+      <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-8 bg-card/[0.02]">
         <div className="flex items-center gap-6">
            <Landmark className="w-8 h-8 text-brand" />
-           <h3 className="text-xl font-black text-white italic tracking-tighter uppercase leading-none font-mono">Forensic Unified Ledger</h3>
+           <h3 className="text-xl font-black text-foreground italic tracking-tighter uppercase leading-none font-mono">Forensic Unified Ledger</h3>
         </div>
 
         <div className="flex p-1.5 bg-slate-900 rounded-3xl border border-white/5 font-mono">
@@ -84,7 +84,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
              onClick={() => setActiveTab('timeline')}
              className={cn(
                "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-               activeTab === 'timeline' ? "bg-white/5 text-white shadow-xl" : "text-slate-500 hover:text-slate-300"
+               activeTab === 'timeline' ? "bg-white/5 text-foreground shadow-xl" : "text-slate-500 hover:text-slate-300"
              )}
            >
              [ CHRONOLOGICAL_LEDGER ]
@@ -93,7 +93,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
              onClick={() => setActiveTab('compliance')}
              className={cn(
                "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-               activeTab === 'compliance' ? "bg-white/5 text-white shadow-xl" : "text-slate-500 hover:text-slate-300"
+               activeTab === 'compliance' ? "bg-white/5 text-foreground shadow-xl" : "text-slate-500 hover:text-slate-300"
              )}
            >
              [ COMPLIANCE_MATRIX ]
@@ -126,7 +126,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                        ) : (
                          <ArrowDownLeft className="w-3 h-3 text-emerald-500/50" />
                        )}
-                       <span className="text-xs font-bold text-white uppercase tracking-tight truncate max-w-sm">{row.description}</span>
+                       <span className="text-xs font-bold text-foreground uppercase tracking-tight truncate max-w-sm">{row.description}</span>
                     </div>
                   </td>
                   <td className="px-10 py-6 text-right">
@@ -176,7 +176,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                              <div className="bg-slate-900 h-10 w-10 rounded-xl flex items-center justify-center text-brand border border-white/5">
                                 <DollarSign className="w-4 h-4" />
                              </div>
-                             <span className="font-black text-white text-xs uppercase tracking-tighter italic">{c.type}</span>
+                             <span className="font-black text-foreground text-xs uppercase tracking-tighter italic">{c.type}</span>
                           </div>
                        </td>
                        <td className="px-10 py-8 text-center">
@@ -195,7 +195,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                           )}
                        </td>
                        <td className="px-10 py-8 text-right">
-                          <span className="text-lg font-black text-white tracking-tighter italic tabular-nums">
+                          <span className="text-lg font-black text-foreground tracking-tighter italic tabular-nums">
                              ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
                        </td>

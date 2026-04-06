@@ -155,7 +155,7 @@ export default function GovernanceRegistryClient({
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4">
           <Button 
             variant="secondary" 
-            className={cn("rounded-3xl h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--foreground)]")} 
+            className={cn("rounded-3xl h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-foreground" : "bg-[var(--card)] text-[var(--foreground)]")} 
             onClick={() => {
               setIsLedgerEditorVisible(!isLedgerEditorVisible);
               setIsCommandCenterVisible(false);
@@ -166,7 +166,7 @@ export default function GovernanceRegistryClient({
           </Button>
           <Button 
             variant="primary" 
-            className="rounded-3xl h-14 px-8 shadow-[0_0_20px_rgba(255,87,51,0.2)] bg-[var(--primary)] text-white" 
+            className="rounded-3xl h-14 px-8 shadow-[0_0_20px_rgba(255,87,51,0.2)] bg-[var(--primary)] text-foreground" 
             onClick={() => {
               setIsCommandCenterVisible(!isCommandCenterVisible);
               setIsLedgerEditorVisible(false);
@@ -271,7 +271,7 @@ export default function GovernanceRegistryClient({
            return (
             <Card 
               key={ledger.id} 
-              className="group min-h-[500px] flex flex-col p-10 bg-[var(--card)] backdrop-blur-xl border border-white/10 rounded-[2.5rem] hover:border-[var(--primary)]/30 transition-all duration-300"
+              className="group min-h-[500px] flex flex-col p-10 bg-[var(--card)] backdrop-blur-xl border border-border rounded-[2.5rem] hover:border-[var(--primary)]/30 transition-all duration-300"
             >
               <div className="flex flex-col items-center text-center mb-10">
                  <div className="w-20 h-20 rounded-[1.75rem] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500 shadow-premium">
@@ -375,7 +375,7 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
             <input 
               value={editName} 
               onChange={(e) => setEditName(e.target.value)} 
-              className="h-14 py-1 px-6 text-[12px] font-black uppercase italic tracking-tight border-2 border-brand/20 bg-card dark:bg-slate-900 rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-white" 
+              className="h-14 py-1 px-6 text-[12px] font-black uppercase italic tracking-tight border-2 border-brand/20 bg-card dark:bg-slate-900 rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-foreground" 
               autoFocus 
             />
           ) : (
@@ -387,7 +387,7 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
         <div className="flex items-center gap-2 opacity-0 group-hover/node:opacity-100 transition-opacity duration-300">
            {isEditing ? (
              <>
-               <button onClick={handleUpdate} className="bg-[var(--primary)] text-white p-2 rounded-xl hover:scale-110 active:scale-95 transition-all"><Check className="w-4 h-4" /></button>
+               <button onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 rounded-xl hover:scale-110 active:scale-95 transition-all"><Check className="w-4 h-4" /></button>
                <button onClick={cancelEdit} className="bg-white/10 text-[var(--muted)] p-2 rounded-xl hover:scale-110 active:scale-95 transition-all"><X className="w-4 h-4" /></button>
              </>
            ) : (

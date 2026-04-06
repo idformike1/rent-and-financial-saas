@@ -20,7 +20,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
       {/* Left Column: Profile */}
       <div className="w-full md:w-1/3 bg-card border border-border shadow-premium sm:rounded-xl p-6 h-fit">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white">{tenant.name}</h2>
+          <h2 className="text-xl font-bold text-foreground">{tenant.name}</h2>
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-[var(--primary-muted)] text-[var(--primary)] uppercase tracking-wider border border-[var(--primary)]/20">
             Active
           </span>
@@ -29,7 +29,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
         <div className="space-y-4">
           <button 
             onClick={() => setDrawerOpen(true)}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,#E64A19)] text-white shadow-premium flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
+            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,#E64A19)] text-foreground shadow-premium flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Receive Payment

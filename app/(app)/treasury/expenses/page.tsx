@@ -27,7 +27,7 @@ export default async function ExpenseLoggingPage() {
               <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to Wealth Ledger
             </Link>
-            <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">Treasury Entry Hub</h1>
+            <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">Treasury Entry Hub</h1>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Fiscal Materialization v3.1</p>
           </div>
         </div>
@@ -51,7 +51,7 @@ export default async function ExpenseLoggingPage() {
              <History className="w-8 h-8 text-slate-400" />
           </div>
           <div>
-            <p className="text-2xl font-black uppercase italic tracking-tighter text-foreground dark:text-white leading-none">System Integrity Anchored</p>
+            <p className="text-2xl font-black uppercase italic tracking-tighter text-foreground dark:text-foreground leading-none">System Integrity Anchored</p>
             <div className="flex items-center gap-3 mt-3">
                <Zap className="w-3 h-3 text-brand" />
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Double-Entry Ledger Verified</p>
@@ -68,7 +68,7 @@ export default async function ExpenseLoggingPage() {
           </Link>
           <Link
             href="/settings/audit"
-            className="h-14 px-8 bg-slate-900 dark:bg-brand text-white text-[10px] font-black rounded-3xl shadow-brand/40 hover:shadow-brand/60 transition-all uppercase tracking-widest italic flex items-center justify-center"
+            className="h-14 px-8 bg-slate-900 dark:bg-brand text-foreground text-[10px] font-black rounded-3xl shadow-brand/40 hover:shadow-brand/60 transition-all uppercase tracking-widest italic flex items-center justify-center"
           >
             <Shield className="w-4 h-4 mr-3" />
             View Audit Trail

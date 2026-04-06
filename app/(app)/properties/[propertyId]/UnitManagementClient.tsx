@@ -84,7 +84,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
                onClick={() => setFilter(cat)}
                className={`text-[10px] font-black transition-all uppercase tracking-[0.2em] px-6 py-3 rounded-xl border-2 ${
                  filter === cat 
-                   ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                   ? 'bg-slate-900 text-foreground border-slate-900 shadow-lg' 
                    : 'bg-card text-slate-400 border-border hover:border-slate-300'
                }`}
              >
@@ -94,7 +94,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-[var(--primary)] text-white font-black text-xs px-8 py-4 rounded-3xl shadow-xl shadow-indigo-100 flex items-center hover:bg-[var(--primary-dark,#E64A19)] active:scale-95 transition-all uppercase tracking-widest"
+          className="bg-[var(--primary)] text-foreground font-black text-xs px-8 py-4 rounded-3xl shadow-xl shadow-indigo-100 flex items-center hover:bg-[var(--primary-dark,#E64A19)] active:scale-95 transition-all uppercase tracking-widest"
         >
           <Plus className="w-5 h-5 mr-4" /> Materialize New Asset
         </button>
@@ -167,9 +167,9 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
            <div className="bg-card border-2 border-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-             <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
+             <div className="p-8 bg-slate-900 text-foreground flex justify-between items-center">
                <h2 className="text-xl font-black uppercase tracking-tight italic">Resource Materialization</h2>
-               <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+               <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-foreground transition-colors">
                  <Plus className="w-6 h-6 rotate-45" />
                </button>
              </div>
@@ -191,7 +191,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
                      <option value="PARKING">PARKING (SERVICE)</option>
                    </select>
                 </div>
-                <button disabled={isSubmitting} className="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-xl shadow-slate-200 uppercase tracking-[0.34em] text-xs hover:bg-slate-800 disabled:opacity-50 active:scale-[0.98] transition-all">
+                <button disabled={isSubmitting} className="w-full bg-slate-900 text-foreground font-black py-6 rounded-3xl shadow-xl shadow-slate-200 uppercase tracking-[0.34em] text-xs hover:bg-slate-800 disabled:opacity-50 active:scale-[0.98] transition-all">
                    {isSubmitting ? 'Syncing...' : 'Initiate Deployment'}
                 </button>
              </form>
@@ -203,12 +203,12 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
       {editingUnit && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="bg-card border-2 border-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
-               <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
+               <div className="p-8 bg-slate-900 text-foreground flex justify-between items-center">
                   <div>
                     <h2 className="text-2xl font-black italic tracking-tighter">Asset {editingUnit.unitNumber}</h2>
                     <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Protocol Overrides</p>
                   </div>
-                  <button onClick={() => setEditingUnit(null)} className="text-slate-400 hover:text-white transition-colors">
+                  <button onClick={() => setEditingUnit(null)} className="text-slate-400 hover:text-foreground transition-colors">
                     <Plus className="w-6 h-6 rotate-45" />
                   </button>
                </div>

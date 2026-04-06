@@ -55,7 +55,7 @@ export default function WaterfallAnalyticsPage() {
     return (
       <div className="min-h-screen bg-surface-950 flex flex-col items-center justify-center space-y-8 p-8">
          <div className="w-24 h-24 border-4 border-brand border-t-transparent rounded-full animate-spin shadow-[0_0_40px_rgba(79,70,229,0.2)]" />
-         <h2 className="text-white text-xl font-black uppercase italic tracking-widest animate-pulse">Materializing Waterfall</h2>
+         <h2 className="text-foreground text-xl font-black uppercase italic tracking-widest animate-pulse">Materializing Waterfall</h2>
       </div>
     )
   }
@@ -64,7 +64,7 @@ export default function WaterfallAnalyticsPage() {
     <div className="p-8 lg:p-12 space-y-12 bg-surface-50 dark:bg-surface-950 min-h-screen">
       
       {/* HEADER COMMAND STRIP (PHASE 3 MANDATE: FINOVA CARD WRAPPER) */}
-      <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-8 gap-8 border-none bg-surface-900 text-white shadow-premium-lg">
+      <Card className="flex flex-col md:flex-row justify-between items-start md:items-center p-8 gap-8 border-none bg-surface-900 text-foreground shadow-premium-lg">
          <div>
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-14 h-14 rounded-3xl bg-brand/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -75,10 +75,10 @@ export default function WaterfallAnalyticsPage() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-               <Badge className="bg-white/5 text-white border-white/10">GAAP V.3 Protocol</Badge>
+               <Badge className="bg-white/5 text-foreground border-border">GAAP V.3 Protocol</Badge>
                <button 
                  onClick={fetchWaterfall}
-                 className="text-[10px] font-black text-brand uppercase tracking-widest hover:text-white transition-colors flex items-center"
+                 className="text-[10px] font-black text-brand uppercase tracking-widest hover:text-foreground transition-colors flex items-center"
                >
                   <RefreshCw className={`w-3 h-3 mr-2 ${loading ? 'animate-spin' : ''}`} /> Recalibrate Streams
                </button>
@@ -86,21 +86,21 @@ export default function WaterfallAnalyticsPage() {
          </div>
 
          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 w-full md:w-auto">
-            <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
-               <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Gross Intent</p>
+            <div className="bg-white/3 border border-border p-5 rounded-3xl">
+               <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-2">Gross Intent</p>
                <h3 className="text-2xl font-black text-[var(--primary)] tracking-tighter italic">
                   +${data?.stats.totalRevenue.toLocaleString() || '0.00'}
                </h3>
             </div>
-            <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
-               <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Cost Realization</p>
+            <div className="bg-white/3 border border-border p-5 rounded-3xl">
+               <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40 mb-2">Cost Realization</p>
                <h3 className="text-2xl font-black text-rose-400 tracking-tighter italic">
                   -${data?.stats.totalExpense.toLocaleString() || '0.00'}
                </h3>
             </div>
             <div className="bg-brand/20 border border-brand/30 p-5 rounded-3xl col-span-2 lg:col-span-1">
-               <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-2">Net Liquidity (NOI)</p>
-               <h3 className="text-2xl font-black text-white tracking-tighter italic">
+               <p className="text-[9px] font-black uppercase tracking-widest text-foreground/60 mb-2">Net Liquidity (NOI)</p>
+               <h3 className="text-2xl font-black text-foreground tracking-tighter italic">
                   ${data?.stats.noi.toLocaleString() || '0.00'}
                </h3>
             </div>
@@ -110,7 +110,7 @@ export default function WaterfallAnalyticsPage() {
       {/* DYNAMIC WATERFALL CANVAS: ENSURING DARK MODE CONTRAST ADHERENCE */}
       <Card className="p-0 overflow-hidden h-[750px] relative border-none bg-card dark:bg-surface-900 shadow-premium">
          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-            <Layers className="w-96 h-96 text-foreground dark:text-white" />
+            <Layers className="w-96 h-96 text-foreground dark:text-foreground" />
          </div>
 
          {!hasData ? (
@@ -119,7 +119,7 @@ export default function WaterfallAnalyticsPage() {
                  <AlertCircle className="w-10 h-10 text-slate-300 dark:text-slate-400" />
               </div>
               <div className="text-center">
-                 <h2 className="text-2xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-white">Null Revenue Detected</h2>
+                 <h2 className="text-2xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-foreground">Null Revenue Detected</h2>
                  <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-3 max-w-xs leading-relaxed">
                    The Waterfall Engine requires at least one 'REVENUE' class ledger with linked 'LedgerEntries'.
                  </p>
@@ -161,7 +161,7 @@ export default function WaterfallAnalyticsPage() {
                     <div className="bg-surface-900 border border-brand/50 p-12 rounded-[3.5rem] shadow-premium-lg flex flex-col items-center">
                        <Pulse className="w-10 h-10 text-brand mb-6 animate-pulse" />
                        <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">GAAP Realization</h5>
-                       <h4 className="text-4xl font-black uppercase italic tracking-tighter text-white">NET PROFIT</h4>
+                       <h4 className="text-4xl font-black uppercase italic tracking-tighter text-foreground">NET PROFIT</h4>
                     </div>
                  </div>
               </div>
@@ -171,8 +171,8 @@ export default function WaterfallAnalyticsPage() {
                  <div className="p-6 bg-surface-50 dark:bg-surface-800 rounded-3xl space-y-4">
                     <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-surface-100 dark:border-surface-700 pb-2">Yield Metrics</h6>
                     <div className="space-y-3">
-                       <p className="text-xs font-black text-surface-900 dark:text-white">Margin: 64%</p>
-                       <p className="text-xs font-black text-surface-900 dark:text-white">NOI: +12%</p>
+                       <p className="text-xs font-black text-surface-900 dark:text-foreground">Margin: 64%</p>
+                       <p className="text-xs font-black text-surface-900 dark:text-foreground">NOI: +12%</p>
                     </div>
                  </div>
               </div>
@@ -187,7 +187,7 @@ export default function WaterfallAnalyticsPage() {
                <PieChart className="w-8 h-8 text-brand" />
             </div>
             <div>
-               <h5 className="text-xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-white">Distribution Logic Protocol</h5>
+               <h5 className="text-xl font-black uppercase italic tracking-tighter text-surface-900 dark:text-foreground">Distribution Logic Protocol</h5>
                <p className="text-sm font-medium text-slate-400 mt-2 leading-relaxed">
                  Financial data is autonomously routed via class discriminators. The red cost streams are calibrated to ensure peak readability in dark mode without color vibration.
                </p>
@@ -195,9 +195,9 @@ export default function WaterfallAnalyticsPage() {
          </Card>
          <Card className="bg-surface-950 border-brand/20 p-8 flex flex-col justify-center relative group overflow-hidden cursor-pointer" onClick={() => window.location.href = '/reports'}>
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:rotate-12 transition-transform">
-               <ArrowRight className="w-24 h-24 text-white" />
+               <ArrowRight className="w-24 h-24 text-foreground" />
             </div>
-            <h5 className="text-white text-lg font-black uppercase italic tracking-tighter">Master Hub</h5>
+            <h5 className="text-foreground text-lg font-black uppercase italic tracking-tighter">Master Hub</h5>
             <div className="mt-4 flex items-center text-brand text-[10px] font-black uppercase tracking-widest">
                Exit Analytics <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
             </div>

@@ -23,9 +23,9 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
            value={searchTerm}
            onChange={(e) => setSearchTerm(e.target.value)}
            placeholder="Scan identity registry (Name or Email)..." 
-           className="bg-transparent border-none text-xs font-black uppercase tracking-[0.2em] text-white outline-none w-full placeholder:text-zinc-700" 
+           className="bg-transparent border-none text-xs font-black uppercase tracking-[0.2em] text-foreground outline-none w-full placeholder:text-zinc-700" 
          />
-         <Badge className="bg-brand text-white border-none mr-2 whitespace-nowrap shadow-lg shadow-brand/20">
+         <Badge className="bg-brand text-foreground border-none mr-2 whitespace-nowrap shadow-lg shadow-brand/20">
            {filteredTenants.length} / {initialTenants.length} MATCHES
          </Badge>
       </Card>
@@ -38,7 +38,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                <ShieldAlert className="w-12 h-12 text-rose-500" />
             </div>
             <div>
-               <p className="text-3xl font-black text-foreground dark:text-white uppercase italic tracking-tighter leading-none">Identity Signal Lost</p>
+               <p className="text-3xl font-black text-foreground dark:text-foreground uppercase italic tracking-tighter leading-none">Identity Signal Lost</p>
                <p className="text-slate-400 text-[10px] mt-4 font-black tracking-[0.4em] uppercase max-w-sm mx-auto leading-relaxed">The search parameters yielded zero matches within the encrypted occupant registry.</p>
             </div>
             <Button variant="secondary" onClick={() => setSearchTerm('')} className="h-12 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest">Reset Scan Parameters</Button>
@@ -63,12 +63,12 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                     <tr key={tenant.id} className="hover:bg-slate-50/80 dark:hover:bg-brand/5 transition-all group cursor-default">
                       <td className="px-8 py-10">
                         <div className="flex items-center gap-6">
-                          <div className="h-16 w-16 rounded-[1.5rem] bg-slate-900 text-white flex items-center justify-center font-black text-2xl italic shadow-2xl group-hover:rotate-6 transition-transform relative overflow-hidden">
+                          <div className="h-16 w-16 rounded-[1.5rem] bg-slate-900 text-foreground flex items-center justify-center font-black text-2xl italic shadow-2xl group-hover:rotate-6 transition-transform relative overflow-hidden">
                             <span className="relative z-10">{tenant.name.charAt(0)}</span>
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
                           </div>
                           <div className="flex flex-col gap-1.5">
-                            <span className="text-xl font-black text-foreground dark:text-white uppercase italic tracking-tighter leading-none group-hover:text-brand transition-colors">{tenant.name}</span>
+                            <span className="text-xl font-black text-foreground dark:text-foreground uppercase italic tracking-tighter leading-none group-hover:text-brand transition-colors">{tenant.name}</span>
                             <div className="flex items-center gap-2.5">
                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                                <span className="text-[10px] font-bold text-slate-400 tracking-tight truncate max-w-[200px] uppercase font-mono">{tenant.email || 'PROTOCOL_NULL'}</span>
@@ -99,7 +99,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                       </td>
                       <td className="px-8 py-10 text-right">
                         <Link href={`/tenants/${tenant.id}`}>
-                           <button className="h-12 w-12 rounded-3xl bg-card dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-brand group-hover:text-white transition-all shadow-premium ring-1 ring-slate-100 dark:ring-white/5 border-none">
+                           <button className="h-12 w-12 rounded-3xl bg-card dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-brand group-hover:text-foreground transition-all shadow-premium ring-1 ring-slate-100 dark:ring-white/5 border-none">
                               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                            </button>
                         </Link>

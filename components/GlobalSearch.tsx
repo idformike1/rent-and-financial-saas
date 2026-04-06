@@ -69,7 +69,7 @@ export default function GlobalSearch() {
       case 'TENANT':     return 'bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20'
       case 'ASSET':      return 'bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20'
       case 'GOVERNANCE': return 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-      default:           return 'bg-white/3 text-[var(--muted)] border-white/10'
+      default:           return 'bg-white/3 text-[var(--muted)] border-border'
     }
   }
 
@@ -80,7 +80,7 @@ export default function GlobalSearch() {
         "flex items-center gap-4 h-11 px-5 rounded-xl glass-panel transition-all duration-500",
         isOpen
           ? "border-[var(--primary)]/50 ring-4 ring-[var(--primary)]/10"
-          : "hover:border-white/10"
+          : "hover:border-border"
       )}>
         {isSearching
           ? <Loader2 className="w-4 h-4 animate-spin text-[var(--primary)]" />
@@ -92,11 +92,11 @@ export default function GlobalSearch() {
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="System-wide Deep Scan (Tenants, Assets, Reports)..."
-          className="flex-1 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-white placeholder:text-[var(--muted)]/50 outline-none"
+          className="flex-1 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-foreground placeholder:text-[var(--muted)]/50 outline-none"
         />
         <div className="flex items-center gap-1 opacity-40">
-          <span className="text-[8px] font-bold border border-white/10 px-1.5 py-0.5 rounded">⌘</span>
-          <span className="text-[8px] font-bold border border-white/10 px-1.5 py-0.5 rounded">K</span>
+          <span className="text-[8px] font-bold border border-border px-1.5 py-0.5 rounded">⌘</span>
+          <span className="text-[8px] font-bold border border-border px-1.5 py-0.5 rounded">K</span>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function GlobalSearch() {
                             {getIcon(r.type)}
                           </div>
                           <div>
-                            <h4 className="text-sm font-black text-white uppercase tracking-tight leading-none mb-1 group-hover:text-[var(--primary)] transition-colors">
+                            <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-none mb-1 group-hover:text-[var(--primary)] transition-colors">
                               {r.title}
                             </h4>
                             <p className="text-[9px] font-bold text-[var(--muted)] uppercase tracking-widest">
@@ -170,7 +170,7 @@ export default function GlobalSearch() {
                         <div className="w-9 h-9 rounded-xl bg-white/3 flex items-center justify-center text-[var(--muted)] group-hover:text-[var(--primary)] transition-colors border border-white/5">
                           <s.icon className="w-4 h-4" />
                         </div>
-                        <h4 className="text-[11px] font-black text-[var(--muted)] group-hover:text-white uppercase tracking-[0.1em] transition-colors">
+                        <h4 className="text-[11px] font-black text-[var(--muted)] group-hover:text-foreground uppercase tracking-[0.1em] transition-colors">
                           {s.title}
                         </h4>
                       </div>
@@ -188,7 +188,7 @@ export default function GlobalSearch() {
                 Axiom 2026 Deep Scan
               </span>
               <span className="text-[8px] font-black text-[var(--muted)] uppercase tracking-widest">
-                <kbd className="bg-white/3 px-1.5 py-0.5 rounded border border-white/10 not-italic mr-1">ESC</kbd>
+                <kbd className="bg-white/3 px-1.5 py-0.5 rounded border border-border not-italic mr-1">ESC</kbd>
                 CLOSE
               </span>
             </div>

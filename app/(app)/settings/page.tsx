@@ -16,7 +16,7 @@ export default function SettingsPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-10">
         <div>
            <Badge variant="brand" className="mb-4">System Governance</Badge>
-           <h1 className="text-4xl font-black italic tracking-tighter text-white uppercase leading-none">Master Settings</h1>
+           <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase leading-none">Master Settings</h1>
            <p className="text-[var(--muted)] text-[10px] font-black uppercase tracking-[0.4em] mt-4">Corporate Treasury & Identity Logic</p>
         </div>
       </div>
@@ -65,12 +65,12 @@ export default function SettingsPage() {
 
             {/* Sovereign Lockdown Overlay */}
             {!isSovereign && (
-              <div className="absolute inset-0 z-50 glass-panel flex flex-col items-center justify-center space-y-4 backdrop-blur-xl bg-slate-950/40">
+              <div className="absolute inset-0 z-50 glass-panel flex flex-col items-center justify-center space-y-4 backdrop-blur-xl bg-background/40">
                 <div className="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center border border-rose-500/30">
                   <Lock className="w-8 h-8 text-rose-500" />
                 </div>
                 <div className="text-center">
-                  <h4 className="text-xl font-black italic tracking-tighter text-white uppercase">[ RESTRICTED CLEARANCE ]</h4>
+                  <h4 className="text-xl font-black italic tracking-tighter text-foreground uppercase">[ RESTRICTED CLEARANCE ]</h4>
                   <p className="text-[8px] font-black text-rose-400 uppercase tracking-[0.3em] mt-2">Requires ADMIN or OWNER Authorization</p>
                 </div>
               </div>

@@ -42,7 +42,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
     <div className="space-y-12">
       
       {/* GLOBAL TELEMETRY BAR */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-slate-900 overflow-hidden rounded-xl divide-x divide-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-slate-900 overflow-hidden rounded-xl divide-x divide-white/10">
         <div className="p-8 space-y-4">
            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Global Net Outflow</span>
            <div className={cn("text-4xl font-mono tracking-tighter tabular-nums", netPosition < 0 ? "text-rose-500" : "text-emerald-500")}>
@@ -70,13 +70,13 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
           <input 
             type="text" 
             placeholder="FILTER SURVEILLANCE DATA..."
-            className="w-full bg-slate-900 border border-white/10 h-12 pl-12 pr-4 text-[10px] font-mono text-white placeholder-slate-700 focus:outline-none focus:border-emerald-500/50 transition-all uppercase tracking-widest"
+            className="w-full bg-slate-900 border border-border h-12 pl-12 pr-4 text-[10px] font-mono text-foreground placeholder-slate-700 focus:outline-none focus:border-emerald-500/50 transition-all uppercase tracking-widest"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-4">
-           <div className="h-12 px-6 bg-slate-950 border border-white/5 flex items-center gap-4 text-[9px] font-black tracking-widest text-slate-500">
+           <div className="h-12 px-6 bg-background border border-white/5 flex items-center gap-4 text-[9px] font-black tracking-widest text-slate-500">
               <Filter className="w-3.5 h-3.5" />
               <span>MATCHED_RECORDS:</span>
               <span className="text-emerald-500 font-mono italic">{filtered.length.toString().padStart(3, '0')}</span>
@@ -85,16 +85,16 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       </div>
 
       {/* THE REGISTRY TABLE */}
-      <div className="border border-white/10 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+      <div className="border border-border bg-slate-900/50 backdrop-blur-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-950/50 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-white/10">
+            <thead className="bg-background/50 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-border">
               <tr>
-                <th className="px-6 py-5 font-black border-r border-white/10">Date</th>
-                <th className="px-6 py-5 font-black border-r border-white/10">Entity/Payee</th>
-                <th className="px-6 py-5 font-black border-r border-white/10">Description</th>
-                <th className="px-6 py-5 font-black border-r border-white/10">Category</th>
-                <th className="px-6 py-5 font-black border-r border-white/10">Scope</th>
+                <th className="px-6 py-5 font-black border-r border-border">Date</th>
+                <th className="px-6 py-5 font-black border-r border-border">Entity/Payee</th>
+                <th className="px-6 py-5 font-black border-r border-border">Description</th>
+                <th className="px-6 py-5 font-black border-r border-border">Category</th>
+                <th className="px-6 py-5 font-black border-r border-border">Scope</th>
                 <th className="px-6 py-5 font-black text-right">Amount</th>
               </tr>
             </thead>
@@ -107,7 +107,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                     </span>
                   </td>
                   <td className="px-6 py-4 border-r border-white/5">
-                    <span className="text-[11px] font-bold text-white uppercase italic tracking-tight">
+                    <span className="text-[11px] font-bold text-foreground uppercase italic tracking-tight">
                        {entry.payee || "INTERNAL_TRANSFER"}
                     </span>
                   </td>

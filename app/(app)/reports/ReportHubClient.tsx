@@ -92,7 +92,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
   const btnClass = (active: boolean) => cn(
     "flex items-center space-x-4 p-6 rounded-3xl border transition-all cursor-pointer",
     active 
-      ? "bg-slate-900 text-white border-slate-900 shadow-brand/20 shadow-premium translate-x-1 translate-y-1" 
+      ? "bg-slate-900 text-foreground border-slate-900 shadow-brand/20 shadow-premium translate-x-1 translate-y-1" 
       : "bg-card text-foreground border-border hover:bg-slate-50 shadow-premium"
   );
 
@@ -200,7 +200,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                         {isSharing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Share2 className="w-4 h-4 mr-2" />} 
                         Generate Share Link
                     </Button>
-                    <Button variant="secondary" className="px-8 py-4 rounded-3xl text-[10px] italic bg-slate-900 text-white border-none">
+                    <Button variant="secondary" className="px-8 py-4 rounded-3xl text-[10px] italic bg-slate-900 text-foreground border-none">
                         <Download className="w-4 h-4 mr-2" /> PDF Export
                     </Button>
                 </div>
@@ -211,7 +211,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div className="bg-slate-50 dark:bg-slate-900/50 border border-border dark:border-slate-800 p-8 rounded-3xl">
                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
-                             <p className="text-3xl font-black text-foreground dark:text-white italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
+                             <p className="text-3xl font-black text-foreground dark:text-foreground italic tracking-tighter">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
                         </div>
                         <div className="bg-[var(--primary-muted)] dark:bg-[var(--primary-muted)] border border-[var(--primary)]/20 dark:border-[var(--primary)]/20 p-8 rounded-3xl">
                              <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
@@ -223,7 +223,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                         </div>
                         <div className="bg-slate-900 p-8 rounded-3xl shadow-premium shadow-slate-900/20">
                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
-                             <p className="text-3xl font-black text-white italic tracking-tighter">$ {data.payload.metrics.netOperatingIncome.toLocaleString()}</p>
+                             <p className="text-3xl font-black text-foreground italic tracking-tighter">$ {data.payload.metrics.netOperatingIncome.toLocaleString()}</p>
                         </div>
                     </div>
 
@@ -236,10 +236,10 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                         <div>
                            <h4 className="text-xs font-black uppercase text-zinc-400 mb-6 flex items-center"><ArrowRight className="w-4 h-4 mr-2" /> Operating Expense Distribution</h4>
                            <table className="w-full border-4 border-black">
-                                <thead className="bg-black text-white">
+                                <thead className="bg-black text-foreground">
                                     <tr>
-                                        <th className={headerClass.replace('text-zinc-400', 'text-white')}>Operating Cost Center</th>
-                                        <th className={headerClass.replace('text-zinc-400', 'text-white')}>Archive Value</th>
+                                        <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Operating Cost Center</th>
+                                        <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Archive Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -275,13 +275,13 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
             {data.type === 'RENTROLL' && (
                 <div className="overflow-x-auto">
                     <table className="w-full border-4 border-black">
-                        <thead className="bg-black text-white">
+                        <thead className="bg-black text-foreground">
                             <tr>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Occupant Identity</th>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Unit Asset</th>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Configured Rent</th>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Security Escrow</th>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Heatmap Status</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Occupant Identity</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Unit Asset</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Configured Rent</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Security Escrow</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Heatmap Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -296,7 +296,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                         <td className={cellClass}>
                                             <div className="flex gap-2">
                                                 {isUnpaid ? (
-                                                    <span className="bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] animate-pulse">VAL_DELINQUENT</span>
+                                                    <span className="bg-red-600 text-foreground text-[8px] font-black px-2 py-1 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] animate-pulse">VAL_DELINQUENT</span>
                                                 ) : (
                                                     <span className="bg-[var(--primary-muted)] text-[var(--primary)] text-[8px] font-black px-2 py-1 rounded">GOV_STABLE</span>
                                                 )}
@@ -315,21 +315,21 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                 <div className="space-y-8">
                      <div className="p-8 border-4 border-[var(--primary)] rounded-3xl bg-[var(--primary)] flex items-center justify-between">
                          <div className="flex items-center gap-4">
-                            <div className="p-4 bg-[var(--primary)] text-white rounded-3xl"><FileText className="w-8 h-8" /></div>
+                            <div className="p-4 bg-[var(--primary)] text-foreground rounded-3xl"><FileText className="w-8 h-8" /></div>
                             <div>
                                 <h4 className="text-sm font-black uppercase italic italic tracking-tighter">IRC Section 162 Compliance Engine</h4>
                                 <p className="text-[10px] font-bold text-[var(--primary)] uppercase">Automated Deductible Mapping Phase Active</p>
                             </div>
                          </div>
-                         <button className="bg-black text-white text-[10px] font-black px-8 py-4 rounded-3xl hover:bg-[var(--primary)] transition-all uppercase tracking-widest italic">
+                         <button className="bg-black text-foreground text-[10px] font-black px-8 py-4 rounded-3xl hover:bg-[var(--primary)] transition-all uppercase tracking-widest italic">
                             Verify Deductions
                          </button>
                      </div>
                     <table className="w-full border-4 border-black">
-                        <thead className="bg-black text-white">
+                        <thead className="bg-black text-foreground">
                             <tr>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>IRC Deductible Category</th>
-                                <th className={headerClass.replace('text-zinc-400', 'text-white')}>Verified Asset Value</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>IRC Deductible Category</th>
+                                <th className={headerClass.replace('text-zinc-400', 'text-foreground')}>Verified Asset Value</th>
                             </tr>
                         </thead>
                         <tbody>

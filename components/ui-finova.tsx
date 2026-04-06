@@ -65,10 +65,10 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-[var(--primary)] text-white hover:bg-[var(--primary-dark,#E64A19)] shadow-[0_0_15px_rgba(255,87,51,0.2)] hover:shadow-[0_0_25px_rgba(255,87,51,0.35)] border-none glow-primary",
-    secondary: "bg-white/3 text-white hover:bg-white/5 border border-white/10",
-    ghost: "bg-transparent text-[var(--muted)] hover:text-white hover:bg-white/3",
-    danger: "bg-[#F43F5E] text-white hover:bg-[#E11D48] shadow-[0_0_15px_rgba(244,63,94,0.2)]",
+    primary: "bg-[var(--primary)] text-foreground hover:bg-[var(--primary-dark,#E64A19)] shadow-[0_0_15px_rgba(255,87,51,0.2)] hover:shadow-[0_0_25px_rgba(255,87,51,0.35)] border-none glow-primary",
+    secondary: "bg-white/3 text-foreground hover:bg-white/5 border border-border",
+    ghost: "bg-transparent text-[var(--muted)] hover:text-foreground hover:bg-white/3",
+    danger: "bg-[#F43F5E] text-foreground hover:bg-[#E11D48] shadow-[0_0_15px_rgba(244,63,94,0.2)]",
   };
 
   const sizes = {
@@ -121,7 +121,7 @@ export function Badge({
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' | 'primary'
 }) {
   const variants = {
-    default: "bg-white/3 text-[var(--muted)] border border-white/10",
+    default: "bg-white/3 text-[var(--muted)] border border-border",
     // Ember-tinted for primary/brand actions
     primary: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
     brand:   "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
@@ -145,7 +145,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "w-full bg-card/[0.03] border border-[var(--border)] rounded-xl px-5 py-3.5 text-sm focus:border-[var(--primary)]/50 focus:ring-2 focus:ring-[var(--primary)]/10 outline-none transition-all duration-300 text-white placeholder:text-[var(--muted)]",
+        "w-full bg-card/[0.03] border border-[var(--border)] rounded-xl px-5 py-3.5 text-sm focus:border-[var(--primary)]/50 focus:ring-2 focus:ring-[var(--primary)]/10 outline-none transition-all duration-300 text-foreground placeholder:text-[var(--muted)]",
         className
       )}
       {...props}

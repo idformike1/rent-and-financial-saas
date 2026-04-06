@@ -44,7 +44,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
             <h2 className="text-2xl font-black text-black uppercase italic tracking-tighter">Line-Item Trace: {categoryName}</h2>
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Deep Forensic Audit Log</p>
           </div>
-          <button onClick={onClose} className="p-3 border-4 border-black hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none">
+          <button onClick={onClose} className="p-3 border-4 border-black hover:bg-black hover:text-foreground transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none">
             <X className="w-6 h-6 stroke-[3px]" />
           </button>
         </div>
@@ -83,7 +83,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
         </div>
         
         <div className="p-8 border-t-4 border-black bg-zinc-50 flex justify-end">
-           <button onClick={onClose} className="px-8 py-4 bg-black text-white text-xs font-black uppercase tracking-widest italic hover:bg-zinc-800 transition-colors">
+           <button onClick={onClose} className="px-8 py-4 bg-black text-foreground text-xs font-black uppercase tracking-widest italic hover:bg-zinc-800 transition-colors">
              Close Audit View
            </button>
         </div>

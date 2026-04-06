@@ -131,7 +131,7 @@ export default function AccessControlTable({
         </tbody>
       </table>
       {isPending && (
-        <div className="absolute inset-0 bg-white/30 dark:bg-slate-950/50 flex items-center justify-center z-10 backdrop-blur-[1px]">
+        <div className="absolute inset-0 bg-white/30 dark:bg-background/50 flex items-center justify-center z-10 backdrop-blur-[1px]">
           <Loader2 className="w-8 h-8 text-brand animate-spin" />
         </div>
       )}

@@ -134,20 +134,20 @@ export default function OnboardingWizard() {
           
           <div className="bg-slate-900 rounded-[2.5rem] p-10 text-left space-y-8 relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 p-6 opacity-10">
-               <Fingerprint className="w-32 h-32 text-white" />
+               <Fingerprint className="w-32 h-32 text-foreground" />
             </div>
             <div className="space-y-6 relative z-10">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
                      <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Fiscal Lease Identifier</p>
-                     <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
-                        <p className="font-mono text-sm text-white truncate font-bold">{successData?.leaseId}</p>
+                     <div className="bg-white/3 border border-border p-5 rounded-3xl">
+                        <p className="font-mono text-sm text-foreground truncate font-bold">{successData?.leaseId}</p>
                      </div>
                   </div>
                   <div className="space-y-3">
                      <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Master Tenant Hash</p>
-                     <div className="bg-white/3 border border-white/10 p-5 rounded-3xl">
-                        <p className="font-mono text-sm text-white truncate font-bold">{successData?.tenantId}</p>
+                     <div className="bg-white/3 border border-border p-5 rounded-3xl">
+                        <p className="font-mono text-sm text-foreground truncate font-bold">{successData?.tenantId}</p>
                      </div>
                   </div>
                </div>
@@ -175,7 +175,7 @@ export default function OnboardingWizard() {
     <div className="max-w-4xl mx-auto py-12 px-6">
       <div className="mb-16 flex items-center gap-6">
          <div className="w-14 h-14 bg-brand rounded-3xl flex items-center justify-center shadow-premium group-hover:rotate-12 transition-transform">
-            <Zap className="w-7 h-7 text-white fill-white" />
+            <Zap className="w-7 h-7 text-foreground fill-white" />
          </div>
          <div>
             <h1 className="text-4xl font-black italic tracking-tighter text-foreground uppercase leading-none">Activation <span className="text-brand">Wizard</span></h1>
@@ -187,7 +187,7 @@ export default function OnboardingWizard() {
          <div className="absolute left-12 right-12 top-7 h-0.5 bg-white/5 -z-0" />
          {[User, DollarSign, CheckCircle2].map((Icon, i) => (
            <div key={i} className="relative z-10">
-              <div className={`w-14 h-14 rounded-3xl border-2 flex items-center justify-center transition-all duration-300 ${step > i + 1 ? 'bg-slate-900 border-slate-900 text-white' : step === i + 1 ? 'bg-brand border-brand text-white shadow-premium' : 'bg-card border-border text-slate-200'}`}>
+              <div className={`w-14 h-14 rounded-3xl border-2 flex items-center justify-center transition-all duration-300 ${step > i + 1 ? 'bg-slate-900 border-slate-900 text-foreground' : step === i + 1 ? 'bg-brand border-brand text-foreground shadow-premium' : 'bg-card border-border text-slate-200'}`}>
                  <Icon className="w-6 h-6" />
               </div>
            </div>
@@ -250,14 +250,14 @@ export default function OnboardingWizard() {
 
           {step === 3 && (
             <div className="space-y-8 animate-in slide-in-from-right-8 duration-500">
-               <Card className="bg-slate-900 border-none p-10 space-y-8 text-white rounded-[2.5rem]">
+               <Card className="bg-slate-900 border-none p-10 space-y-8 text-foreground rounded-[2.5rem]">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand border-b border-white/5 pb-4">Audit Projection</h4>
                   <div className="flex justify-between items-end">
                      <div>
                         <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Aggregate Liquid Requirement</p>
                         <p className="text-sm font-medium mt-1">Prorated Initial + Collateral</p>
                      </div>
-                     <span className="text-4xl font-black italic tracking-tighter text-white">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                     <span className="text-4xl font-black italic tracking-tighter text-foreground">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                   </div>
                </Card>
                {serverError && <div className="bg-rose-500/10 p-6 rounded-3xl border-l-8 border-rose-500 text-rose-600 font-bold text-xs uppercase">{serverError}</div>}

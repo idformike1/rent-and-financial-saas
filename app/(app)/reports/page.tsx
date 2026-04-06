@@ -17,7 +17,7 @@ export default async function ReportsPage() {
                <BrainCircuit className="w-7 h-7 text-brand fill-brand" />
             </div>
             <div>
-               <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-white uppercase leading-none">Intelligence <span className="text-brand">Hub</span></h1>
+               <h1 className="text-4xl font-black italic tracking-tighter text-foreground dark:text-foreground uppercase leading-none">Intelligence <span className="text-brand">Hub</span></h1>
                <p className="text-slate-400 font-bold tracking-[0.3em] uppercase text-[10px] mt-2">Strategic Fiscal Analysis & Reporting Engine</p>
             </div>
           </div>
@@ -43,7 +43,7 @@ export default async function ReportsPage() {
                 <History className="w-10 h-10 text-brand" />
              </div>
              <div className="space-y-2">
-                <p className="text-white font-black uppercase italic tracking-tighter text-2xl leading-none">Predictive Audit Readiness</p>
+                <p className="text-foreground font-black uppercase italic tracking-tighter text-2xl leading-none">Predictive Audit Readiness</p>
                 <p className="text-slate-400 font-medium text-xs tracking-wide uppercase opacity-70">Engineered for 100% GAAP compliance and IRS reporting integrity.</p>
              </div>
           </div>

@@ -121,7 +121,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
         </div>
 
         <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
-          <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-lg">
+          <div className="bg-slate-900 rounded-3xl p-6 text-foreground shadow-lg">
             <h3 className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-[0.2em] mb-4">Target Identity</h3>
             <p className="text-2xl font-black tracking-tight italic">{tenant.name}</p>
           </div>
@@ -220,7 +220,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             type="submit" 
             form="payment-form"
             disabled={isPending || isSubmitting} 
-            className="w-full bg-slate-900 text-white font-medium py-3 rounded-xl shadow-premium hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-slate-900 text-foreground font-medium py-3 rounded-xl shadow-premium hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? 'Executing Transaction...' : 'Process Payment'}
           </button>

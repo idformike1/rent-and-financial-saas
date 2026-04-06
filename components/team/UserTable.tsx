@@ -119,7 +119,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 <button 
                   disabled={user.id === currentUserId}
                   onClick={() => setDeleteModal({ open: true, user })}
-                  className="p-2 rounded-xl text-rose-500 hover:bg-rose-500 hover:text-white transition-all disabled:opacity-20 hover:shadow-lg hover:shadow-rose-500/30"
+                  className="p-2 rounded-xl text-rose-500 hover:bg-rose-500 hover:text-foreground transition-all disabled:opacity-20 hover:shadow-lg hover:shadow-rose-500/30"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -167,7 +167,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
               <button 
                 disabled={confirmEmail !== deleteModal.user.email}
                 onClick={handleDelete}
-                className="w-full bg-rose-500 text-white font-black py-4 rounded-xl uppercase tracking-[0.2em] shadow-lg shadow-rose-500/30 hover:bg-rose-600 disabled:bg-[var(--card-raised)] disabled:text-[var(--muted)] disabled:shadow-none transition-all"
+                className="w-full bg-rose-500 text-foreground font-black py-4 rounded-xl uppercase tracking-[0.2em] shadow-lg shadow-rose-500/30 hover:bg-rose-600 disabled:bg-[var(--card-raised)] disabled:text-[var(--muted)] disabled:shadow-none transition-all"
               >
                 EXECUTE PURGE
               </button>

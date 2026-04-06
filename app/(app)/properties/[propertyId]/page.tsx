@@ -15,14 +15,14 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
     <div className="min-h-screen flex items-center justify-center p-10">
        <div className="bg-rose-500/10 border border-rose-500/20 p-12 rounded-[3.5rem] text-center space-y-6">
           <Zap className="w-12 h-12 text-rose-500 mx-auto" strokeWidth={3} />
-          <h2 className="text-2xl font-black italic tracking-tighter text-white uppercase">NULL_RESOURCE_CONTEXT</h2>
+          <h2 className="text-2xl font-black italic tracking-tighter text-foreground uppercase">NULL_RESOURCE_CONTEXT</h2>
           <Link href="/properties" className="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-brand transition-colors">Return to Portfolio Registry</Link>
        </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-slate-950 p-10 lg:p-14 space-y-16">
+    <div className="min-h-screen bg-background p-10 lg:p-14 space-y-16">
       
       {/* TERMINAL HEADER: SOVEREIGN AUDENCE */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 border-b border-white/5 pb-12">
@@ -41,7 +41,7 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
           </div>
 
           <div>
-            <h1 className="text-5xl font-light tracking-tighter text-white uppercase italic leading-none">
+            <h1 className="text-5xl font-light tracking-tighter text-foreground uppercase italic leading-none">
               {property.name} <br/>
               <span className="text-[var(--primary)]">Pulse Terminal</span>
             </h1>
@@ -52,9 +52,9 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-           <div className="px-8 py-5 border border-white/10 bg-white/3 rounded-3xl flex flex-col justify-center">
+           <div className="px-8 py-5 border border-border bg-white/3 rounded-3xl flex flex-col justify-center">
               <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Authorization Layer</span>
-              <span className="text-xs font-bold text-white flex items-center gap-2 italic uppercase">
+              <span className="text-xs font-bold text-foreground flex items-center gap-2 italic uppercase">
                  <ShieldCheck className="w-3 h-3 text-brand" /> Sovereignty_V3.0
               </span>
            </div>
