@@ -91,7 +91,7 @@ export default function GlobalSearch() {
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
-          placeholder="System-wide Deep Scan (Tenants, Assets, Reports)..."
+          placeholder="Search Assets & Tenants..."
           className="flex-1 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-foreground placeholder:text-[var(--muted)]/50 outline-none"
         />
         <div className="flex items-center gap-1 opacity-40">

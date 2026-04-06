@@ -132,6 +132,13 @@ body, button, input, select, textarea, div, span, p {
   font-style: normal !important;
 }
 
+.font-finance {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+  font-family: var(--font-mono) !important;
+}
+
 /* ── SOVEREIGN OVERRIDES ─────────────────────────────────────────────────── */
 [class*="italic"] { font-style: normal !important; }
 

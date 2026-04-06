@@ -52,7 +52,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
 
   const handleDelete = async () => {
     if (!deleteModal.user) return
-    if (confirmEmail !== deleteModal.user.email) return
+    if (confirmEmail !== 'CONFIRM') return
 
     try {
       await deleteUserForever(deleteModal.user.id)
@@ -71,9 +71,9 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
           <tr>
             <th className="p-5 font-bold uppercase tracking-[0.2em]">User</th>
             <th className="p-5 font-bold uppercase tracking-[0.2em]">Role</th>
-            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">The Muzzle</th>
-            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">The Kick</th>
-            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">Nuclear</th>
+            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">View Only</th>
+            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">Deactivate</th>
+            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">Delete</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--border)]">
@@ -137,7 +137,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
             
             <div className="flex justify-between items-start mb-6 relative z-10">
               <h2 className="text-3xl font-black uppercase tracking-tighter leading-none italic text-rose-500">
-                NUCLEAR STRIKE
+                DELETE USER
               </h2>
               <button onClick={() => setDeleteModal({ open: false, user: null })} className="p-2 rounded-xl hover:bg-[var(--card-raised)] text-[var(--muted)] hover:text-[var(--foreground)]">
                 <X size={24} />
@@ -154,22 +154,22 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
 
             <div className="space-y-4">
               <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">
-                Verify target email to authorize purge:
+                Type "CONFIRM" to authorize deletion:
               </label>
               <input 
                 type="text" 
-                placeholder={deleteModal.user.email}
+                placeholder="CONFIRM"
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
-                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 font-mono text-sm uppercase placeholder:opacity-30 focus:outline-none focus:ring-2 focus:ring-rose-500/50 text-[var(--foreground)]"
+                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 font-mono text-sm uppercase placeholder:opacity-30 focus:-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] text-[var(--foreground)]"
               />
               
               <button 
-                disabled={confirmEmail !== deleteModal.user.email}
+                disabled={confirmEmail !== 'CONFIRM'}
                 onClick={handleDelete}
                 className="w-full bg-rose-500 text-foreground font-black py-4 rounded-xl uppercase tracking-[0.2em] shadow-lg shadow-rose-500/30 hover:bg-rose-600 disabled:bg-[var(--card-raised)] disabled:text-[var(--muted)] disabled:shadow-none transition-all"
               >
-                EXECUTE PURGE
+                CONFIRM DELETE
               </button>
             </div>
           </div>

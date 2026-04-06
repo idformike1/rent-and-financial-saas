@@ -171,7 +171,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
               {node.amount && (
                  <div className="flex items-center justify-between">
                     <span className="text-[8px] text-slate-500 uppercase font-black tracking-widest">VALUE</span>
-                    <span className="text-[var(--primary)] font-mono text-[11px] tabular-nums font-bold">
+                    <span className="text-[var(--primary)] font-mono text-[11px] font-finance tabular-nums font-bold">
                         {Number(node.amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                     </span>
                  </div>

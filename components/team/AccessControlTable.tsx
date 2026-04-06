@@ -75,7 +75,7 @@ export default function AccessControlTable({
                   value={member.role}
                   onChange={(e) => handleAction(() => updateUserRole(member.id, e.target.value), "Role recalibrated")}
                   disabled={member.id === currentUserId}
-                  className="bg-card border border-border text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all disabled:opacity-50"
+                  className="bg-card border border-border text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:ring-1 focus:ring-brand focus:border-brand transition-all disabled:opacity-50"
                 >
                   <option value="OWNER">OWNER</option>
                   <option value="MANAGER">MANAGER</option>

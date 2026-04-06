@@ -131,17 +131,17 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                   </td>
                   <td className="px-10 py-6 text-right">
                     {row.debitAmount ? (
-                      <span className="text-sm font-black text-rose-500 tabular-nums">+${row.debitAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      <span className="text-sm font-black text-rose-500 font-finance tabular-nums">+${row.debitAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     ) : '-'}
                   </td>
                   <td className="px-10 py-6 text-right">
                     {row.creditAmount ? (
-                      <span className="text-sm font-black text-emerald-500 tabular-nums">-${row.creditAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      <span className="text-sm font-black text-emerald-500 font-finance tabular-nums">-${row.creditAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     ) : '-'}
                   </td>
                   <td className="px-10 py-6 text-right">
                     <span className={cn(
-                      "text-md font-black tabular-nums italic",
+                      "text-md font-black font-finance tabular-nums italic",
                       row.runningBalance > 0 ? "text-rose-500" : "text-emerald-500"
                     )}>
                       ${row.runningBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -195,7 +195,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                           )}
                        </td>
                        <td className="px-10 py-8 text-right">
-                          <span className="text-lg font-black text-foreground tracking-tighter italic tabular-nums">
+                          <span className="text-lg font-black text-foreground tracking-tighter italic font-finance tabular-nums">
                              ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
                        </td>

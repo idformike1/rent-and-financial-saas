@@ -53,7 +53,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
         >
           <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
           <Building2 className="w-5 h-5 mr-3 relative z-10" /> 
-          <span className="relative z-10">Materialize Asset</span>
+          <span className="relative z-10">Add Property</span>
         </Button>
       </div>
 

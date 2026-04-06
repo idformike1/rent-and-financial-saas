@@ -45,19 +45,19 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-slate-900 overflow-hidden rounded-xl divide-x divide-white/10">
         <div className="p-8 space-y-4">
            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Global Net Outflow</span>
-           <div className={cn("text-4xl font-mono tracking-tighter tabular-nums", netPosition < 0 ? "text-rose-500" : "text-emerald-500")}>
+           <div className={cn("text-4xl font-mono tracking-tighter font-finance tabular-nums", netPosition < 0 ? "text-rose-500" : "text-emerald-500")}>
               ${Math.abs(netPosition).toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
         </div>
         <div className="p-8 space-y-4 opacity-50">
            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Volume: Inflow</span>
-           <div className="text-2xl font-mono text-emerald-400 tabular-nums">
+           <div className="text-2xl font-mono text-emerald-400 font-finance tabular-nums">
               +${totalInflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
         </div>
         <div className="p-8 space-y-4 opacity-50">
            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Volume: Outflow</span>
-           <div className="text-2xl font-mono text-rose-400 tabular-nums">
+           <div className="text-2xl font-mono text-rose-400 font-finance tabular-nums">
               -${totalOutflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
         </div>
@@ -70,7 +70,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
           <input 
             type="text" 
             placeholder="FILTER SURVEILLANCE DATA..."
-            className="w-full bg-slate-900 border border-border h-12 pl-12 pr-4 text-[10px] font-mono text-foreground placeholder-slate-700 focus:outline-none focus:border-emerald-500/50 transition-all uppercase tracking-widest"
+            className="w-full bg-slate-900 border border-border h-12 pl-12 pr-4 text-[10px] font-mono text-foreground placeholder-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:border-emerald-500/50 transition-all uppercase tracking-widest"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -147,7 +147,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                   </td>
                   <td className="px-6 py-4 text-right">
                     <span className={cn(
-                      "text-[13px] font-mono font-bold tabular-nums italic tracking-tighter",
+                      "text-[13px] font-mono font-bold font-finance tabular-nums italic tracking-tighter",
                       Number(entry.amount) < 0 ? "text-rose-500" : "text-emerald-400"
                     )}>
                       {Number(entry.amount) < 0 ? '-' : '+'}${Math.abs(Number(entry.amount)).toLocaleString(undefined, { minimumFractionDigits: 2 })}

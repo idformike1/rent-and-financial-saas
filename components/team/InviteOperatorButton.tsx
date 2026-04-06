@@ -32,7 +32,7 @@ export default function InviteOperatorButton() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-4 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-light)] px-8 py-5 rounded-3xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,87,51,0.3)] hover:shadow-[0_0_35px_rgba(255,87,51,0.5)] hover:scale-105 transition-all focus:outline-none"
+        className="flex items-center gap-4 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-light)] px-8 py-5 rounded-3xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,87,51,0.3)] hover:shadow-[0_0_35px_rgba(255,87,51,0.5)] hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
       >
         <Plus size={24} />
         <span className="text-sm">Invite Operator</span>

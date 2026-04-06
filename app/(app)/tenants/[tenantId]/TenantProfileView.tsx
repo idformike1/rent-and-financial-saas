@@ -217,7 +217,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
             <div className="text-center space-y-2">
                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Integrity Index</p>
                <div className={cn(
-                 "text-6xl font-black italic tracking-tighter tabular-nums leading-none",
+                 "text-6xl font-black italic tracking-tighter font-finance tabular-nums leading-none",
                  tenant.integrityScore >= 90 ? "text-[var(--primary)]" : tenant.integrityScore >= 70 ? "text-amber-500" : "text-rose-500"
                )}>
                  {tenant.integrityScore || 0}%
@@ -297,7 +297,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
            <div className="bg-slate-900 border border-border rounded-[3rem] p-10 relative overflow-hidden group">
               <div className="absolute -right-12 -top-12 w-40 h-40 bg-brand/10 rounded-full blur-[60px] group-hover:bg-brand/20 transition-all duration-700" />
               <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] mb-6">Aggregate Liability</p>
-              <div className="text-5xl font-black text-foreground tracking-tighter italic tabular-nums leading-none">
+              <div className="text-5xl font-black text-foreground tracking-tighter italic font-finance tabular-nums leading-none">
                  ${totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}
               </div>
               <div className="mt-12 pt-8 border-t border-white/5 flex justify-between items-center">
@@ -348,7 +348,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                              )}
                           </div>
                           <div className="flex justify-between items-end">
-                             <p className="text-2xl font-black text-foreground tracking-tighter tabular-nums italic">${lease.rentAmount.toLocaleString()}<span className="text-[10px] text-slate-500 lowercase ml-1">/fisc</span></p>
+                             <p className="text-2xl font-black text-foreground tracking-tighter font-finance tabular-nums italic">${lease.rentAmount.toLocaleString()}<span className="text-[10px] text-slate-500 lowercase ml-1">/fisc</span></p>
                              <div className="text-right">
                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Expiry_Window</p>
                                 <p className="text-[9px] font-black text-foreground uppercase tracking-tighter mt-1">{new Date(lease.endDate).toLocaleDateString()}</p>

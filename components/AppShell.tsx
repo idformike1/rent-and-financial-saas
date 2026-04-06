@@ -18,12 +18,12 @@ const navigationSections = [
   {
     label: 'Core Operations',
     items: [
-      { name: 'Treasury',         href: '/dashboard',   icon: LayoutDashboard },
+      { name: 'Dashboard',        href: '/dashboard',   icon: LayoutDashboard },
       { name: 'Properties',       href: '/properties',  icon: Database },
       { name: 'Tenants',          href: '/tenants',     icon: Users },
       { name: 'Onboarding',       href: '/onboarding',  icon: Search },
       { name: 'Expense Registry', href: '/expenses',    icon: Layers },
-      { name: 'Asset Reserve',    href: '/treasury',    icon: Database },
+      { name: 'Treasury',         href: '/treasury',    icon: Database },
     ]
   },
   {

@@ -79,6 +79,8 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditPortfolioModalOpen, setIsEditPortfolioModalOpen] = useState(false)
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
+  const [confirmArchiveText, setConfirmArchiveText] = useState('')
   const [editingUnit, setEditingUnit] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -227,6 +229,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                 variant="danger" 
                 size="sm" 
                 className="rounded-full opacity-50 hover:opacity-100"
+                onClick={() => setIsArchiveModalOpen(true)}
               >
                 <Trash2 className="w-3 h-3 mr-2" />
                 Archive Portfolio
@@ -255,7 +258,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Net Operating Income</span>
              <TrendingUp className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </div>
-          <div className={cn("text-3xl font-mono tracking-tighter tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
+          <div className={cn("text-3xl font-mono tracking-tighter font-finance tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
              <RollingCounter value={data.hud.noi} prefix="$" />
           </div>
           <div className="mt-3 flex items-center gap-2">
@@ -272,7 +275,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Adjusted NOI (OPEX-Only)</span>
              <Activity className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand transition-colors" />
           </div>
-          <div className="text-3xl font-mono text-foreground tracking-tighter tabular-nums">
+          <div className="text-3xl font-mono text-foreground tracking-tighter font-finance tabular-nums">
              <RollingCounter value={data.hud.adjustedNoi} prefix="$" />
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3 underline decoration-slate-800">Operational Health Index</p>
@@ -287,7 +290,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Revenue Leakage (Gap)</span>
              <AlertCircle className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-500 transition-colors" />
           </div>
-          <div className={cn("text-3xl font-mono tracking-tighter tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-slate-300")}>
+          <div className={cn("text-3xl font-mono tracking-tighter font-finance tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-slate-300")}>
              <RollingCounter value={data.hud.revenueLeakage} suffix="%" />
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3">Market vs Contract Delta</p>
@@ -302,7 +305,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Collection Efficiency</span>
              <ShieldCheck className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </div>
-          <div className={cn("text-3xl font-mono tracking-tighter tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
+          <div className={cn("text-3xl font-mono tracking-tighter font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
              <RollingCounter value={data.hud.collectionEfficiency} suffix="%" />
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3">Current_Month_Inflow_Ratio</p>
@@ -341,7 +344,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
 
                <div className="pt-10 border-t border-brand/30 relative z-10">
                   <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Net Cash Realization</p>
-                  <div className="text-4xl font-black text-foreground italic tracking-tighter tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                  <div className="text-4xl font-black text-foreground italic tracking-tighter font-finance tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                      ${data.waterfall.netCash.toLocaleString()}
                   </div>
                </div>
@@ -465,7 +468,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                                </div>
                                <p className="text-foreground font-bold text-xs uppercase tracking-tight">{e.description}</p>
                             </div>
-                            <div className={cn("text-xl font-mono tabular-nums font-black", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
+                            <div className={cn("text-xl font-mono font-finance tabular-nums font-black", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
                                {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString()}
                             </div>
                          </div>

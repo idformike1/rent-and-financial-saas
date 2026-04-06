@@ -220,7 +220,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             type="submit" 
             form="payment-form"
             disabled={isPending || isSubmitting} 
-            className="w-full bg-slate-900 text-foreground font-medium py-3 rounded-xl shadow-premium hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-slate-900 text-foreground font-medium py-3 rounded-xl shadow-premium hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? 'Executing Transaction...' : 'Process Payment'}
           </button>
