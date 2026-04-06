@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { 
   getLiveWaterfallData 
-} from '@/actions/reports.actions'
+} from '@/actions/analytics.actions'
 import { 
   TrendingUp, 
   TrendingDown, 

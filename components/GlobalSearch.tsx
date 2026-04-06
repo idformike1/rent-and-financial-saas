@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Search, Loader2, User, Building, Settings, FileSpreadsheet, ArrowRight, Zap, Target } from 'lucide-react'
-import { deepScanSystem } from '@/actions/search.actions'
+import { deepScanSystem } from '@/actions/system.actions'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

@@ -16,7 +16,7 @@ import {
   Layers,
 } from 'lucide-react'
 import Link from 'next/link'
-import { fetchDetailedOntology } from '@/actions/ontology.actions'
+import { fetchDetailedOntology } from '@/actions/system.actions'
 import { Badge } from '@/components/ui-finova'
 import { Skeleton } from '@/components/ui/skeleton'
 

@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { Plus, Settings, CheckCircle2, AlertTriangle, Hammer, Hash, LayoutGrid, Building2, Store, MoveHorizontal } from 'lucide-react'
-import { createUnit, updateUnitStatus } from '@/actions/unit-mgmt.actions'
+import { createUnit, updateUnitStatus } from '@/actions/asset.actions'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MaintenanceStatus } from '@prisma/client'
+import { MaintenanceStatus } from '@/src/schema/enums'
 import { toast } from '@/lib/toast'
 
 const unitSchema = z.object({
@@ -215,7 +215,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
                <div className="p-8 space-y-3">
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Integrity Override:</p>
                   <button 
-                    onClick={() => onStatusChange(editingUnit.id, 'OPERATIONAL')}
+                    onClick={() => onStatusChange(editingUnit.id, MaintenanceStatus.OPERATIONAL)}
                     className="w-full flex items-center justify-between p-5 bg-slate-50 border-2 border-border hover:border-green-500 rounded-3xl transition-all"
                   >
                     <div className="flex items-center text-foreground font-black uppercase text-xs tracking-widest">
@@ -223,7 +223,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
                     </div>
                   </button>
                   <button 
-                    onClick={() => onStatusChange(editingUnit.id, 'UNDER_REPAIR')}
+                    onClick={() => onStatusChange(editingUnit.id, MaintenanceStatus.UNDER_REPAIR)}
                     className="w-full flex items-center justify-between p-5 bg-slate-50 border-2 border-border hover:border-amber-500 rounded-3xl transition-all"
                   >
                     <div className="flex items-center text-foreground font-black uppercase text-xs tracking-widest">
@@ -231,7 +231,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
                     </div>
                   </button>
                   <button 
-                    onClick={() => onStatusChange(editingUnit.id, 'DECOMMISSIONED')}
+                    onClick={() => onStatusChange(editingUnit.id, MaintenanceStatus.DECOMMISSIONED)}
                     className="w-full flex items-center justify-between p-5 bg-slate-50 border-2 border-border hover:border-red-500 rounded-3xl transition-all"
                   >
                     <div className="flex items-center text-foreground font-black uppercase text-xs tracking-widest text-red-600">

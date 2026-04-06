@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Building2, MapPin, LayoutGrid, ChevronRight, Hash, X, Loader2, Sparkles, Navigation } from 'lucide-react'
-import { createProperty } from '@/actions/property-mgmt.actions'
+import { createProperty } from '@/actions/asset.actions'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'

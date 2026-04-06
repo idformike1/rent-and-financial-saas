@@ -1,8 +1,10 @@
 'use server'
 
 import { runSecureServerAction } from '@/lib/auth-utils'
-import { 
-  getWaterfallDataService, 
+import {
+  getGlobalPortfolioTelemetryService,
+  getDetailedOntologyService,
+  getWaterfallDataService,
   getProfitAndLossService,
   getRentRollService,
   getTaxPrepService,
@@ -10,10 +12,57 @@ import {
   getPropertyAssetPulseService,
   getPropertyLedgerEntriesService,
   getMasterLedgerService
-} from '@/src/services/queries/reports.services'
+} from '@/src/services/queries/analytics.services'
 
 /**
- * REPORTING ACTION: LIVE WATERFALL (SANKEY) DATA AGGREGATION
+ * ANALYTICS DOMAIN ACTIONS (SOVEREIGN AUTHORITY)
+ *
+ * Centralized gatekeeper for all read-only analytics operations:
+ * Macro Dashboard Telemetry, Financial Reports, and Asset Pulse.
+ */
+
+/* ── 1. MACRO DASHBOARD ─────────────────────────────────────────────────── */
+
+/**
+ * GLOBAL PORTFOLIO TELEMETRY (GATEKEEPER)
+ */
+export async function getGlobalPortfolioTelemetry() {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await getGlobalPortfolioTelemetryService({
+        operatorId: session.userId || "OP_SYSTEM_ADMIN",
+        organizationId: session.organizationId
+      });
+      return { success: true, data: result };
+    } catch (e: any) {
+      console.error('[ANALYTICS_TELEMETRY_FATAL]', e);
+      return { success: false, message: e.message || "System Reconciliation Failure" };
+    }
+  });
+}
+
+/**
+ * STRUCTURAL ONTOLOGY GATEKEEPER
+ */
+export async function getDetailedOntology() {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await getDetailedOntologyService({
+        operatorId: session.userId || "OP_SYSTEM_ADMIN",
+        organizationId: session.organizationId
+      });
+      return { success: true, data: result };
+    } catch (e: any) {
+      console.error('[ANALYTICS_ONTOLOGY_FATAL]', e);
+      return { success: false, message: e.message || "Ontology Materialization Failure" };
+    }
+  });
+}
+
+/* ── 2. FINANCIAL REPORTS ───────────────────────────────────────────────── */
+
+/**
+ * LIVE WATERFALL (SANKEY) DATA GATEKEEPER
  */
 export async function getLiveWaterfallData() {
   return runSecureServerAction('MANAGER', async (session) => {
@@ -24,14 +73,14 @@ export async function getLiveWaterfallData() {
       });
       return { success: true, data };
     } catch (e: any) {
-      console.error('[REPORTS_WATERFALL_FATAL]', e);
+      console.error('[ANALYTICS_WATERFALL_FATAL]', e);
       return { success: false, error: "ERR_REPORTING_SERVICE_FAILURE" };
     }
   });
 }
 
 /**
- * GAAP PROFIT & LOSS ENGINE
+ * GAAP PROFIT & LOSS ENGINE GATEKEEPER
  */
 export async function getProfitAndLoss(dateRange: string, scope: string, propertyId?: string) {
   return runSecureServerAction('MANAGER', async (session) => {
@@ -40,9 +89,9 @@ export async function getProfitAndLoss(dateRange: string, scope: string, propert
         operatorId: session.userId || "OP_SYSTEM_ADMIN",
         organizationId: session.organizationId
       });
-      return data; // Parity with legacy P&L response structure
+      return data; // Legacy P&L response structure maintained for UI parity
     } catch (e: any) {
-      console.error('[REPORTS_PL_FATAL]', e);
+      console.error('[ANALYTICS_PL_FATAL]', e);
       return {
         revenue: { grossPotentialRent: 0, effectiveGrossRevenue: 0, vacancyLoss: 0 },
         expenses: { operating: { total: 0, categories: {} } },
@@ -63,7 +112,7 @@ export async function getRentRoll(propertyId?: string) {
         organizationId: session.organizationId
       });
     } catch (e: any) {
-      console.error('[REPORTS_RENTROLL_FATAL]', e);
+      console.error('[ANALYTICS_RENTROLL_FATAL]', e);
       return [];
     }
   });
@@ -80,14 +129,14 @@ export async function getTaxPrep(year: number, propertyId?: string) {
         organizationId: session.organizationId
       });
     } catch (e: any) {
-      console.error('[REPORTS_TAXPREP_FATAL]', e);
+      console.error('[ANALYTICS_TAXPREP_FATAL]', e);
       return [];
     }
   });
 }
 
 /**
- * SNAPSHOT GATEKEEPER
+ * REPORT SNAPSHOT GATEKEEPER
  */
 export async function saveReportSnapshot(payload: any) {
   return runSecureServerAction('MANAGER', async (session) => {
@@ -97,11 +146,13 @@ export async function saveReportSnapshot(payload: any) {
         organizationId: session.organizationId
       });
     } catch (e: any) {
-      console.error('[REPORTS_SNAPSHOT_FATAL]', e);
+      console.error('[ANALYTICS_SNAPSHOT_FATAL]', e);
       throw e;
     }
   });
 }
+
+/* ── 3. ASSET ANALYTICS ─────────────────────────────────────────────────── */
 
 /**
  * ASSET PULSE GATEKEEPER
@@ -115,7 +166,7 @@ export async function getPropertyAssetPulse(propertyId: string) {
       });
       return { success: true, data };
     } catch (e: any) {
-      console.error('[REPORTS_PULSE_FATAL]', e);
+      console.error('[ANALYTICS_PULSE_FATAL]', e);
       return { success: false, message: e.message };
     }
   });
@@ -132,7 +183,7 @@ export async function getPropertyLedgerEntries(propertyId: string, type: string)
         organizationId: session.organizationId
       });
     } catch (e: any) {
-      console.error('[REPORTS_LEDGER_DRILL_FATAL]', e);
+      console.error('[ANALYTICS_LEDGER_DRILL_FATAL]', e);
       return [];
     }
   });
@@ -149,7 +200,7 @@ export async function getMasterLedger(query?: string) {
         organizationId: session.organizationId
       });
     } catch (e: any) {
-      console.error('[REPORTS_MASTER_LEDGER_FATAL]', e);
+      console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
       return [];
     }
   });

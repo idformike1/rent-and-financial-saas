@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react'
 import { Upload, FileSpreadsheet, CheckCircle2, AlertOctagon, Zap, ShieldCheck, Database, Trash2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { axiomParseCSV } from '@/lib/csv-parser'
-import { ingestBulkExpenses } from '@/actions/ingestion.actions'
+import { ingestBulkExpenses } from '@/actions/finance.actions'
 import { Badge } from '@/components/ui-finova'
 
 export default function MassIngestionClient() {

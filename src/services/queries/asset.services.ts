@@ -1,10 +1,12 @@
 import { getSovereignClient } from "@/src/lib/db";
 
 /**
- * UNIT QUERY SERVICE (SOVEREIGN EDITION)
+ * ASSET QUERY SERVICE (SOVEREIGN AUTHORITY)
  * 
- * Provides high-performance visibility into the property unit inventory.
+ * Provides high-performance visibility into the Property and Unit inventory.
  */
+
+/* ── 1. UNIT INVENTORY QUERIES ─────────────────────────────────────────── */
 
 /**
  * Retrieves all OPERATIONAL units that do not have an active lease.

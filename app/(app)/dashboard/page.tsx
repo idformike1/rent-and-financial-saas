@@ -2,7 +2,7 @@ import { Card, Badge, Button } from '@/components/ui-finova'
 import { Activity, Zap, LayoutDashboard } from 'lucide-react'
 import ExportControls from '@/components/ExportControls'
 import DashboardClientGrid from './DashboardClientGrid'
-import { getGlobalPortfolioTelemetry } from '@/actions/dashboard-macro.actions'
+import { getGlobalPortfolioTelemetry } from '@/actions/analytics.actions'
 import { Suspense } from 'react'
 import { cn } from '@/lib/utils'
 

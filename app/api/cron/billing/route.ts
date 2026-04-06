@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { runMonthlyBillingCycle } from '@/actions/billing-automation.actions';
+import { runMonthlyBillingCycle } from '@/actions/finance.actions';
 
 /**
  * Vercel Cron Job: Autonomous Monthly Billing Protocol

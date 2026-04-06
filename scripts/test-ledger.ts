@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import { submitOnboarding } from '../actions/onboarding.actions'
-import { processPayment } from '../actions/ledger.actions'
+import { submitOnboarding } from '../actions/tenant.actions'
+import { processPayment } from '../actions/finance.actions'
 
 const prisma = new PrismaClient({
   url: process.env.DATABASE_URL

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import { getProfitAndLoss } from '@/actions/reports.actions'
+import { getProfitAndLoss } from '@/actions/analytics.actions'
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');

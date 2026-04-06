@@ -1,0 +1,245 @@
+'use server'
+
+import { runSecureServerAction } from '@/lib/auth-utils'
+import { revalidatePath } from 'next/cache'
+import { SystemResponse } from '@/types'
+import { 
+  submitOnboardingService, 
+  checkTenantExistenceService,
+  liquidateTenantDebtService, 
+  getTenantForensicDossierService,
+  processMoveOutService,
+  updateTenantDetailsService,
+  softDeleteTenantService,
+  addAdditionalLeaseService
+} from '@/src/services/mutations/tenant.services'
+
+/**
+ * TENANT DOMAIN ACTIONS (SOVEREIGN AUTHORITY)
+ * 
+ * Centralized gatekeeper for all Tenant lifecycle events: 
+ * Onboarding, Forensics, Registry Updates, and Disposition.
+ */
+
+/* ── 1. ONBOARDING & IDENTITY ─────────────────────────────────────────── */
+
+export interface OnboardingPayload {
+  tenantName: string;
+  email?: string;
+  phone?: string;
+  nationalId?: string;
+  unitId: string;
+  baseRent: number;
+  securityDeposit: number;
+  moveInDate: string; // ISO date string
+}
+
+/**
+ * STRATEGIC ONBOARDING GATEKEEPER
+ */
+export async function submitOnboarding(data: OnboardingPayload): Promise<SystemResponse> {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await submitOnboardingService(
+        data,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+
+      revalidatePath('/tenants');
+      revalidatePath('/properties');
+      
+      return { 
+        success: true, 
+        message: "Enterprise Onboarding successfully materialized.", 
+        data: result 
+      };
+
+    } catch (e: any) {
+      console.error('[ONBOARDING_ACTION_FATAL]', e);
+      return { 
+        success: false, 
+        message: e.message || "Onboarding failed", 
+        errorCode: "STATE_CONFLICT" 
+      };
+    }
+  });
+}
+
+/**
+ * IDENTITY PROTOCOL VALIDATION (GATEKEEPER)
+ */
+export async function checkTenantExistence(name: string, email?: string, phone?: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await checkTenantExistenceService(
+        { name, email, phone },
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+      return result;
+    } catch (e: any) {
+      console.error('[CHECK_EXISTENCE_FATAL]', e);
+      return { exists: false, message: "Validation Protocol Failure" };
+    }
+  });
+}
+
+/* ── 2. FORENSICS & RECONCILIATION ─────────────────────────────────────── */
+
+/**
+ * DEBT LIQUIDATION PROTOCOL (FIFO)
+ */
+export async function liquidateTenantDebt(tenantId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await liquidateTenantDebtService(
+        tenantId,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+      
+      revalidatePath(`/tenants/${tenantId}`);
+      return { success: true, message: "FIFO_RECONCILIATION_SUCCESS", data: result };
+    } catch (e: any) {
+      console.error('[LIQUIDATE_DEBT_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}
+
+/**
+ * FORENSIC DOSSIER MATERIALIZATION
+ */
+export async function getTenantForensicDossier(tenantId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await getTenantForensicDossierService(
+        tenantId,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+
+      return { 
+        success: true, 
+        data: JSON.parse(JSON.stringify(result)) 
+      };
+
+    } catch (e: any) {
+      console.error('[FORENSIC_DOSSIER_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}
+
+/* ── 3. LIFECYCLE & REGISTRY ───────────────────────────────────────────── */
+
+/**
+ * UPDATE BASIC DETAILS (GATEKEEPER)
+ */
+export async function updateTenantDetails(tenantId: string, data: { name: string, email?: string, phone?: string, nationalId?: string }) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const tenant = await updateTenantDetailsService(
+        tenantId,
+        data,
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+
+      revalidatePath(`/tenants/${tenantId}`);
+      revalidatePath('/tenants');
+      return { success: true, data: tenant };
+    } catch (e: any) {
+      console.error('[TENANT_UPDATE_FATAL]', e);
+      return { success: false, message: e.message };
+    }
+  });
+}
+
+/**
+ * SOFT DELETE TENANT (GATEKEEPER)
+ */
+export async function softDeleteTenant(tenantId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      await softDeleteTenantService(
+        tenantId,
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+      revalidatePath('/tenants');
+      return { success: true, message: "Tenant soft-deleted and leases archived." };
+    } catch (e: any) {
+      console.error('[TENANT_SOFT_DELETE_FATAL]', e);
+      return { success: false, message: e.message };
+    }
+  });
+}
+
+/**
+ * ADD ADDITIONAL LEASE (GATEKEEPER)
+ */
+export async function addAdditionalLease(data: { 
+  tenantId: string, 
+  unitId: string, 
+  rentAmount: number, 
+  depositAmount: number,
+  startDate: string 
+}) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const result = await addAdditionalLeaseService(
+        data,
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+
+      revalidatePath(`/tenants/${data.tenantId}`);
+      revalidatePath('/properties');
+      return { success: true, message: "Additional lease protocol established.", data: result };
+    } catch (e: any) {
+      console.error('[ADD_LEASE_FATAL]', e);
+      return { success: false, message: e.message };
+    }
+  });
+}
+
+/**
+ * MOVE-OUT PROTOCOL (GATEKEEPER)
+ */
+export async function processMoveOut(tenantId: string, leaseId: string, unitId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      await processMoveOutService(
+        { tenantId, leaseId, unitId },
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+      
+      revalidatePath(`/tenants/${tenantId}`);
+      revalidatePath('/tenants');
+      revalidatePath('/properties');
+      return { success: true, message: "Move-out protocol executed successfully." };
+    } catch (e: any) {
+      console.error('[MOVE_OUT_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}

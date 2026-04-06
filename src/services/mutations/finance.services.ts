@@ -1,24 +1,141 @@
 import { getSovereignClient } from "@/src/lib/db";
-import { calculateWaterfallDistribution } from "@/src/core/algorithms/finance";
 import { Prisma } from "@prisma/client";
-import { AccountCategory } from "@/src/schema/enums";
+import { AccountCategory, PaymentMode } from "@/src/schema/enums";
 import { randomUUID } from "crypto";
 import { recordAuditLog } from "@/lib/audit-logger";
+import { calculateWaterfallDistribution, toNegativeOutflow } from "@/src/core/algorithms/finance";
 
 /**
- * LEDGER MUTATION SERVICE (SOVEREIGN EDITION)
+ * FINANCE MUTATION SERVICE (SOVEREIGN AUTHORITY)
  * 
- * Orchestrates atomic financial transactions with absolute data integrity.
+ * Orchestrates all fiscal commands including Billing Cycles, 
+ * Bulk Ingestion, Payment Processing, and Ledger Reconciliation.
  * 
- * Mandate: 
+ * Mandate:
  * 1. Decimal-Safe Math (Prisma.Decimal).
- * 2. Automated Surveillance via Shielded Client.
+ * 2. Non-Repudiable Audit Logging.
  * 3. Atomic Multi-Step Transactions.
  */
 
-/**
- * Processes a tenant payment through the FIFO Waterfall Distribution.
- */
+/* ── 1. BILLING CYCLE ORCHESTRATION ───────────────────────────────────────── */
+
+export async function runMonthlyBillingCycleService(
+  targetDate: string,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+  const targetTime = new Date(targetDate);
+  const startOfMonth = new Date(targetTime.getFullYear(), targetTime.getMonth(), 1);
+  const endOfMonth = new Date(targetTime.getFullYear(), targetTime.getMonth() + 1, 0);
+
+  return await db.$transaction(async (tx: any) => {
+    const activeLeases = await tx.lease.findMany({
+      where: { isActive: true, organizationId: context.organizationId },
+      include: { unit: true }
+    });
+
+    let generatedCount = 0;
+    let bypassedCount = 0;
+    const generatedIds: string[] = [];
+
+    for (const lease of activeLeases) {
+      if (lease.unit.maintenanceStatus === 'DECOMMISSIONED') {
+        bypassedCount++;
+        continue;
+      }
+
+      const existingCharge = await tx.charge.findFirst({
+        where: {
+          leaseId: lease.id,
+          type: 'RENT',
+          dueDate: { gte: startOfMonth, lte: endOfMonth },
+          organizationId: context.organizationId
+        }
+      });
+
+      if (!existingCharge) {
+        const charge = await tx.charge.create({
+          data: {
+            organizationId: context.organizationId,
+            tenantId: lease.tenantId,
+            leaseId: lease.id,
+            type: 'RENT',
+            amount: lease.rentAmount,
+            dueDate: startOfMonth,
+            isFullyPaid: false
+          }
+        });
+        generatedCount++;
+        generatedIds.push(charge.id);
+      }
+    }
+
+    if (generatedCount > 0) {
+      await recordAuditLog({
+        action: 'CREATE',
+        entityType: 'CHARGE',
+        entityId: `BILLING_CYCLE_${startOfMonth.toISOString()}`,
+        metadata: { cycleStart: startOfMonth, generated: generatedCount, recordIds: generatedIds },
+        tx: tx as any
+      });
+    }
+
+    return { generated: generatedCount, bypassed: bypassedCount };
+  });
+}
+
+/* ── 2. MASS DATA INGESTION ─────────────────────────────────────────────── */
+
+export async function ingestLedgerService(
+  records: any[], 
+  context: { operatorId: string; organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+  const totalVolume = records.reduce((sum, r) => sum + Math.abs(r.amount), 0);
+
+  return await db.$transaction(async (tx: any) => {
+    const account = await tx.account.findFirst({
+      where: { category: AccountCategory.ASSET, organizationId: context.organizationId }
+    });
+
+    if (!account) throw new Error(`CRITICAL_FAILURE: No primary asset account found for organization [${context.organizationId}].`);
+
+    const entriesCreated: string[] = [];
+
+    for (const record of records) {
+      const transactionId = randomUUID();
+      const netAmount = toNegativeOutflow(record.amount);
+
+      const entry = await tx.ledgerEntry.create({
+        data: {
+          organizationId: context.organizationId,
+          transactionId,
+          accountId: account.id,
+          amount: netAmount,
+          date: record.date,
+          transactionDate: record.date,
+          description: record.description || `Bulk Import: ${record.payee}`,
+          payee: record.payee,
+          paymentMode: record.paymentMode || PaymentMode.BANK
+        }
+      });
+      entriesCreated.push(entry.id);
+    }
+
+    await recordAuditLog({
+      action: 'CREATE',
+      entityType: 'LEDGER_ENTRY',
+      entityId: `BULK_INGEST_${Date.now()}`,
+      metadata: { count: records.length, totalVolume, ingressType: 'CSV_UPLOAD' },
+      tx: tx as any
+    });
+
+    return { count: records.length, totalVolume };
+  });
+}
+
+/* ── 3. PAYMENT PROCESSING (WATERFALL) ──────────────────────────────────── */
+
 export async function processPaymentService(
   payload: {
     tenantId: string;
@@ -33,11 +150,8 @@ export async function processPaymentService(
 
   return await db.$transaction(async (tx: any) => {
     const amountToApply = new Prisma.Decimal(payload.amountPaid);
-    if (amountToApply.lte(0)) {
-       throw new Error("ERR_FISCAL_BREACH: Payment amount must be absolute positive.");
-    }
+    if (amountToApply.lte(0)) throw new Error("ERR_FISCAL_BREACH: Payment amount must be absolute positive.");
 
-    // 1. Fetch Tenant and Outstanding Charges
     const tenant = await tx.tenant.findUnique({
       where: { id: payload.tenantId, organizationId: context.organizationId },
       include: {
@@ -50,13 +164,8 @@ export async function processPaymentService(
 
     if (!tenant) throw new Error("ERR_TENANT_RECORD_ABSENT");
 
-    // 2. Execute Algorithm: Waterfall Distribution
-    const { distributions, remainingCredit } = calculateWaterfallDistribution(
-      amountToApply,
-      tenant.charges
-    );
+    const { distributions, remainingCredit } = calculateWaterfallDistribution(amountToApply, tenant.charges);
 
-    // 3. Materialize Charge Updates
     for (const distro of distributions) {
       await tx.charge.update({
         where: { id: distro.id, organizationId: context.organizationId },
@@ -67,13 +176,10 @@ export async function processPaymentService(
       });
     }
 
-    // 4. Handle Overpayment (Credit Materialization)
     if (remainingCredit.gt(0)) {
       const activeLease = await tx.lease.findFirst({ 
         where: { tenantId: tenant.id, isActive: true, isPrimary: true } 
-      }) || await tx.lease.findFirst({ 
-        where: { tenantId: tenant.id, isActive: true } 
-      });
+      }) || await tx.lease.findFirst({ where: { tenantId: tenant.id, isActive: true } });
 
       if (activeLease) {
         await tx.charge.create({
@@ -91,7 +197,6 @@ export async function processPaymentService(
       }
     }
 
-    // 5. Locate/Materialize Core Accounts (Registry Sync)
     const assetAccount = await tx.account.findFirst({ 
       where: { category: AccountCategory.ASSET, organizationId: context.organizationId } 
     }) || await tx.account.create({
@@ -104,10 +209,8 @@ export async function processPaymentService(
       data: { name: "GENERAL OPERATING REVENUE (AUTO)", category: AccountCategory.INCOME, organizationId: context.organizationId }
     });
 
-    // 6. Double-Entry Ledger Commitment
     const transactionId = randomUUID();
     
-    // DEBIT ASSET
     await tx.ledgerEntry.create({
       data: {
         organizationId: context.organizationId,
@@ -123,7 +226,6 @@ export async function processPaymentService(
       }
     });
 
-    // CREDIT REVENUE
     await tx.ledgerEntry.create({
       data: {
         organizationId: context.organizationId,
@@ -139,7 +241,6 @@ export async function processPaymentService(
       }
     });
 
-    // 7. Audit Surveillance
     await recordAuditLog({
       action: 'PAYMENT',
       entityType: 'LEDGER_ENTRY',
@@ -152,10 +253,8 @@ export async function processPaymentService(
   });
 }
 
-/**
- * Logs a manual expense or income entry into the ledger with strict 
- * sign-convention enforcement and asset account synchronization.
- */
+/* ── 4. EXPENSE LOGGING ─────────────────────────────────────────────────── */
+
 export async function logExpenseService(
   payload: {
     amount: number;
@@ -173,7 +272,6 @@ export async function logExpenseService(
   const transactionId = randomUUID();
   const date = new Date();
 
-  // SIGN CONVENTION: INCOME (+) | EXPENSE (-)
   const finalAmount = payload.type === 'INCOME' 
     ? new Prisma.Decimal(payload.amount).abs() 
     : new Prisma.Decimal(payload.amount).abs().negated();
@@ -213,9 +311,8 @@ export async function logExpenseService(
   });
 }
 
-/**
- * Waives a charge balance for a tenant, creating a non-repudiable audit trace.
- */
+/* ── 5. CREDIT & WAIVERS ─────────────────────────────────────────────────── */
+
 export async function waiveChargeService(
   chargeId: string,
   reasonText: string,
@@ -224,10 +321,7 @@ export async function waiveChargeService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const charge = await tx.charge.findUnique({ 
-      where: { id: chargeId, organizationId: context.organizationId } 
-    });
-
+    const charge = await tx.charge.findUnique({ where: { id: chargeId, organizationId: context.organizationId } });
     if (!charge) throw new Error("ERR_CHARGE_ABSENT");
     
     const balance = charge.amount.minus(charge.amountPaid);
@@ -235,13 +329,9 @@ export async function waiveChargeService(
 
     await tx.charge.update({
       where: { id: chargeId },
-      data: {
-        amountPaid: charge.amount,
-        isFullyPaid: true
-      }
+      data: { amountPaid: charge.amount, isFullyPaid: true }
     });
 
-    // Detailed Audit for Waive-off (Governance Protocol)
     await recordAuditLog({
       action: 'UPDATE',
       entityType: 'CHARGE',
@@ -254,9 +344,8 @@ export async function waiveChargeService(
   });
 }
 
-/**
- * Reconciles utility recovery metrics for a given property.
- */
+/* ── 6. UTILITY RECONCILIATION ────────────────────────────────────────────── */
+
 export async function reconcileUtilitiesService(
   propertyId: string, 
   dateRange: { start: Date, end: Date },

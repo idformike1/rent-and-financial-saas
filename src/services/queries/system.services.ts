@@ -2,16 +2,16 @@ import { getSovereignClient } from "@/src/lib/db";
 import { rankSearchResults } from "@/src/core/algorithms/governance";
 
 /**
- * SEARCH SERVICE (QUERY LAYER)
- * 
- * Provides high-performance visibility into the entire Sovereign registry.
+ * SYSTEM QUERY SERVICES (SOVEREIGN AUTHORITY)
+ *
+ * Provides high-performance, cross-domain search visibility into the registry.
  */
 
 /**
- * Executes a Deep Scan across all primary entity types with strict isolation.
+ * Executes a Deep Scan across all primary entity types with strict tenant isolation.
  */
 export async function deepScanSystemService(
-  query: string, 
+  query: string,
   context: { operatorId: string, organizationId: string }
 ) {
   const db = getSovereignClient(context.operatorId);
@@ -62,6 +62,5 @@ export async function deepScanSystemService(
     ...units.map((u: any) => ({ id: u.id, title: `Unit ${u.unitNumber}`, type: 'ASSET', href: '/properties', description: u.type })),
   ];
 
-  // Algorithm Delegation: Search Ranking
   return rankSearchResults(rawResults, query);
 }

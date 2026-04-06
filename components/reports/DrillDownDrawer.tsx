@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { X, Loader2, ArrowRight } from 'lucide-react'
-import { getMasterLedger } from '@/actions/reports.actions'
+import { getMasterLedger } from '@/actions/analytics.actions'
 import { format } from 'date-fns'
 
 interface DrillDownDrawerProps {

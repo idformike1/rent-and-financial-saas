@@ -21,8 +21,8 @@ import {
   Edit2,
   Trash2
 } from 'lucide-react'
-import { getPropertyAssetPulse, getPropertyLedgerEntries } from '@/actions/reports.actions'
-import { createUnit, updateUnit } from '@/actions/unit-mgmt.actions'
+import { getPropertyAssetPulse, getPropertyLedgerEntries } from '@/actions/analytics.actions'
+import { createUnit, updateUnit } from '@/actions/asset.actions'
 import { Card, Badge, Button, RollingCounter } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
