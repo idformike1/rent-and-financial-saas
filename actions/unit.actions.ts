@@ -1,31 +1,22 @@
 'use server'
 
-import prisma from '@/lib/prisma'
-
 import { runSecureServerAction } from '@/lib/auth-utils'
+import { getAvailableUnitsService } from '@/src/services/queries/unit.services'
 
+/**
+ * UNIT AVAILABILITY SCANNER (GATEKEEPER)
+ */
 export async function getAvailableUnits() {
-  return runSecureServerAction('MANAGER', async (session) => {
-    const units = await prisma.unit.findMany({
-      where: {
-        organizationId: session.organizationId,
-        maintenanceStatus: 'OPERATIONAL',
-        leases: {
-          none: {
-            isActive: true
-          }
-        }
-      },
-      include: {
-        property: true
-      },
-      orderBy: {
-        unitNumber: 'asc'
-      }
+  try {
+    return await runSecureServerAction('MANAGER', async (session) => {
+      const units = await getAvailableUnitsService({
+        operatorId: session.userId || "OP_SYSTEM_ADMIN",
+        organizationId: session.organizationId
+      });
+      return JSON.parse(JSON.stringify(units || []));
     });
-    return JSON.parse(JSON.stringify(units.map(u => ({
-      ...u,
-      marketRent: Number(u.marketRent)
-    }))));
-  });
+  } catch (e) {
+    console.error('[GET_AVAILABLE_UNITS_FATAL]', e);
+    return [];
+  }
 }

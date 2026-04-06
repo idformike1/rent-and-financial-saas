@@ -1,10 +1,11 @@
 'use server'
 
-import prisma from '@/lib/prisma'
 import { runSecureServerAction } from '@/lib/auth-utils'
-import { Prisma } from '@prisma/client'
 import { SystemResponse } from '@/types'
-import { recordAuditLog } from '@/lib/audit-logger'
+import { 
+  submitOnboardingService, 
+  checkTenantExistenceService 
+} from '@/src/services/mutations/tenant.services'
 
 export interface OnboardingPayload {
   tenantName: string;
@@ -17,146 +18,19 @@ export interface OnboardingPayload {
   moveInDate: string; // ISO date string
 }
 
+/**
+ * STRATEGIC ONBOARDING GATEKEEPER
+ */
 export async function submitOnboarding(data: OnboardingPayload): Promise<SystemResponse> {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      // Step 0: Deduplication Check
-      if (data.email || data.phone) {
-        const existing = await prisma.tenant.findFirst({
-          where: {
-            organizationId: session.organizationId,
-            OR: [
-              ...(data.email ? [{ email: data.email }] : []),
-              ...(data.phone ? [{ phone: data.phone }] : [])
-            ],
-            isDeleted: false
-          }
-        });
-
-        if (existing) {
-          return { 
-            success: false, 
-            message: `Tenant already exists (${existing.name}). Please use the 'Add Additional Lease' flow on their profile.`, 
-            errorCode: "VALIDATION_ERROR" 
-          };
+      const result = await submitOnboardingService(
+        data,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
         }
-      }
-
-      const unit = await prisma.unit.findFirst({ 
-        where: { id: data.unitId, organizationId: session.organizationId },
-        include: { leases: { where: { isActive: true } } }
-      });
-      if (!unit) return { success: false, message: "Unit not found", errorCode: "VALIDATION_ERROR" };
-      
-      // Protocols Rule: Single-Tenant Occupancy Enforcement
-      if (unit.leases.length > 0) {
-        return { 
-          success: false, 
-          message: "Unit is currently occupied. Protocol Rule #1: Single Registry Only.", 
-          errorCode: "STATE_CONFLICT" 
-        };
-      }
-
-      // Maintenance State Machine: Blocks DECOMMISSIONED units
-      if (unit.maintenanceStatus === 'DECOMMISSIONED') {
-        return { success: false, message: "Unit is DECOMMISSIONED. Assignment blocked by Protocol Rule #3.", errorCode: "STATE_CONFLICT" };
-      }
-
-      const moveIn = new Date(data.moveInDate);
-      const year = moveIn.getUTCFullYear();
-      const month = moveIn.getUTCMonth();
-      
-      const endOfMonth = new Date(Date.UTC(year, month + 1, 0));
-      const daysInMonth = endOfMonth.getUTCDate();
-      const currentDay = moveIn.getUTCDate();
-      const remainingDays = daysInMonth - currentDay + 1;
-      
-      const proratedRentRaw = (data.baseRent / daysInMonth) * remainingDays;
-      const proratedRent = new Prisma.Decimal(proratedRentRaw.toFixed(2));
-      const secDep = new Prisma.Decimal(data.securityDeposit);
-
-      const result = await prisma.$transaction(async (txOps: Prisma.TransactionClient) => {
-        // Step 1: Create Tenant with Enterprise fields
-        const tenant = await txOps.tenant.create({
-          data: { 
-            organizationId: session.organizationId,
-            name: data.tenantName,
-            email: data.email,
-            phone: data.phone,
-            nationalId: data.nationalId,
-            isDeleted: false
-          }
-        });
-
-        // Step 2: Create Lease
-        const endDate = new Date(moveIn);
-        endDate.setUTCFullYear(endDate.getUTCFullYear() + 1);
-
-        const lease = await txOps.lease.create({
-          data: {
-            organizationId: session.organizationId,
-            tenantId: tenant.id,
-            unitId: data.unitId,
-            isPrimary: true,
-            rentAmount: new Prisma.Decimal(data.baseRent),
-            depositAmount: secDep,
-            startDate: moveIn,
-            endDate,
-            isActive: true
-          }
-        });
-
-        await recordAuditLog({
-          action: 'CREATE',
-          entityType: 'TENANT',
-          entityId: tenant.id,
-          metadata: { name: tenant.name },
-          tx: txOps
-        });
-
-        await recordAuditLog({
-          action: 'CREATE',
-          entityType: 'LEASE',
-          entityId: lease.id,
-          metadata: { rent: data.baseRent },
-          tx: txOps
-        });
-
-        // Step 3: Financial Initialization
-        await txOps.charge.create({
-          data: {
-            organizationId: session.organizationId,
-            tenantId: tenant.id,
-            leaseId: lease.id,
-            type: 'RENT', 
-            amount: secDep,
-            amountPaid: new Prisma.Decimal(0),
-            dueDate: moveIn,
-            isFullyPaid: false,
-          }
-        });
-
-        await txOps.charge.create({
-          data: {
-            organizationId: session.organizationId,
-            tenantId: tenant.id,
-            leaseId: lease.id,
-            type: 'RENT', 
-            amount: proratedRent,
-            amountPaid: new Prisma.Decimal(0),
-            dueDate: moveIn,
-            isFullyPaid: false,
-          }
-        });
-
-        // Use updateMany for safe organizationId scoping on non-composite primary keys
-        await txOps.unit.updateMany({
-          where: { id: unit.id, organizationId: session.organizationId },
-          data: { maintenanceStatus: 'OPERATIONAL' }
-        });
-
-        return { tenantId: tenant.id, leaseId: lease.id };
-      });
+      );
 
       return { 
         success: true, 
@@ -165,58 +39,33 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
       };
 
     } catch (e: any) {
-      return { success: false, message: e.message || "Onboarding failed", errorCode: "STATE_CONFLICT" };
+      console.error('[ONBOARDING_ACTION_FATAL]', e);
+      return { 
+        success: false, 
+        message: e.message || "Onboarding failed", 
+        errorCode: "STATE_CONFLICT" 
+      };
     }
   });
 }
 
 /**
- * IDENTITY PROTOCOL: PRE-MISSION VALIDATION
- * Verifies if a tenant exists before proceeding to Step 2.
+ * IDENTITY PROTOCOL VALIDATION (GATEKEEPER)
  */
 export async function checkTenantExistence(name: string, email?: string, phone?: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      // 1. Exact Name Check
-      const nameMatch = await prisma.tenant.findFirst({
-        where: { organizationId: session.organizationId, name: { equals: name, mode: 'insensitive' }, isDeleted: false }
-      });
-      if (nameMatch) {
-        return { 
-          exists: true, 
-          message: `Identity Conflict: A Tenant named '${nameMatch.name}' is already registered.` 
-        };
-      }
-
-      // 2. Email Check
-      if (email) {
-        const emailMatch = await prisma.tenant.findFirst({
-          where: { organizationId: session.organizationId, email: { equals: email, mode: 'insensitive' }, isDeleted: false }
-        });
-        if (emailMatch) {
-          return { 
-            exists: true, 
-            message: `Identity Conflict: The email '${email}' is already associated with '${emailMatch.name}'. Duplicate registrations are blocked by Protocol.` 
-          };
+      const result = await checkTenantExistenceService(
+        { name, email, phone },
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
         }
-      }
-
-      // 3. Phone Check
-      if (phone) {
-        const phoneMatch = await prisma.tenant.findFirst({
-          where: { organizationId: session.organizationId, phone: { equals: phone, mode: 'insensitive' }, isDeleted: false }
-        });
-        if (phoneMatch) {
-          return { 
-            exists: true, 
-            message: `Identity Conflict: The contact string '${phone}' is already registered for '${phoneMatch.name}'.` 
-          };
-        }
-      }
-
-      return { exists: false };
+      );
+      return result;
     } catch (e: any) {
-      return { exists: false, error: "Validation Protocol Failure" };
+      console.error('[CHECK_EXISTENCE_FATAL]', e);
+      return { exists: false, message: "Validation Protocol Failure" };
     }
   });
 }

@@ -1,138 +1,23 @@
 'use server'
 
-import prisma from "@/lib/prisma"
 import { runSecureServerAction } from "@/lib/auth-utils"
+import { getDetailedOntologyService } from "@/src/services/queries/dashboard.services"
 
+/**
+ * DETAILED ONTOLOGY SCRAPER (GATEKEEPER)
+ */
 export async function fetchDetailedOntology() {
   return runSecureServerAction('MANAGER', async (session) => {
-    const orgId = session.organizationId;
-
-    // 1. Fetch Organization
-    const org = await prisma.organization.findUnique({
-      where: { id: orgId },
-      select: { id: true, name: true }
-    });
-
-    if (!org) throw new Error("Organization not found");
-
-    // 2. Fetch Buildings with their related Tenants (via Leases) and Expenses
-    const buildings = await prisma.property.findMany({
-      where: { organizationId: orgId },
-      include: {
-        units: {
-          include: {
-            leases: {
-              where: { isActive: true },
-              include: {
-                tenant: {
-                  select: { id: true, name: true }
-                }
-              }
-            }
-          }
-        },
-        ledgerEntries: {
-          where: {
-            organizationId: orgId,
-            OR: [
-              { account: { category: 'EXPENSE' } },
-              { expenseCategoryId: { not: null } }
-            ]
-          },
-          select: {
-            id: true,
-            description: true,
-            amount: true,
-            transactionDate: true,
-            expenseCategory: {
-              select: { name: true }
-            }
-          },
-          orderBy: { transactionDate: 'desc' },
-          take: 10 
-        }
-      }
-    });
-
-    // 3. Fetch Corporate Overhead (Expenses with no propertyId)
-    const corporateExpenses = await prisma.ledgerEntry.findMany({
-      where: {
-        organizationId: orgId,
-        propertyId: null,
-        OR: [
-          { account: { category: 'EXPENSE' } },
-          { expenseCategoryId: { not: null } }
-        ]
-      },
-      select: {
-        id: true,
-        description: true,
-        amount: true,
-        transactionDate: true,
-        expenseCategory: {
-          select: { name: true }
-        }
-      },
-      orderBy: { transactionDate: 'desc' },
-      take: 20
-    });
-
-    // Transform buildings to include unique tenants and mapped expenses
-    const mappedBuildings = buildings.map((b: any) => {
-      const tenantsMap = new Map<string, string>();
-      b.units.forEach((u: any) => {
-        u.leases.forEach((l: any) => {
-          if (l.tenant) {
-            tenantsMap.set(l.tenant.id, l.tenant.name);
-          }
-        });
+    try {
+      const root = await getDetailedOntologyService({
+        operatorId: session.userId || "OP_SYSTEM_ADMIN",
+        organizationId: session.organizationId
       });
 
-      return {
-        id: b.id,
-        name: b.name,
-        type: 'BUILDING',
-        tenants: Array.from(tenantsMap.entries()).map(([id, name]) => ({ id, name, type: 'TENANT' })),
-        expenses: b.ledgerEntries.map((e: any) => ({ 
-          id: e.id,
-          description: e.description,
-          amount: Number(e.amount),
-          transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : String(e.transactionDate),
-          expenseCategory: e.expenseCategory,
-          name: e.description || e.expenseCategory?.name || 'Uncategorized OPEX',
-          type: 'EXPENSE' 
-        }))
-      };
-    });
-
-    return {
-      root: {
-        id: org.id,
-        name: org.name,
-        type: 'ORGANIZATION',
-        children: [
-          {
-            id: 'asset-portfolio',
-            name: 'Asset Portfolio',
-            type: 'CATEGORY',
-            children: mappedBuildings
-          },
-          {
-            id: 'corporate-overhead',
-            name: 'Corporate Overhead',
-            type: 'CATEGORY',
-            children: corporateExpenses.map((e: any) => ({ 
-              id: e.id,
-              description: e.description,
-              amount: Number(e.amount),
-              transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : String(e.transactionDate),
-              expenseCategory: e.expenseCategory,
-              name: e.description || e.expenseCategory?.name || 'Corporate Overhead Entry',
-              type: 'EXPENSE' 
-            }))
-          }
-        ]
-      }
-    };
+      return { root };
+    } catch (e: any) {
+      console.error('[ONTOLOGY_ACTION_FATAL]', e);
+      throw e;
+    }
   });
 }

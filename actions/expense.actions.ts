@@ -1,73 +1,57 @@
 'use server'
 
-import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { randomUUID } from 'crypto'
-import { PaymentMode, AccountCategory } from '@prisma/client'
 import { runSecureServerAction } from '@/lib/auth-utils'
-import { recordAuditLog } from '@/lib/audit-logger'
+import { logExpenseService } from '@/src/services/mutations/ledger.services'
+import { PaymentMode } from '@prisma/client'
 
+/**
+ * LOG EXPENSE ACTION (GATEKEEPER)
+ */
 export async function logExpense(formData: FormData) {
   return runSecureServerAction('MANAGER', async (session) => {
-    const transactionId = randomUUID();
-    const date = new Date(formData.get('date') as string);
-    const rawAmount = parseFloat(formData.get('amount') as string);
-    const payee = formData.get('payee') as string;
-    const description = formData.get('description') as string;
-    const ledgerId = formData.get('scope') as string; // This is the FinancialLedger ID
-    const type = formData.get('type') as string || 'EXPENSE';
-    const propertyId = formData.get('propertyId') as string || null;
-    const expenseCategoryId = formData.get('subCategoryId') as string || formData.get('parentCategoryId') as string;
-    const paymentMode = formData.get('paymentMode') as PaymentMode || PaymentMode.BANK;
-
-    if (!rawAmount || !payee || !expenseCategoryId || !ledgerId) {
-      return { error: "Missing critical governance data. Operation aborted." };
-    }
-
-    // SIGN CONVENTION: INCOME is Positive Inflow, EXPENSE is Negative Outflow
-    const amount = type === 'INCOME' ? Math.abs(rawAmount) : -Math.abs(rawAmount);
-
     try {
-      await prisma.$transaction(async (tx) => {
-        // Find a default account for the treasury hit (ASSET - Cash/Bank)
-        const account = await tx.account.findFirst({
-            where: { category: AccountCategory.ASSET, organizationId: session.organizationId }
-        });
+      // 1. Data Normalization & Header Re-mapping
+      const rawAmount = parseFloat(formData.get('amount') as string);
+      const payee = formData.get('payee') as string;
+      const description = formData.get('description') as string;
+      const ledgerId = formData.get('scope') as string;
+      const type = (formData.get('type') as string || 'EXPENSE') as 'INCOME' | 'EXPENSE';
+      const propertyId = formData.get('propertyId') as string || undefined;
+      const expenseCategoryId = formData.get('subCategoryId') as string || formData.get('parentCategoryId') as string;
+      const paymentMode = formData.get('paymentMode') as PaymentMode || PaymentMode.BANK;
 
-        if (!account) throw new Error("No primary asset account found for ledger synchronization.");
+      if (!rawAmount || !payee || !expenseCategoryId || !ledgerId) {
+        return { error: "ERR_PROTOCOL_VIOLATION: Missing critical financial headers." };
+      }
 
-        // Create the master ledger entry
-        const entry = await tx.ledgerEntry.create({
-          data: {
-            organizationId: session.organizationId,
-            transactionId,
-            accountId: account.id,
-            amount: amount,
-            date,
-            transactionDate: date,
-            description,
-            payee,
-            propertyId,
-            expenseCategoryId,
-            paymentMode
-          }
-        });
+      // 2. Delegation to Sovereign Service Layer
+      const result = await logExpenseService(
+        {
+          amount: rawAmount,
+          payee,
+          description,
+          ledgerId,
+          type,
+          propertyId,
+          expenseCategoryId,
+          paymentMode
+        },
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
 
-        await recordAuditLog({
-          action: 'CREATE',
-          entityType: type === 'INCOME' ? 'REVENUE' : 'EXPENSE',
-          entityId: entry.id,
-          metadata: { amount, payee, type, description },
-          tx
-        });
-      });
-
+      // 3. Global Cache Synchronization
       revalidatePath('/expenses');
       revalidatePath('/reports/master-ledger');
-      return { success: true };
+      
+      return { success: true, data: result };
+
     } catch (e: any) {
-      console.error('[EXPENSE_LOG_FATAL]', e);
-      return { error: e.message || "Digital ledger synchronization failed." };
+      console.error('[EXPENSE_ACTION_FATAL]', e);
+      return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }

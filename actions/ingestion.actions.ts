@@ -1,12 +1,10 @@
 'use server'
 
-import prisma from '@/lib/prisma'
 import { runSecureServerAction } from '@/lib/auth-utils'
-import { recordAuditLog } from '@/lib/audit-logger'
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-import { randomUUID } from 'crypto'
-import { PaymentMode, AccountCategory } from '@prisma/client'
+import { PaymentMode } from '@prisma/client'
+import { ingestLedgerService } from '@/src/services/mutations/ingestLedger'
 
 /**
  * ZOD SCHEMA: AXIOM BULK EXPENSE IMPORT
@@ -27,10 +25,16 @@ const BulkExpenseSchema = z.object({
 
 const IngestionPayload = z.array(BulkExpenseSchema);
 
+/**
+ * MASS INGESTION SERVER ACTION (GATEKEEPER)
+ * 
+ * Performs authorization checks and data validation before 
+ * offloading the atomic database transaction to the Sovereign Service Layer.
+ */
 export async function ingestBulkExpenses(data: any[]) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      // 1. Normalization & Validation Gateway
+      // 1. Data Normalization & Header Re-mapping
       const normalizedData = data.map(row => {
          const getVal = (key: string) => {
             const foundKey = Object.keys(row).find(k => k.toLowerCase() === key.toLowerCase());
@@ -39,11 +43,12 @@ export async function ingestBulkExpenses(data: any[]) {
          return {
             date: getVal('date'),
             amount: getVal('amount'),
-            payee: getVal('payee') || "UNSPECIFIED",
-            description: getVal('description') || "UNSPECIFIED",
+            payee: getVal('payee'),
+            description: getVal('description'),
          }
       });
 
+      // 2. Strict Schema Validation Gateway
       const validated = IngestionPayload.safeParse(normalizedData);
       if (!validated.success) {
         return { 
@@ -53,73 +58,29 @@ export async function ingestBulkExpenses(data: any[]) {
         };
       }
 
-      const records = validated.data;
-      const totalRecords = records.length;
-
-      // 2. Atomic Materialization Pipeline
-      const result = await prisma.$transaction(async (tx: any) => {
-        // Find default Asset Account once for the whole batch signature
-        const account = await tx.account.findFirst({
-           where: { category: AccountCategory.ASSET, organizationId: session.organizationId }
-        });
-
-        if (!account) throw new Error("No primary asset account found for registry synchronization.");
-
-        const entriesCreated = [];
-
-        for (const item of records) {
-          const transactionId = randomUUID();
-          
-          // SIGN CONVENTION: Expenses are negative outflows
-          const netAmount = -Math.abs(item.amount);
-
-          const entry = await tx.ledgerEntry.create({
-            data: {
-              organizationId: session.organizationId,
-              transactionId,
-              accountId: account.id,
-              amount: netAmount,
-              date: item.date,
-              transactionDate: item.date,
-              description: item.description || `Bulk Ingestion Import: ${item.payee}`,
-              payee: item.payee,
-              paymentMode: item.paymentMode
-            }
-          });
-
-          entriesCreated.push(entry.id);
-        }
-
-        // 3. Global Audit Surveillance
-        await recordAuditLog({
-          action: 'CREATE',
-          entityType: 'LEDGER_ENTRY',
-          entityId: "BULK_INGESTION_" + Date.now(),
-          metadata: { 
-            count: totalRecords, 
-            ingressType: 'CSV_UPLOAD',
-            recordRange: entriesCreated
-          },
-          tx
-        });
-
-        return { count: totalRecords };
+      // 3. Delegation to Sovereign Service Layer
+      // We pass the Session context to the service to trigger the Surveillance Grid
+      const result = await ingestLedgerService(validated.data, {
+        operatorId: session.userId || "OP_SYSTEM_ADMIN",
+        organizationId: session.organizationId
       });
 
+      // 4. Global Path Synchronization
       revalidatePath('/reports/master-ledger');
       revalidatePath('/expenses');
       revalidatePath('/dashboard');
       
       return { 
         success: true, 
-        message: `Mass Ingestion Complete: ${result.count} records committed to the immutable ledger.` 
+        message: `Mass Ingestion Complete: ${result.count} records [Vol: ${result.totalVolume.toLocaleString()}] committed to ledger.`,
+        data: result
       };
 
     } catch (e: any) {
-      console.error('[INGESTION_FATAL]', e);
+      console.error('[INGESTION_FATAL_BREACH]', e);
       return { 
         success: false, 
-        error: "INGESTION_PROTOCOL_BREACH", 
+        error: "SERVICE_LAYER_PROTOCOL_FAILURE", 
         message: e.message || "Internal database synchronization failure." 
       };
     }

@@ -1,4 +1,4 @@
-import { PrismaClient, ExpenseScope, PaymentMode } from '@prisma/client'
+import { PrismaClient, PaymentMode } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -46,7 +46,7 @@ async function main() {
   const expenses = []
   for (let i = 0; i < 100; i++) {
     const subCat = subCategories[Math.floor(Math.random() * subCategories.length)]
-    const property = subCat.scope === 'PROPERTY' ? properties[Math.floor(Math.random() * properties.length)] : null
+    const property = Math.random() > 0.3 ? properties[Math.floor(Math.random() * properties.length)] : null
     const amount = Math.floor(Math.random() * 500) + 20
     const date = randomDate(new Date(2025, 0, 1), new Date())
     const payee = payees[Math.floor(Math.random() * payees.length)]

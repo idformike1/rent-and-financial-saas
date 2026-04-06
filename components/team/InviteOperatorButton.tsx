@@ -39,8 +39,8 @@ export default function InviteOperatorButton() {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="glass-panel p-10 w-full max-w-md shadow-[0_0_40px_rgba(255,87,51,0.2)] rounded-3xl relative overflow-hidden">
+        <div className="fixed inset-0 bg-[var(--background)]/60 z-50 flex items-center justify-center p-4 backdrop-blur-md transition-all duration-500">
+          <div className="glass-panel p-12 w-full max-w-md shadow-[0_0_40px_rgba(255,87,51,0.15)] rounded-[2.5rem] relative overflow-hidden border border-[var(--primary)]/10 animate-in zoom-in-95 duration-300">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full -mr-32 -mt-32 pointer-events-none" />
             <button 
               onClick={() => setIsOpen(false)}
@@ -49,7 +49,7 @@ export default function InviteOperatorButton() {
               <X size={24} />
             </button>
 
-            <h2 className="text-3xl font-black uppercase tracking-tighter mb-8 border-b border-[var(--border)] pb-4 text-[var(--foreground)] italic relative z-10">
+            <h2 className="text-3xl font-black uppercase tracking-widest mb-8 border-b border-[var(--border)] pb-6 text-[var(--foreground)] relative z-10">
               Add Operator
             </h2>
 
@@ -61,8 +61,8 @@ export default function InviteOperatorButton() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 font-bold text-sm focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] outline-none text-[var(--foreground)] transition-all"
-                  placeholder="e.g. AGENT 001"
+                  className="w-full bg-[var(--card)]/50 border border-[var(--border)] rounded-2xl p-4 font-bold text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] text-[var(--foreground)] transition-all"
+                  placeholder="e.g. AGENT_001"
                 />
               </div>
 
@@ -73,7 +73,7 @@ export default function InviteOperatorButton() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 font-bold text-sm focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] outline-none text-[var(--foreground)] transition-all"
+                  className="w-full bg-[var(--card)]/50 border border-[var(--border)] rounded-2xl p-4 font-bold text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] text-[var(--foreground)] transition-all"
                   placeholder="name@nexus.com"
                 />
               </div>
@@ -81,9 +81,9 @@ export default function InviteOperatorButton() {
               <button
                 disabled={isPending}
                 type="submit"
-                className="w-full bg-[var(--primary)] text-[var(--primary-foreground)] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:shadow-[0_0_25px_rgba(255,87,51,0.4)] hover:bg-[var(--primary-light)] transition-all disabled:opacity-50 disabled:shadow-none relative z-10 mt-8"
+                className="w-full bg-[var(--primary)] text-[var(--primary-foreground)] py-6 rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:shadow-[0_0_30px_rgba(255,87,51,0.3)] hover:bg-[var(--primary-light)] transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none relative z-10 mt-8"
               >
-                {isPending ? "AUTHORIZING..." : "INITIATE INVITE"}
+                {isPending ? "AUTHORIZING..." : "[ INITIATE INVITE ]"}
               </button>
               
               <p className="text-[9px] uppercase font-black tracking-widest text-center text-[var(--muted)] opacity-60 relative z-10">

@@ -1,60 +1,28 @@
 'use server'
 
-import prisma from '@/lib/prisma'
-import { auth } from '@/auth'
+import { runSecureServerAction } from '@/lib/auth-utils'
+import { deepScanSystemService } from '@/src/services/queries/search.services'
 
+/**
+ * DEEP SCAN GATEKEEPER
+ */
 export async function deepScanSystem(query: string) {
-  if (!query || query.length < 2) return { success: true, data: [] }
+  if (!query || query.length < 2) return { success: true, data: [] };
 
-  try {
-    const session = await auth()
-    const orgId = session?.user?.organizationId as string | undefined
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const results = await deepScanSystemService(
+        query,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
 
-    const [tenants, properties, categories, units] = await Promise.all([
-      prisma.tenant.findMany({
-        where: {
-          ...(orgId ? { organizationId: orgId } : {}),
-          OR: [
-            { name: { contains: query, mode: 'insensitive' } },
-            { email: { contains: query, mode: 'insensitive' } },
-          ]
-        },
-        take: 5
-      }),
-      prisma.property.findMany({
-        where: {
-          ...(orgId ? { organizationId: orgId } : {}),
-          OR: [
-            { name: { contains: query, mode: 'insensitive' } },
-            { address: { contains: query, mode: 'insensitive' } },
-          ]
-        },
-        take: 5
-      }),
-      (prisma as any).expenseCategory.findMany({
-        where: {
-          name: { contains: query, mode: 'insensitive' }
-        },
-        take: 3
-      }),
-      prisma.unit.findMany({
-        where: {
-          unitNumber: { contains: query, mode: 'insensitive' }
-        },
-        take: 3
-      })
-    ])
-
-    const results = [
-      ...tenants.map((t: any) => ({ id: t.id, title: t.name, type: 'TENANT', href: `/tenants/${t.id}`, description: t.email })),
-      ...properties.map((p: any) => ({ id: p.id, title: p.name, type: 'ASSET', href: `/properties/${p.id}`, description: p.address || 'Property' })),
-      ...categories.map((c: any) => ({ id: c.id, title: c.name, type: 'GOVERNANCE', href: '/settings/categories', description: 'Expense Category' })),
-      ...units.map((u: any) => ({ id: u.id, title: `Unit ${u.unitNumber}`, type: 'ASSET', href: '/properties', description: u.type })),
-    ]
-
-    return { success: true, data: results }
-  } catch (error: any) {
-    console.error('Deep Scan Error:', error)
-    return { success: false, error: 'Quantum Search Failure' }
-  }
+      return { success: true, data: results };
+    } catch (error: any) {
+      console.error('[SEARCH_DEEP_SCAN_FATAL]', error);
+      return { success: false, error: 'Quantum Search Failure' };
+    }
+  });
 }

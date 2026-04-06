@@ -38,10 +38,15 @@ const unitSchema = z.object({
   unitNumber: z.string().min(1, "Required"),
   type: z.string().min(2, "e.g. Standard Apartment"),
   category: z.string().min(1, "Required"),
-  marketRent: z.coerce.number().min(0)
+  marketRent: z.number().min(0)
 })
 
-type UnitForm = z.infer<typeof unitSchema>
+type UnitForm = {
+  unitNumber: string;
+  type: string;
+  category: string;
+  marketRent: number;
+}
 
 interface PulseData {
   hud: {

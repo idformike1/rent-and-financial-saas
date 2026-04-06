@@ -7,12 +7,18 @@ import { Badge } from '@/components/ui-finova'
 import { getCurrentSession } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 
+import { FINANCIAL_PERIODS, getTemporalFragment, REVENUE_FILTER_CONTEXT } from '@/src/core/algorithms/finance'
+
 export default async function ExpenseRegistryPage() {
   const session = await getCurrentSession();
   if (!session) redirect('/login');
 
   const entriesRaw = await prisma.ledgerEntry.findMany({
-    where: { organizationId: session.organizationId },
+    where: { 
+      organizationId: session.organizationId,
+      ...getTemporalFragment(FINANCIAL_PERIODS.TRAILING_MONTH),
+      AND: REVENUE_FILTER_CONTEXT
+    },
     select: {
       id: true,
       amount: true,
@@ -28,6 +34,13 @@ export default async function ExpenseRegistryPage() {
           parent: {
             select: { id: true, name: true }
           }
+        }
+      },
+      account: {
+        select: {
+          id: true,
+          name: true,
+          category: true
         }
       },
       property: {

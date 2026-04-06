@@ -57,7 +57,10 @@ export default function MassIngestionClient() {
     try {
       const response = await ingestBulkExpenses(data);
       if (response.success) {
-        toast.success("BATCH COMMITTED TO IMMUTABLE LEDGER", { icon: '🔥' });
+        toast.success(response.message || "BATCH COMMITTED TO IMMUTABLE LEDGER", { 
+          icon: '🔥',
+          duration: 5000 
+        });
         setData([]);
         setFile(null);
       } else {

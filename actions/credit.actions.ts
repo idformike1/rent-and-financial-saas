@@ -1,48 +1,42 @@
 'use server'
 
-import prisma from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
 import { runSecureServerAction } from '@/lib/auth-utils'
+import { waiveChargeService } from '@/src/services/mutations/ledger.services'
+import { revalidatePath } from 'next/cache'
 
+/**
+ * WAIVE CHARGE ACTION (GATEKEEPER)
+ */
 export async function waiveCharge(chargeId: string, reasonText: string) {
   return runSecureServerAction('MANAGER', async (session) => {
-    if (!reasonText || reasonText.length < 10) {
-      return { success: false, message: "Waive off reason must be at least 10 characters long." }
-    }
-
-    const charge = await prisma.charge.findUnique({ where: { id: chargeId } })
-    if (!charge) return { success: false, message: "Charge not found." }
-
-    const balance = charge.amount.minus(charge.amountPaid);
-    if (balance.lte(0)) return { success: false, message: "Charge is already fully paid." }
-
     try {
-      await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        // 1. Waive the remaining balance by marking it as paid (system credit essentially)
-        await tx.charge.update({
-          where: { id: chargeId },
-          data: {
-            amountPaid: charge.amount, // Set amountPaid = amount
-            isFullyPaid: true
-          }
-        });
+      // 1. Governance Verification
+      if (!reasonText || reasonText.length < 10) {
+        return { success: false, message: "ERR_PROTOCOL_VIOLATION: Waive-off justification must be at least 10 chars." };
+      }
 
-        // 2. Create Audit Trail
-        await tx.auditLog.create({
-          data: {
-            organizationId: session.organizationId,
-            actionType: 'WAIVE_OFF',
-            targetId: chargeId,
-            amountContext: balance,
-            managerId: session.userId,
-            reasonText: reasonText
-          }
-        });
-      });
+      // 2. Delegation to Sovereign Service Layer
+      const result = await waiveChargeService(
+        chargeId,
+        reasonText,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
 
-      return { success: true, message: "Charge waived successfully. Audit log created." }
+      // 3. UI Synchronization
+      revalidatePath(`/tenants`);
+
+      return { 
+        success: true, 
+        message: `Charge waived successfully. Fiscal impact: $${result.waived.toFixed(2)}`,
+        data: result 
+      };
+
     } catch (e: any) {
-      return { success: false, message: e.message || "Failed to waive charge." }
+      console.error('[CREDIT_WAIVE_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }

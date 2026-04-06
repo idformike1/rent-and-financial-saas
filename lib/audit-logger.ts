@@ -3,7 +3,7 @@ import { auth } from '@/auth'
 
 interface AuditLogParams {
   action: 'CREATE' | 'UPDATE' | 'DELETE' | 'NUCLEAR_PURGE' | 'INVITE' | 'ACTIVATE' | 'DEACTIVATE' | 'ROLE_CHANGE' | 'MOVE_OUT' | 'PAYMENT';
-  entityType: 'USER' | 'EXPENSE' | 'REVENUE' | 'PROPERTY' | 'TENANT' | 'UNIT' | 'LEASE' | 'CHARGE' | 'ACCOUNT' | 'LEDGER_ENTRY';
+  entityType: 'USER' | 'EXPENSE' | 'REVENUE' | 'PROPERTY' | 'TENANT' | 'UNIT' | 'LEASE' | 'CHARGE' | 'ACCOUNT' | 'LEDGER_ENTRY' | 'LEDGER' | 'CATEGORY' | 'ORGANIZATION';
   entityId: string;
   metadata?: any;
   tx?: any; 

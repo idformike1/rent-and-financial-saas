@@ -1,5 +1,6 @@
 'use client'
-import { FileText, Download } from 'lucide-react'
+import { toast } from '@/lib/toast'
+import { Download } from 'lucide-react'
 
 export default function ExportControls() {
   const ledgerData = [
@@ -8,7 +9,10 @@ export default function ExportControls() {
   ];
 
   const handleCSVExport = () => {
-    if (!ledgerData.length) return;
+    if (!ledgerData.length) {
+      toast.error("DATA_VOID: No ledger entries found for export.");
+      return;
+    }
     const headers = Object.keys(ledgerData[0]).join(',');
     const rows = ledgerData.map(obj => Object.values(obj).join(',')).join('\n');
     const csvContent = `${headers}\n${rows}`;
@@ -20,6 +24,8 @@ export default function ExportControls() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    toast.success("LEDGER_EXPORT_MATERIALIZED: axiom_master_ledger.csv");
   };
 
   return (

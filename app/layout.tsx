@@ -37,7 +37,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${ibmPlexMono.variable}`}
     >
-      <body className="antialiased h-screen overflow-hidden font-sans bg-background text-foreground transition-colors duration-300">
+      <body 
+        className="antialiased min-h-screen overflow-hidden font-sans bg-background text-foreground transition-colors duration-300"
+        suppressHydrationWarning
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
           <SessionProvider>
             <Toaster />

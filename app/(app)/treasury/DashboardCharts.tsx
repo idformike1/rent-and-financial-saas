@@ -118,9 +118,10 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
                 paddingAngle={8}
                 dataKey="value"
                 stroke="none"
+                cornerRadius={8}
               >
                 {recoveryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={8} />
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip 

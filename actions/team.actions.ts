@@ -1,13 +1,18 @@
 'use server'
 
-import prisma from "@/lib/prisma"
-import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
-import bcrypt from "bcryptjs"
+import { runSecureServerAction } from "@/lib/auth-utils"
+import { 
+  inviteTeamMemberService, 
+  updateUserRoleService, 
+  deleteUserService 
+} from "@/src/services/mutations/team.services"
+import prisma from "@/lib/prisma"
 import { recordAuditLog } from "@/lib/audit-logger"
 
-import { runSecureServerAction } from "@/lib/auth-utils"
-
+/**
+ * TEAM REGISTRY ACCESS
+ */
 export async function fetchTeamMembers() {
   return runSecureServerAction('OWNER', async (session) => {
     const members = await prisma.user.findMany({
@@ -22,148 +27,117 @@ export async function fetchTeamMembers() {
         createdAt: true
       },
       orderBy: { createdAt: 'asc' }
-    })
+    });
 
     const stats = {
       total: members.length,
       active: members.filter((m: any) => m.isActive).length,
       viewOnly: members.filter((m: any) => !m.canEdit).length
-    }
+    };
 
-    return { members, stats }
+    return { members, stats };
   });
 }
 
+/**
+ * ROLE ESCALATION GATEKEEPER
+ */
 export async function updateUserRole(userId: string, newRole: string) {
   return runSecureServerAction('OWNER', async (session) => {
-    // Prevent changing own role if you are the last owner (simplified check)
-    if (userId === session.userId && newRole !== 'OWNER') {
-      throw new Error("Cannot demote yourself from OWNER role.")
+    try {
+      await updateUserRoleService(
+        userId,
+        newRole,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+      revalidatePath('/settings/team');
+    } catch (e: any) {
+      console.error('[TEAM_ROLE_UPDATE_FATAL]', e);
+      throw e;
     }
-
-    await prisma.user.update({
-      where: { 
-        id: userId,
-        organizationId: session.organizationId 
-      },
-      data: { role: newRole }
-    })
-
-    await recordAuditLog({
-      action: 'ROLE_CHANGE',
-      entityType: 'USER',
-      entityId: userId,
-      metadata: { newRole }
-    })
-    
-    revalidatePath('/settings/team')
   });
 }
 
+/**
+ * USER ACTIVATION GATEKEEPER
+ */
 export async function toggleUserActivation(userId: string, isActive: boolean) {
   return runSecureServerAction('OWNER', async (session) => {
     if (userId === session.userId) {
-      throw new Error("Cannot deactivate your own account.")
+      throw new Error("ERR_GRAVITY_VIOLATION: Self-deactivation protocol blocked.");
     }
 
     await prisma.user.update({
-      where: { 
-        id: userId,
-        organizationId: session.organizationId 
-      },
+      where: { id: userId, organizationId: session.organizationId },
       data: { isActive }
-    })
+    });
 
     await recordAuditLog({
       action: isActive ? 'ACTIVATE' : 'DEACTIVATE',
       entityType: 'USER',
       entityId: userId
-    })
+    });
     
-    revalidatePath('/settings/team')
+    revalidatePath('/settings/team');
   });
 }
 
+/**
+ * PERMISSION GATEKEEPER
+ */
 export async function toggleUserEditPermission(userId: string, canEdit: boolean) {
   return runSecureServerAction('OWNER', async (session) => {
     await prisma.user.update({
-      where: { 
-        id: userId,
-        organizationId: session.organizationId 
-      },
+      where: { id: userId, organizationId: session.organizationId },
       data: { canEdit }
-    })
-    
-    revalidatePath('/settings/team')
+    });
+    revalidatePath('/settings/team');
   });
 }
 
+/**
+ * TERMINATION GATEKEEPER
+ */
 export async function deleteUserForever(userId: string) {
   return runSecureServerAction('OWNER', async (session) => {
-    if (userId === session.userId) {
-      throw new Error("Self-termination protocol blocked.")
+    try {
+      await deleteUserService(
+        userId,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+      revalidatePath('/settings/team');
+    } catch (e: any) {
+      console.error('[TEAM_TERMINATION_FATAL]', e);
+      throw e;
     }
-
-    // Safety Catch: Check for existing AuditLogs or LedgerEntries
-    const hasHistory = await prisma.$transaction(async (tx: any) => {
-      const logsCount = await tx.auditLog.count({ where: { userId: userId } })
-      return logsCount > 0
-    })
-
-    if (hasHistory) {
-      throw new Error("Cannot delete user with history. Use 'Kick' (Deactivate) instead.")
-    }
-
-    await prisma.user.delete({
-      where: { 
-        id: userId,
-        organizationId: session.organizationId 
-      }
-    })
-
-    await recordAuditLog({
-      action: 'DELETE',
-      entityType: 'USER',
-      entityId: userId
-    })
-    
-    revalidatePath('/settings/team')
   });
 }
 
+/**
+ * INVITATION GATEKEEPER
+ */
 export async function inviteMember(email: string, name: string) {
   return runSecureServerAction('OWNER', async (session) => {
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    })
+    try {
+      const newUser = await inviteTeamMemberService(
+        { email, name },
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
 
-    if (existingUser) {
-      throw new Error("User already exists in the system.")
+      revalidatePath('/settings/team');
+      return { success: true, user: newUser };
+    } catch (e: any) {
+      console.error('[TEAM_INVITATION_FATAL]', e);
+      throw e;
     }
-
-    const defaultPassword = "password123" 
-    const passwordHash = await bcrypt.hash(defaultPassword, 10)
-
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        passwordHash,
-        role: 'MANAGER',
-        organizationId: session.organizationId,
-        isActive: true,
-        canEdit: true,
-      }
-    })
-
-    await recordAuditLog({
-      action: 'INVITE',
-      entityType: 'USER',
-      entityId: newUser.id,
-      metadata: { email }
-    })
-
-    revalidatePath('/settings/team')
-    return { success: true, user: newUser }
   });
 }

@@ -95,7 +95,7 @@ export default function OnboardingWizard() {
       const vals = getValues();
       const check = await checkTenantExistence(vals.tenantName, vals.email, vals.phone);
       if (check.exists) {
-        setServerError(check.message!);
+        setServerError(check.message || "Identity conflict detected.");
         return;
       }
     }

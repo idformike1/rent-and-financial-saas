@@ -34,8 +34,21 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
     )
   })
 
-  const totalInflow = entries.filter(e => Number(e.amount) > 0).reduce((sum, e) => sum + Number(e.amount), 0)
-  const totalOutflow = entries.filter(e => Number(e.amount) < 0).reduce((sum, e) => sum + Math.abs(Number(e.amount)), 0)
+  const EXCLUSION_KEYWORDS = ['TRANSFER', 'INTERNAL', 'REFUND'];
+  
+  const isExcluded = (e: any) => {
+    const desc = (e.description || '').toUpperCase();
+    return EXCLUSION_KEYWORDS.some(kw => desc.includes(kw));
+  };
+
+  const totalInflow = entries
+    .filter(e => e.account?.category === 'INCOME' && Number(e.amount) > 0 && !isExcluded(e))
+    .reduce((sum, e) => sum + Number(e.amount), 0)
+    
+  const totalOutflow = entries
+    .filter(e => e.account?.category === 'EXPENSE' && Number(e.amount) < 0 && !isExcluded(e))
+    .reduce((sum, e) => sum + Math.abs(Number(e.amount)), 0)
+    
   const netPosition = totalInflow - totalOutflow
 
   return (
@@ -111,10 +124,16 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                        {entry.payee || "INTERNAL_TRANSFER"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 border-r border-white/5">
-                    <span className="text-[10px] text-slate-400 capitalize truncate max-w-[200px]">
+                  <td className="px-6 py-4 border-r border-white/5 relative group/desc">
+                    <span className="text-[10px] text-slate-400 capitalize truncate max-w-[200px] block">
                        {entry.description || "N/A"}
                     </span>
+                    {entry.description && entry.description.length > 20 && (
+                      <div className="absolute left-6 top-0 -translate-y-full mb-2 hidden group-hover/desc:block z-50 bg-slate-900 border border-border p-3 rounded-xl shadow-2xl text-[10px] text-foreground w-[300px] pointer-events-none animate-in fade-in slide-in-from-bottom-2">
+                        <p className="font-mono text-slate-500 uppercase tracking-widest text-[8px] mb-2 font-black">SURVEILLANCE_DETAIL</p>
+                        {entry.description}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 border-r border-white/5">
                     <div className="flex items-center gap-2">

@@ -1,16 +1,22 @@
 import TenantProfileView from '@/app/(app)/tenants/[tenantId]/TenantProfileView'
-import { getTenantForensicDossier } from '@/actions/tenant-forensics.actions'
-import { notFound } from 'next/navigation'
+import { getTenantForensicDossierService } from '@/src/services/mutations/tenant.services'
+import { notFound, redirect } from 'next/navigation'
+import { getCurrentSession } from '@/lib/auth-utils'
 
 export default async function TenantProfilePage({ params }: { params: Promise<{ tenantId: string }> }) {
   const { tenantId } = await params;
+  const session = await getCurrentSession();
+  
+  if (!session) redirect('/login');
 
-  const res: any = await getTenantForensicDossier(tenantId);
-  if (!res.success || !res.data) {
-    notFound();
-  }
+  try {
+    const data = await getTenantForensicDossierService(tenantId, {
+      operatorId: session.userId,
+      organizationId: session.organizationId
+    });
 
-  const { tenant, integrityScore, stripChart } = res.data;
+    const { tenant } = data;
+    const { integrityScore, stripChart } = tenant;
 
   // DATA RECONSTRUCTION FOR V3.0 INTERFACE
   const tenantDTO = {
@@ -36,14 +42,18 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
       isPrimary: l.isPrimary
     }));
 
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#020617]">
-      <TenantProfileView 
-        tenant={JSON.parse(JSON.stringify(tenantDTO))} 
-        activeLeases={JSON.parse(JSON.stringify(activeLeases))}
-        charges={JSON.parse(JSON.stringify(tenant.charges))}
-        ledgerEntries={JSON.parse(JSON.stringify(tenant.ledgerEntries))}
-      />
-    </div>
-  );
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#020617]">
+        <TenantProfileView 
+          tenant={JSON.parse(JSON.stringify(tenantDTO || {}))} 
+          activeLeases={JSON.parse(JSON.stringify(activeLeases || []))}
+          charges={JSON.parse(JSON.stringify(tenant.charges || []))}
+          ledgerEntries={JSON.parse(JSON.stringify(tenant.ledgerEntries || []))}
+        />
+      </div>
+    );
+  } catch (e) {
+    console.error('[PROFILE_RENDER_FATAL]', e);
+    notFound();
+  }
 }

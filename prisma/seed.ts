@@ -1,4 +1,4 @@
-import { PrismaClient, MaintenanceStatus, ChargeType, AccountCategory, ExpenseScope, PaymentMode } from '@prisma/client'
+import { PrismaClient, MaintenanceStatus, ChargeType, AccountCategory, PaymentMode } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import bcrypt from 'bcryptjs'
@@ -46,20 +46,25 @@ async function main() {
   // -- 2. EXPENSE CATEGORIES --
   console.log('📂 Seeding Chart of Accounts (Expense Categories)...')
   const categoriesData = [
-    { name: 'Building Utilities', scope: ExpenseScope.PROPERTY, children: ['Water', 'Electricity'] },
-    { name: 'Maintenance', scope: ExpenseScope.PROPERTY, children: ['Plumbing', 'Electrical'] },
-    { name: 'Home Utilities', scope: ExpenseScope.HOME, children: ['Water', 'Internet'] },
-    { name: 'Person 1', scope: ExpenseScope.PERSONAL, children: ['Food', 'Travel'] },
-    { name: 'Person 2', scope: ExpenseScope.PERSONAL, children: ['Food', 'Medical'] },
+    { name: 'Building Utilities', children: ['Water', 'Electricity'] },
+    { name: 'Maintenance', children: ['Plumbing', 'Electrical'] },
+    { name: 'Home Utilities', children: ['Water', 'Internet'] },
+    { name: 'Person 1', children: ['Food', 'Travel'] },
+    { name: 'Person 2', children: ['Food', 'Medical'] },
   ];
 
   for (const cat of categoriesData) {
-    const parent = await prisma.expenseCategory.create({
-      data: { name: cat.name, scope: cat.scope, organizationId: org.id }
+    const ledger = await prisma.financialLedger.create({
+      data: { name: `${cat.name} Ledger`, organizationId: org.id }
     });
+    
+    const parent = await prisma.expenseCategory.create({
+      data: { name: cat.name, organizationId: org.id, ledgerId: ledger.id }
+    });
+    
     for (const childName of cat.children) {
       await prisma.expenseCategory.create({
-        data: { name: childName, scope: cat.scope, parentId: parent.id, organizationId: org.id }
+        data: { name: childName, parentId: parent.id, organizationId: org.id, ledgerId: ledger.id }
       });
     }
   }
