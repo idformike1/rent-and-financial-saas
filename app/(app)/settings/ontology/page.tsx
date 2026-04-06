@@ -25,23 +25,23 @@ function OntologySkeleton() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] pt-20">
       <div className="p-5 bg-[var(--card)] border border-[var(--border)] min-w-[280px] rounded-3xl mb-0 flex flex-col gap-3 relative z-20">
         <div className="flex justify-between items-center mb-2">
-          <Skeleton className="w-20 h-3 rounded" />
-          <Skeleton className="w-4 h-4 rounded-full" />
+          <Skeleton className="w-20 h-3" />
+          <Skeleton className="w-4 h-4" />
         </div>
-        <Skeleton className="w-48 h-5 rounded" />
-        <Skeleton className="w-24 h-4 mt-2 rounded" />
+        <Skeleton className="w-48 h-5" />
+        <Skeleton className="w-24 h-4 mt-2" />
       </div>
       <div className="w-px h-10 bg-gradient-to-b from-[var(--border)] to-transparent relative z-0" />
       <div className="w-[180px] h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent mb-10 relative z-0" />
       
       <div className="flex gap-10 relative z-20">
         <div className="p-5 bg-[var(--card)] border border-[var(--border)] min-w-[280px] rounded-3xl flex flex-col gap-3">
-          <Skeleton className="w-16 h-3 rounded" />
-          <Skeleton className="w-40 h-5 rounded" />
+          <Skeleton className="w-16 h-3" />
+          <Skeleton className="w-40 h-5" />
         </div>
         <div className="p-5 bg-[var(--card)] border border-[var(--border)] min-w-[280px] rounded-3xl flex flex-col gap-3">
-          <Skeleton className="w-16 h-3 rounded" />
-          <Skeleton className="w-40 h-5 rounded" />
+          <Skeleton className="w-16 h-3" />
+          <Skeleton className="w-40 h-5" />
         </div>
       </div>
     </div>
@@ -70,9 +70,9 @@ export default function OntologyMapPage() {
     <div className="min-h-screen bg-[var(--background)] font-mono p-8 lg:p-12 overflow-x-auto border-none">
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-[var(--border)] pb-10 gap-6">
         <div className="space-y-4">
-          <Skeleton className="w-24 h-5 rounded-full" />
-          <Skeleton className="w-[400px] h-12 rounded-lg" />
-          <Skeleton className="w-[300px] h-4 rounded" />
+          <Skeleton className="w-24 h-5" />
+          <Skeleton className="w-[400px] h-12" />
+          <Skeleton className="w-[300px] h-4" />
         </div>
       </div>
       <OntologySkeleton />

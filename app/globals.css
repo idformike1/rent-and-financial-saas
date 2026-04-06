@@ -2,22 +2,24 @@
 
 @theme {
   /* ── SLATE & EMBER V3: DESIGN SYSTEM FOUNDATION ──────────────────────────── */
-  --color-primary:       #FF5733;
+  --color-primary:       var(--primary);
   --color-primary-light: #FF7555;
+  --color-primary-foreground: var(--primary-foreground);
 
   /* Legacy alias so `text-brand`, `bg-brand` classes still resolve */
-  --color-brand:         #FF5733;
+  --color-brand:         var(--primary);
 
   --color-success:  #10B981;
   --color-warning:  #F59E0B;
   --color-danger:   #F43F5E;
 
   /* ── SURFACE PALETTE ─────────────────────────────────────────────────────── */
-  --color-background:  #0B0F17;
-  --color-card:        #1A2030;
-  --color-card-raised: #202840;
-  --color-border:      rgba(255, 255, 255, 0.10);
-  --color-muted:       #94A3B8;
+  --color-background:  var(--background);
+  --color-foreground:  var(--foreground);
+  --color-card:        var(--card);
+  --color-card-raised: var(--card);
+  --color-border:      var(--border);
+  --color-muted:       var(--muted);
 
   /* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), sans-serif;

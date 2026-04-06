@@ -102,7 +102,7 @@ export default function MasterLedgerPage() {
                       setSearchTerm(e.target.value);
                       setPage(1);
                     }}
-                    className="w-full bg-card border border-border rounded-xl pl-12 pr-4 py-3 text-sm font-medium outline-none focus:border-slate-900 transition-all font-sans" 
+                    className="w-full bg-card border border-border rounded-xl pl-12 pr-4 py-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all font-sans"
                     placeholder="Search entries, accounts, or IDs..." 
                   />
               </div>
@@ -120,14 +120,14 @@ export default function MasterLedgerPage() {
                   type="date" 
                   value={startDate}
                   onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-                  className="bg-card border border-border rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus:border-slate-900"
+                  className="bg-card border border-border rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 />
                 <span className="text-slate-300">→</span>
                 <input 
                   type="date" 
                   value={endDate}
                   onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-                  className="bg-card border border-border rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus:border-slate-900"
+                  className="bg-card border border-border rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 />
               </div>
 
@@ -138,7 +138,7 @@ export default function MasterLedgerPage() {
                 <select 
                   value={category}
                   onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-                  className="bg-card border border-border rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus:border-slate-900 appearance-none cursor-pointer"
+                  className="bg-card border border-border rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background appearance-none cursor-pointer"
                 >
                   <option value="ALL">ALL CATEGORIES</option>
                   <option value="INCOME">INCOME ONLY</option>

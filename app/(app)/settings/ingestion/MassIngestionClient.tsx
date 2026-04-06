@@ -35,6 +35,14 @@ export default function MassIngestionClient() {
       const csvData = e.target?.result as string;
       try {
         const parsedData = axiomParseCSV(csvData);
+        
+        if (parsedData.length > 0) {
+          const keys = Object.keys(parsedData[0]).map(k => k.toLowerCase());
+          if (!keys.includes('date') || !keys.includes('amount')) {
+            setErrorStatus("MISSING CORE HEADERS: Date and Amount are strictly required.");
+          }
+        }
+
         setData(parsedData);
       } catch (err) {
         toast.error("Parsing Failure: digital dataset contains illegal characters.");
@@ -49,7 +57,7 @@ export default function MassIngestionClient() {
     try {
       const response = await ingestBulkExpenses(data);
       if (response.success) {
-        toast.success(response.message);
+        toast.success("BATCH COMMITTED TO IMMUTABLE LEDGER", { icon: '🔥' });
         setData([]);
         setFile(null);
       } else {
@@ -86,7 +94,7 @@ export default function MassIngestionClient() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <div className={data.length > 0 ? "flex flex-col gap-12" : "grid grid-cols-1 lg:grid-cols-2 gap-12 items-start"}>
 
         {/* DROP ZONE */}
         <div
@@ -142,67 +150,88 @@ export default function MassIngestionClient() {
         </div>
 
         {/* STAGING BUFFER */}
-        <div className="glass-panel rounded-3xl border border-[var(--border)] overflow-hidden">
-          <div className="bg-[var(--card)] px-8 py-5 border-b border-[var(--border)] flex items-center gap-3">
-            <Zap className="w-5 h-5 text-[var(--primary)]" />
-            <h4 className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">Staging Buffer</h4>
+        <div className="glass-panel rounded-3xl border border-[var(--border)] overflow-hidden flex flex-col">
+          <div className="bg-[var(--card)] px-8 py-5 border-b border-[var(--border)] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Zap className="w-5 h-5 text-[var(--primary)]" />
+              <h4 className="text-sm font-black uppercase tracking-widest text-[var(--foreground)]">Staging Buffer</h4>
+            </div>
+            {data.length > 0 && (
+              <Badge variant="brand" className="bg-[var(--primary)]/10 text-[var(--primary)] border-transparent font-black tracking-widest">
+                {data.length.toLocaleString()} RECORDS STAGED FOR COMMIT
+              </Badge>
+            )}
           </div>
 
-          <div className="p-8 min-h-[320px] flex flex-col justify-between gap-6">
-            <div className="flex-1">
-              {data.length > 0 ? (
-                <div className="space-y-3 max-h-[260px] overflow-auto pr-2">
-                  {data.slice(0, 5).map((row, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-3 px-4 rounded-2xl bg-white/[0.03] border border-white/5 text-[10px] font-black tracking-widest uppercase hover:bg-[var(--primary)]/5 transition-colors">
-                      <span className="text-[var(--muted)]">{row.Date || row.date || 'unknown'}</span>
-                      <span className="text-[var(--foreground)]">{row.Payee || row.payee || 'no_payee'}</span>
-                      <span className="text-[var(--primary)]">${row.Amount || row.amount || '0'}</span>
-                    </div>
-                  ))}
-                  {data.length > 5 && (
-                    <p className="text-[var(--muted)] italic text-[10px] font-bold py-2 text-center">
-                      + {data.length - 5} additional records in buffer chain
-                    </p>
-                  )}
+          <div className="p-0 flex-1 flex flex-col min-h-[320px]">
+            {data.length > 0 ? (
+              <div className="max-h-[600px] overflow-y-auto w-full overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                  <thead className="sticky top-0 bg-[var(--card)]/90 backdrop-blur border-b border-[var(--border)] z-10 shadow-sm">
+                    <tr>
+                      <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Date</th>
+                      <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Payee</th>
+                      <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Description</th>
+                      <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Category</th>
+                      <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-[var(--muted)] text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--border)]/50">
+                    {data.slice(0, 100).map((row, idx) => (
+                      <tr key={idx} className="hover:bg-[var(--primary)]/5 transition-colors group">
+                        <td className="py-4 px-6 text-xs font-bold text-[var(--muted)] whitespace-nowrap">{row.Date || row.date || '—'}</td>
+                        <td className="py-4 px-6 text-xs font-bold text-[var(--foreground)] max-w-[200px] truncate" title={row.Payee || row.payee}>{row.Payee || row.payee || '—'}</td>
+                        <td className="py-4 px-6 text-xs font-medium text-[var(--muted)] max-w-[300px] truncate" title={row.Description || row.description}>{row.Description || row.description || '—'}</td>
+                        <td className="py-4 px-6"><Badge variant="default" className="text-[9px] uppercase">{row.Category || row.category || 'UNCLASSIFIED'}</Badge></td>
+                        <td className="py-4 px-6 text-right text-sm font-finance tabular-nums font-black text-[var(--primary)]">${row.Amount || row.amount || '0.00'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-16 h-full flex-1 opacity-60">
+                <div className="w-20 h-20 rounded-full border border-dashed border-[var(--primary)]/30 flex items-center justify-center mb-4">
+                  <FileSpreadsheet className="w-8 h-8 text-[var(--muted)]" />
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-[200px] border border-dashed border-[var(--primary)]/20 rounded-2xl opacity-60">
-                  <FileSpreadsheet className="w-10 h-10 text-[var(--muted)] mb-3" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">No legacy trace found.</p>
-                </div>
-              )}
+                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">No legacy trace found in staging area.</p>
+              </div>
+            )}
 
+            <div className="p-8 bg-[var(--card)]/50 border-t border-[var(--border)] mt-auto flex flex-col gap-6">
               {errorStatus && (
-                <div className="mt-6 bg-rose-500/10 border border-rose-500/30 p-5 rounded-2xl flex items-start gap-3 animate-in slide-in-from-top-2 duration-300">
-                  <AlertOctagon className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-rose-400 font-black uppercase text-[9px] tracking-widest mb-1">Ingestion Breach</p>
-                    <p className="text-[var(--foreground)] text-xs font-medium leading-relaxed">{errorStatus}</p>
+                <div className="bg-rose-500/10 border border-rose-500/30 p-5 rounded-2xl flex items-start gap-4 animate-in slide-in-from-top-2 duration-300">
+                  <div className="w-10 h-10 bg-rose-500/20 rounded-xl flex items-center justify-center shrink-0">
+                    <AlertOctagon className="w-5 h-5 text-rose-400" />
+                  </div>
+                  <div className="mt-0.5">
+                    <p className="text-rose-400 font-black uppercase text-[10px] tracking-widest mb-1.5 leading-none">INGESTION FAILED</p>
+                    <p className="text-[var(--foreground)] text-xs font-bold uppercase tracking-wider">{errorStatus}</p>
                   </div>
                 </div>
               )}
-            </div>
 
-            <button
-              onClick={handleRegistryCommit}
-              disabled={data.length === 0 || isProcessing}
-              className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 transition-all active:scale-95 ${
-                data.length > 0 && !isProcessing
-                  ? 'bg-[var(--primary)] text-foreground hover:shadow-[0_0_20px_rgba(255,87,51,0.4)]'
-                  : 'bg-white/5 text-[var(--muted)] cursor-not-allowed'
-              }`}
-            >
-              {isProcessing ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full" />
-                  Synchronizing Chain...
-                </div>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4 fill-white" /> Commit Records to Registry
-                </>
-              )}
-            </button>
+              <button
+                onClick={handleRegistryCommit}
+                disabled={data.length === 0 || isProcessing || errorStatus !== null}
+                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 transition-all ${
+                  data.length > 0 && !isProcessing && !errorStatus
+                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[0_0_20px_rgba(255,87,51,0.2)] hover:shadow-none hover:translate-y-[1px]'
+                    : 'bg-[var(--muted)]/10 text-[var(--muted)] cursor-not-allowed border border-white/5 disabled:opacity-50'
+                }`}
+              >
+                {isProcessing ? (
+                   <div className="flex items-center gap-3">
+                     <span className="w-3 h-3 bg-[var(--foreground)] rounded-full animate-ping" />
+                     SYNCHRONIZING CHAIN...
+                   </div>
+                ) : (
+                  <>
+                    <Zap className="w-5 h-5" /> Commit {data.length} Records to Registry
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

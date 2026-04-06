@@ -12,13 +12,16 @@ import { PaymentMode, AccountCategory } from '@prisma/client'
  * ZOD SCHEMA: AXIOM BULK EXPENSE IMPORT
  */
 const BulkExpenseSchema = z.object({
-  date: z.string().transform(v => new Date(v)),
-  amount: z.string().transform(v => parseFloat(v)),
-  payee: z.string().min(1, "Payee required"),
-  description: z.string().optional(),
-  ledgerId: z.string().uuid("Invalid Ledger ID Scope"),
-  expenseCategoryId: z.string().uuid("Invalid Category ID Scope"),
-  propertyId: z.string().uuid().optional().nullable(),
+  date: z.union([z.string(), z.date()]).transform(v => new Date(v)),
+  amount: z.union([z.string(), z.number()]).transform(v => {
+    if (typeof v === 'string') {
+      const parsed = parseFloat(v.replace(/[^\d.-]/g, ''));
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    return v;
+  }),
+  payee: z.string().optional().transform(v => v || "UNSPECIFIED"),
+  description: z.string().optional().transform(v => v || "UNSPECIFIED"),
   paymentMode: z.nativeEnum(PaymentMode).default(PaymentMode.BANK)
 });
 
@@ -27,8 +30,21 @@ const IngestionPayload = z.array(BulkExpenseSchema);
 export async function ingestBulkExpenses(data: any[]) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      // 1. Validation Gateway
-      const validated = IngestionPayload.safeParse(data);
+      // 1. Normalization & Validation Gateway
+      const normalizedData = data.map(row => {
+         const getVal = (key: string) => {
+            const foundKey = Object.keys(row).find(k => k.toLowerCase() === key.toLowerCase());
+            return foundKey ? row[foundKey] : undefined;
+         }
+         return {
+            date: getVal('date'),
+            amount: getVal('amount'),
+            payee: getVal('payee') || "UNSPECIFIED",
+            description: getVal('description') || "UNSPECIFIED",
+         }
+      });
+
+      const validated = IngestionPayload.safeParse(normalizedData);
       if (!validated.success) {
         return { 
            success: false, 
@@ -41,7 +57,7 @@ export async function ingestBulkExpenses(data: any[]) {
       const totalRecords = records.length;
 
       // 2. Atomic Materialization Pipeline
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx: any) => {
         // Find default Asset Account once for the whole batch signature
         const account = await tx.account.findFirst({
            where: { category: AccountCategory.ASSET, organizationId: session.organizationId }
@@ -67,8 +83,6 @@ export async function ingestBulkExpenses(data: any[]) {
               transactionDate: item.date,
               description: item.description || `Bulk Ingestion Import: ${item.payee}`,
               payee: item.payee,
-              propertyId: item.propertyId,
-              expenseCategoryId: item.expenseCategoryId,
               paymentMode: item.paymentMode
             }
           });
@@ -94,6 +108,7 @@ export async function ingestBulkExpenses(data: any[]) {
 
       revalidatePath('/reports/master-ledger');
       revalidatePath('/expenses');
+      revalidatePath('/dashboard');
       
       return { 
         success: true, 
