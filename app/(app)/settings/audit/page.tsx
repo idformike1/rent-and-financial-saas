@@ -111,7 +111,7 @@ export default async function AuditLogPage() {
                 </tr>
               ) : (
                 logs.map((log: any) => (
-                  <tr key={log.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <tr key={log.id} className="bg-[var(--card)]/50 hover:bg-[var(--primary)]/5 transition-colors group">
                     <td className="px-8 py-5 font-mono text-[11px] font-bold text-[var(--muted)]">
                       {format(new Date(log.createdAt), 'yyyy-MM-dd HH:mm:ss')}
                     </td>
@@ -142,8 +142,8 @@ export default async function AuditLogPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <div className="bg-[var(--background)] text-[9px] font-mono p-3 rounded-xl border border-[var(--border)] max-w-xs overflow-hidden">
-                        <pre className="text-[var(--primary)] leading-tight whitespace-pre-wrap break-all">
+                      <div className="bg-[var(--card)]/30 text-[9px] font-mono p-3 rounded-xl border border-[var(--border)] max-w-xs overflow-hidden">
+                        <pre className="text-[var(--muted)] leading-tight whitespace-pre-wrap break-all hover:text-[var(--primary)] transition-colors">
                           {JSON.stringify(log.metadata, null, 2) || '{}'}
                         </pre>
                       </div>

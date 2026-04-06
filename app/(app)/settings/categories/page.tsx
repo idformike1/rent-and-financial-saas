@@ -29,14 +29,14 @@ export default async function CategoriesManagementPage() {
         initialNodes={allNodes} 
       />
 
-      <Card className="bg-brand/5 border-none rounded-[2.5rem] p-12 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden group shadow-premium">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 rounded-full -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-110" />
-          <div className="w-20 h-20 rounded-3xl bg-brand/10 flex items-center justify-center shrink-0">
-             <Info className="w-10 h-10 text-brand" />
+      <Card className="glass-panel border border-[var(--border)] rounded-[2.5rem] p-12 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-110" />
+          <div className="w-20 h-20 rounded-3xl bg-[var(--primary-muted)] flex items-center justify-center shrink-0 border border-[var(--border)] relative z-10">
+             <Info className="w-10 h-10 text-[var(--primary)]" />
           </div>
           <div className="space-y-4 relative z-10">
-              <h3 className="text-foreground dark:text-white font-black uppercase italic tracking-tighter text-3xl">Financial Governance Protocol V.3</h3>
-              <p className="text-slate-500 dark:text-slate-400 font-medium text-xs tracking-widest leading-relaxed max-w-3xl uppercase">
+              <h3 className="text-[var(--foreground)] font-black uppercase italic tracking-tighter text-3xl">Financial Governance Protocol V.3</h3>
+              <p className="text-[var(--muted)] font-medium text-[11px] tracking-widest leading-relaxed max-w-3xl uppercase">
                   This hub orchestrates the immutable hierarchy of your Chart of Accounts. 
                   Enforced Strict Depth: Ledgers can contain exactly 2 levels of sub-taxonomy (Root Categories and Child Nodes).
                   Vaporization Check: Global Ledgers cannot be decommissioned while active sub-ledgers exist.
