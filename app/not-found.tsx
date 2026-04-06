@@ -13,7 +13,7 @@ export default function NotFound() {
 
         {/* Code */}
         <div className="space-y-4">
-          <p className="text-[10px] font-bold text-muted-foreground  tracking-[0.3em]">
+          <p className="text-[10px] font-bold text-muted-foreground  ">
             System Error // Routing Protocol Failure
           </p>
           <h1 className="text-7xl font-bold text-foreground leading-none">

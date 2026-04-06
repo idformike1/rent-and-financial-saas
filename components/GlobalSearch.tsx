@@ -185,7 +185,7 @@ export default function GlobalSearch() {
 
             {/* Footer */}
             <div className="p-4 border-t border-border flex justify-between items-center px-6 bg-muted/50">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase ">
                 Mercury Deep Scan
               </span>
               <span className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-4">

@@ -91,7 +91,7 @@ export default function MassIngestionClient() {
           <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">
             Mass Ingestion <span className="text-[var(--primary)]">Engine</span>
           </h1>
-          <p className="text-[10px] font-mono text-[var(--muted)]  tracking-[0.4em] flex items-center gap-2">
+          <p className="text-[10px] text-[var(--muted)]   flex items-center gap-2">
             <ShieldCheck className="w-3 h-3" /> Data Protocol v.3.5.1 Active
           </p>
         </div>
@@ -247,7 +247,7 @@ export default function MassIngestionClient() {
           { title: "Registry Persistence", desc: "Once committed, records enter the immutable master ledger.", n: '03' },
         ].map((box) => (
           <div key={box.n} className="glass-panel rounded-[8px] p-6 border border-[var(--border)] hover:border-[var(--primary)]/30 transition-all group">
-            <h5 className="text-[9px] text-[var(--primary)]  mb-2 font-mono">AXIOM_PROTOCOL_{box.n}</h5>
+            <h5 className="text-[9px] text-[var(--primary)]  mb-2">AXIOM_PROTOCOL_{box.n}</h5>
             <h4 className="text-base text-[var(--foreground)]  mb-2">{box.title}</h4>
             <p className="text-xs font-medium text-[var(--muted)] leading-relaxed ">{box.desc}</p>
           </div>

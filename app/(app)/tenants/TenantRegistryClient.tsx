@@ -31,7 +31,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
       </Card>
 
       {/* CORE REGISTRY */}
-      <Card className="p-0 overflow-hidden border border-border bg-card">
+      <Card className="p-0 overflow-hidden border border-border bg-card shadow-none">
         {filteredTenants.length === 0 ? (
           <div className="p-12 text-center space-y-4">
              <p className="text-display font-weight-display text-foreground">Identity Signal Lost</p>
@@ -40,13 +40,13 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-border">
-              <thead className="bg-muted/50 border-b border-border">
+            <table className="min-w-full border-collapse">
+              <thead className="bg-[#1C1F26]/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">
                 <tr>
-                  <th className="px-5 py-3 text-left text-[10px]  tracking-widest text-muted-foreground font-bold">Identity Protocol</th>
-                  <th className="px-5 py-3 text-left text-[10px]  tracking-widest text-muted-foreground font-bold">Lease Portfolio</th>
-                  <th className="px-5 py-3 text-left text-[10px]  tracking-widest text-muted-foreground font-bold">Risk Matrix</th>
-                  <th className="px-5 py-3 text-right text-[10px]  tracking-widest text-muted-foreground font-bold">Action</th>
+                  <th className="px-[22px]">Identity Protocol</th>
+                  <th className="px-[22px]">Lease Portfolio</th>
+                  <th className="px-[22px]">Risk Matrix</th>
+                  <th className="px-[22px] text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -55,33 +55,33 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                   const primaryLease = activeLeases.find(l => l.isPrimary) || activeLeases[0];
                   
                   return (
-                    <tr key={tenant.id} className="hover:bg-muted/50 transition-colors h-[52px]">
-                      <td className="px-5">
+                    <tr key={tenant.id} className="hover:bg-[#1C1F26] transition-none h-[38px] group">
+                      <td className="px-[22px]">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-[4px] bg-muted text-foreground flex items-center justify-center text-xs font-bold">
+                          <div className="h-6 w-6 rounded-[4px] bg-muted text-foreground flex items-center justify-center text-[10px] font-bold">
                             {tenant.name.charAt(0)}
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-[14px] text-foreground font-bold">{tenant.name}</span>
-                            <span className="text-[11px] text-muted-foreground">{tenant.email || 'PROTOCOL_NULL'}</span>
+                          <div className="flex flex-col leading-none">
+                            <span className="text-[13px] text-foreground font-medium">{tenant.name}</span>
+                            <span className="text-[11px] text-muted-foreground">{tenant.email || 'N/A'}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-5">
-                        <div className="flex flex-col">
-                          <span className="text-[13px] text-foreground font-bold">{primaryLease?.unit.unitNumber || 'UNASSIGNED'}</span>
-                          <span className="text-[11px] text-muted-foreground">{primaryLease?.unit.type || 'STAGING_NODE'}</span>
+                      <td className="px-[22px]">
+                        <div className="flex flex-col leading-none">
+                          <span className="text-[12px] text-foreground font-medium">{primaryLease?.unit.unitNumber || 'Unassigned'}</span>
+                          <span className="text-[10px] text-muted-foreground">{primaryLease?.unit.type || 'Standard'}</span>
                         </div>
                       </td>
-                      <td className="px-5">
-                         <Badge variant={activeLeases.length > 0 ? 'success' : 'default'}>
-                           {activeLeases.length > 0 ? 'ACTIVE' : 'RESERVED'}
+                      <td className="px-[22px]">
+                         <Badge variant={activeLeases.length > 0 ? 'success' : 'default'} className="font-medium">
+                           {activeLeases.length > 0 ? 'Active' : 'Reserved'}
                          </Badge>
                       </td>
-                      <td className="px-5 text-right">
+                      <td className="px-[22px] text-right">
                         <Link href={`/tenants/${tenant.id}`}>
-                           <Button variant="secondary" size="sm" className="h-8 w-8 p-0 rounded-[4px]">
-                              <ArrowRight className="w-4 h-4" />
+                           <Button variant="secondary" size="sm" className="h-7 w-7 p-0 rounded-full">
+                              <ArrowRight className="w-3.5 h-3.5" />
                            </Button>
                         </Link>
                       </td>

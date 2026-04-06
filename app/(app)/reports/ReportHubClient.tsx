@@ -154,7 +154,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
                 type="submit" 
                 variant="primary"
                 disabled={isGenerating}
-                className="w-full h-14 rounded-[8px] tracking-[0.2em] text-[11px]"
+                className="w-full h-14 rounded-[8px]  text-[11px]"
             >
                 {isGenerating ? <Loader2 className="w-5 h-5 animate-spin text-[var(--primary)]" /> : <Database className="w-5 h-5 mr-3 text-[var(--primary)] group-hover:rotate-12 transition-transform" /> }
                 {isGenerating ? "MATERIALIZING ANALYTICS" : "Launch Engine Analysis"}
@@ -193,7 +193,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                     <h3 className="text-display font-weight-display ">
                        Materialized Record: <span className="text-[var(--primary)]">{data.type} ARCHIVE</span>
                     </h3>
-                    <p className="text-[10px]  text-muted-foreground tracking-[0.3em]">Governance Timestamp: {new Date().toISOString()}</p>
+                    <p className="text-[10px]  text-muted-foreground ">Governance Timestamp: {new Date().toISOString()}</p>
                 </div>
                 <div className="flex gap-4">
                     <Button onClick={onShare} disabled={isSharing} variant="primary" className="px-8 py-4 rounded-[8px] text-[10px]">
@@ -246,7 +246,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                     {Object.entries(data.payload.expenses.operating.categories).map(([name, total]) => (
                                         <tr key={name} onClick={() => onDrillDown(name)} className="hover:bg-muted cursor-pointer group transition-colors">
                                             <td className={cellClass}>{name}</td>
-                                            <td className={`${cellClass} text-right text-red-600 font-mono flex items-center justify-end`}>
+                                            <td className={`${cellClass} text-right text-red-600 flex items-center justify-end`}>
                                                 -$ {(total as number).toLocaleString()}
                                                 <ArrowRight className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0" />
                                             </td>
@@ -336,7 +336,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                             {data.payload.map((e: any) => (
                                 <tr key={e.category} className="hover:bg-muted transition-colors">
                                     <td className={cellClass}>{e.category}</td>
-                                    <td className={`${cellClass} text-right text-red-600 font-mono`}>-$ {e.amount.toLocaleString()}</td>
+                                    <td className={`${cellClass} text-right text-red-600`}>-$ {e.amount.toLocaleString()}</td>
                                 </tr>
                             ))}
                         </tbody>

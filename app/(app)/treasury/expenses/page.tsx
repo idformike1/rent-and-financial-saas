@@ -28,7 +28,7 @@ export default async function ExpenseLoggingPage() {
               Back to Wealth Ledger
             </Link>
             <h1 className="text-display font-weight-display text-foreground dark:text-foreground leading-none">Treasury Entry Hub</h1>
-            <p className="text-[10px] text-muted-foreground  tracking-[0.3em] mt-3">Fiscal Materialization v3.1</p>
+            <p className="text-[10px] text-muted-foreground   mt-3">Fiscal Materialization v3.1</p>
           </div>
         </div>
 

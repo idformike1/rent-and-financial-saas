@@ -62,7 +62,7 @@ export default async function AuditLogPage() {
           <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">
             Surveillance <span className="text-[var(--primary)]">Grid</span>
           </h1>
-          <p className="text-[10px] font-mono text-[var(--muted)]  tracking-[0.4em] flex items-center gap-2">
+          <p className="text-[10px] text-[var(--muted)]   flex items-center gap-2">
             <Fingerprint className="w-3 h-3" />
             High-Value Asset Protection Protocol
           </p>
@@ -91,7 +91,7 @@ export default async function AuditLogPage() {
         {/* Table Header */}
         <div className="bg-[var(--card-raised,#202840)] px-8 py-5 border-b border-[var(--border)] flex justify-between items-center">
           <span className="text-[10px]  text-[var(--muted)]">Chronological Forensic Feed</span>
-          <span className="text-[9px] font-mono text-[var(--primary)]">{logs.length} RECORDS</span>
+          <span className="text-[9px] text-[var(--primary)]">{logs.length} RECORDS</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -113,7 +113,7 @@ export default async function AuditLogPage() {
               ) : (
                 logs.map((log: any) => (
                   <tr key={log.id} className="bg-[var(--card)]/50 hover:bg-[var(--primary)]/5 transition-colors group">
-                    <td className="px-8 py-5 font-mono text-[11px] font-bold text-[var(--muted)]">
+                    <td className="px-8 py-5 text-[11px] font-bold text-[var(--muted)]">
                       {format(new Date(log.createdAt), 'yyyy-MM-dd HH:mm:ss')}
                     </td>
                     <td className="px-8 py-5">
@@ -123,12 +123,12 @@ export default async function AuditLogPage() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[10px]  text-[var(--foreground)]">{log.user.name}</span>
-                          <span className="text-[9px] font-mono text-[var(--muted)]">{log.user.email}</span>
+                          <span className="text-[9px] text-[var(--muted)]">{log.user.email}</span>
                         </div>
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <span className={`px-3 py-1.5 rounded-xl text-[9px]  tracking-[0.2em] border ${getBadgeStyle(log.action)}`}>
+                      <span className={`px-3 py-1.5 rounded-xl text-[9px]   border ${getBadgeStyle(log.action)}`}>
                         {log.action}
                       </span>
                     </td>
@@ -137,13 +137,13 @@ export default async function AuditLogPage() {
                         <span className="text-[9px]  tracking-tight text-[var(--foreground)] flex items-center gap-1">
                           <Tag className="w-3 h-3 text-[var(--muted)]" /> {log.entityType}
                         </span>
-                        <span className="text-[9px] font-mono text-[var(--muted)] truncate w-32 group-hover:w-auto transition-all">
+                        <span className="text-[9px] text-[var(--muted)] truncate w-32 group-hover:w-auto transition-all">
                           {log.entityId}
                         </span>
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <div className="glass-panel text-[9px] font-mono p-4 rounded-[8px] border border-[var(--border)] min-w-[280px]">
+                      <div className="glass-panel text-[9px] p-4 rounded-[8px] border border-[var(--border)] min-w-[280px]">
                         {log.metadata && Object.keys(log.metadata).length > 0 ? (
                           <div className="flex flex-col gap-1.5 line-clamp-4 group-hover:line-clamp-none transition-all">
                             {Object.entries(log.metadata).map(([key, value]) => (

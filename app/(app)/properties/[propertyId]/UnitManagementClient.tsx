@@ -82,7 +82,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
              <button 
                key={cat} 
                onClick={() => setFilter(cat)}
-               className={`text-[10px] transition-all  tracking-[0.2em] px-6 py-3 rounded-xl border-2 ${
+               className={`text-[10px] transition-all   px-6 py-3 rounded-xl border-2 ${
                  filter === cat 
                    ? 'bg-card text-foreground border-foreground' 
                    : 'bg-card text-muted-foreground border-border hover:border-border'
@@ -102,7 +102,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
 
       <div className="bg-card border-2 border-foreground rounded-[8px] shadow-none overflow-hidden flex-1 overflow-y-auto">
         <table className="min-w-full divide-y-2 divide-slate-900">
-          <thead className="bg-card text-muted-foreground text-[10px]  tracking-[0.2em] sticky top-0 z-10 border-b-2 border-foreground">
+          <thead className="bg-card text-muted-foreground text-[10px]   sticky top-0 z-10 border-b-2 border-foreground">
             <tr>
               <th className="px-8 py-6 text-left border-r border-border">Asset Label</th>
               <th className="px-8 py-6 text-left border-r border-border">Category</th>
@@ -111,7 +111,7 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
               <th className="px-8 py-6 text-right">Overrides</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-card font-mono text-sm leading-none">
+          <tbody className="divide-y divide-slate-100 bg-card text-sm leading-none">
             {filteredUnits.map((u, i) => (
               <tr key={u.id} className={`${i % 2 === 0 ? 'bg-card' : 'bg-muted'} hover:bg-muted transition-colors group cursor-default`}>
                 <td className="px-8 py-6 whitespace-nowrap border-r border-border/30">

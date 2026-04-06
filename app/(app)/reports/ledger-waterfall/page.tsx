@@ -160,7 +160,7 @@ export default function WaterfallAnalyticsPage() {
                     
                     <div className="bg-surface-900 border border-brand/50 p-6 rounded-[8px] flex flex-col items-center">
                        <Pulse className="w-10 h-10 text-brand mb-6 animate-pulse" />
-                       <h5 className="text-[10px]  tracking-[0.4em] text-muted-foreground mb-2">GAAP Realization</h5>
+                       <h5 className="text-[10px]   text-muted-foreground mb-2">GAAP Realization</h5>
                        <h4 className="text-display font-weight-display text-foreground">NET PROFIT</h4>
                     </div>
                  </div>

@@ -18,7 +18,7 @@ export default async function ReportsPage() {
             </div>
             <div>
                <h1 className="text-display font-weight-display text-foreground dark:text-foreground leading-none">Intelligence <span className="text-brand">Hub</span></h1>
-               <p className="text-muted-foreground font-bold tracking-[0.3em]  text-[10px] mt-2">Strategic Fiscal Analysis & Reporting Engine</p>
+               <p className="text-muted-foreground font-bold   text-[10px] mt-2">Strategic Fiscal Analysis & Reporting Engine</p>
             </div>
           </div>
         </div>

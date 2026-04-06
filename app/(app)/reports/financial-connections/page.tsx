@@ -99,7 +99,7 @@ export default function FinanceTranslationHub() {
             </h1>
             <div className="flex items-center space-x-4 mt-2">
                <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
-               <p className="text-muted-foreground font-bold tracking-[0.3em]  text-[10px]">
+               <p className="text-muted-foreground font-bold   text-[10px]">
                  AXIOM V.3 Architecture ↔ GAAP Regulatory Standards
                </p>
             </div>
@@ -140,7 +140,7 @@ export default function FinanceTranslationHub() {
                       <Icon className={`w-6 h-6 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="flex-1">
-                      <span className={`text-[9px]  tracking-[0.2em] mb-1 block ${isActive ? 'text-foreground/60' : 'text-muted-foreground'}`}>
+                      <span className={`text-[9px]   mb-1 block ${isActive ? 'text-foreground/60' : 'text-muted-foreground'}`}>
                         {node.category} COMPONENT
                       </span>
                       <h3 className={`text-lg  ${isActive ? 'text-foreground' : 'text-foreground dark:text-foreground'}`}>
@@ -174,7 +174,7 @@ export default function FinanceTranslationHub() {
            <div className="sticky top-28 space-y-8">
               
               <Card className="rounded-[8px] p-6 border-none bg-card dark:bg-card border-l-8 border-brand">
-                <h4 className="text-[9px]  tracking-[0.3em] text-muted-foreground mb-6">GAAP Logical Proxy</h4>
+                <h4 className="text-[9px]   text-muted-foreground mb-6">GAAP Logical Proxy</h4>
                 <p className="text-xl text-foreground dark:text-foreground leading-relaxed">
                   "{selected.gaap_definition}"
                 </p>
@@ -189,9 +189,9 @@ export default function FinanceTranslationHub() {
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
                         <Link className="w-4 h-4 text-brand" />
-                        <h5 className="text-[10px]  tracking-[0.2em] text-muted-foreground">Persistence Model</h5>
+                        <h5 className="text-[10px]   text-muted-foreground">Persistence Model</h5>
                       </div>
-                      <div className="bg-surface-800/80 border border-surface-700 px-5 py-4 rounded-xl font-mono text-xs text-brand/80">
+                      <div className="bg-surface-800/80 border border-surface-700 px-5 py-4 rounded-xl text-xs text-brand/80">
                         {selected.axiom_model}
                       </div>
                    </section>
@@ -199,7 +199,7 @@ export default function FinanceTranslationHub() {
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
                         <FileJson className="w-4 h-4 text-amber-500" />
-                        <h5 className="text-[10px]  tracking-[0.2em] text-muted-foreground">Materialization</h5>
+                        <h5 className="text-[10px]   text-muted-foreground">Materialization</h5>
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
@@ -214,12 +214,12 @@ export default function FinanceTranslationHub() {
                    <section>
                       <div className="flex items-center space-x-3 mb-4">
                         <Code2 className="w-4 h-4 text-[var(--primary)]" />
-                        <h5 className="text-[10px]  tracking-[0.2em] text-muted-foreground">Instruction Pathway</h5>
+                        <h5 className="text-[10px]   text-muted-foreground">Instruction Pathway</h5>
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
                            <div key={i} className="flex items-center justify-between bg-surface-800 p-4 rounded-xl border-l-[4px] border-emerald-500 group cursor-default">
-                              <span className="font-mono text-[10px] text-[var(--primary)]/80">{act}</span>
+                              <span className="text-[10px] text-[var(--primary)]/80">{act}</span>
                               <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] text-[8px] px-1.5 py-0">Active</Badge>
                            </div>
                          ))}

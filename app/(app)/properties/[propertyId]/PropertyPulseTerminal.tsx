@@ -249,16 +249,16 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       
       {/* UNIVERSAL MERCURY HEADER BLOCK */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Badge variant="brand" className="font-bold">{propertyName}</Badge>
-            <Badge variant="default" className="font-bold">ID: {propertyId.slice(0, 8)}</Badge>
+            <Badge variant="brand" className="font-medium">Property Hub</Badge>
+            <Badge variant="default" className="font-medium text-[10px]">ID: {propertyId.slice(0, 8)}</Badge>
           </div>
-          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
-            Asset Operations Terminal
+          <h1 className="text-[24px] font-medium text-foreground tracking-tight leading-none">
+            {propertyName}
           </h1>
-          <p className="text-[15px] font-[400] text-muted-foreground">
-            Full-spectrum portfolio intelligence and unit occupancy controls
+          <p className="text-[14px] text-muted-foreground">
+            Asset performance vectors and unit level compliance matrix
           </p>
         </div>
         
@@ -267,49 +267,51 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             <>
               <Button 
                 variant="secondary" 
+                size="sm"
                 onClick={() => setIsEditPortfolioModalOpen(true)}
               >
-                <Edit2 className="w-4 h-4 mr-2" />
+                <Edit2 className="w-3.5 h-3.5 mr-2" />
                 Edit Asset
               </Button>
               <Button 
                 variant="danger" 
                 size="sm" 
-                className="rounded-full opacity-50 hover:opacity-100"
+                className="opacity-50 hover:opacity-100"
                 onClick={() => setIsArchiveModalOpen(true)}
               >
                 <Trash2 className="w-3 h-3 mr-2" />
-                Archive Portfolio
+                Archive
               </Button>
             </>
           )}
           <Button 
+            size="sm"
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-primary text-primary-foreground font-bold  text-[10px] rounded-[8px]"
+            className="bg-primary text-primary-foreground font-bold text-[11px]"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Provision New Unit
+            Provision Unit
           </Button>
         </div>
       </div>
 
       {/* STEP 1: FISCAL HUD */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-background divide-x divide-white/10 overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-[#181B21]/50 divide-x divide-border overflow-hidden rounded-[12px]">
         
         {/* NOI */}
         <button 
           onClick={() => setDrillDownType('NOI')}
-          className="p-6 text-left hover:bg-card/[0.02] transition-all group"
+          className="p-6 text-left hover:bg-[#1C1F26] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  tracking-[0.3em]">Net Operating Income</span>
+             <span className="text-[11px] text-muted-foreground font-medium">Net Operating Income</span>
              <TrendingUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
           </div>
-          <div className={cn("text-display font-weight-display font-mono font-finance tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
-             <span className="font-finance">${data.hud.noi}</span>
+          <div className={cn("text-[24px] font-[380] font-finance tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
+             <span className="font-finance">${data.hud.noi.toLocaleString()}</span>
           </div>
           <div className="mt-3 flex items-center gap-2">
-             <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-none text-[8px] py-0 px-2 font-mono">REALIZED_VALUE_v3</Badge>
+             <Badge variant="success" className="text-[9px] py-0 px-2 font-medium">Verified</Badge>
           </div>
         </button>
 
@@ -319,10 +321,10 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
           className="p-6 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  tracking-[0.3em]">Adjusted NOI (OPEX-Only)</span>
+             <span className="text-[9px] text-muted-foreground  ">Adjusted NOI (OPEX-Only)</span>
              <Activity className="w-3.5 h-3.5 text-muted-foreground group-hover:text-brand transition-colors" />
           </div>
-          <div className="text-display font-weight-display font-mono text-foreground font-finance tabular-nums">
+          <div className="text-display font-weight-display text-foreground font-finance tabular-nums">
              <span className="font-finance">${data.hud.adjustedNoi}</span>
           </div>
           <p className="text-[8px] text-muted-foreground  mt-3 underline decoration-border">Operational Health Index</p>
@@ -334,10 +336,10 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
           className="p-6 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  tracking-[0.3em]">Revenue Leakage (Gap)</span>
+             <span className="text-[9px] text-muted-foreground  ">Revenue Leakage (Gap)</span>
              <AlertCircle className="w-3.5 h-3.5 text-muted-foreground group-hover:text-rose-500 transition-colors" />
           </div>
-          <div className={cn("text-display font-weight-display font-mono font-finance tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-muted-foreground")}>
+          <div className={cn("text-display font-weight-display font-finance tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-muted-foreground")}>
              <span className="font-finance">{data.hud.revenueLeakage}%</span>
           </div>
           <p className="text-[8px] text-muted-foreground  mt-3">Market vs Contract Delta</p>
@@ -349,10 +351,10 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
           className="p-6 text-left hover:bg-card/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  tracking-[0.3em]">Collection Efficiency</span>
+             <span className="text-[9px] text-muted-foreground  ">Collection Efficiency</span>
              <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
           </div>
-          <div className={cn("text-display font-weight-display font-mono font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
+          <div className={cn("text-display font-weight-display font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
              <span className="font-finance">{data.hud.collectionEfficiency}%</span>
           </div>
           <p className="text-[8px] text-muted-foreground  mt-3">Current_Month_Inflow_Ratio</p>
@@ -364,7 +366,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
          
          {/* STEP 2: EXPENSE WATERFALL (SVG ENGINE) */}
          <div className="lg:col-span-1 space-y-6">
-            <h3 className="text-[10px] text-muted-foreground  tracking-[0.4em] mb-4 flex items-center gap-3">
+            <h3 className="text-[10px] text-muted-foreground   mb-4 flex items-center gap-3">
                <History className="w-3.5 h-3.5" /> Fiscal Materialization Flow
             </h3>
             <Card className="bg-background border-border p-6 h-[450px] flex flex-col justify-between relative overflow-hidden group">
@@ -374,7 +376,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                   </svg>
                </div>
                
-               <div className="space-y-10 relative z-10 w-full font-mono">
+               <div className="space-y-10 relative z-10 w-full">
                   <div className="flex justify-between items-end border-b border-border pb-4">
                      <span className="text-[8px] text-muted-foreground ">Gross Revenue</span>
                      <span className="text-emerald-500 font-bold">+${data.waterfall.revenue.toLocaleString()}</span>
@@ -399,63 +401,57 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
          </div>
 
          {/* STEP 3: THE MATRIX (HEATMAP) */}
-         <div className="lg:col-span-2 space-y-6">
-            <div className="flex justify-between items-end mb-4">
-              <h3 className="text-[10px] text-muted-foreground  tracking-[0.4em] flex items-center gap-3">
+         <div className="lg:col-span-2 space-y-4">
+            <div className="flex justify-between items-end mb-2">
+              <h3 className="text-[11px] text-muted-foreground font-medium flex items-center gap-3">
                  <Building2 className="w-3.5 h-3.5" /> Occupancy & Behavioral Risk Matrix
               </h3>
               <div className="flex gap-4">
-                 <button 
-                   onClick={() => setIsAddModalOpen(true)}
-                   className="bg-brand text-foreground text-[9px] px-6 py-2 rounded-xl flex items-center hover:bg-brand/80 transition-all  mr-4"
-                 >
-                   <Plus className="w-3 h-3 mr-2" /> Materialize
-                 </button>
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[var(--primary)]" />
-                    <span className="text-[8px] text-muted-foreground ">Prime</span>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="text-[10px] text-muted-foreground font-medium">Prime</span>
                  </div>
                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-amber-500" />
-                    <span className="text-[8px] text-muted-foreground ">Watchlist</span>
+                    <span className="text-[10px] text-muted-foreground font-medium">Watchlist</span>
                  </div>
                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-rose-500" />
-                    <span className="text-[8px] text-muted-foreground ">Default/Void</span>
+                    <span className="text-[10px] text-muted-foreground font-medium">Default</span>
                  </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
                {data.units.map(unit => (
                  <button 
                    key={unit.id}
                    onClick={() => setEditingUnit(unit)}
                    className={cn(
-                     "border border-border bg-background p-6 flex flex-col justify-between h-[140px] text-left group relative transition-all active:scale-[0.98]",
-                     unit.occupancy ? "hover:border-white/30" : "opacity-40 grayscale grayscale hover:grayscale-0 transition-all cursor-not-allowed"
+                     "border border-border bg-[#181B21] p-5 rounded-[12px] flex flex-col justify-between h-[120px] text-left group relative transition-all active:scale-[0.98]",
+                     unit.occupancy ? "hover:border-foreground/20 hover:bg-[#1C1F26]" : "opacity-40 grayscale grayscale hover:grayscale-0 transition-all cursor-not-allowed"
                    )}
                  >
                     <div className="flex justify-between items-start">
-                       <span className="text-xl font-bold font-mono text-foreground">{unit.unitNumber}</span>
+                       <span className="text-lg font-medium text-foreground">{unit.unitNumber}</span>
                        <div className={cn(
                          "w-2 h-2 rounded-full",
-                         unit.riskScore === 'GREEN' ? "bg-[var(--primary)] shadow-none" :
+                         unit.riskScore === 'GREEN' ? "bg-emerald-500" :
                          unit.riskScore === 'YELLOW' ? "bg-amber-500" :
-                         "bg-rose-500 shadow-none animate-pulse"
+                         "bg-rose-500 animate-pulse"
                        )} />
                     </div>
-                    <div className="space-y-1">
-                       <p className="text-[8px] text-muted-foreground  truncate">{unit.tenantName}</p>
+                    <div className="space-y-0.5">
+                       <p className="text-[11px] text-muted-foreground truncate font-medium">{unit.tenantName}</p>
                        <div className="flex items-center justify-between">
                          <span className={cn(
-                           "text-[7px] ",
-                           unit.occupancy ? "text-emerald-500" : "text-muted-foreground"
+                           "text-[10px] font-medium",
+                           unit.occupancy ? "text-emerald-500/80" : "text-muted-foreground/60"
                          )}>
-                            {unit.occupancy ? 'ACTIVE_TENURE' : 'VACANT_ASSET'}
+                            {unit.occupancy ? 'Active' : 'Vacant'}
                          </span>
                          {unit.occupancy && (
-                           <ExternalLink className="w-3 h-3 text-brand opacity-0 group-hover:opacity-100 transition-opacity" />
+                           <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                          )}
                        </div>
                     </div>
@@ -473,7 +469,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
               <div className="p-6 border-b border-border flex justify-between items-center bg-background">
                  <div>
                     <h2 className="text-display font-weight-display text-foreground leading-none">Registry Surveillance</h2>
-                    <p className="text-[10px] text-brand  tracking-[0.3em] mt-3">{propertyName} // Drill-Down: {drillDownType}</p>
+                    <p className="text-[10px] text-brand   mt-3">{propertyName} // Drill-Down: {drillDownType}</p>
                  </div>
                  <button 
                   onClick={() => setDrillDownType(null)}
@@ -497,12 +493,12 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                  {drillDownLoading ? (
                     <div className="h-64 flex flex-col items-center justify-center space-y-4 opacity-40">
                        <div className="w-10 h-10 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-                       <p className="text-[8px]  tracking-[0.4em]">Parsing Ledger Streams...</p>
+                       <p className="text-[8px]  ">Parsing Ledger Streams...</p>
                     </div>
                  ) : drillDownEntries.length === 0 ? (
                     <div className="flex items-center justify-center h-[300px] border-2 border-dashed border-border opacity-10 rounded-[8px] flex-col space-y-4">
                        <Search className="w-12 h-12" />
-                       <p className="text-[10px]  tracking-[0.4em]">No Direct Records Found in Current Buffer</p>
+                       <p className="text-[10px]  ">No Direct Records Found in Current Buffer</p>
                     </div>
                  ) : (
                     <div className="space-y-4">
@@ -510,12 +506,12 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                          <div key={e.id} className="p-6 border border-border bg-background/50 rounded-[8px] flex justify-between items-center group hover:border-border transition-all">
                             <div className="space-y-1">
                                <div className="flex items-center gap-3">
-                                  <span className="text-[10px] font-mono text-muted-foreground">{new Date(e.transactionDate).toLocaleDateString()}</span>
+                                  <span className="text-[10px] text-muted-foreground">{new Date(e.transactionDate).toLocaleDateString()}</span>
                                   <Badge className="bg-muted/50 text-muted-foreground border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
                                </div>
                                <p className="text-foreground font-bold text-xs  tracking-tight">{e.description}</p>
                             </div>
-                            <div className={cn("text-xl font-mono font-finance tabular-nums", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
+                            <div className={cn("text-xl font-finance tabular-nums", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
                                {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString()}
                             </div>
                          </div>

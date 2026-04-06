@@ -16,7 +16,7 @@ export default function TreasuryRedirect() {
       <div className="w-16 h-16 rounded-[8px] bg-brand/10 flex items-center justify-center animate-spin mb-6">
         <Loader2 className="w-8 h-8 text-brand" />
       </div>
-      <p className="text-[10px]  tracking-[0.4em] text-muted-foreground animate-pulse">Synchronizing Treasury Matrix...</p>
+      <p className="text-[10px]   text-muted-foreground animate-pulse">Synchronizing Treasury Matrix...</p>
     </div>
   )
 }

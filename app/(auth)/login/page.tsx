@@ -48,7 +48,7 @@ export default function LoginPage() {
              </div>
              <div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground leading-none">Mercury <span className="text-muted-foreground font-normal">OS</span></h1>
-                <p className="text-[11px] font-bold  tracking-[0.3em] text-muted-foreground mt-4 leading-relaxed">Enterprise Financial Terminal</p>
+                <p className="text-[11px] font-bold   text-muted-foreground mt-4 leading-relaxed">Enterprise Financial Terminal</p>
              </div>
           </div>
 
@@ -95,7 +95,7 @@ export default function LoginPage() {
               type="submit"
               disabled={isLoading}
               variant="primary"
-              className="w-full h-12 rounded-full text-[14px] font-bold  tracking-[0.2em] bg-primary hover:bg-primary/95 text-foreground border-none mt-2"
+              className="w-full h-12 rounded-full text-[14px] font-bold   bg-primary hover:bg-primary/95 text-foreground border-none mt-2"
             >
               {isLoading ? (
                 <>

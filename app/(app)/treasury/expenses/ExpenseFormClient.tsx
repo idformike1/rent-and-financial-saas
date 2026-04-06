@@ -140,7 +140,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               <p className=" text-2xl text-foreground leading-none">
                 Entry #{sessionCount}: Materialized
               </p>
-              <p className="text-[10px]  tracking-[0.3em] text-[var(--primary)] mt-3 animate-pulse">
+              <p className="text-[10px]   text-[var(--primary)] mt-3 animate-pulse">
                 {lastEntry.payee} — ${parseFloat(lastEntry.amount).toLocaleString(undefined, {minimumFractionDigits: 2})} // AUDITED
               </p>
             </div>

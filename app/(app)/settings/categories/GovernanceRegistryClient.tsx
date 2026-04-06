@@ -187,7 +187,7 @@ export default function GovernanceRegistryClient({
                     <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
                        <Zap className="w-8 h-8 mr-4 text-brand" /> Provision Financial Partition
                     </h3>
-                    <p className="text-[10px] text-muted-foreground  tracking-[0.3em] mt-3">Level 0: Master Ledger Inode</p>
+                    <p className="text-[10px] text-muted-foreground   mt-3">Level 0: Master Ledger Inode</p>
                   </div>
                   <button onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-3 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
                     <X className="w-6 h-6 text-muted-foreground group-hover:text-rose-500 transition-colors"/>
@@ -232,7 +232,7 @@ export default function GovernanceRegistryClient({
                     <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
                        <Layers className="w-8 h-8 mr-4 text-brand" /> Provision Account Node
                     </h3>
-                    <p className="text-[10px] text-muted-foreground  tracking-[0.3em] mt-3">Recursive Logic Definition</p>
+                    <p className="text-[10px] text-muted-foreground   mt-3">Recursive Logic Definition</p>
                   </div>
                   <button onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-3 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
                     <X className="w-6 h-6 text-muted-foreground group-hover:text-rose-500 transition-colors"/>
@@ -278,7 +278,7 @@ export default function GovernanceRegistryClient({
                     <Icon className="w-10 h-10 text-brand fill-brand/10" />
                  </div>
                  <h2 className="text-2xl text-[var(--foreground)] leading-none">{ledger.name}</h2>
-                 <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'brand'} className="mt-4 px-4 py-1.5 text-[8px] tracking-[0.2em]">{ledger.class}</Badge>
+                 <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'brand'} className="mt-4 px-4 py-1.5 text-[8px] ">{ledger.class}</Badge>
               </div>
 
               <div className="flex-1 space-y-4">

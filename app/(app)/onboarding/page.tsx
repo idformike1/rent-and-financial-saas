@@ -139,15 +139,15 @@ export default function OnboardingWizard() {
             <div className="space-y-6 relative z-10">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
-                     <p className="text-[11px] text-muted-foreground  tracking-[0.3em]">Fiscal Lease Identifier</p>
+                     <p className="text-[11px] text-muted-foreground  ">Fiscal Lease Identifier</p>
                      <div className="bg-muted/50 border border-border p-5 rounded-[8px]">
-                        <p className="font-mono text-sm text-foreground truncate font-bold">{successData?.leaseId}</p>
+                        <p className="text-sm text-foreground truncate font-bold">{successData?.leaseId}</p>
                      </div>
                   </div>
                   <div className="space-y-3">
-                     <p className="text-[11px] text-muted-foreground  tracking-[0.3em]">Master Tenant Hash</p>
+                     <p className="text-[11px] text-muted-foreground  ">Master Tenant Hash</p>
                      <div className="bg-muted/50 border border-border p-5 rounded-[8px]">
-                        <p className="font-mono text-sm text-foreground truncate font-bold">{successData?.tenantId}</p>
+                        <p className="text-sm text-foreground truncate font-bold">{successData?.tenantId}</p>
                      </div>
                   </div>
                </div>
@@ -257,7 +257,7 @@ export default function OnboardingWizard() {
           {step === 3 && (
             <div className="space-y-8 animate-in slide-in-from-right-8 duration-500">
                <Card className="bg-card border-none p-6 space-y-8 text-foreground rounded-[8px]">
-                  <h4 className="text-[10px]  tracking-[0.4em] text-brand border-b border-border pb-4">Audit Projection</h4>
+                  <h4 className="text-[10px]   text-brand border-b border-border pb-4">Audit Projection</h4>
                   <div className="flex justify-between items-end">
                      <div>
                         <p className="text-[9px] font-bold text-muted-foreground ">Aggregate Liquid Requirement</p>

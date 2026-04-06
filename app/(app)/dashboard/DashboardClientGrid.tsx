@@ -10,6 +10,18 @@ interface DashboardClientGridProps {
   }
 }
 
+const UpArrow = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="w-3 h-3 mr-1 fill-current">
+    <path d="M363.3 148.7c3.1 3.1 3.1 8.2 0 11.3s-8.2 3.1-11.3 0L203.3 21 349.4 167.1c3.1 3.1 3.1 8.2 0 11.3s-8.2 3.1-11.3 0L192 32.7 45.9 178.8c-3.1 3.1-8.2 3.1-11.3 0s-3.1-8.2 0-11.3L180.7 21l34.6 146.1c3.1 3.1 3.1 8.2 0 11.3s8.2 3.1 11.3 0L192 40.7 363.3 212.1c3.1 3.1 3.1 8.2 0 11.3z"/>
+  </svg>
+)
+
+const DownArrow = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="w-3 h-3 mr-1 fill-current">
+    <path d="M363.3 363.3c3.1 3.1 8.2 3.1 11.3 0s3.1-8.2 0-11.3L203.3 206 349.4 59.9c3.1-3.1 3.1-8.2 0-11.3s-8.2-3.1-11.3 0L192 194.7 45.9 48.6c-3.1-3.1-8.2-3.1-11.3 0s-3.1 8.2 0 11.3L180.7 206 34.6 352.1c-3.1 3.1-3.1 8.2 0 11.3s8.2 3.1 11.3 0L192 217.3 363.3 363.3z"/>
+  </svg>
+)
+
 export default function DashboardClientGrid({ data }: DashboardClientGridProps) {
   const CARDS = [
     { 
@@ -41,23 +53,23 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {CARDS.map((s) => (
-        <Card key={s.label} className="p-6 flex flex-col justify-between min-h-[160px]">
+        <Card key={s.label} className="p-6 flex flex-col justify-between min-h-[140px] shadow-none">
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
                <div>
-                  <p className="text-[12px] font-bold text-muted-foreground  mb-1">{s.label}</p>
-                  <p className="text-[10px] text-muted-foreground/60  tracking-[0.2em] font-bold">{s.subtitle}</p>
+                  <p className="text-[12px] font-medium text-muted-foreground mb-0.5">{s.label}</p>
+                  <p className="text-[10px] text-muted-foreground/50 font-medium lowercase italic">{s.subtitle}</p>
                </div>
-                <Badge variant={s.inverse ? (s.delta > 0 ? 'danger' : 'success') : (s.delta >= 0 ? 'success' : 'danger')} className="text-[10px] font-bold px-2 py-0.5">
-                  {s.delta >= 0 ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
+                <Badge variant={s.inverse ? (s.delta > 0 ? 'danger' : 'success') : (s.delta >= 0 ? 'success' : 'danger')} className="text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {s.delta >= 0 ? <UpArrow /> : <DownArrow />}
                   {Math.abs(s.delta).toFixed(1)}%
                 </Badge>
             </div>
 
-            <div className="mt-8">
-              <span className="font-finance text-display font-weight-display font-bold text-foreground leading-none block">
+            <div className="mt-6">
+              <span className="font-finance text-[24px] font-[380] text-foreground leading-none block">
                 {s.isPercent ? "" : "$"}{s.val.toLocaleString()}{s.isPercent ? "%" : ""}
               </span>
             </div>

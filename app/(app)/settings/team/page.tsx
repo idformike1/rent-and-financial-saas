@@ -27,7 +27,7 @@ export default async function TeamPage() {
           <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">
             Team <span className="text-[var(--primary)]">Command</span>
           </h1>
-          <p className="text-[10px] font-mono text-[var(--muted)]  tracking-[0.3em]">
+          <p className="text-[10px] text-[var(--muted)]  ">
             Cluster Identity: {session?.user?.organizationName}
           </p>
         </div>
@@ -40,7 +40,7 @@ export default async function TeamPage() {
           <div key={s.label} className="glass-panel rounded-[8px] p-6 flex flex-col justify-between gap-4 border border-[var(--border)] hover:border-[var(--primary)]/30 transition-all">
             <div className="flex justify-between items-start">
               <s.icon size={24} className={s.color} />
-              <span className={`text-display font-weight-display font-mono ${s.color}`}>{s.value}</span>
+              <span className={`text-display font-weight-display ${s.color}`}>{s.value}</span>
             </div>
             <span className="text-[10px]  text-[var(--muted)]">{s.label}</span>
           </div>
@@ -61,7 +61,7 @@ export default async function TeamPage() {
         />
       </div>
 
-      <footer className="text-[9px] font-mono text-[var(--muted)]  tracking-[0.3em] text-center pt-4 border-t border-[var(--border)]">
+      <footer className="text-[9px] text-[var(--muted)]   text-center pt-4 border-t border-[var(--border)]">
         Enterprise Multi-Tenancy Core // Unified Wealth Ledger // Terminal-01
       </footer>
     </div>

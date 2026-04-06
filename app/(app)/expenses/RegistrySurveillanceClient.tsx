@@ -97,66 +97,66 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       </Card>
 
       {/* THE REGISTRY TABLE */}
-      <Card className="p-0 overflow-hidden border border-border">
+      <Card className="p-0 overflow-hidden border border-border shadow-none">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-muted/50 text-[10px] text-muted-foreground  tracking-widest border-b border-border">
+            <thead className="bg-[#1C1F26]/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">
               <tr>
-                <th className="px-5 py-3 font-bold">Execution Date</th>
-                <th className="px-5 py-3 font-bold">Payee / Entity</th>
-                <th className="px-5 py-3 font-bold">Description</th>
-                <th className="px-5 py-3 font-bold">Categorization</th>
-                <th className="px-5 py-3 font-bold">Asset Scope</th>
-                <th className="px-5 py-3 font-bold text-right">Value</th>
+                <th className="px-[22px]">Execution Date</th>
+                <th className="px-[22px]">Payee / Entity</th>
+                <th className="px-[22px]">Description</th>
+                <th className="px-[22px]">Categorization</th>
+                <th className="px-[22px]">Asset Scope</th>
+                <th className="px-[22px] text-right">Value</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.map((entry: any) => (
-                <tr key={entry.id} className="hover:bg-muted/50 transition-colors h-[52px]">
-                  <td className="px-5">
-                    <span className="text-[12px] text-muted-foreground font-finance">
+                <tr key={entry.id} className="hover:bg-[#1C1F26] transition-none h-[38px] group">
+                  <td className="px-[22px]">
+                    <span className="text-[12px] text-muted-foreground font-finance tabular-nums">
                       {new Date(entry.transactionDate || entry.date).toISOString().split('T')[0]}
                     </span>
                   </td>
-                  <td className="px-5">
-                    <span className="text-[14px] font-bold text-foreground">
-                       {entry.payee || "INTERNAL_TRANSFER"}
+                  <td className="px-[22px]">
+                    <span className="text-[13px] font-medium text-foreground">
+                       {entry.payee || "Internal Transfer"}
                     </span>
                   </td>
-                  <td className="px-5">
-                    <span className="text-[13px] text-muted-foreground truncate max-w-[200px] block">
+                  <td className="px-[22px]">
+                    <span className="text-[12px] text-muted-foreground truncate max-w-[200px] block">
                        {entry.description || "N/A"}
                     </span>
                   </td>
-                  <td className="px-5">
-                    <Badge variant="default" className="bg-muted text-muted-foreground border-none">
-                      {entry.expenseCategory?.name || "UNCLASSIFIED"}
+                  <td className="px-[22px]">
+                    <Badge variant="default" className="bg-muted text-muted-foreground border-none font-medium">
+                      {entry.expenseCategory?.name || "Unclassified"}
                     </Badge>
                   </td>
-                  <td className="px-5">
+                  <td className="px-[22px]">
                     {entry.propertyId ? (
                       <Link 
                         href={`/properties/${entry.propertyId}`}
                         className="flex items-center gap-2 text-primary hover:underline transition-all"
                       >
                          <Building2 className="w-3.5 h-3.5 opacity-60" />
-                         <span className="text-[12px] truncate max-w-[120px]">
+                         <span className="text-[12px] truncate max-w-[120px] font-sans">
                             {entry.property?.name}
                          </span>
                       </Link>
                     ) : (
                       <div className="flex items-center gap-2 opacity-40">
                          <Layers className="w-3.5 h-3.5" />
-                         <span className="text-[11px] ">
-                            CORPORATE
+                         <span className="text-[11px] font-medium">
+                            Corporate
                          </span>
                       </div>
                     )}
                   </td>
-                  <td className="px-5 text-right">
+                  <td className="px-[22px] text-right">
                     <span className={cn(
-                      "text-[14px] font-bold font-finance tabular-nums",
-                      Number(entry.amount) < 0 ? "text-rose-600" : "text-emerald-600"
+                      "text-[13px] font-bold font-finance tabular-nums",
+                      Number(entry.amount) < 0 ? "text-rose-400" : "text-emerald-400"
                     )}>
                       {Number(entry.amount) < 0 ? '-' : '+'}${Math.abs(Number(entry.amount)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>

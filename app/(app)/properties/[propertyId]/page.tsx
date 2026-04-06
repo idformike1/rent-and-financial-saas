@@ -29,14 +29,14 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
         <div className="space-y-6">
           <Link 
             href="/properties" 
-            className="flex items-center text-[10px] text-muted-foreground  tracking-[0.3em] hover:text-brand transition-colors mb-6 group"
+            className="flex items-center text-[10px] text-muted-foreground   hover:text-brand transition-colors mb-6 group"
           >
             <ChevronLeft className="w-3.5 h-3.5 mr-3 group-hover:-translate-x-2 transition-transform" /> 
             PORTFOLIO_MASTER_INDEX
           </Link>
           
           <div className="flex items-center gap-4">
-             <Badge variant="success" className="rounded-xl px-3 font-mono text-[8px] tracking-[0.4em]">ASSET_STATUS: ONLINE</Badge>
+             <Badge variant="success" className="rounded-xl px-3 text-[8px] ">ASSET_STATUS: ONLINE</Badge>
              <div className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-pulse" />
           </div>
 
@@ -45,7 +45,7 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
               {property.name} <br/>
               <span className="text-[var(--primary)]">Pulse Terminal</span>
             </h1>
-            <div className="flex items-center text-muted-foreground text-[10px]  tracking-[0.4em] mt-5">
+            <div className="flex items-center text-muted-foreground text-[10px]   mt-5">
               <Navigation className="w-3.5 h-3.5 mr-3 text-brand" /> {property.address}
             </div>
           </div>
@@ -68,12 +68,12 @@ export default async function PropertyUnitsPage({ params }: { params: Promise<{ 
       <div className="flex justify-between items-center opacity-30 pt-10 border-t border-border text-muted-foreground">
          <div className="flex items-center gap-6">
             <Layers className="w-10 h-10" />
-            <div className="text-[8px]  tracking-[0.4em] leading-relaxed">
+            <div className="text-[8px]   leading-relaxed">
                Axiom 2026 Sovereign Auditor <br/>
                Physical_Asset_Persistence_Mapping
             </div>
          </div>
-         <div className="text-[9px] font-mono">
+         <div className="text-[9px]">
             SEC_TOKEN: {property.id.split('-')[0].toUpperCase()}
          </div>
       </div>

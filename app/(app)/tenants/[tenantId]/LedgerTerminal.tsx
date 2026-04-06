@@ -76,10 +76,10 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
       <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-card/[0.02]">
         <div className="flex items-center gap-6">
            <Landmark className="w-8 h-8 text-brand" />
-           <h3 className="text-xl text-foreground leading-none font-mono">Forensic Unified Ledger</h3>
+           <h3 className="text-xl text-foreground leading-none">Forensic Unified Ledger</h3>
         </div>
 
-        <div className="flex p-1.5 bg-card rounded-[8px] border border-border font-mono">
+        <div className="flex p-1.5 bg-card rounded-[8px] border border-border">
            <button 
              onClick={() => setActiveTab('timeline')}
              className={cn(
@@ -103,7 +103,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
 
       <div className="overflow-x-auto min-h-[400px]">
         {activeTab === 'timeline' ? (
-          <table className="w-full text-left border-collapse font-mono">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-border bg-card/[0.01]">
                 <th className="px-10 py-6 text-[10px] text-muted-foreground ">Date</th>
@@ -152,7 +152,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
             </tbody>
           </table>
         ) : (
-          <table className="w-full text-left border-collapse font-mono">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-border bg-card/[0.01]">
                  <th className="px-10 py-6 text-[10px] text-muted-foreground ">Charge Node</th>

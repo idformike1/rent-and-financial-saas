@@ -168,7 +168,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                   placeholder="CONFIRM"
                   value={confirmEmail}
                   onChange={(e) => setConfirmEmail(e.target.value)}
-                  className="font-mono text-[13px] uppercase h-12"
+                  className="text-[13px] uppercase h-12"
                 />
               </div>
               

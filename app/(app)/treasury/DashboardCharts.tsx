@@ -140,7 +140,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
              <span className="font-finance text-2xl font-bold text-foreground">84%</span>
-             <span className="text-[9px] font-bold  text-muted-foreground tracking-[0.2em] mt-1">Efficiency</span>
+             <span className="text-[9px] font-bold  text-muted-foreground  mt-1">Efficiency</span>
           </div>
         </div>
 

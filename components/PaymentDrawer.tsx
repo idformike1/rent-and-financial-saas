@@ -117,7 +117,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
           
           {/* Target Identity Context */}
           <div className="bg-muted/50 border border-border rounded-[8px] p-4 flex flex-col">
-            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">Posting To</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase  mb-2">Posting To</label>
             <p className="text-xl font-bold text-foreground tracking-tight">{tenant.name}</p>
           </div>
 
@@ -223,7 +223,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             type="submit" 
             form="payment-form"
             isLoading={isPending || isSubmitting}
-            className="w-full h-12 uppercase tracking-[0.2em] font-bold"
+            className="w-full h-12 uppercase  font-bold"
           >
             Liquidate Liability
           </Button>

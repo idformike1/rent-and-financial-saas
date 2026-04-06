@@ -17,7 +17,7 @@ export default function SettingsPage() {
         <div>
            <Badge variant="brand" className="mb-4">System Governance</Badge>
            <h1 className="text-display font-weight-display text-foreground leading-none">Master Settings</h1>
-           <p className="text-[var(--muted)] text-[10px]  tracking-[0.4em] mt-4">Corporate Treasury & Identity Logic</p>
+           <p className="text-[var(--muted)] text-[10px]   mt-4">Corporate Treasury & Identity Logic</p>
         </div>
       </div>
 
@@ -27,7 +27,7 @@ export default function SettingsPage() {
         <div className="space-y-6 relative">
           <div className="flex items-center gap-3 mb-2">
             <Landmark className="w-4 h-4 text-[var(--primary)]" />
-            <h3 className="text-[10px] text-[var(--muted)]  tracking-[0.4em]">Master Bank Account</h3>
+            <h3 className="text-[10px] text-[var(--muted)]  ">Master Bank Account</h3>
           </div>
 
           <div className={cn("relative overflow-hidden glass-panel p-6 rounded-[8px] border border-[var(--border)]", !isSovereign && "opacity-80")}>
@@ -71,7 +71,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="text-center">
                   <h4 className="text-xl text-foreground ">[ RESTRICTED CLEARANCE ]</h4>
-                  <p className="text-[8px] text-rose-400  tracking-[0.3em] mt-2">Requires ADMIN or OWNER Authorization</p>
+                  <p className="text-[8px] text-rose-400   mt-2">Requires ADMIN or OWNER Authorization</p>
                 </div>
               </div>
             )}
@@ -82,7 +82,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
-            <h3 className="text-[10px] text-[var(--muted)]  tracking-[0.4em]">Organization Identity</h3>
+            <h3 className="text-[10px] text-[var(--muted)]  ">Organization Identity</h3>
           </div>
 
           <div className="space-y-8 glass-panel p-6 rounded-[8px] border border-[var(--border)]">

@@ -30,7 +30,7 @@ export function Card({
   return (
     <motion.div
       className={cn(
-        "rounded-[8px] p-5 transition-none",
+        "rounded-[12px] p-6 transition-none",
         variants[variant as keyof typeof variants],
         className
       )}
@@ -61,9 +61,9 @@ export function Button({
 }: ButtonProps) {
   const variants = {
     primary: "bg-primary text-primary-foreground hover:bg-primary/95 border-none shadow-none rounded-full",
-    secondary: "bg-card border border-border text-foreground hover:bg-muted shadow-none rounded-[8px]",
-    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted rounded-[8px]",
-    danger: "bg-card border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 shadow-none rounded-[8px]",
+    secondary: "bg-card border border-border text-foreground hover:bg-muted shadow-none rounded-full",
+    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted rounded-full",
+    danger: "bg-muted border border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 shadow-none rounded-full",
   };
 
   const sizes = {
@@ -75,7 +75,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center transition-none disabled:opacity-40 disabled:pointer-events-none leading-none uppercase",
+        "inline-flex items-center justify-center transition-none disabled:opacity-40 disabled:pointer-events-none leading-none tracking-tight",
         variants[variant],
         sizes[size],
         className
@@ -96,7 +96,7 @@ export function Button({
  */
 export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <label className={cn("text-[12px] font-bold text-muted-foreground block mb-2 uppercase", className)}>
+    <label className={cn("text-[12px] font-bold text-muted-foreground block mb-2", className)}>
       {children}
     </label>
   )
@@ -125,7 +125,7 @@ export function Badge({
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0.5 rounded-[4px] border text-[11px] font-bold leading-none uppercase tracking-tight",
+      "inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold leading-none tracking-tight",
       variants[variant],
       className
     )}>

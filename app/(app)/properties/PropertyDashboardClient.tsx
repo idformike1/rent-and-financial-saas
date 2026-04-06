@@ -83,7 +83,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
               <div className="flex items-center justify-between pt-8 border-t border-border border-border">
                  <div className="flex items-center space-x-6">
                     <div className="flex flex-col">
-                      <span className="text-[9px] text-muted-foreground  tracking-[0.2em]">Deployment Count</span>
+                      <span className="text-[9px] text-muted-foreground  ">Deployment Count</span>
                       <span className="text-xl text-foreground dark:text-foreground flex items-center mt-1">
                         <Hash className="w-4 h-4 mr-1.5 text-brand" /> {p._count.units}
                       </span>
@@ -106,7 +106,7 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
                 <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-full -mr-16 -mt-16" />
                 <div className="relative z-10">
                    <h2 className="text-2xl text-foreground leading-none">Asset Registration</h2>
-                   <p className="text-muted-foreground text-[9px]  tracking-[0.3em] mt-2">Phase 1: Domain Mapping</p>
+                   <p className="text-muted-foreground text-[9px]   mt-2">Phase 1: Domain Mapping</p>
                 </div>
                 <button onClick={() => setIsAddModalOpen(false)} className="bg-muted hover:bg-muted text-foreground rounded-xl p-3 transition-colors relative z-10">
                   <X className="w-5 h-5" />

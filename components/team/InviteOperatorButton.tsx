@@ -81,7 +81,7 @@ export default function InviteOperatorButton() {
               <button
                 disabled={isPending}
                 type="submit"
-                className="w-full bg-[var(--primary)] text-[var(--primary-foreground)] py-6 rounded-[8px] uppercase tracking-[0.3em] text-xs hover:shadow-none hover:bg-[var(--primary-light)] transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none relative z-10 mt-8"
+                className="w-full bg-[var(--primary)] text-[var(--primary-foreground)] py-6 rounded-[8px] uppercase  text-xs hover:shadow-none hover:bg-[var(--primary-light)] transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none relative z-10 mt-8"
               >
                 {isPending ? "AUTHORIZING..." : "[ INITIATE INVITE ]"}
               </button>

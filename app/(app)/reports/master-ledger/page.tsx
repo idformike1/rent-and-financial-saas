@@ -164,7 +164,7 @@ export default function MasterLedgerPage() {
 
         <div className="flex-1 overflow-x-auto overflow-y-auto min-h-[500px]">
           <table className="min-w-full border-collapse">
-            <thead className="bg-card text-muted-foreground text-[10px]  tracking-[0.2em] sticky top-0 z-10">
+            <thead className="bg-card text-muted-foreground text-[10px]   sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-5 text-left border-r border-border">Posting Date</th>
                 <th className="px-6 py-5 text-left border-r border-border">Transaction ID</th>
@@ -176,7 +176,7 @@ export default function MasterLedgerPage() {
                 <th className="px-6 py-5 text-left">Internal Narrative</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 bg-card font-mono text-sm">
+            <tbody className="divide-y divide-slate-100 bg-card text-sm">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">Querying ledger registry...</td>
@@ -207,7 +207,7 @@ export default function MasterLedgerPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-[10px]  text-muted-foreground border-r border-border/30">
                         {e.paymentMode || 'N/A'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[10px] font-bold text-muted-foreground font-mono border-r border-border/30 truncate max-w-[120px]">
+                      <td className="px-6 py-4 whitespace-nowrap text-[10px] font-bold text-muted-foreground border-r border-border/30 truncate max-w-[120px]">
                         {e.referenceText || '---'}
                       </td>
                       <td className="px-6 py-4 text-xs font-medium text-muted-foreground max-w-xs truncate font-sans">
@@ -242,7 +242,7 @@ export default function MasterLedgerPage() {
         </div>
       </div>
       
-      <div className="flex items-center justify-center space-x-8 text-[10px] text-muted-foreground  tracking-[0.4em] mt-2">
+      <div className="flex items-center justify-center space-x-8 text-[10px] text-muted-foreground   mt-2">
         <span className="flex items-center"><TrendingUp className="w-3.5 h-3.5 mr-2 text-[var(--primary)]" /> System Integrity Certified</span>
         <span className="flex items-center"><TrendingDown className="w-3.5 h-3.5 mr-2 text-red-500" /> Balanced Status Check: Pass</span>
       </div>
