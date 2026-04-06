@@ -32,47 +32,48 @@ export default function InviteOperatorButton() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-4 bg-[#FF3D00] text-black border-4 border-black px-8 py-5 font-black uppercase tracking-widest shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all focus:outline-none"
+        className="flex items-center gap-4 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-light)] px-8 py-5 rounded-3xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,87,51,0.3)] hover:shadow-[0_0_35px_rgba(255,87,51,0.5)] hover:scale-105 transition-all focus:outline-none"
       >
-        <Plus size={32} />
-        <span className="text-xl">Invite Operator</span>
+        <Plus size={24} />
+        <span className="text-sm">Invite Operator</span>
       </button>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-card border-8 border-black p-8 w-full max-w-md shadow-[16px_16px_0px_0px_rgba(255,61,0,1)] relative">
+          <div className="glass-panel p-10 w-full max-w-md shadow-[0_0_40px_rgba(255,87,51,0.2)] rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full -mr-32 -mt-32 pointer-events-none" />
             <button 
               onClick={() => setIsOpen(false)}
-              className="absolute -top-6 -right-6 bg-black text-white p-2 border-4 border-white hover:bg-[#FF3D00] transition-colors"
+              className="absolute top-6 right-6 text-[var(--muted)] hover:bg-[var(--card-raised)] hover:text-[var(--foreground)] p-2 rounded-xl transition-colors z-10"
             >
               <X size={24} />
             </button>
 
-            <h2 className="text-4xl font-black uppercase tracking-tighter mb-8 border-b-4 border-black pb-2">
+            <h2 className="text-3xl font-black uppercase tracking-tighter mb-8 border-b border-[var(--border)] pb-4 text-[var(--foreground)] italic relative z-10">
               Add Operator
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest block">Operational Callsign (Name)</label>
+              <div className="space-y-2 relative z-10">
+                <label className="text-[10px] font-black uppercase tracking-widest block text-[var(--muted)]">Operational Callsign (Name)</label>
                 <input
                   required
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border-4 border-black p-4 font-bold text-xl focus:bg-yellow-50 outline-none"
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 font-bold text-sm focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] outline-none text-[var(--foreground)] transition-all"
                   placeholder="e.g. AGENT 001"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest block">Communications Link (Email)</label>
+              <div className="space-y-2 relative z-10">
+                <label className="text-[10px] font-black uppercase tracking-widest block text-[var(--muted)]">Communications Link (Email)</label>
                 <input
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border-4 border-black p-4 font-bold text-xl focus:bg-yellow-50 outline-none"
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 font-bold text-sm focus:ring-2 focus:ring-[var(--primary)]/50 focus:border-[var(--primary)] outline-none text-[var(--foreground)] transition-all"
                   placeholder="name@nexus.com"
                 />
               </div>
@@ -80,12 +81,12 @@ export default function InviteOperatorButton() {
               <button
                 disabled={isPending}
                 type="submit"
-                className="w-full bg-black text-white py-6 font-black uppercase tracking-[0.2em] text-xl border-4 border-black hover:bg-card hover:text-black transition-all disabled:opacity-50"
+                className="w-full bg-[var(--primary)] text-[var(--primary-foreground)] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm hover:shadow-[0_0_25px_rgba(255,87,51,0.4)] hover:bg-[var(--primary-light)] transition-all disabled:opacity-50 disabled:shadow-none relative z-10 mt-8"
               >
                 {isPending ? "AUTHORIZING..." : "INITIATE INVITE"}
               </button>
               
-              <p className="text-[10px] uppercase font-black tracking-widest text-center opacity-50">
+              <p className="text-[9px] uppercase font-black tracking-widest text-center text-[var(--muted)] opacity-60 relative z-10">
                 Default Access Key: password123
               </p>
             </form>

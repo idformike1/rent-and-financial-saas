@@ -45,7 +45,8 @@ export default async function AuditLogPage() {
   ];
 
   return (
-    <div className="space-y-12 pb-24 max-w-7xl mx-auto animate-in fade-in duration-500">
+    <div className="bg-[var(--background)] text-[var(--foreground)] min-h-screen">
+      <div className="space-y-12 pb-24 max-w-7xl mx-auto animate-in fade-in duration-500 pt-10">
 
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border)] pb-10">
@@ -142,10 +143,21 @@ export default async function AuditLogPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <div className="bg-[var(--card)]/30 text-[9px] font-mono p-3 rounded-xl border border-[var(--border)] max-w-xs overflow-hidden">
-                        <pre className="text-[var(--muted)] leading-tight whitespace-pre-wrap break-all hover:text-[var(--primary)] transition-colors">
-                          {JSON.stringify(log.metadata, null, 2) || '{}'}
-                        </pre>
+                      <div className="glass-panel text-[9px] font-mono p-4 rounded-2xl border border-[var(--border)] min-w-[280px]">
+                        {log.metadata && Object.keys(log.metadata).length > 0 ? (
+                          <div className="flex flex-col gap-1.5 line-clamp-4 group-hover:line-clamp-none transition-all">
+                            {Object.entries(log.metadata).map(([key, value]) => (
+                              <div key={key} className="flex items-start gap-2 break-all">
+                                <span className="text-[var(--primary)] font-black shrink-0">"{key}":</span>
+                                <span className="text-[var(--muted)]">
+                                  {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-[var(--muted)] italic">No Metadata Attributes</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -155,6 +167,7 @@ export default async function AuditLogPage() {
           </table>
         </div>
       </div>
+    </div>
     </div>
   )
 }

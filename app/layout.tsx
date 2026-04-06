@@ -38,7 +38,7 @@ export default function RootLayout({
       className={`${inter.variable} ${ibmPlexMono.variable}`}
     >
       <body className="antialiased h-screen overflow-hidden font-sans bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
+        <ThemeProvider attribute="class" defaultTheme="system" forcedTheme="dark" enableSystem={true}>
           <SessionProvider>
             <Toaster />
             {children}
