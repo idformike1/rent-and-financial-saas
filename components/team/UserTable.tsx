@@ -65,61 +65,61 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
   }
 
   return (
-    <div className="border-4 border-black bg-card overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+    <div className="glass-panel overflow-hidden rounded-3xl shadow-sm dark:shadow-none">
       <table className="w-full text-left border-collapse">
-        <thead className="bg-black text-white uppercase text-xs tracking-widest font-black">
+        <thead className="bg-[var(--background)] text-[var(--muted)] uppercase text-[10px] tracking-widest font-black border-b border-[var(--border)]">
           <tr>
-            <th className="p-4 border-r-2 border-zinc-800">User</th>
-            <th className="p-4 border-r-2 border-zinc-800">Role</th>
-            <th className="p-4 text-center border-r-2 border-zinc-800">The Muzzle</th>
-            <th className="p-4 text-center border-r-2 border-zinc-800">The Kick</th>
-            <th className="p-4 text-center">Nuclear</th>
+            <th className="p-5 font-bold uppercase tracking-[0.2em]">User</th>
+            <th className="p-5 font-bold uppercase tracking-[0.2em]">Role</th>
+            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">The Muzzle</th>
+            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">The Kick</th>
+            <th className="p-5 text-center font-bold uppercase tracking-[0.2em]">Nuclear</th>
           </tr>
         </thead>
-        <tbody className="divide-y-2 divide-black">
+        <tbody className="divide-y divide-[var(--border)]">
           {users.map((user) => (
-            <tr key={user.id} className="hover:bg-zinc-50 transition-colors group">
-              <td className="p-4 border-r-2 border-black">
+            <tr key={user.id} className="hover:bg-[var(--card-raised)] transition-colors group">
+              <td className="p-5">
                 <div className="flex flex-col">
-                  <span className="font-black uppercase tracking-tight text-sm">{user.name || 'UNNAMED OPERATOR'}</span>
-                  <span className="text-xs text-zinc-500 font-mono tracking-tighter">{user.email}</span>
+                  <span className="font-black uppercase tracking-tight text-sm text-[var(--foreground)]">{user.name || 'UNNAMED OPERATOR'}</span>
+                  <span className="text-xs text-[var(--muted)] font-mono tracking-tighter">{user.email}</span>
                 </div>
               </td>
-              <td className="p-4 border-r-2 border-black">
+              <td className="p-5">
                 <select 
                   value={user.role}
                   disabled={user.id === currentUserId}
                   onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                  className="bg-zinc-100 border-2 border-black p-1 text-xs font-black uppercase tracking-tighter cursor-pointer focus:ring-0"
+                  className="bg-[var(--background)] border border-[var(--border)] p-2 text-xs font-black uppercase tracking-tighter cursor-pointer focus:ring-1 focus:ring-[var(--primary)] rounded-xl text-[var(--foreground)]"
                 >
                   <option value="OWNER">OWNER</option>
                   <option value="ADMIN">ADMIN</option>
                   <option value="MANAGER">MANAGER</option>
                 </select>
               </td>
-              <td className="p-4 text-center border-r-2 border-black">
+              <td className="p-5 text-center">
                 <button 
                   onClick={() => handleToggleEdit(user.id, user.canEdit)}
-                  className={`p-2 border-2 border-black transition-all ${user.canEdit ? 'bg-black text-white' : 'bg-card text-zinc-300'}`}
+                  className={`p-2 rounded-xl border border-transparent transition-all ${user.canEdit ? 'bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-light)]' : 'bg-[var(--card-raised)] text-[var(--muted)] hover:bg-[var(--background)] hover:border-[var(--border)]'}`}
                   title={user.canEdit ? "Can Edit (Shield Active)" : "View-Only (Muzzled)"}
                 >
-                  <Shield size={18} fill={user.canEdit ? "white" : "none"} />
+                  <Shield size={18} fill={user.canEdit ? "currentColor" : "none"} />
                 </button>
               </td>
-              <td className="p-4 text-center border-r-2 border-black">
+              <td className="p-5 text-center">
                 <button 
                   disabled={user.id === currentUserId}
                   onClick={() => handleToggleActive(user.id, user.isActive)}
-                  className={`p-2 border-2 border-black transition-all ${user.isActive ? 'bg-[var(--primary-muted)] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'bg-red-500 text-white opacity-50'} disabled:opacity-20`}
+                  className={`p-2 rounded-xl transition-all ${user.isActive ? 'bg-[var(--primary-muted)] text-[var(--primary)] hover:bg-[var(--primary)]/20' : 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20'} disabled:opacity-20`}
                 >
                   <Power size={18} />
                 </button>
               </td>
-              <td className="p-4 text-center">
+              <td className="p-5 text-center">
                 <button 
                   disabled={user.id === currentUserId}
                   onClick={() => setDeleteModal({ open: true, user })}
-                  className="p-2 border-2 border-black hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none disabled:opacity-20 group-hover:bg-red-50"
+                  className="p-2 rounded-xl text-rose-500 hover:bg-rose-500 hover:text-white transition-all disabled:opacity-20 hover:shadow-lg hover:shadow-rose-500/30"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -132,26 +132,28 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
       {/* Delete Confirmation Modal */}
       {deleteModal.open && deleteModal.user && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-card border-8 border-black p-8 max-w-md w-full shadow-[16px_16px_0px_0px_rgba(255,0,0,0.5)]">
-            <div className="flex justify-between items-start mb-6">
-              <h2 className="text-3xl font-black uppercase tracking-tighter leading-none italic text-red-600">
+          <div className="glass-panel border-rose-500 p-8 max-w-md w-full shadow-lg rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full -mr-32 -mt-32 pointer-events-none" />
+            
+            <div className="flex justify-between items-start mb-6 relative z-10">
+              <h2 className="text-3xl font-black uppercase tracking-tighter leading-none italic text-rose-500">
                 NUCLEAR STRIKE
               </h2>
-              <button onClick={() => setDeleteModal({ open: false, user: null })} className="p-1 hover:bg-zinc-100">
-                <X size={32} />
+              <button onClick={() => setDeleteModal({ open: false, user: null })} className="p-2 rounded-xl hover:bg-[var(--card-raised)] text-[var(--muted)] hover:text-[var(--foreground)]">
+                <X size={24} />
               </button>
             </div>
             
-            <p className="font-black uppercase text-sm mb-4 leading-tight">
-              You are about to permanently purge <span className="underline decoration-red-600 decoration-4">{deleteModal.user.email}</span> from the organization.
+            <p className="font-black uppercase text-sm mb-4 leading-tight text-[var(--foreground)]">
+              You are about to permanently purge <span className="underline decoration-rose-500 decoration-4">{deleteModal.user.email}</span> from the organization.
             </p>
             
-            <div className="bg-red-100 border-4 border-red-600 p-4 mb-6 text-xs font-bold leading-relaxed">
+            <div className="bg-rose-500/10 border border-rose-500/20 p-4 mb-6 text-xs font-bold leading-relaxed text-rose-400 rounded-xl">
               WARNING: This action cannot be undone. All access will be revoked immediately. If historical records exist, this operation will fail.
             </div>
 
             <div className="space-y-4">
-              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">
                 Verify target email to authorize purge:
               </label>
               <input 
@@ -159,13 +161,13 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 placeholder={deleteModal.user.email}
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
-                className="w-full border-4 border-black p-3 font-mono text-sm uppercase placeholder:opacity-30 focus:outline-none focus:ring-4 focus:ring-red-600/20"
+                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 font-mono text-sm uppercase placeholder:opacity-30 focus:outline-none focus:ring-2 focus:ring-rose-500/50 text-[var(--foreground)]"
               />
               
               <button 
                 disabled={confirmEmail !== deleteModal.user.email}
                 onClick={handleDelete}
-                className="w-full bg-red-600 text-white font-black py-4 uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-red-700 disabled:bg-zinc-300 disabled:shadow-none transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
+                className="w-full bg-rose-500 text-white font-black py-4 rounded-xl uppercase tracking-[0.2em] shadow-lg shadow-rose-500/30 hover:bg-rose-600 disabled:bg-[var(--card-raised)] disabled:text-[var(--muted)] disabled:shadow-none transition-all"
               >
                 EXECUTE PURGE
               </button>

@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui-finova'
 // High-fidelity node color definitions
 const NODE_COLORS = {
   ORGANIZATION: 'text-[var(--primary)] border-emerald-400/30',
-  CATEGORY: 'text-slate-400 border-white/10',
+  CATEGORY: 'text-[var(--muted)] border-[var(--border)]',
   BUILDING: 'text-[var(--primary)] border-[var(--primary)]/20',
   TENANT: 'text-amber-400 border-amber-400/20',
   EXPENSE: 'text-rose-400 border-rose-400/20',
@@ -38,7 +38,7 @@ export default function OntologyMapPage() {
   }, [])
 
   if (!tree) return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-950 font-mono text-[var(--primary)] border-none">
+    <div className="flex items-center justify-center min-h-screen bg-[var(--background)] font-mono text-[var(--primary)] border-none">
       <div className="flex flex-col items-center">
         <Zap className="animate-pulse mb-4 w-8 h-8" />
         <span className="text-[10px] tracking-[0.3em] uppercase">Initializing Recon Protocol...</span>
@@ -47,7 +47,7 @@ export default function OntologyMapPage() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-950 font-mono p-8 lg:p-12 overflow-x-auto selection:bg-[var(--primary-muted)] border-none scrollbar-hide">
+    <div className="min-h-screen bg-[var(--background)] font-mono p-8 lg:p-12 overflow-x-auto selection:bg-[var(--primary-muted)] border-none scrollbar-hide text-[var(--foreground)]">
       
       {/* GRID OVERLAY */}
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-20" />
@@ -56,18 +56,18 @@ export default function OntologyMapPage() {
       <div className="fixed inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[size:100%_4px,3px_100%] pointer-events-none z-50 opacity-10" />
 
       {/* HEADER */}
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-white/5 pb-10 gap-6">
+      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-[var(--border)] pb-10 gap-6">
         <div>
           <div className="flex items-center space-x-3 mb-2">
             <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20 text-[8px] rounded-xl px-2 py-0.5">SYST_REC_v3.5</Badge>
             <div className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-pulse shadow-[0_0_8px_var(--primary)]" />
           </div>
-          <h1 className="text-5xl font-light tracking-tighter text-white uppercase italic">System Recon <span className="text-[var(--primary)]">Ontology Tree</span></h1>
-          <p className="text-[10px] text-slate-500 tracking-[0.2em] mt-3 uppercase">Dynamic persistence layer mapping for <span className="text-white font-bold tracking-normal">{tree.name}</span></p>
+          <h1 className="text-5xl font-light tracking-tighter text-[var(--foreground)] uppercase italic">System Recon <span className="text-[var(--primary)]">Ontology Tree</span></h1>
+          <p className="text-[10px] text-[var(--muted)] tracking-[0.2em] mt-3 uppercase">Dynamic persistence layer mapping for <span className="text-[var(--foreground)] font-bold tracking-normal">{tree.name}</span></p>
         </div>
         <div className="hidden md:flex flex-col items-end opacity-40">
            <span className="text-[8px] text-[var(--primary)] uppercase tracking-widest font-black mb-1">DATA_INTEGRITY: 100%</span>
-           <div className="w-32 h-[2px] bg-slate-900 overflow-hidden relative">
+           <div className="w-32 h-[2px] bg-[var(--border)] overflow-hidden relative">
               <div className="absolute inset-0 bg-[var(--primary)] animate-progress origin-left" />
            </div>
         </div>
@@ -79,15 +79,15 @@ export default function OntologyMapPage() {
       </div>
 
       {/* FOOTER TERMINAL */}
-      <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-slate-400 uppercase tracking-[0.2em] border-t border-white/5 pt-10 pointer-events-none bg-slate-950/80 backdrop-blur-sm z-30">
+      <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-[var(--muted)] uppercase tracking-[0.2em] border-t border-[var(--border)] pt-10 pointer-events-none bg-[var(--background)]/80 backdrop-blur-sm z-30">
          <div className="flex items-center space-x-10">
             <div className="flex items-center space-x-3">
                <HardDrive className="w-3.5 h-3.5 text-[var(--primary)]/50" />
-               <span className="text-[8px]">LAYER: <span className="text-slate-400">PERSISTENCE_GRAPH</span></span>
+               <span className="text-[8px]">LAYER: <span className="text-[var(--foreground)]">PERSISTENCE_GRAPH</span></span>
             </div>
             <div className="flex items-center space-x-3">
                <Cpu className="w-3.5 h-3.5 text-[var(--primary)]/50" />
-               <span className="text-[8px]">PROTOCOL: <span className="text-slate-400">RECURSIVE_EXPANSION</span></span>
+               <span className="text-[8px]">PROTOCOL: <span className="text-[var(--foreground)]">RECURSIVE_EXPANSION</span></span>
             </div>
          </div>
          <div className="flex items-center space-x-6 text-[8px] italic">
@@ -121,14 +121,14 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
   
   if (node.type === 'EMPTY_STATE') {
       return (
-        <div className="min-w-[280px] p-5 bg-slate-950 border border-dashed border-white/5 font-mono text-[10px] text-zinc-500 text-center uppercase tracking-widest italic rounded-3xl">
+        <div className="min-w-[280px] p-5 bg-[var(--background)] border border-dashed border-[var(--border)] font-mono text-[10px] text-[var(--muted)] text-center uppercase tracking-widest italic rounded-3xl">
           {node.name}
         </div>
       )
   }
 
   const colorKey = node.type as keyof typeof NODE_COLORS
-  const colorClasses = NODE_COLORS[colorKey] || 'text-slate-400 border-white/10'
+  const colorClasses = NODE_COLORS[colorKey] || 'text-[var(--muted)] border-[var(--border)]'
 
   return (
     <div className="flex flex-col items-center relative">
@@ -141,9 +141,9 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
          <div 
           onClick={() => hasChildren && setIsOpen(!isOpen)}
           className={`
-            min-w-[280px] p-5 bg-slate-900 border ${colorClasses} relative transition-all duration-300
-            ${hasChildren ? 'cursor-pointer hover:bg-slate-800/80 hover:scale-[1.02]' : 'cursor-default'}
-            shadow-[0_20px_50px_rgba(0,0,0,0.5)]
+            min-w-[280px] p-5 bg-[var(--card)] border ${colorClasses} relative transition-all duration-300 rounded-3xl shadow-sm hover:shadow-md
+            ${hasChildren ? 'cursor-pointer hover:bg-[var(--card-raised)] hover:scale-[1.02]' : 'cursor-default'}
+            dark:shadow-none
           `}
          >
            {/* TYPE & STATUS */}
@@ -155,16 +155,16 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
               {hasChildren && (
                  <motion.div 
                   animate={{ rotate: isOpen ? 90 : 0 }}
-                  className="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center border border-white/5"
+                  className="w-4 h-4 rounded-full bg-[var(--card-raised)] flex items-center justify-center border border-[var(--border)]"
                  >
-                    <ChevronRight className="w-2.5 h-2.5 text-slate-500" />
+                    <ChevronRight className="w-2.5 h-2.5 text-[var(--muted)]" />
                  </motion.div>
               )}
            </div>
 
            {/* CONTENT */}
            <div className="space-y-2">
-              <h3 className="text-white text-xs font-bold tracking-tight uppercase truncate leading-tight">
+              <h3 className="text-[var(--foreground)] text-xs font-bold tracking-tight uppercase truncate leading-tight">
                 {node.name || (node.description ? node.description.slice(0, 30) + '...' : 'UNNAMED_ENTITY')}
               </h3>
               
@@ -186,10 +186,10 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
            </div>
 
            {/* DATA FINGERPRINT */}
-           <div className="mt-5 border-t border-white/5 pt-3 flex items-center justify-between">
+           <div className="mt-5 border-t border-[var(--border)] pt-3 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                 <div className={`w-1 h-1 rounded-full ${isOpen ? 'bg-[var(--primary)]' : 'bg-slate-700'}`} />
-                 <span className="text-[7px] font-mono text-slate-400 uppercase tracking-tighter truncate max-w-[120px]">REF_{node.id.slice(0,12)}</span>
+                 <div className={`w-1 h-1 rounded-full ${isOpen ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]/50'}`} />
+                 <span className="text-[7px] font-mono text-[var(--muted)] uppercase tracking-tighter truncate max-w-[120px]">REF_{node.id.slice(0,12)}</span>
               </div>
               <JumpToSource node={node} />
            </div>
@@ -197,7 +197,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
 
          {/* DOWNWARD CONNECTOR (Local to Node) */}
          {isOpen && hasChildren && (
-            <div className="absolute top-[100%] left-1/2 -translate-x-1/2 w-[2px] h-[40px] bg-gradient-to-b from-emerald-500/40 to-white/5 z-0" />
+            <div className="absolute top-[100%] left-1/2 -translate-x-1/2 w-[2px] h-[40px] bg-gradient-to-b from-emerald-500/40 to-[var(--border)]/20 z-0" />
          )}
       </motion.div>
 
@@ -213,14 +213,14 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
           >
             {/* HORIZONTAL CONNECTOR (SMART LINE APPROXIMATION) */}
             {childBranches.length > 1 && (
-               <div className="absolute top-0 left-[140px] right-[140px] h-px bg-white/3" />
+               <div className="absolute top-0 left-[140px] right-[140px] h-px bg-[var(--border)]" />
             )}
             
             {childBranches.map((child: any) => (
                <div key={child.id} className="relative pt-0">
                   {/* RE-VERTICAL CONNECTOR */}
                   {childBranches.length > 1 && (
-                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-10 bg-white/3" />
+                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-10 bg-[var(--border)]" />
                   )}
                   <TreeNode node={child} />
                </div>
@@ -261,9 +261,9 @@ function JumpToSource({ node }: { node: any }) {
     <Link 
       href={href} 
       title={`Jump to ${label} Source`}
-      className="p-1 hover:bg-brand/10 transition-all group/link rounded"
+      className="p-1 hover:bg-[var(--primary)]/10 transition-all group/link rounded"
     >
-      <Link2 className="w-3 h-3 text-slate-400 group-hover/link:text-brand transition-colors group-hover/link:drop-shadow-[0_0_5px_#10b981]" />
+      <Link2 className="w-3 h-3 text-[var(--muted)] group-hover/link:text-[var(--primary)] transition-colors" />
     </Link>
   );
 }
