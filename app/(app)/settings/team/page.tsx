@@ -2,73 +2,66 @@ import { auth } from "@/auth"
 import { fetchTeamMembers } from "@/actions/team.actions"
 import UserTable from "@/components/team/UserTable"
 import InviteOperatorButton from "@/components/team/InviteOperatorButton"
-import { Users, UserCheck, ShieldAlert, Plus } from "lucide-react"
+import { Users, UserCheck, ShieldAlert } from "lucide-react"
+import { Badge } from "@/components/ui-finova"
 
 export default async function TeamPage() {
   const session = await auth()
   const { members, stats } = await fetchTeamMembers()
 
-  return (
-    <div className="space-y-12 pb-24 font-mono">
-      {/* Brutalist Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-8 border-black pb-8">
-        <div>
-          <h1 className="text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-2">
-            Team<br/>Command
-          </h1>
-          <div className="flex items-center gap-2 bg-black text-white px-4 py-2 w-fit">
-            <span className="text-[10px] uppercase font-black tracking-widest opacity-50">Cluster Identity:</span>
-            <span className="text-lg font-black uppercase italic tracking-tighter">
-              {session?.user?.organizationName}
-            </span>
-          </div>
-        </div>
+  const statCards = [
+    { label: 'Total Deployment', value: stats.total, icon: Users, color: 'text-[var(--foreground)]' },
+    { label: 'Active Duty', value: stats.active, icon: UserCheck, color: 'text-[var(--primary)]' },
+    { label: 'View-Only', value: stats.viewOnly, icon: ShieldAlert, color: 'text-amber-400' },
+  ]
 
+  return (
+    <div className="space-y-12 pb-24 max-w-7xl mx-auto animate-in fade-in duration-500">
+
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border)] pb-10">
+        <div className="space-y-4">
+          <Badge variant="brand" className="px-5 py-2 rounded-3xl font-black uppercase text-[9px] tracking-widest bg-[var(--primary-muted)] border-2 border-[var(--primary)]/20">
+            Team Command Center
+          </Badge>
+          <h1 className="text-5xl font-black tracking-tighter text-[var(--foreground)] uppercase leading-none">
+            Team <span className="text-[var(--primary)]">Command</span>
+          </h1>
+          <p className="text-[10px] font-mono font-black text-[var(--muted)] uppercase tracking-[0.3em]">
+            Cluster Identity: {session?.user?.organizationName}
+          </p>
+        </div>
         <InviteOperatorButton />
       </header>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="border-4 border-black p-6 bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex justify-between items-start mb-2">
-            <Users size={32} />
-            <span className="text-4xl font-black">{stats.total}</span>
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {statCards.map((s) => (
+          <div key={s.label} className="glass-panel rounded-3xl p-8 flex flex-col justify-between gap-4 border border-[var(--border)] hover:border-[var(--primary)]/30 transition-all">
+            <div className="flex justify-between items-start">
+              <s.icon size={24} className={s.color} />
+              <span className={`text-5xl font-black font-mono ${s.color}`}>{s.value}</span>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">{s.label}</span>
           </div>
-          <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Total Deployment</span>
-        </div>
-
-        <div className="border-4 border-black p-6 bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex justify-between items-start mb-2">
-            <UserCheck size={32} className="text-[var(--primary)]" />
-            <span className="text-4xl font-black">{stats.active}</span>
-          </div>
-          <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Active Duty</span>
-        </div>
-
-        <div className="border-4 border-black p-6 bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex justify-between items-start mb-2">
-            <ShieldAlert size={32} className="text-amber-500" />
-            <span className="text-4xl font-black">{stats.viewOnly}</span>
-          </div>
-          <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Muzzled (View-Only)</span>
-        </div>
+        ))}
       </div>
 
-      {/* Main Table Container */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-black uppercase tracking-tighter">
+      {/* Table */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-black uppercase tracking-tighter text-[var(--foreground)]">
           Registry Overview
         </h2>
-        <UserTable 
+        <UserTable
           users={members.map((m: any) => ({
             ...m,
             role: m.role as string
-          }))} 
+          }))}
           currentUserId={session?.user?.id}
         />
       </div>
 
-      <footer className="bg-black text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em] p-2 flex justify-center">
+      <footer className="text-[9px] font-mono text-[var(--muted)] uppercase tracking-[0.3em] text-center pt-4 border-t border-[var(--border)]">
         Enterprise Multi-Tenancy Core // Unified Wealth Ledger // Terminal-01
       </footer>
     </div>

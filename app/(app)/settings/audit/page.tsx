@@ -2,7 +2,8 @@ import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
-import { ShieldAlert, Fingerprint, Activity, Clock, User as UserIcon, Tag, Database, Search } from "lucide-react"
+import { ShieldAlert, Fingerprint, Activity, Clock, User as UserIcon, Tag, Database } from "lucide-react"
+import { Badge } from "@/components/ui-finova"
 
 export default async function AuditLogPage() {
   const session = await auth();
@@ -18,130 +19,133 @@ export default async function AuditLogPage() {
     take: 100
   });
 
-  const getBadgeColor = (action: string) => {
+  const getBadgeStyle = (action: string) => {
     switch (action) {
       case 'CREATE':
       case 'INVITE':
       case 'ACTIVATE':
-        return 'bg-[var(--primary)] text-white shadow-[0_0_12px_rgba(255,87,51,0.2)]';
+        return 'bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20';
       case 'UPDATE':
       case 'ROLE_CHANGE':
-        return 'bg-amber-500 text-white shadow-[2px_2px_0px_0px_rgba(217,119,6,1)]';
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
       case 'DELETE':
       case 'DEACTIVATE':
       case 'NUCLEAR_PURGE':
-        return 'bg-rose-600 text-white shadow-[2px_2px_0px_0px_rgba(153,27,27,1)]';
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
       default:
-        return 'bg-slate-900 text-white';
+        return 'bg-white/5 text-[var(--muted)] border-white/10';
     }
   };
 
+  const statCards = [
+    { label: 'Capture Points', value: logs.length, icon: Database },
+    { label: 'Threat Identity', value: session.user.organizationName, icon: UserIcon },
+    { label: 'Grid Status', value: 'NOMINAL', icon: Activity },
+    { label: 'Archive Depth', value: '100 ITEMS', icon: Clock },
+  ];
+
   return (
-    <div className="p-12 space-y-12 animate-in fade-in duration-500">
-      <div className="flex justify-between items-end border-b-8 border-black pb-8">
-        <div className="space-y-2">
+    <div className="space-y-12 pb-24 max-w-7xl mx-auto animate-in fade-in duration-500">
+
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border)] pb-10">
+        <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-red-600 text-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <ShieldAlert className="w-8 h-8" />
+            <div className="w-12 h-12 bg-rose-500/10 rounded-2xl flex items-center justify-center border border-rose-500/20">
+              <ShieldAlert className="w-6 h-6 text-rose-400" />
             </div>
-            <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
-              Surveillance Grid
-            </h1>
+            <Badge variant="brand" className="px-5 py-2 rounded-3xl font-black uppercase text-[9px] tracking-widest bg-[var(--primary-muted)] border-2 border-[var(--primary)]/20">
+              Immutable Forensic Archive
+            </Badge>
           </div>
-          <p className="text-[10px] font-black uppercase text-zinc-400 tracking-[0.4em] flex items-center">
-            <Fingerprint className="w-3 h-3 mr-2" /> 
-            Immutable Forensic Archive • High-Value Asset Protection
+          <h1 className="text-5xl font-black tracking-tighter text-[var(--foreground)] uppercase leading-none">
+            Surveillance <span className="text-[var(--primary)]">Grid</span>
+          </h1>
+          <p className="text-[10px] font-mono font-black text-[var(--muted)] uppercase tracking-[0.4em] flex items-center gap-2">
+            <Fingerprint className="w-3 h-3" />
+            High-Value Asset Protection Protocol
           </p>
         </div>
-
-        <div className="flex gap-4">
-            <div className="bg-black text-white px-6 py-3 rounded-xl border-4 border-black text-[10px] font-black uppercase tracking-widest flex items-center italic">
-                <Activity className="w-4 h-4 mr-2 text-[var(--primary)] animate-pulse" /> Live Monitoring
-            </div>
+        <div className="glass-panel rounded-2xl px-6 py-3 border border-[var(--border)] flex items-center gap-2">
+          <Activity className="w-4 h-4 text-[var(--primary)] animate-pulse" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--foreground)]">Live Monitoring</span>
         </div>
-      </div>
+      </header>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[
-            { label: 'Capture Points', value: logs.length, icon: <Database /> },
-            { label: 'Threat Identity', value: session.user.organizationName, icon: <UserIcon /> },
-            { label: 'Grid Status', value: 'NOMINAL', icon: <Activity className="text-[var(--primary)]" /> },
-            { label: 'Archive Depth', value: '100 ITEMS', icon: <Clock /> }
-        ].map(s => (
-            <div key={s.label} className="bg-card border-4 border-black p-6 rounded-3xl flex flex-col justify-between shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                <div className="text-zinc-400 font-bold text-[9px] uppercase tracking-widest flex items-center justify-between">
-                    {s.label} {s.icon}
-                </div>
-                <div className="text-2xl font-black italic uppercase tracking-tighter mt-2">{s.value}</div>
+        {statCards.map((s) => (
+          <div key={s.label} className="glass-panel rounded-3xl p-6 border border-[var(--border)] flex flex-col justify-between gap-3 hover:border-[var(--primary)]/30 transition-all">
+            <div className="flex justify-between items-center text-[var(--muted)]">
+              <span className="text-[9px] font-black uppercase tracking-widest">{s.label}</span>
+              <s.icon className="w-4 h-4" />
             </div>
+            <div className="text-xl font-black tracking-tighter text-[var(--foreground)] uppercase">{s.value}</div>
+          </div>
         ))}
       </div>
 
-      <div className="bg-card border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] rounded-[40px] overflow-hidden">
-        <div className="bg-black text-white p-6 flex justify-between items-center italic">
-            <span className="text-xs font-black uppercase tracking-widest">Chronological Forensic Feed</span>
-            <div className="relative group">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-                <input type="text" placeholder="QUERY UUID OR ACTION..." className="bg-zinc-900 border-2 border-zinc-700 rounded-xl px-10 py-2 text-[10px] uppercase font-black tracking-widest outline-none focus:border-indigo-500 w-64 transition-all" />
-            </div>
+      {/* Audit Log Table */}
+      <div className="glass-panel rounded-3xl border border-[var(--border)] overflow-hidden">
+        {/* Table Header */}
+        <div className="bg-[var(--card-raised,#202840)] px-8 py-5 border-b border-[var(--border)] flex justify-between items-center">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Chronological Forensic Feed</span>
+          <span className="text-[9px] font-mono text-[var(--primary)]">{logs.length} RECORDS</span>
         </div>
+
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-zinc-50 border-b-4 border-black">
+            <thead className="border-b border-[var(--border)]">
               <tr>
-                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400">Timestamp</th>
-                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400">Operator</th>
-                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400">Action Badge</th>
-                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400">Tactical Target</th>
-                <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-zinc-400">Audit Metadata</th>
+                {['Timestamp', 'Operator', 'Action', 'Target', 'Metadata'].map(h => (
+                  <th key={h} className="px-8 py-5 text-left text-[9px] font-black uppercase tracking-widest text-[var(--muted)]">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y-4 divide-black">
+            <tbody className="divide-y divide-[var(--border)]">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-8 py-20 text-center text-zinc-400 font-black italic uppercase tracking-widest bg-zinc-100">
+                  <td colSpan={5} className="px-8 py-20 text-center text-[var(--muted)] font-black uppercase tracking-widest text-[10px]">
                     No forensic captures available. System secure.
                   </td>
                 </tr>
               ) : (
                 logs.map((log: any) => (
-                  <tr key={log.id} className="hover:bg-zinc-50 transition-colors group">
-                    <td className="px-8 py-6 font-mono text-[11px] font-bold text-zinc-500">
-                        {format(new Date(log.createdAt), 'yyyy-MM-dd HH:mm:ss')}
+                  <tr key={log.id} className="hover:bg-white/[0.02] transition-colors group">
+                    <td className="px-8 py-5 font-mono text-[11px] font-bold text-[var(--muted)]">
+                      {format(new Date(log.createdAt), 'yyyy-MM-dd HH:mm:ss')}
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-[var(--primary-muted)] flex items-center justify-center font-black text-[var(--primary)] text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                            {log.user.name?.[0].toUpperCase()}
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-[var(--primary-muted)] flex items-center justify-center font-black text-[var(--primary)] text-xs">
+                          {log.user.name?.[0].toUpperCase()}
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase italic tracking-tighter leading-none">{log.user.name}</span>
-                            <span className="text-[9px] font-bold text-zinc-400 tracking-tight">{log.user.email}</span>
+                          <span className="text-[10px] font-black uppercase tracking-tighter text-[var(--foreground)]">{log.user.name}</span>
+                          <span className="text-[9px] font-mono text-[var(--muted)]">{log.user.email}</span>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] italic ${getBadgeColor(log.action)}`}>
+                    <td className="px-8 py-5">
+                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border ${getBadgeStyle(log.action)}`}>
                         {log.action}
                       </span>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-8 py-5">
                       <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black uppercase italic tracking-tighter bg-zinc-100 px-2 py-1 rounded inline-block w-fit">
-                            <Tag className="w-3 h-3 inline mr-1" /> {log.entityType}
+                        <span className="text-[9px] font-black uppercase tracking-tight text-[var(--foreground)] flex items-center gap-1">
+                          <Tag className="w-3 h-3 text-[var(--muted)]" /> {log.entityType}
                         </span>
-                        <span className="text-[9px] font-mono text-zinc-400 lowercase tracking-tighter truncate w-32 group-hover:w-auto transition-all">
-                            ID: {log.entityId}
+                        <span className="text-[9px] font-mono text-[var(--muted)] truncate w-32 group-hover:w-auto transition-all">
+                          {log.entityId}
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="max-w-xs">
-                         <div className="bg-black text-[9px] font-mono p-3 rounded-xl border-2 border-zinc-800 shadow-[4px_4px_0px_0px_rgba(79,70,229,1)] overflow-hidden">
-                            <pre className="text-[var(--primary)] leading-tight">
-                                {JSON.stringify(log.metadata, null, 2) || '{}'}
-                            </pre>
-                         </div>
+                    <td className="px-8 py-5">
+                      <div className="bg-[var(--background)] text-[9px] font-mono p-3 rounded-xl border border-[var(--border)] max-w-xs overflow-hidden">
+                        <pre className="text-[var(--primary)] leading-tight whitespace-pre-wrap break-all">
+                          {JSON.stringify(log.metadata, null, 2) || '{}'}
+                        </pre>
                       </div>
                     </td>
                   </tr>

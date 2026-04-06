@@ -94,7 +94,11 @@ export async function fetchDetailedOntology() {
         type: 'BUILDING',
         tenants: Array.from(tenantsMap.entries()).map(([id, name]) => ({ id, name, type: 'TENANT' })),
         expenses: b.ledgerEntries.map((e: any) => ({ 
-          ...e, 
+          id: e.id,
+          description: e.description,
+          amount: Number(e.amount),
+          transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : String(e.transactionDate),
+          expenseCategory: e.expenseCategory,
           name: e.description || e.expenseCategory?.name || 'Uncategorized OPEX',
           type: 'EXPENSE' 
         }))
@@ -118,7 +122,11 @@ export async function fetchDetailedOntology() {
             name: 'Corporate Overhead',
             type: 'CATEGORY',
             children: corporateExpenses.map((e: any) => ({ 
-              ...e, 
+              id: e.id,
+              description: e.description,
+              amount: Number(e.amount),
+              transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : String(e.transactionDate),
+              expenseCategory: e.expenseCategory,
               name: e.description || e.expenseCategory?.name || 'Corporate Overhead Entry',
               type: 'EXPENSE' 
             }))

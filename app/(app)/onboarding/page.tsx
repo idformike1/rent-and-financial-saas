@@ -160,7 +160,7 @@ export default function OnboardingWizard() {
             </Button>
             <button 
                onClick={() => { reset(); setStep(1); }} 
-               className="h-14 rounded-3xl font-black uppercase tracking-widest text-[11px] text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center group"
+               className="h-14 rounded-3xl font-black uppercase tracking-widest text-[11px] text-[var(--muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all flex items-center justify-center group"
             >
                <AlertCircle className="w-4 h-4 mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                Reset Activation Wizard
@@ -184,7 +184,7 @@ export default function OnboardingWizard() {
       </div>
 
       <div className="flex items-center justify-between mb-16 px-12 relative">
-         <div className="absolute left-12 right-12 top-7 h-0.5 bg-slate-100 -z-0" />
+         <div className="absolute left-12 right-12 top-7 h-0.5 bg-white/5 -z-0" />
          {[User, DollarSign, CheckCircle2].map((Icon, i) => (
            <div key={i} className="relative z-10">
               <div className={`w-14 h-14 rounded-3xl border-2 flex items-center justify-center transition-all duration-300 ${step > i + 1 ? 'bg-slate-900 border-slate-900 text-white' : step === i + 1 ? 'bg-brand border-brand text-white shadow-premium' : 'bg-card border-border text-slate-200'}`}>
@@ -227,7 +227,7 @@ export default function OnboardingWizard() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="md:col-span-2 space-y-4">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Allocation</label>
-                     <select {...register('unitId')} className={cn("w-full bg-slate-50 border-2 rounded-3xl px-6 py-5 font-black text-lg h-16 outline-none appearance-none focus:ring-2 focus:ring-brand", errors.unitId ? 'border-rose-500' : 'border-border')}>
+                      <select {...register('unitId')} className={cn("w-full bg-[var(--card)] text-[var(--foreground)] border-2 rounded-3xl px-6 py-5 font-black text-lg h-16 outline-none appearance-none focus:ring-2 focus:ring-[var(--primary)]", errors.unitId ? 'border-rose-500' : 'border-[var(--border)]')}>
                         <option value="">Select Target Unit</option>
                         {units.map(u => <option key={u.id} value={u.id}>Unit {u.unitNumber} // {u.type}</option>)}
                      </select>
@@ -260,7 +260,7 @@ export default function OnboardingWizard() {
                      <span className="text-4xl font-black italic tracking-tighter text-white">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                   </div>
                </Card>
-               {serverError && <div className="bg-rose-50 p-6 rounded-3xl border-l-8 border-rose-500 text-rose-600 font-bold text-xs uppercase">{serverError}</div>}
+               {serverError && <div className="bg-rose-500/10 p-6 rounded-3xl border-l-8 border-rose-500 text-rose-600 font-bold text-xs uppercase">{serverError}</div>}
             </div>
           )}
 
@@ -271,7 +271,7 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-10 border-t border-slate-50">
+          <div className="flex justify-between items-center pt-10 border-t border-white/5">
              {step > 1 ? (
                <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground flex items-center transition-colors"><ChevronLeft className="w-4 h-4 mr-2" /> Reverse</button>
              ) : <div />}
