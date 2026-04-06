@@ -1,5 +1,6 @@
 import { getSovereignClient } from "@/src/lib/db";
-import { Prisma, MaintenanceStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { MaintenanceStatus } from "@/src/schema/enums";
 import { recordAuditLog } from "@/lib/audit-logger";
 
 /**

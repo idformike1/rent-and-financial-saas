@@ -1,6 +1,7 @@
 import { getSovereignClient } from "@/src/lib/db";
 import { calculateWaterfallDistribution } from "@/src/core/algorithms/finance";
-import { Prisma, AccountCategory } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { AccountCategory } from "@/src/schema/enums";
 import { randomUUID } from "crypto";
 import { recordAuditLog } from "@/lib/audit-logger";
 

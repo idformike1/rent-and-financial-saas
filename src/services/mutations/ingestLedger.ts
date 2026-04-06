@@ -1,6 +1,6 @@
 import { getSovereignClient } from "@/src/lib/db";
 import { toNegativeOutflow } from "@/src/core/algorithms/finance";
-import { AccountCategory, PaymentMode } from "@prisma/client";
+import { AccountCategory, PaymentMode } from "@/src/schema/enums";
 import { randomUUID } from "crypto";
 import { recordAuditLog } from "@/lib/audit-logger";
 

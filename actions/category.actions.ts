@@ -5,9 +5,11 @@ import { runSecureServerAction } from '@/lib/auth-utils'
 import { 
   createLedgerService, 
   deleteLedgerService, 
-  createAccountNodeService 
+  createAccountNodeService,
+  updateLedgerService,
+  updateAccountNodeService,
+  deleteAccountNodeService
 } from '@/src/services/mutations/taxonomy.services'
-import prisma from '@/lib/prisma'
 
 /**
  * TAXONOMY GATEKEEPER: LEDGER MATERIALIZATION
@@ -67,7 +69,7 @@ export async function createAccountNode(formData: FormData) {
         return { error: "Missing required taxonomy fields: Label, Ledger." };
       }
 
-      const newNode = await createAccountNodeService(
+      await createAccountNodeService(
         { name: label, ledgerId, parentId },
         { 
           operatorId: session.userId || "OP_SYSTEM_ADMIN", 
@@ -76,7 +78,7 @@ export async function createAccountNode(formData: FormData) {
       );
 
       revalidatePath('/settings/categories');
-      return { success: true, data: newNode };
+      return { success: true };
     } catch (e: any) {
       console.error('[NODE_MATERIALIZE_FATAL]', e);
       return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -85,37 +87,67 @@ export async function createAccountNode(formData: FormData) {
 }
 
 /**
- * REMAINING CRUD (TO BE FULLY STRANGLED IN FINAL PASS)
+ * TAXONOMY GATEKEEPER: LEDGER RECALIBRATION
  */
 export async function recalibrateLedger(id: string, name: string) {
   return runSecureServerAction('MANAGER', async (session) => {
-    await prisma.financialLedger.updateMany({
-      where: { id, organizationId: session.organizationId },
-      data: { name: name.trim().toUpperCase() }
-    });
-    revalidatePath('/settings/categories');
-    return { success: true };
+    try {
+      await updateLedgerService(
+        id, name, 
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+      revalidatePath('/settings/categories');
+      return { success: true };
+    } catch (e: any) {
+       console.error('[LEDGER_RECALIBRATE_FATAL]', e);
+       return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
   });
 }
 
+/**
+ * TAXONOMY GATEKEEPER: ACCOUNT NODE RECALIBRATION
+ */
 export async function updateAccountNode(id: string, label: string) {
   return runSecureServerAction('MANAGER', async (session) => {
-    await prisma.expenseCategory.updateMany({
-      where: { id, organizationId: session.organizationId },
-      data: { name: label.trim() }
-    });
-    revalidatePath('/settings/categories');
-    return { success: true };
+    try {
+      await updateAccountNodeService(
+        id, label, 
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+      revalidatePath('/settings/categories');
+      return { success: true };
+    } catch (e: any) {
+       console.error('[NODE_RECALIBRATE_FATAL]', e);
+       return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
   });
 }
 
+/**
+ * TAXONOMY GATEKEEPER: ACCOUNT NODE VAPORIZATION
+ */
 export async function deleteAccountNode(id: string) {
   return runSecureServerAction('MANAGER', async (session) => {
-    const deleted = await prisma.expenseCategory.deleteMany({
-      where: { id, organizationId: session.organizationId }
-    });
-    if (deleted.count === 0) return { error: "Node vaporization protocol denied (not found)." };
-    revalidatePath('/settings/categories');
-    return { success: true };
+    try {
+      await deleteAccountNodeService(
+        id, 
+        { 
+          operatorId: session.userId || "OP_SYSTEM_ADMIN", 
+          organizationId: session.organizationId 
+        }
+      );
+      revalidatePath('/settings/categories');
+      return { success: true };
+    } catch (e: any) {
+       console.error('[NODE_VAPORIZE_FATAL]', e);
+       return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
   });
 }

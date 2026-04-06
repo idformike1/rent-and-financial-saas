@@ -39,7 +39,7 @@
   --card-foreground: #0F172A;
   --primary: #E64A19; 
   --primary-foreground: #FFFFFF;
-  --muted: #64748B; 
+  --muted: #F1F5F9;
   --muted-foreground: #475569;
   --border: #E2E8F0; 
   --radius: 1.5rem;
@@ -54,7 +54,7 @@
   --primary: #FF5733; 
   --primary-foreground: #FFFFFF;
   --muted: #1E293B; 
-  --muted-foreground: #94A3B8;
+  --muted-foreground: #CBD5E1;
   --border: rgba(255, 255, 255, 0.1);
 }
 

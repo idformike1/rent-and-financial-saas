@@ -131,3 +131,100 @@ export async function createAccountNodeService(
     return node;
   });
 }
+
+/**
+ * Recalibrates a ledger's label with audit trail.
+ */
+export async function updateLedgerService(
+  id: string, 
+  name: string,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+  const normalized = name.trim().toUpperCase();
+
+  return await db.$transaction(async (tx: any) => {
+    const updated = await tx.financialLedger.update({
+      where: { id, organizationId: context.organizationId },
+      data: { name: normalized }
+    });
+
+    await recordAuditLog({
+      action: 'UPDATE',
+      entityType: 'LEDGER',
+      entityId: id,
+      metadata: { newName: normalized },
+      tx: tx as any
+    });
+    
+    return updated;
+  });
+}
+
+/**
+ * Recalibrates an account node's label.
+ */
+export async function updateAccountNodeService(
+  id: string, 
+  label: string,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+  const normalized = label.trim();
+
+  return await db.$transaction(async (tx: any) => {
+    const updated = await tx.expenseCategory.update({
+      where: { id, organizationId: context.organizationId },
+      data: { name: normalized }
+    });
+
+    await recordAuditLog({
+      action: 'UPDATE',
+      entityType: 'CATEGORY',
+      entityId: id,
+      metadata: { newLabel: normalized },
+      tx: tx as any
+    });
+
+    return updated;
+  });
+}
+
+/**
+ * Executes a terminal node vaporization.
+ */
+export async function deleteAccountNodeService(
+  id: string,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    // Check for child nodes before deletion
+    const childrenCount = await tx.expenseCategory.count({
+      where: { parentId: id, organizationId: context.organizationId }
+    });
+
+    if (childrenCount > 0) throw new Error("ERR_ENTITY_LOCKED: Node contains active sub-categories.");
+
+    // Check for ledger entries linked to this category
+    const entriesCount = await tx.ledgerEntry.count({
+      where: { accountId: id, organizationId: context.organizationId }
+    });
+
+    if (entriesCount > 0) throw new Error("ERR_ENTITY_LOCKED: Node associated with active ledger entries.");
+
+    const result = await tx.expenseCategory.delete({
+      where: { id, organizationId: context.organizationId }
+    });
+
+    await recordAuditLog({
+      action: 'DELETE',
+      entityType: 'CATEGORY',
+      entityId: id,
+      tx: tx as any
+    });
+
+    return result;
+  });
+}

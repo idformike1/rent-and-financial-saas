@@ -110,7 +110,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               {/* Section toggle header */}
               <button
                 onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.4em] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground hover:text-foreground transition-colors"
               >
                 {section.label}
                 <ChevronDown className={cn("w-3 h-3 transition-transform duration-300", openSections.includes(section.label) ? 'rotate-180' : '')} />
@@ -137,8 +137,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                           className={cn(`
                             flex items-center px-6 py-4 text-[11px] font-bold uppercase tracking-[0.15em] rounded-full transition-all duration-300
                             ${isActive
-                              ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-lg shadow-[var(--primary)]/30 glow-primary'
-                              : 'text-[var(--muted)] hover:bg-[var(--foreground)]/5 hover:text-[var(--foreground)]'
+                              ? 'bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/30 glow-primary'
+                              : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
                             }
                           `)}
                         >

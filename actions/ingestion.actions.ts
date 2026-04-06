@@ -3,7 +3,7 @@
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-import { PaymentMode } from '@prisma/client'
+import { PaymentMode } from '@/src/schema/enums'
 import { ingestLedgerService } from '@/src/services/mutations/ingestLedger'
 
 /**

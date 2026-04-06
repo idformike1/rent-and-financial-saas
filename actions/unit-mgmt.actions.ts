@@ -3,7 +3,7 @@
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
 import { createUnitService, updateUnitService } from '@/src/services/mutations/unit.services'
-import { MaintenanceStatus } from '@prisma/client'
+import { MaintenanceStatus } from '@/src/schema/enums'
 
 /**
  * UNIT MATERIALIZATION ACTION (GATEKEEPER)

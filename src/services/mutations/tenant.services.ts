@@ -317,3 +317,128 @@ export async function checkTenantExistenceService(
 
   return { exists: false };
 }
+
+/**
+ * Recalibrates tenant metadata with audit trail.
+ */
+export async function updateTenantDetailsService(
+  tenantId: string, 
+  data: { name: string, email?: string, phone?: string, nationalId?: string },
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    const tenant = await tx.tenant.update({
+      where: { id: tenantId, organizationId: context.organizationId },
+      data: { 
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        nationalId: data.nationalId
+      }
+    });
+
+    await recordAuditLog({
+      action: 'UPDATE',
+      entityType: 'TENANT',
+      entityId: tenantId,
+      metadata: { name: data.name, email: data.email },
+      tx: tx as any
+    });
+
+    return tenant;
+  });
+}
+
+/**
+ * Executes a definitive tenant soft-deletion and lease archiving protocol.
+ */
+export async function softDeleteTenantService(
+  tenantId: string,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    // 1. ARCHIVE IDENTITY
+    await tx.tenant.update({
+      where: { id: tenantId, organizationId: context.organizationId },
+      data: { isDeleted: true }
+    });
+
+    // 2. ARCHIVE ACTIVE LEASES
+    await tx.lease.updateMany({
+       where: { tenantId, isActive: true, organizationId: context.organizationId },
+       data: { isActive: false, endDate: new Date() }
+    });
+
+    await recordAuditLog({
+       action: 'DELETE',
+       entityType: 'TENANT',
+       entityId: tenantId,
+       metadata: { archiveDate: new Date() },
+       tx: tx as any
+    });
+  });
+}
+
+/**
+ * Materializes an additional lease for multi-unit tenancy scenarios.
+ */
+export async function addAdditionalLeaseService(
+  data: { 
+    tenantId: string, 
+    unitId: string, 
+    rentAmount: number, 
+    depositAmount: number,
+    startDate: string 
+  },
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    const unit = await tx.unit.findUnique({ 
+      where: { id: data.unitId, organizationId: context.organizationId } 
+    });
+    
+    if (!unit) throw new Error("ERR_UNIT_ABSENT");
+    if (unit.maintenanceStatus === 'DECOMMISSIONED') {
+      throw new Error("ERR_PROTOCOL_VIOLATION: Unit is currently DECOMMISSIONED.");
+    }
+
+    const moveIn = new Date(data.startDate);
+    const endDate = new Date(moveIn);
+    endDate.setUTCFullYear(endDate.getUTCFullYear() + 1);
+
+    const lease = await tx.lease.create({
+      data: {
+        organizationId: context.organizationId,
+        tenantId: data.tenantId,
+        unitId: data.unitId,
+        isPrimary: false,
+        rentAmount: new Prisma.Decimal(data.rentAmount),
+        depositAmount: new Prisma.Decimal(data.depositAmount),
+        startDate: moveIn,
+        endDate,
+        isActive: true
+      }
+    });
+
+    await tx.unit.update({
+      where: { id: data.unitId, organizationId: context.organizationId },
+      data: { maintenanceStatus: 'OPERATIONAL' }
+    });
+
+    await recordAuditLog({
+      action: 'CREATE',
+      entityType: 'LEASE',
+      entityId: lease.id,
+      metadata: { tenantId: data.tenantId, unitId: data.unitId },
+      tx: tx as any
+    });
+
+    return lease;
+  });
+}

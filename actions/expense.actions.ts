@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { logExpenseService } from '@/src/services/mutations/ledger.services'
-import { PaymentMode } from '@prisma/client'
+import { PaymentMode } from '@/src/schema/enums'
 
 /**
  * LOG EXPENSE ACTION (GATEKEEPER)

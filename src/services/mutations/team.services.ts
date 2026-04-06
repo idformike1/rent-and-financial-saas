@@ -132,3 +132,53 @@ export async function deleteUserService(
     });
   });
 }
+
+/**
+ * Toggles a user's account activation status with audit trail.
+ */
+export async function toggleUserActivationService(
+  userId: string,
+  isActive: boolean,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    await tx.user.update({
+      where: { id: userId, organizationId: context.organizationId },
+      data: { isActive }
+    });
+
+    await recordAuditLog({
+      action: isActive ? 'ACTIVATE' : 'DEACTIVATE',
+      entityType: 'USER',
+      entityId: userId,
+      tx: tx as any
+    });
+  });
+}
+
+/**
+ * Toggles a user's destructive editing permissions.
+ */
+export async function toggleUserEditPermissionService(
+  userId: string,
+  canEdit: boolean,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    await tx.user.update({
+      where: { id: userId, organizationId: context.organizationId },
+      data: { canEdit }
+    });
+
+    await recordAuditLog({
+      action: canEdit ? 'GRANT_EDIT' : 'REVOKE_EDIT',
+      entityType: 'USER',
+      entityId: userId,
+      tx: tx as any
+    });
+  });
+}

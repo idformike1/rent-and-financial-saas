@@ -5,37 +5,21 @@ import { runSecureServerAction } from "@/lib/auth-utils"
 import { 
   inviteTeamMemberService, 
   updateUserRoleService, 
-  deleteUserService 
+  deleteUserService,
+  toggleUserActivationService,
+  toggleUserEditPermissionService
 } from "@/src/services/mutations/team.services"
-import prisma from "@/lib/prisma"
-import { recordAuditLog } from "@/lib/audit-logger"
+import { getTeamMembersService } from "@/src/services/queries/team.services"
 
 /**
- * TEAM REGISTRY ACCESS
+ * TEAM REGISTRY ACCESS (GATEKEEPER)
  */
 export async function fetchTeamMembers() {
   return runSecureServerAction('OWNER', async (session) => {
-    const members = await prisma.user.findMany({
-      where: { organizationId: session.organizationId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isActive: true,
-        canEdit: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: 'asc' }
+    return await getTeamMembersService({
+      operatorId: session.userId,
+      organizationId: session.organizationId
     });
-
-    const stats = {
-      total: members.length,
-      active: members.filter((m: any) => m.isActive).length,
-      viewOnly: members.filter((m: any) => !m.canEdit).length
-    };
-
-    return { members, stats };
   });
 }
 
@@ -70,16 +54,14 @@ export async function toggleUserActivation(userId: string, isActive: boolean) {
       throw new Error("ERR_GRAVITY_VIOLATION: Self-deactivation protocol blocked.");
     }
 
-    await prisma.user.update({
-      where: { id: userId, organizationId: session.organizationId },
-      data: { isActive }
-    });
-
-    await recordAuditLog({
-      action: isActive ? 'ACTIVATE' : 'DEACTIVATE',
-      entityType: 'USER',
-      entityId: userId
-    });
+    await toggleUserActivationService(
+      userId,
+      isActive,
+      {
+        operatorId: session.userId,
+        organizationId: session.organizationId
+      }
+    );
     
     revalidatePath('/settings/team');
   });
@@ -90,10 +72,14 @@ export async function toggleUserActivation(userId: string, isActive: boolean) {
  */
 export async function toggleUserEditPermission(userId: string, canEdit: boolean) {
   return runSecureServerAction('OWNER', async (session) => {
-    await prisma.user.update({
-      where: { id: userId, organizationId: session.organizationId },
-      data: { canEdit }
-    });
+    await toggleUserEditPermissionService(
+      userId,
+      canEdit,
+      {
+        operatorId: session.userId,
+        organizationId: session.organizationId
+      }
+    );
     revalidatePath('/settings/team');
   });
 }
