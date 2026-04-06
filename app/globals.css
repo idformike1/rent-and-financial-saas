@@ -1,154 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── SLATE & EMBER V3: DESIGN SYSTEM FOUNDATION ──────────────────────────── */
-  --color-primary:       var(--primary);
-  --color-primary-light: #FF7555;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
-  /* Legacy alias so `text-brand`, `bg-brand` classes still resolve */
-  --color-brand:         var(--primary);
-
-  --color-success:  #10B981;
-  --color-warning:  #F59E0B;
-  --color-danger:   #F43F5E;
-
-  /* ── SURFACE PALETTE ─────────────────────────────────────────────────────── */
-  --color-background:  var(--background);
-  --color-foreground:  var(--foreground);
-  --color-card:        var(--card);
-  --color-card-raised: var(--card);
-  --color-border:      var(--border);
-  --color-muted:       var(--muted);
-
-  /* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
-  --font-sans: var(--font-inter), sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), monospace;
-
-  /* ── GEOMETRY ────────────────────────────────────────────────────────────── */
-  --radius-xl:  1rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 1.875rem;
+  --radius-sm: var(--radius);
+  
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* ── LIGHT MODE ──────────────────────────────────────────────────────────── */
-:root {
-  --background: #F8FAFC; 
-  --foreground: #0F172A;
-  --card: rgba(255, 255, 255, 0.8); 
-  --card-foreground: #0F172A;
-  --primary: #E64A19; 
-  --primary-foreground: #FFFFFF;
-  --muted: #F1F5F9;
-  --muted-foreground: #475569;
-  --border: #E2E8F0; 
-  --radius: 1.5rem;
+:root, .dark {
+  --background: #0B0D10;
+  --foreground: #FFFFFF;
+  --card: #14161A;
+  --card-foreground: #FFFFFF;
+  --muted: #1A1D24;
+  --muted-foreground: #8A919E;
+  --border: #23252A;
+  --primary: #E8E9EB;
+  --primary-foreground: #0B0D10;
+  --radius: 6px;
 }
 
-/* ── DARK MODE ───────────────────────────────────────────────────────────── */
-.dark {
-  --background: #0B0F17; 
-  --foreground: #F8FAFC;
-  --card: rgba(22, 27, 38, 0.7); 
-  --card-foreground: #F8FAFC;
-  --primary: #FF5733; 
-  --primary-foreground: #FFFFFF;
-  --muted: #1E293B; 
-  --muted-foreground: #CBD5E1;
-  --border: rgba(255, 255, 255, 0.1);
-}
-
-/* ── BASE ────────────────────────────────────────────────────────────────── */
 html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── GLASS PANEL — The universal elevated surface ────────────────────────── */
-.glass-panel {
-  @apply backdrop-blur-xl border border-border shadow-sm;
-  background: var(--card);
-}
-
-/* ── PRIMARY EMBER GLOW ──────────────────────────────────────────────────── */
-.glow-primary {
-  box-shadow: 0 0 20px rgba(255, 87, 51, 0.25),
-              0 4px 12px rgba(255, 87, 51, 0.15);
-}
-.glow-primary:hover {
-  box-shadow: 0 0 35px rgba(255, 87, 51, 0.40),
-              0 8px 20px rgba(255, 87, 51, 0.25);
-  transition: box-shadow 0.3s ease;
-}
-/* Legacy alias */
-.glow-orange { box-shadow: 0 0 20px rgba(255, 87, 51, 0.25); }
-.glow-orange:hover { box-shadow: 0 0 35px rgba(255, 87, 51, 0.40); }
-
-/* ── SCROLLBAR ───────────────────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 4px; height: 4px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 10px; }
-
-/* ── FORM ELEMENTS ───────────────────────────────────────────────────────── */
-input, select, textarea {
-  background-color: var(--card) !important;
-  color: var(--foreground) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-xl) !important;
-  padding: 0.75rem 1rem !important;
-  outline: none !important;
-  transition: all 0.2s ease;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px var(--primary-muted) !important;
-}
-
-/* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--foreground);
-  letter-spacing: -0.02em;
-  font-style: normal;
-}
-.text-meta {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-}
-
-/* ── FONT STANDARDIZATION ────────────────────────────────────────────────── */
-body, button, input, select, textarea, div, span, p {
-  font-family: var(--font-sans);
-}
-.font-mono, [class*="tabular-nums"], [class*="text-digit"] {
-  font-family: var(--font-mono) !important;
-}
-[class*="text-5xl"], [class*="text-4xl"] {
-  font-family: var(--font-mono) !important;
-  font-style: normal !important;
-}
-
+/* ── STEP 2: FINANICAL TYPOGRAPHY ────────────────────────────────────────── */
 .font-finance {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  letter-spacing: -0.02em;
   font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum";
+  letter-spacing: -0.01em;
 }
 
-/* ── SOVEREIGN OVERRIDES ─────────────────────────────────────────────────── */
-[class*="italic"] { font-style: normal !important; }
+/* ── PURGE LEGACY ─────────────────────────────────────────────────────────── */
+.glass-panel, .glow-primary, .glow-orange { display: none !important; }
 
-/* Prevent any legacy green/blue buttons from leaking through */
-button[class*="bg-green"],
-button[class*="bg-emerald"],
-button[class*="bg-blue-6"],
-button[class*="bg-blue-5"] {
-  background-color: var(--primary) !important;
-  color: var(--primary-foreground) !important;
-}
+/* Global Scrollbar Reset */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }

@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { getPropertyAssetPulse, getPropertyLedgerEntries } from '@/actions/analytics.actions'
 import { createUnit, updateUnit } from '@/actions/asset.actions'
-import { Card, Badge, Button, RollingCounter } from '@/components/ui-finova'
+import { Card, Badge, Button } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -305,7 +305,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <TrendingUp className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </div>
           <div className={cn("text-3xl font-mono tracking-tighter font-finance tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
-             <RollingCounter value={data.hud.noi} prefix="$" />
+             <span className="font-finance">${data.hud.noi}</span>
           </div>
           <div className="mt-3 flex items-center gap-2">
              <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-none text-[8px] py-0 px-2 font-mono">REALIZED_VALUE_v3</Badge>
@@ -322,7 +322,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <Activity className="w-3.5 h-3.5 text-slate-400 group-hover:text-brand transition-colors" />
           </div>
           <div className="text-3xl font-mono text-foreground tracking-tighter font-finance tabular-nums">
-             <RollingCounter value={data.hud.adjustedNoi} prefix="$" />
+             <span className="font-finance">${data.hud.adjustedNoi}</span>
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3 underline decoration-slate-800">Operational Health Index</p>
         </button>
@@ -337,7 +337,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <AlertCircle className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-500 transition-colors" />
           </div>
           <div className={cn("text-3xl font-mono tracking-tighter font-finance tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-slate-300")}>
-             <RollingCounter value={data.hud.revenueLeakage} suffix="%" />
+             <span className="font-finance">{data.hud.revenueLeakage}%</span>
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3">Market vs Contract Delta</p>
         </button>
@@ -352,7 +352,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
              <ShieldCheck className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
           </div>
           <div className={cn("text-3xl font-mono tracking-tighter font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
-             <RollingCounter value={data.hud.collectionEfficiency} suffix="%" />
+             <span className="font-finance">{data.hud.collectionEfficiency}%</span>
           </div>
           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3">Current_Month_Inflow_Ratio</p>
         </button>

@@ -174,7 +174,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
          <div 
           onClick={() => hasChildren && setIsOpen(!isOpen)}
           className={`
-            min-w-[280px] p-5 bg-[var(--card)] border ${colorClasses} relative transition-all duration-300 rounded-3xl shadow-sm hover:shadow-md
+            min-w-[280px] p-5 bg-[var(--card)] border ${colorClasses} relative transition-all duration-300 rounded-3xl shadow-sm hover:shadow-none
             ${hasChildren ? 'cursor-pointer hover:bg-[var(--card-raised)] hover:scale-[1.02]' : 'cursor-default'}
             dark:shadow-none
           `}

@@ -1,42 +1,37 @@
 'use client'
 
 import React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 export { cn }
 
 /**
- * AXIOM 2026: CARD (SLATE & EMBER — V3 SOVEREIGN)
- * Glass surface, 3xl radius, subtle ember depth.
+ * MERCURY: CARD (WORKSTATION STANDARD)
+ * Flat, bordered, 6px radius. No shadows.
  */
 interface CardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   children: React.ReactNode;
-  variant?: 'glass' | 'outline' | 'flat';
-  isHoverable?: boolean;
+  variant?: 'default' | 'muted' | 'outline' | 'glass';
 }
 
 export function Card({
   children,
   className,
-  variant = 'glass',
-  isHoverable = false,
+  variant = 'default',
   ...props
 }: CardProps) {
   const variants = {
-    glass: "glass-panel shadow-2xl",
-    outline: "bg-transparent border border-white/5",
-    flat: "bg-white/30 border-none",
+    default: "bg-[#0B0D10] border border-[#23252A] shadow-none",
+    muted:   "bg-[#14161A] border border-[#23252A] shadow-none",
+    outline: "bg-transparent border border-[#23252A] shadow-none",
+    glass:   "bg-[#14161A]/50 backdrop-blur-xl border border-[#23252A] shadow-none",
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={isHoverable ? { y: -4, transition: { duration: 0.3 } } : undefined}
       className={cn(
-        "rounded-3xl p-8 transition-all duration-500",
-        variants[variant],
+        "rounded-[6px] p-5 transition-none",
+        variants[variant as keyof typeof variants],
         className
       )}
       {...props}
@@ -47,8 +42,8 @@ export function Card({
 }
 
 /**
- * AXIOM 2026: BUTTON (SLATE & EMBER — PILL SOVEREIGN)
- * Primary = Ember glow. Every button rounded-full.
+ * MERCURY: BUTTON (WORKSTATION STANDARD)
+ * High contrast, no glows, 6px radius.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -65,22 +60,22 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-[var(--primary)] text-foreground hover:bg-[var(--primary-dark,#E64A19)] shadow-[0_0_15px_rgba(255,87,51,0.2)] hover:shadow-[0_0_25px_rgba(255,87,51,0.35)] border-none glow-primary",
-    secondary: "bg-white/3 text-foreground hover:bg-white/5 border border-border",
-    ghost: "bg-transparent text-[var(--muted)] hover:text-foreground hover:bg-white/3",
-    danger: "bg-[#F43F5E] text-foreground hover:bg-[#E11D48] shadow-[0_0_15px_rgba(244,63,94,0.2)]",
+    primary: "bg-[#E8E9EB] text-[#0B0D10] hover:bg-white border-none shadow-none",
+    secondary: "bg-transparent border border-[#23252A] text-white hover:bg-[#14161A] shadow-none",
+    ghost: "bg-transparent text-[#8A919E] hover:text-white hover:bg-[#14161A]",
+    danger: "bg-transparent border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 shadow-none",
   };
 
   const sizes = {
-    sm:  "px-5 py-2 text-[10px] font-black tracking-widest",
-    md:  "px-8 py-3.5 text-[11px] font-black tracking-widest",
-    lg:  "px-10 py-4 text-xs font-black tracking-widest"
+    sm:  "px-3 py-1.5 text-xs font-medium",
+    md:  "px-4 py-2 text-sm font-medium",
+    lg:  "px-6 py-3 text-base font-medium"
   };
 
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-all duration-300 active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none uppercase leading-none",
+        "inline-flex items-center justify-center rounded-[6px] transition-none disabled:opacity-40 disabled:pointer-events-none leading-none",
         variants[variant],
         sizes[size],
         className
@@ -89,7 +84,7 @@ export function Button({
       {...props}
     >
       {isLoading && (
-        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2.5" />
+        <span className="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin mr-2" />
       )}
       {children}
     </button>
@@ -97,19 +92,19 @@ export function Button({
 }
 
 /**
- * AXIOM 2026: LABEL (SOFT METADATA)
+ * MERCURY: LABEL
  */
 export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <label className={cn("text-sm font-semibold text-[var(--muted)] block mb-2 uppercase tracking-wider text-[10px]", className)}>
+    <label className={cn("text-[11px] font-medium text-[#8A919E] block mb-2 uppercase tracking-wider", className)}>
       {children}
     </label>
   )
 }
 
 /**
- * AXIOM 2026: BADGE (DATA DENSITY — EMBER STANDARD)
- * All status badges align to Ember palette or neutral Slate.
+ * MERCURY: BADGE
+ * Minimalist status indicators.
  */
 export function Badge({
   children,
@@ -118,34 +113,35 @@ export function Badge({
 }: {
   children: React.ReactNode,
   className?: string,
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand' | 'primary'
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand'
 }) {
   const variants = {
-    default: "bg-white/3 text-[var(--muted)] border border-border",
-    // Ember-tinted for primary/brand actions
-    primary: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
-    brand:   "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
-    // Status semantics — kept distinct for data clarity
-    success: "bg-[var(--primary-muted)] text-[var(--primary)] border border-[var(--primary)]/20 font-bold",
-    warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold",
-    danger:  "bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold",
+    default: "border-[#23252A] text-[#8A919E] bg-[#1A1D24]",
+    success: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10",
+    warning: "border-amber-500/30 text-amber-400 bg-amber-500/10",
+    danger:  "border-rose-500/30 text-rose-400 bg-rose-500/10",
+    brand:   "border-[#E8E9EB]/30 text-[#E8E9EB] bg-[#E8E9EB]/10",
   };
 
   return (
-    <span className={cn("px-3 py-1 rounded-full text-[9px] uppercase font-black tracking-widest inline-flex items-center gap-1.5", variants[variant], className)}>
+    <span className={cn(
+      "inline-flex items-center px-2 py-0.5 rounded-[4px] border text-[11px] font-medium leading-none",
+      variants[variant],
+      className
+    )}>
       {children}
     </span>
   )
 }
 
 /**
- * AXIOM 2026: INPUT (LIQUID INTERACTION)
+ * MERCURY: INPUT
  */
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       className={cn(
-        "w-full bg-card/[0.03] border border-[var(--border)] rounded-xl px-5 py-3.5 text-sm focus:border-[var(--primary)]/50 focus:ring-2 focus:ring-[var(--primary)]/10 outline-none transition-all duration-300 text-foreground placeholder:text-[var(--muted)]",
+        "w-full bg-[#0B0D10] border border-[#23252A] text-white px-3 py-2 rounded-[6px] text-sm placeholder-[#8A919E] focus:outline-none focus:border-white focus:ring-0 transition-none",
         className
       )}
       {...props}
@@ -154,32 +150,18 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
 }
 
 /**
- * AXIOM 2026: ROLLING COUNTER (FINANCIAL TELEMETRY)
+ * MERCURY: SELECT (Basic override)
  */
-export function RollingCounter({ value, prefix = "", suffix = "" }: { value: number, prefix?: string, suffix?: string }) {
-  const [displayValue, setDisplayValue] = React.useState(0);
-
-  React.useEffect(() => {
-    let start = displayValue;
-    let end = value;
-    let duration = 1500;
-    let startTime: number | null = null;
-
-    const animate = (time: number) => {
-      if (!startTime) startTime = time;
-      let progress = Math.min((time - startTime) / duration, 1);
-      const easeOutExpo = 1 - Math.pow(2, -10 * progress);
-      const current = start + (end - start) * easeOutExpo;
-      setDisplayValue(current);
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-
-    requestAnimationFrame(animate);
-  }, [value]);
-
+export function Select({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <span className="font-black tracking-tighter">
-      {prefix}{displayValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}{suffix}
-    </span>
-  );
+    <select
+      className={cn(
+        "w-full bg-[#0B0D10] border border-[#23252A] text-white px-3 py-2 rounded-[6px] text-sm focus:outline-none focus:border-white focus:ring-0 transition-none appearance-none cursor-pointer",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </select>
+  )
 }

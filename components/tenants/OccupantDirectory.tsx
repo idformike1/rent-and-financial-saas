@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Search, ShieldCheck, ArrowRight, Building, User } from 'lucide-react'
-import { Card, Badge } from '@/components/ui-finova'
+import { Search, ArrowRight, Building, User } from 'lucide-react'
+import { Card, Badge, Input } from '@/components/ui-finova'
 
 interface Tenant {
   id: string
@@ -15,93 +15,82 @@ interface Tenant {
 export default function OccupantDirectory({ initialTenants }: { initialTenants: Tenant[] }) {
   const [searchQuery, setSearchQuery] = useState('')
 
-  // ── FILTER LOGIC: The "Brain" of the search ───────────────────────────────
   const filteredTenants = initialTenants.filter(tenant => 
     tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (tenant.email && tenant.email.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
       {/* SEARCH COMMAND STRIP */}
-      <Card className="p-1 bg-slate-900 border-none rounded-3xl flex items-center gap-4 group transition-all ring-1 ring-slate-800 focus-within:ring-brand/50">
-         <Search className="w-5 h-5 text-slate-500 ml-5 group-focus-within:text-brand transition-colors" />
-         <input 
+      <div className="relative group max-w-sm">
+         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A919E] group-focus-within:text-white transition-colors" />
+         <Input 
            type="text" 
-           placeholder="Scan identity registry (e.g. 'JACK')..." 
+           placeholder="Scan identity registry..." 
            value={searchQuery}
            onChange={(e) => setSearchQuery(e.target.value)}
-           className="bg-transparent border-none text-foreground text-xs font-bold uppercase tracking-widest outline-none w-full py-4 placeholder:text-zinc-700" 
+           className="pl-10" 
          />
-         <div className="flex items-center pr-2">
-            <Badge className="bg-brand/20 text-brand border-brand/30 whitespace-nowrap h-8 px-4 rounded-xl font-mono">
-               {filteredTenants.length} Identities Found
-            </Badge>
-         </div>
-      </Card>
+      </div>
 
       {/* CORE REGISTRY TABLE */}
-      <Card className="p-0 overflow-hidden border-none shadow-2xl rounded-[2.5rem] bg-card dark:bg-slate-900">
+      <Card variant="outline" className="p-0 border-[#23252A] bg-transparent">
         {filteredTenants.length === 0 ? (
-          <div className="p-32 text-center space-y-6">
-            <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto transition-transform hover:scale-110 border border-border dark:border-slate-800">
-               <User className="w-10 h-10 text-slate-200 dark:text-slate-400" />
-            </div>
+          <div className="p-20 text-center space-y-4">
+            <User className="w-10 h-10 text-[#23252A] mx-auto" />
             <div>
-               <p className="text-2xl font-black text-foreground dark:text-foreground uppercase italic tracking-tighter leading-none">Identity Void</p>
-               <p className="text-slate-400 text-[9px] mt-3 font-black tracking-[0.3em] uppercase">No active signals found matching your current scan parameters.</p>
+               <p className="text-xl font-medium text-white italic tracking-tight">Identity Void</p>
+               <p className="text-[#8A919E] text-[10px] mt-2 uppercase tracking-widest leading-relaxed">No active signals found matching your current scan parameters.</p>
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead className="bg-slate-50/50 dark:bg-background/50 border-b border-border dark:border-slate-800">
-                <tr>
-                  <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Identity Protocol</th>
-                  <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Lease Portfolio</th>
-                  <th className="px-8 py-6 text-left text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Risk Matrix</th>
-                  <th className="px-8 py-6 text-right text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Action Domain</th>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
+              <thead className="border-b border-[#23252A]">
+                <tr className="bg-transparent">
+                  <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">Identity Protocol</th>
+                  <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">Lease Portfolio</th>
+                  <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">Status Flag</th>
+                  <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-right">Domain Access</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+              <tbody className="divide-none">
                 {filteredTenants.map((tenant: any) => {
                   const activeLeases = (tenant.leases as any[]).filter(l => l.isActive);
                   const primaryLease = activeLeases.find(l => l.isPrimary) || activeLeases[0];
                   
                   return (
-                    <tr key={tenant.id} className="hover:bg-slate-50/50 dark:hover:bg-brand/5 transition-all group">
-                      <td className="px-8 py-8">
-                        <div className="flex items-center gap-5">
-                          <div className="h-14 w-14 rounded-3xl bg-slate-900 text-foreground flex items-center justify-center font-black text-xl italic shadow-xl group-hover:rotate-6 transition-all border border-border">
+                    <tr key={tenant.id} className="border-b border-[#23252A] hover:bg-[#14161A] group transition-none cursor-pointer">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-[4px] bg-[#1A1D24] border border-[#23252A] text-white flex items-center justify-center font-bold text-sm">
                             {tenant.name.charAt(0)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-lg font-black text-foreground dark:text-foreground uppercase italic tracking-tighter leading-none mb-1.5 group-hover:text-brand transition-colors">{tenant.name}</span>
-                            <div className="flex items-center gap-2">
-                               <ShieldCheck className="w-3 h-3 text-[var(--primary)]" />
-                               <span className="text-[10px] font-bold text-slate-400 tracking-tight truncate max-w-[150px] uppercase font-mono">{tenant.email || 'PROTOCOL_NULL'}</span>
-                            </div>
+                            <span className="text-sm font-medium text-white tracking-tight">{tenant.name}</span>
+                            <span className="text-[10px] text-[#8A919E] uppercase tracking-wider font-mono">{tenant.email || 'PROTOCOL_NULL'}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-8">
-                        <div className="flex items-center gap-3">
-                          <Building className="w-4 h-4 text-brand" />
-                          <span className="text-sm font-black text-slate-400 dark:text-slate-300 uppercase italic tracking-tighter">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <Building className="w-3.5 h-3.5 text-[#8A919E]" />
+                          <span className="text-sm font-medium text-white">
                             {primaryLease?.unit.unitNumber || 'UNASSIGNED'}
                           </span>
                         </div>
-                        <p className="text-[9px] font-black text-slate-400 mt-2 uppercase tracking-widest">{activeLeases.length} ACTIVE ATOMIC LEASES</p>
+                        <p className="text-[10px] text-[#8A919E] mt-1 uppercase tracking-widest">{activeLeases.length} ACTIVE</p>
                       </td>
-                      <td className="px-8 py-8">
-                        <Badge className={`px-4 py-1.5 text-[9px] rounded-xl border-none font-black tracking-widest ${activeLeases.length > 0 ? 'bg-[var(--primary)]/10 text-[var(--primary)]' : 'bg-slate-100 text-slate-400'}`}>
-                          {activeLeases.length > 0 ? 'STATUS::ACTIVE' : 'STATUS::INACTIVE'}
+                      <td className="px-4 py-4">
+                        <Badge variant={activeLeases.length > 0 ? 'success' : 'default'} className="lowercase text-[10px]">
+                           {activeLeases.length > 0 ? 'active' : 'inactive'}
                         </Badge>
                       </td>
-                      <td className="px-8 py-8 text-right">
-                        <Link href={`/tenants/${tenant.id}`}>
-                           <button className="h-10 w-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-slate-800 flex items-center justify-center group-hover:bg-brand group-hover:text-foreground transition-all shadow-premium">
-                              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      <td className="px-4 py-4 text-right">
+                        <Link href={`/tenants/${tenant.id}`} onClick={(e) => e.stopPropagation()}>
+                           <button className="h-8 w-8 rounded-[4px] border border-[#23252A] flex items-center justify-center text-[#8A919E] hover:text-white hover:bg-[#23252A] transition-none">
+                              <ArrowRight className="w-3.5 h-3.5" />
                            </button>
                         </Link>
                       </td>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTransition, useState } from 'react'
+import { useTransition } from 'react'
 import { 
   updateUserRole, 
   toggleUserActivation, 
@@ -9,6 +9,8 @@ import {
 } from "@/actions/team.actions"
 import { Shield, UserMinus, ShieldAlert, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { Badge } from '@/components/ui-finova'
+import { cn } from '@/lib/utils'
 
 interface Member {
   id: string
@@ -27,7 +29,6 @@ export default function AccessControlTable({
   currentUserId: string | undefined 
 }) {
   const [isPending, startTransition] = useTransition()
-  const [localMembers, setLocalMembers] = useState(members)
 
   const handleAction = async (action: () => Promise<any>, successMsg: string) => {
     startTransition(async () => {
@@ -41,89 +42,99 @@ export default function AccessControlTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-left">
-        <thead>
-          <tr className="border-b border-border bg-slate-50/50 dark:bg-slate-900/50">
-            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted">User Identity</th>
-            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted">Overarching Role</th>
-            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted text-center">The Muzzle</th>
-            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted text-center">Kill Switch</th>
-            <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted text-right">Nuclear</th>
+    <div className="w-full overflow-x-auto relative">
+      <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
+        <thead className="border-b border-[#23252A]">
+          <tr className="bg-transparent">
+            <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">User Identity</th>
+            <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A]">Overarching Role</th>
+            <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-center">Permissions</th>
+            <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-center">Status</th>
+            <th className="px-4 py-3 text-xs font-normal text-[#8A919E] bg-transparent border-b border-[#23252A] text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className="divide-none">
           {members.map((member) => (
             <tr 
               key={member.id} 
-              className={`group transition-colors duration-200 hover:bg-slate-50/30 dark:hover:bg-slate-800/20 ${isPending ? 'opacity-50 pointer-events-none' : ''}`}
+              className={cn(
+                "border-b border-[#23252A] hover:bg-[#14161A] group transition-none cursor-pointer",
+                isPending && "opacity-50"
+              )}
             >
-              <td className="px-6 py-4">
+              <td className="px-4 py-4">
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-foreground uppercase tracking-tight">
-                    {member.name || 'Anonymous User'}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-white">
+                      {member.name || 'Anonymous'}
+                    </span>
                     {member.id === currentUserId && (
-                      <span className="ml-2 text-[8px] bg-brand/10 text-brand px-1.5 py-0.5 rounded border border-brand/20">YOU</span>
+                      <Badge variant="default" className="text-[9px] px-1.5 py-0 border-[#23252A]/50 lowercase">you</Badge>
                     )}
-                  </span>
-                  <span className="text-xs text-muted font-mono lowercase">{member.email}</span>
+                  </div>
+                  <span className="text-xs text-[#8A919E] font-mono lowercase">{member.email}</span>
                 </div>
               </td>
               
-              <td className="px-6 py-4">
+              <td className="px-4 py-4">
                 <select
                   value={member.role}
                   onChange={(e) => handleAction(() => updateUserRole(member.id, e.target.value), "Role recalibrated")}
                   disabled={member.id === currentUserId}
-                  className="bg-card border border-border text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] focus:ring-1 focus:ring-brand focus:border-brand transition-all disabled:opacity-50"
+                  className="bg-transparent border border-[#23252A] text-[11px] font-bold text-white px-2 py-1 rounded-[4px] focus:outline-none focus:border-white transition-none disabled:opacity-30"
                 >
-                  <option value="OWNER">OWNER</option>
-                  <option value="MANAGER">MANAGER</option>
-                  <option value="ADMIN">ADMIN</option>
+                  <option value="OWNER" className="bg-[#0B0D10]">OWNER</option>
+                  <option value="MANAGER" className="bg-[#0B0D10]">MANAGER</option>
+                  <option value="ADMIN" className="bg-[#0B0D10]">ADMIN</option>
                 </select>
               </td>
 
-              <td className="px-6 py-4 text-center">
+              <td className="px-4 py-4 text-center">
                 <button
-                  onClick={() => handleAction(() => toggleUserEditPermission(member.id, !member.canEdit), member.canEdit ? "User muzzled" : "User unmuzzled")}
-                  className={`inline-flex items-center justify-center p-2 rounded-xl border transition-all ${
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAction(() => toggleUserEditPermission(member.id, !member.canEdit), member.canEdit ? "Muzzled" : "Unmuzzled")
+                  }}
+                  className={`p-1.5 rounded-[4px] border transition-none ${
                     member.canEdit 
-                      ? 'border-brand/20 bg-brand/5 text-brand hover:bg-brand/10' 
-                      : 'border-muted/20 bg-slate-100 dark:bg-slate-800 text-muted hover:text-foreground'
+                      ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400' 
+                      : 'border-[#23252A] bg-transparent text-[#8A919E]'
                   }`}
-                  title={member.canEdit ? "Revoke Edit Access" : "Grant Edit Access"}
                 >
-                  {member.canEdit ? <Shield size={16} /> : <ShieldAlert size={16} />}
+                  {member.canEdit ? <Shield size={14} /> : <ShieldAlert size={14} />}
                 </button>
               </td>
 
-              <td className="px-6 py-4 text-center">
+              <td className="px-4 py-4 text-center">
                 <button
-                  onClick={() => handleAction(() => toggleUserActivation(member.id, !member.isActive), member.isActive ? "User identity suspended" : "User identity restored")}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAction(() => toggleUserActivation(member.id, !member.isActive), member.isActive ? "Suspended" : "Restored")
+                  }}
                   disabled={member.id === currentUserId}
-                  className={`inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={cn(
+                    "inline-flex items-center gap-2 px-2 py-0.5 rounded-[4px] border text-[10px] font-bold uppercase transition-none disabled:opacity-10",
                     member.isActive 
-                      ? 'border-[var(--primary)]/20 bg-[var(--primary)]/5 text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-muted)]' 
-                      : 'border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10'
-                  }`}
+                      ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400' 
+                      : 'border-rose-500/20 bg-rose-500/5 text-rose-500'
+                  )}
                 >
-                  {member.isActive ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
                   {member.isActive ? 'ACTIVE' : 'LOCKED'}
                 </button>
               </td>
 
-              <td className="px-6 py-4 text-right">
+              <td className="px-4 py-4 text-right">
                 <button
-                  onClick={() => {
-                    if (confirm("Initiate nuclear purge sequence? This cannot be undone if logs exist.")) {
-                      handleAction(() => deleteUserForever(member.id), "User identity vaporized")
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (confirm("Purge identity forever?")) {
+                      handleAction(() => deleteUserForever(member.id), "Vaporized")
                     }
                   }}
                   disabled={member.id === currentUserId}
-                  className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-xl border border-transparent hover:border-rose-500/20 transition-all disabled:opacity-30"
-                  title="Purge Identity"
+                  className="p-1.5 text-rose-500 hover:bg-rose-500/10 rounded-[4px] transition-none disabled:opacity-10"
                 >
-                  <UserMinus size={18} />
+                  <UserMinus size={16} />
                 </button>
               </td>
             </tr>
@@ -131,8 +142,8 @@ export default function AccessControlTable({
         </tbody>
       </table>
       {isPending && (
-        <div className="absolute inset-0 bg-white/30 dark:bg-background/50 flex items-center justify-center z-10 backdrop-blur-[1px]">
-          <Loader2 className="w-8 h-8 text-brand animate-spin" />
+        <div className="absolute inset-0 bg-[#0B0D10]/20 flex items-center justify-center z-10">
+          <Loader2 className="w-5 h-5 text-white animate-spin" />
         </div>
       )}
     </div>
