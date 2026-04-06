@@ -26,6 +26,7 @@ import { createUnit, updateUnit } from '@/actions/unit-mgmt.actions'
 import { Card, Badge, Button, RollingCounter } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -170,15 +171,55 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
 
   if (loading) {
     return (
-      <div className="h-[600px] flex flex-col items-center justify-center space-y-6 opacity-40">
-         <div className="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-         <motion.span 
-           animate={{ opacity: [0.4, 1, 0.4] }}
-           transition={{ repeat: Infinity, duration: 2 }}
-           className="text-[10px] font-black uppercase tracking-[0.4em]"
-         >
-           Calibrating Asset Pulse...
-         </motion.span>
+      <div className="space-y-12 animate-in fade-in duration-300 pb-20">
+        
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-10">
+          <div className="space-y-5">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-24 h-6 rounded" />
+              <Skeleton className="w-32 h-6 rounded" />
+            </div>
+            <Skeleton className="w-80 h-10 rounded" />
+            <Skeleton className="w-64 h-3 rounded" />
+          </div>
+          <div className="flex items-center gap-3">
+            <Skeleton className="w-32 h-9 rounded-full" />
+            <Skeleton className="w-36 h-9 rounded-full" />
+          </div>
+        </div>
+
+        {/* STEP 1: FISCAL HUD */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-background divide-x divide-white/10">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="p-8 text-left group">
+               <div className="flex justify-between items-start mb-6">
+                 <Skeleton className="w-32 h-3 rounded" />
+                 <Skeleton className="w-4 h-4 rounded-full" />
+               </div>
+               <Skeleton className="w-40 h-10 mb-4 rounded" />
+               <Skeleton className="w-24 h-3 mt-3 rounded" />
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+           <div className="lg:col-span-1 space-y-6">
+              <Skeleton className="w-48 h-4 rounded" />
+              <Skeleton className="w-full h-[450px] rounded-3xl" />
+           </div>
+           <div className="lg:col-span-2 space-y-6">
+              <div className="flex justify-between items-end mb-4">
+                 <Skeleton className="w-64 h-4 rounded" />
+                 <Skeleton className="w-32 h-8 rounded" />
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                 {[...Array(10)].map((_, i) => (
+                   <Skeleton key={i} className="w-full h-[140px] rounded-none opacity-50" />
+                 ))}
+              </div>
+           </div>
+        </div>
+
       </div>
     )
   }
