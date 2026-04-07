@@ -57,7 +57,7 @@ export default function HomeVisuals() {
 
         <div className="flex-1 mt-8 -mx-6 -mb-6 rounded-b-[12px] overflow-hidden">
            <ResponsiveContainer width="100%" height={260}>
-              <AreaChart data={treasuryData}>
+              <AreaChart data={treasuryData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
                        <stop offset="0%" stopColor="#8DA4F5" stopOpacity={0.28} />
@@ -69,8 +69,10 @@ export default function HomeVisuals() {
                    hide={false} 
                    axisLine={false} 
                    tickLine={false} 
-                   tick={{ fontSize: 10, fill: 'var(--muted-foreground)', opacity: 0.4 }}
-                   interval={1}
+                   tick={{ fill: '#FFFFFF', fontSize: 11, fontWeight: 400 }}
+                   interval="preserveStartEnd"
+                   ticks={['Mar 13', 'Mar 18', 'Mar 23', 'Mar 28', 'Apr 2']}
+                   padding={{ left: 0, right: 0 }}
                  />
                  <Tooltip 
                    contentStyle={{ backgroundColor: '#171721', border: '1px solid var(--border)', borderRadius: '8px' }}
