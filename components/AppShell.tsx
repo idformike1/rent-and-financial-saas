@@ -38,8 +38,9 @@ const Icons = {
 // ─── FULL 3-DOMAIN NAVIGATION REGISTRY ───────────────────────────────────────
 const navigationSections = [
   {
-    label: 'Core Operations',
+    label: 'Command',
     items: [
+      { name: 'Home',              href: '/home',        icon: Icons.Home },
       { name: 'Dashboard',        href: '/dashboard',   icon: Icons.Home },
       { name: 'Properties',       href: '/properties',  icon: Icons.Accounts },
       { name: 'Tenants',          href: '/tenants',     icon: Icons.Accounts },
@@ -49,7 +50,7 @@ const navigationSections = [
     ]
   },
   {
-    label: 'Intelligence Hub',
+    label: 'Intelligence hub',
     items: [
       { name: 'Analytic Hub',  href: '/reports',                       icon: Icons.Home },
       { name: 'Master Ledger', href: '/reports/master-ledger',         icon: Icons.Transactions },
@@ -59,7 +60,7 @@ const navigationSections = [
     ]
   },
   {
-    label: 'Governance Control',
+    label: 'Governance control',
     items: [
       { name: 'Taxonomy Logic', href: '/settings/categories', icon: Icons.Accounts },
       { name: 'System Ontology',href: '/settings/ontology',   icon: Icons.Home },
@@ -76,7 +77,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const userName = session?.user?.name || 'Sovereign Auditor'
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [openSections, setOpenSections] = useState<string[]>(['Core Operations', 'Intelligence Hub', 'Governance Control'])
+  const [openSections, setOpenSections] = useState<string[]>(['Command', 'Intelligence hub', 'Governance control'])
   const pathname = usePathname()
 
   const toggleSection = (label: string) => {
@@ -88,7 +89,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   const filteredSections = navigationSections.filter(section => {
-    if (section.label === 'Governance Control' && userRole === 'MANAGER') return false
+    if (section.label === 'Governance control' && userRole === 'MANAGER') return false
     return true
   })
 

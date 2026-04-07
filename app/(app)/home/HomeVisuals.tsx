@@ -30,18 +30,18 @@ function Zap({ className }: { className?: string }) {
 
 export default function HomeVisuals() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
       
       {/* ── COMPONENT A: TREASURY CHART CARD (2-COLUMN) ────────────────────── */}
-      <Card className="lg:col-span-2 flex flex-col justify-between p-6 bg-card border-border shadow-none rounded-[12px] min-h-[380px]">
+      <Card className="lg:col-span-1 flex flex-col justify-between p-6 bg-card border-border shadow-none rounded-[12px] min-h-[380px]">
         
         <div className="flex justify-between items-start">
-           <div className="space-y-1">
-              <h3 className="text-[12px] font-[400] text-[#9D9DA8] tracking-wider">Treasury Net Position</h3>
-              <div className="flex items-baseline gap-3">
-                 <span className="text-[36px] font-[380] text-foreground tracking-[-0.03em] font-finance">
-                   $5,216,471.18
-                 </span>
+            <div className="space-y-1">
+               <h3 className="text-[15px] font-[400] text-[#DDDAE5] tracking-tight">Mercury balance</h3>
+               <div className="flex items-baseline gap-3">
+                  <span className="text-[28px] font-[380] text-white tracking-[-0.03em] font-finance">
+                    $5,216,471.18
+                  </span>
                  <span className="text-[13px] font-[400] text-mercury-green flex items-center gap-1">
                     <ArrowUpRight className="w-3 h-3" />
                     $1.8M
@@ -58,12 +58,12 @@ export default function HomeVisuals() {
         <div className="flex-1 mt-8 -mx-6 -mb-6 rounded-b-[12px] overflow-hidden">
            <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={treasuryData}>
-                 <defs>
+                  <defs>
                     <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.15} />
-                       <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.01} />
+                       <stop offset="0%" stopColor="#8DA4F5" stopOpacity={0.28} />
+                       <stop offset="100%" stopColor="#8DA4F5" stopOpacity={0.08} />
                     </linearGradient>
-                 </defs>
+                  </defs>
                  <XAxis 
                    dataKey="date" 
                    hide={false} 
@@ -77,24 +77,24 @@ export default function HomeVisuals() {
                    itemStyle={{ color: 'var(--foreground)' }}
                    cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 1 }}
                  />
-                 <Area 
-                   type="monotone" 
-                   dataKey="value" 
-                   stroke="var(--accent)" 
-                   strokeWidth={2}
-                   fill="url(#chartGradient)" 
-                   animationDuration={1500}
-                 />
+                  <Area 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#8DA4F5" 
+                    strokeWidth={1.5}
+                    fill="url(#chartGradient)" 
+                    animationDuration={1500}
+                  />
               </AreaChart>
            </ResponsiveContainer>
         </div>
       </Card>
 
       {/* ── COMPONENT B: LEDGER BALANCES CARD (1-COLUMN) ───────────────────── */}
-      <Card className="lg:col-span-1 p-6 bg-card border-border shadow-none rounded-[12px] flex flex-col">
-         
-         <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[12px] font-[400] text-[#9D9DA8] tracking-wider">Ledger Balances</h3>
+       <Card className="lg:col-span-1 p-6 bg-card border-border shadow-none rounded-[12px] flex flex-col">
+          
+          <div className="flex justify-between items-center mb-6">
+             <h3 className="text-[15px] font-[400] text-[#DDDAE5] tracking-tight">Accounts</h3>
             <div className="flex items-center gap-2">
                <button className="p-1 hover:bg-white/5 rounded-full transition-colors">
                   <Plus className="w-3.5 h-3.5 text-muted-foreground/40" />
@@ -124,11 +124,11 @@ export default function HomeVisuals() {
             ))}
          </div>
 
-         <div className="mt-6 pt-4 border-t border-white/[0.04]">
-            <button className="text-[11px] font-bold text-muted-foreground/40 hover:text-foreground transition-colors tracking-tight">
-               + 2 View all ledgers
-            </button>
-         </div>
+          <div className="mt-6 pt-4 border-t border-white/[0.04]">
+             <button className="text-[13px] font-[400] text-muted-foreground hover:text-foreground transition-colors tracking-tight">
+                View all accounts
+             </button>
+          </div>
       </Card>
 
     </div>
