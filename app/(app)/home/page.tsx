@@ -18,23 +18,23 @@ export default async function HomePage() {
       {/* ── HEADER STRATUM ─────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10 px-1">
         <div className="space-y-1">
-          <h1 className="text-[32px] font-display text-foreground leading-none tracking-[-0.025em]">
+          <h1 className="text-[28px] leading-[36px] font-[400] text-white tracking-tight font-sans">
             Home
           </h1>
-          <p className="text-[15px] font-[400] text-muted-foreground/60 tracking-tight">
+          <p className="text-[15px] font-[400] text-white/40 tracking-tight font-sans">
             Portfolio-level macro analysis
           </p>
         </div>
         
         <div className="flex items-center gap-3">
           <Link href="/expenses">
-            <Button variant="secondary" size="sm" className="h-8 rounded-full text-[13px] border-white/5 bg-white/5 hover:bg-white/10 px-4">
-              View Activity
+            <Button variant="secondary" size="sm" className="h-8 rounded-full text-[15px] font-[400] border-white/5 bg-white/5 hover:bg-white/10 px-6">
+              View activity
             </Button>
           </Link>
           <Link href="/treasury">
-            <Button size="sm" className="bg-[#5266EB] hover:bg-[#5266EB]/90 h-8 px-4 rounded-full text-[13px] border-none">
-              <Plus className="w-[14px] h-[14px] mr-2 shrink-0" /> Move Money
+            <Button size="sm" className="bg-[#5266EB] hover:bg-[#5266EB]/90 h-8 px-6 rounded-full text-[15px] font-[400] border-none">
+              <Plus className="w-[14px] h-[14px] mr-2 shrink-0" /> Move money
             </Button>
           </Link>
         </div>
