@@ -14,7 +14,7 @@ export default async function TransactionsPage() {
   const ledgerData = await getMasterLedger();
 
   return (
-    <div className="py-8 max-w-[1200px] mx-auto px-6">
+    <div className="py-6 w-full px-6">
       <TransactionFeedClient initialData={ledgerData as any} />
     </div>
   );
