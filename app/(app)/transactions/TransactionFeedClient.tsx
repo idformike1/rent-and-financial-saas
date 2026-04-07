@@ -217,7 +217,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
                  </div>
 
                  {/* DATE BLOCK */}
-                 <div className="text-[13px] text-[#C3C3CC] font-[400] tracking-tight">
+                 <div className="text-[14px] leading-[20px] text-[#C3C3CC] font-[400] tracking-tight">
                     {format(new Date(tx.transactionDate), 'MMM d')}
                  </div>
 
@@ -226,9 +226,9 @@ export default function TransactionFeedClient({ initialData }: Props) {
                     <div className="w-7 h-7 rounded-full bg-white/[0.05] border border-white/[0.03] flex items-center justify-center text-[10px] text-white/50 font-[400] shrink-0">
                       {initials}
                     </div>
-                    <span className="text-[14px] text-[#DDE1E5] font-[400] tracking-tight truncate">
-                      {tx.description || tx.payee}
-                    </span>
+                    <span className="text-[15px] leading-[24px] text-[#DDE1E5] font-[400] tracking-tight truncate">
+                       {tx.description || tx.payee}
+                     </span>
                  </div>
 
                  {/* FISCAL BLOCK */}
@@ -241,18 +241,18 @@ export default function TransactionFeedClient({ initialData }: Props) {
 
                  {/* ACCOUNT BLOCK */}
                  <div className="pl-6">
-                    <span className="text-[13px] text-[#C3C3CC] font-[400] tracking-tight truncate block">
+                    <span className="text-[14px] leading-[20px] text-[#C3C3CC] font-[400] tracking-tight truncate block">
                       {tx.account.name}
                     </span>
                  </div>
 
                  {/* METHOD BLOCK */}
-                 <div className="text-[13px] text-[#9D9DA8] font-[400] tracking-tight">
+                 <div className="text-[14px] leading-[20px] text-[#9D9DA8] font-[400] tracking-tight">
                     Direct Transfer
                  </div>
 
                  {/* CATEGORY BLOCK */}
-                 <div className="text-[13px] text-[#9D9DA8] font-[400] tracking-tight truncate">
+                 <div className="text-[14px] leading-[20px] text-[#9D9DA8] font-[400] tracking-tight truncate">
                     {tx.expenseCategory?.name || 'Inflow'}
                  </div>
                </motion.div>
