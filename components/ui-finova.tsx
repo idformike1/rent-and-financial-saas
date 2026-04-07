@@ -22,7 +22,7 @@ export function Card({
 }: CardProps) {
   const variants = {
     default: "mercury-card",
-    muted:   "mercury-card border-white/[0.04] bg-white/[0.02]",
+    muted:   "mercury-card border-[#262631] bg-[#1c1c26]",
     outline: "mercury-card bg-transparent",
     glass:   "mercury-card bg-white/[0.04] backdrop-blur-md",
   };

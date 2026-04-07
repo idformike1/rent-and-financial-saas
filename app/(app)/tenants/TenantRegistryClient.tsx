@@ -16,7 +16,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
   return (
     <div className="space-y-6">
       {/* CORE REGISTRY CARD (Integrated) */}
-      <div className="w-full overflow-hidden rounded-[8px] border border-white/[0.08] bg-white/[0.02]">
+      <div className="mercury-card w-full overflow-hidden">
         
         {/* TACTICAL FILTER STRIP (Inside the Card) */}
         <div className="p-4 border-b border-white/[0.08] flex items-center justify-between gap-4 bg-white/[0.02]">
