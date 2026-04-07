@@ -58,7 +58,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 2. DATA STRATUM ─────────────────────────────────────────────── */}
       <div className="space-y-0">
          {/* THEAD (SURFACE LEVEL) */}
-         <div className="grid grid-cols-[1fr,150px,180px,150px] px-4 py-2 text-[12px] font-[400] text-white/30 uppercase tracking-widest border-b border-white/[0.05] mb-2">
+         <div className="grid grid-cols-[1fr,150px,180px,150px] px-4 py-4 text-[11px] font-[400] text-white/20 uppercase tracking-[0.1em] border-b border-white/[0.05] mb-2 bg-[#0a0a0b] sticky top-0 z-10">
             <div>Date & Description</div>
             <div className="text-right">Amount</div>
             <div className="text-left pl-12">Account</div>
@@ -85,10 +85,10 @@ export default function TransactionFeedClient({ initialData }: Props) {
                      {initials}
                    </div>
                    <div className="flex flex-col">
-                     <span className="text-[15px] text-white font-[400] tracking-tight truncate max-w-[300px]">
+                     <span className="text-[15px] text-[#DDE1E5] font-[400] tracking-tight truncate max-w-[300px]">
                        {tx.description || tx.payee}
                      </span>
-                     <span className="text-[12px] text-white/40 font-[400]">
+                     <span className="text-[14px] text-[#C3C3CC] font-[400]">
                        {format(new Date(tx.transactionDate), 'MMM d')} • {tx.expenseCategory?.name || 'Treasury Inflow'}
                      </span>
                    </div>
@@ -97,14 +97,14 @@ export default function TransactionFeedClient({ initialData }: Props) {
                  {/* FISCAL BLOCK */}
                  <div className={cn(
                     "text-[16px] font-[400] text-right font-finance",
-                    isNegative ? "text-white" : "text-white"
+                    isNegative ? "text-[#F4F5F9]" : "text-[#6CC08F]"
                  )}>
-                   {isNegative ? '−' : ''}${displayAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                   {isNegative ? '−' : ''}${displayAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                  </div>
 
                  {/* ANALYTICAL DIMENSIONS */}
                  <div className="pl-12">
-                    <span className="px-2.5 py-1 rounded-full bg-white/[0.05] text-[12px] text-white/60 font-[400]">
+                    <span className="text-[14px] text-[#C3C3CC] font-[400]">
                       {tx.account.name}
                     </span>
                  </div>
