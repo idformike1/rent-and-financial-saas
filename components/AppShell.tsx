@@ -208,8 +208,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* ── MAIN CANVAS ───────────────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-[1600px] mx-auto">
+        <main className="flex-1 overflow-y-auto">
+          <div className="w-full">
             {children}
           </div>
         </main>
