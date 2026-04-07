@@ -33,7 +33,7 @@ export default function HomeVisuals() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
       
       {/* ── COMPONENT A: TREASURY CHART CARD (2-COLUMN) ────────────────────── */}
-      <Card className="lg:col-span-1 flex flex-col justify-between p-6 bg-card border-border shadow-none rounded-[12px] min-h-[380px]">
+      <Card className="lg:col-span-1 flex flex-col justify-between p-6 bg-card border border-border shadow-none rounded-[12px] min-h-[380px]">
         
         <div className="flex justify-between items-start">
             <div className="space-y-1">
