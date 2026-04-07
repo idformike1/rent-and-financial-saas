@@ -21,10 +21,10 @@ export function Card({
   ...props
 }: CardProps) {
   const variants = {
-    default: "bg-white/[0.06] border border-white/[0.08] shadow-none",
-    muted:   "bg-white/[0.02] border border-white/[0.08] shadow-none",
-    outline: "bg-transparent border border-white/[0.08] shadow-none",
-    glass:   "bg-white/[0.04] backdrop-blur-md border border-white/[0.08] shadow-none",
+    default: "mercury-card",
+    muted:   "mercury-card border-white/[0.04] bg-white/[0.02]",
+    outline: "mercury-card bg-transparent",
+    glass:   "mercury-card bg-white/[0.04] backdrop-blur-md",
   };
 
   return (
@@ -32,7 +32,6 @@ export function Card({
       whileTap={{ scale: 0.995 }}
       transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
-        "rounded-[8px] px-6 py-8 transition-all duration-150",
         variants[variant as keyof typeof variants],
         className
       )}
