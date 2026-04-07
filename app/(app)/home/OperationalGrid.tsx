@@ -7,7 +7,7 @@ export default function OperationalGrid() {
       {/* ── CARD 1: DELINQUENT ARREARS ────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-6 flex flex-col justify-between h-[280px]">
         <div className="flex justify-between items-center">
-          <h3 className="text-[15px] font-[400] text-white tracking-tight">Delinquent arrears</h3>
+          <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Delinquent arrears</h3>
           <div className="flex items-center gap-1 text-white/30">
             <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><ChevronLeft className="w-3.5 h-3.5" /></button>
             <span className="text-[13px] font-[400]">1/9</span>
@@ -17,8 +17,8 @@ export default function OperationalGrid() {
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <p className="text-[13px] font-[400] text-white/50 tracking-tight">Past due rent collected</p>
-            <p className="text-[28px] leading-[42px] font-[380] text-white tracking-[-0.03em] font-display">$14,250</p>
+            <p className="text-[13px] font-[400] text-white/50 tracking-tight font-sans">Past due rent collected</p>
+            <p className="text-[28px] leading-[42px] font-[400] text-white tracking-tight font-sans">$14,250</p>
           </div>
           
           <div className="space-y-2">
@@ -43,14 +43,14 @@ export default function OperationalGrid() {
       {/* ── CARD 2: OCCUPANCY YIELD ─────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-6 flex flex-col justify-between h-[280px]">
         <div className="flex justify-between items-center">
-          <h3 className="text-[15px] font-[400] text-white tracking-tight">Occupancy yield</h3>
+          <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Occupancy yield</h3>
           <Building className="w-4 h-4 text-white/20" />
         </div>
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <p className="text-[13px] font-[400] text-white/50 tracking-tight">Total potential rent</p>
-            <p className="text-[28px] leading-[42px] font-[380] text-white tracking-[-0.03em] font-display">$12,505.87</p>
+            <p className="text-[13px] font-[400] text-white/50 tracking-tight font-sans">Total potential rent</p>
+            <p className="text-[28px] leading-[42px] font-[400] text-white tracking-tight font-sans">$12,505.87</p>
           </div>
           
           <div className="space-y-2">
@@ -81,7 +81,7 @@ export default function OperationalGrid() {
       {/* ── CARD 3: EXPENSE PAYABLES ────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-6 flex flex-col justify-between h-[280px]">
         <div className="flex justify-between items-center">
-          <h3 className="text-[15px] font-[400] text-white tracking-tight">Expense payables</h3>
+          <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Expense payables</h3>
           <div className="flex items-center gap-2 text-white/30">
             <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><Upload className="w-3.5 h-3.5" /></button>
             <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>
@@ -114,7 +114,7 @@ export default function OperationalGrid() {
       {/* ── CARD 4: RENT RECEIVABLES ────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-6 flex flex-col justify-between h-[280px]">
         <div className="flex justify-between items-center">
-          <h3 className="text-[15px] font-[400] text-white tracking-tight">Rent receivables</h3>
+          <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Rent receivables</h3>
           <div className="flex items-center gap-2 text-white/30">
             <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><Plus className="w-3.5 h-3.5" /></button>
             <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>

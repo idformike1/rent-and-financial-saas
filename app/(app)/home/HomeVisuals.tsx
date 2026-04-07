@@ -37,7 +37,7 @@ export default function HomeVisuals() {
         
         <div className="flex justify-between items-start">
             <div className="space-y-1">
-               <h3 className="text-[15px] font-[400] text-white tracking-tight">Mercury balance</h3>
+               <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Mercury balance</h3>
                <div className="flex items-baseline gap-3 mt-1">
                   <span className="text-[28px] leading-[42px] font-[380] text-white tracking-[-0.03em] font-display">
                     $5,216,471.18
@@ -96,7 +96,7 @@ export default function HomeVisuals() {
        <Card className="lg:col-span-1 p-6 bg-card border-border shadow-none rounded-[12px] flex flex-col">
           
           <div className="flex justify-between items-center mb-6">
-             <h3 className="text-[15px] font-[400] text-white tracking-tight">Accounts</h3>
+             <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Accounts</h3>
             <div className="flex items-center gap-2">
                <button className="p-1 hover:bg-white/5 rounded-full transition-colors">
                   <Plus className="w-3.5 h-3.5 text-muted-foreground/40" />
