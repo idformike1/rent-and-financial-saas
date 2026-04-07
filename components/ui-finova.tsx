@@ -129,7 +129,7 @@ export function Badge({
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0 rounded-full border text-[9px] font-bold leading-none tracking-tight uppercase",
+      "inline-flex items-center px-2 py-0 rounded-full border text-[9px] font-medium leading-none tracking-tight",
       variants[variant],
       className
     )}>
@@ -194,7 +194,7 @@ export function TD({
   if (isHeader) {
     return (
       <th className={cn(
-        "px-[10px] text-left text-[12px] font-[400] text-[#9D9DA8] tracking-normal leading-none capitalize",
+        "px-[10px] text-left text-[12px] font-[400] text-[#9D9DA8] tracking-normal leading-none",
         className
       )}>
         {children}

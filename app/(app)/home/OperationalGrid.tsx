@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight, Building, Upload, MoreHorizontal, Plus, Arro
 
 export default function OperationalGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
       
       {/* ── CARD 1: DELINQUENT ARREARS ────────────────────────────────────────── */}
       <div className="bg-card border border-border rounded-xl p-6 flex flex-col justify-between h-[280px]">
@@ -59,7 +59,7 @@ export default function OperationalGrid() {
                <div className="h-full bg-muted-foreground/40" style={{ width: '10%' }} />
                {/* remaining 5% is vacant (muted bg) */}
             </div>
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-[400] uppercase tracking-tight">
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-[400] tracking-tight">
               <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-foreground" /> Occupied</div>
               <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-muted" /> Vacant</div>
               <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" /> Notice</div>
@@ -72,7 +72,7 @@ export default function OperationalGrid() {
             <span className="text-[13px] font-[380] text-foreground/80">Autopay</span>
             <span className="text-[11px] font-[400] text-muted-foreground/60">144 Leases</span>
           </div>
-          <button className="px-3 py-1 bg-muted rounded-full text-[11px] font-[400] text-foreground hover:bg-white/10 transition-colors uppercase tracking-tight">
+          <button className="px-3 py-1 bg-muted rounded-full text-[11px] font-[400] text-foreground hover:bg-white/10 transition-colors tracking-tight">
             Manage
           </button>
         </div>

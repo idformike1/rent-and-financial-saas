@@ -45,12 +45,12 @@ export default function CashFlowGrid() {
         {/* ── CARD A: MONEY IN ────────────────────────────────────────────────── */}
         <Card className="bg-card border-border shadow-none rounded-[12px] p-6 flex flex-col">
           <div className="space-y-1">
-            <h3 className="text-[12px] font-[400] text-muted-foreground uppercase tracking-wider">Money in</h3>
+            <h3 className="text-[12px] font-[400] text-muted-foreground tracking-wider">Money in</h3>
             <p className="text-[32px] font-[380] text-[#37CC73] tracking-tight font-finance">$154,609.29</p>
           </div>
 
           <div className="mt-8 flex-1">
-            <h4 className="text-[11px] font-[400] text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Top sources</h4>
+            <h4 className="text-[11px] font-[400] text-muted-foreground tracking-wider mb-4 border-b border-border pb-2">Top sources</h4>
             <div className="space-y-3">
               {moneyInSources.map((source, i) => (
                 <div key={i} className="flex justify-between items-center group">
@@ -86,14 +86,14 @@ export default function CashFlowGrid() {
         <Card className="bg-card border-border shadow-none rounded-[12px] p-6 flex flex-col">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5">
-               <h3 className="text-[12px] font-[400] text-muted-foreground uppercase tracking-wider">Money out</h3>
+                  <p className="text-[12px] font-[400] text-[#9D9DA8] tracking-wider mb-1">Money out</p>
                <Info className="w-3.5 h-3.5 text-muted-foreground/60" />
             </div>
             <p className="text-[32px] font-[380] text-foreground tracking-tight font-finance">-$211,661.22</p>
           </div>
 
           <div className="mt-8 flex-1">
-            <h4 className="text-[11px] font-[400] text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Top spend</h4>
+            <h4 className="text-[11px] font-[400] text-muted-foreground tracking-wider mb-4 border-b border-border pb-2">Top spend</h4>
             <div className="space-y-3">
               {moneyOutSources.map((source, i) => (
                 <div key={i} className="flex justify-between items-center group">

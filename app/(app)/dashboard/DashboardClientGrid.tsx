@@ -59,7 +59,7 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
                <div>
-                  <p className="text-[12px] font-[400] text-[#9D9DA8] uppercase tracking-wider mb-1">{s.label}</p>
+                  <p className="text-[12px] font-[400] text-[#9D9DA8] tracking-wider mb-1">{s.label}</p>
                   <p className="text-[10px] text-muted-foreground/30 font-medium lowercase italic">{s.subtitle}</p>
                </div>
                 <Badge variant={s.inverse ? (s.delta > 0 ? 'danger' : 'success') : (s.delta >= 0 ? 'success' : 'danger')} className="text-[9px] font-bold px-1.5 py-0 rounded-full tracking-tight desaturate">
