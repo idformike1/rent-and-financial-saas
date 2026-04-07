@@ -93,7 +93,7 @@ export default function HomeVisuals() {
       </Card>
 
       {/* ── COMPONENT B: LEDGER BALANCES CARD (1-COLUMN) ───────────────────── */}
-       <Card className="lg:col-span-1 p-6 bg-card border-border shadow-none rounded-[12px] flex flex-col">
+       <Card className="lg:col-span-1 p-6 bg-card border-none shadow-sm rounded-[12px] flex flex-col">
           
           <div className="flex justify-between items-center mb-6">
              <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Accounts</h3>
@@ -126,8 +126,8 @@ export default function HomeVisuals() {
             ))}
          </div>
 
-          <div className="mt-6 pt-4 border-t border-white/[0.04]">
-             <button className="text-[13px] font-[400] text-muted-foreground hover:text-foreground transition-colors tracking-tight">
+          <div className="mt-auto pt-4 border-t border-white/[0.04]">
+             <button className="text-[15px] font-[400] text-white/40 hover:text-white transition-colors tracking-tight font-sans">
                 View all accounts
              </button>
           </div>
