@@ -46,7 +46,7 @@ export default function CashFlowGrid() {
         <Card className="bg-card border-border shadow-none rounded-[12px] p-6 flex flex-col">
           <div className="space-y-1">
             <h3 className="text-[12px] font-[400] text-muted-foreground tracking-wider">Money in</h3>
-            <p className="text-[32px] font-[380] text-[#37CC73] tracking-tight font-finance">$154,609.29</p>
+            <p className="text-[32px] font-[380] text-mercury-green tracking-tight font-finance">$154,609.29</p>
           </div>
 
           <div className="mt-8 flex-1">
@@ -60,7 +60,7 @@ export default function CashFlowGrid() {
                     </div>
                     <span className="text-[13px] font-[380] text-foreground/80">{source.name}</span>
                   </div>
-                  <span className="text-[14px] font-[380] text-[#37CC73] font-finance">${source.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span className="text-[14px] font-[380] text-mercury-green font-finance">${source.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               ))}
             </div>

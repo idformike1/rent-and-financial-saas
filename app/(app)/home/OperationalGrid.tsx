@@ -134,7 +134,7 @@ export default function OperationalGrid() {
                <span className="text-[13px] font-[400] text-muted-foreground/80">Paid</span>
                <span className="text-[11px] font-[400] text-muted-foreground/40">12 items</span>
             </div>
-            <span className="text-[16px] font-[380] font-finance text-[#37CC73] tracking-tight">$6K</span>
+            <span className="text-[16px] font-[380] font-finance text-mercury-green tracking-tight">$6K</span>
           </div>
         </div>
 

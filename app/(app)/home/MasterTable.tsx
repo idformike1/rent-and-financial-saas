@@ -58,7 +58,7 @@ export default function MasterTable() {
                   </div>
                 </TD>
                 <TD className="text-right">
-                  <span className={txn.amount > 0 ? "text-[#37CC73] font-[380] font-finance" : "text-foreground font-[380] font-finance"}>
+                  <span className={txn.amount > 0 ? "text-mercury-green font-[380] font-finance" : "text-foreground font-[380] font-finance"}>
                     {txn.amount < 0 ? '−' : ''}${Math.abs(txn.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </TD>

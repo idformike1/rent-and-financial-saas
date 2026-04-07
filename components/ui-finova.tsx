@@ -204,7 +204,7 @@ export function TD({
 
   const variants = {
     default:  "text-foreground/90 font-[380]",
-    positive: "text-[#37CC73] font-[380]",
+    positive: "text-mercury-green font-[380]",
     negative: "text-foreground font-[380]",
     date:     "text-muted-foreground/60 font-[380]",
     large:    "text-[16px] font-[380] text-foreground/90"

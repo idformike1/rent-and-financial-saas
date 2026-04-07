@@ -42,7 +42,7 @@ export default function HomeVisuals() {
                  <span className="text-[36px] font-[380] text-foreground tracking-[-0.03em] font-finance">
                    $5,216,471.18
                  </span>
-                 <span className="text-[13px] font-[400] text-[#37CC73] flex items-center gap-1">
+                 <span className="text-[13px] font-[400] text-mercury-green flex items-center gap-1">
                     <ArrowUpRight className="w-3 h-3" />
                     $1.8M
                  </span>
