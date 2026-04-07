@@ -33,7 +33,7 @@ export default function HomeVisuals() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
       
       {/* ── COMPONENT A: TREASURY CHART CARD (2-COLUMN) ────────────────────── */}
-      <Card className="lg:col-span-2 flex flex-col justify-between p-6 bg-white/[0.03] border-white/[0.08] shadow-none rounded-[12px] min-h-[380px]">
+      <Card className="lg:col-span-2 flex flex-col justify-between p-6 bg-card border-border shadow-none rounded-[12px] min-h-[380px]">
         
         <div className="flex justify-between items-start">
            <div className="space-y-1">
@@ -91,7 +91,7 @@ export default function HomeVisuals() {
       </Card>
 
       {/* ── COMPONENT B: LEDGER BALANCES CARD (1-COLUMN) ───────────────────── */}
-      <Card className="lg:col-span-1 p-6 bg-white/[0.03] border-white/[0.08] shadow-none rounded-[12px] flex flex-col">
+      <Card className="lg:col-span-1 p-6 bg-card border-border shadow-none rounded-[12px] flex flex-col">
          
          <div className="flex justify-between items-center mb-6">
             <h3 className="text-[12px] font-[400] text-[#9D9DA8] tracking-wider">Ledger Balances</h3>

@@ -55,7 +55,7 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {CARDS.map((s) => (
-        <Card key={s.label} className="flex flex-col justify-between min-h-[140px] shadow-none rounded-[8px] p-6 bg-white/[0.02]">
+        <Card key={s.label} className="flex flex-col justify-between min-h-[140px] shadow-none rounded-[8px] p-6 bg-card border-border">
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
                <div>
