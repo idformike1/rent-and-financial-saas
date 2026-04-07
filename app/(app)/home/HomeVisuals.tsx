@@ -39,7 +39,7 @@ export default function HomeVisuals() {
             <div className="space-y-1">
                <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Mercury balance</h3>
                <div className="flex items-baseline gap-3 mt-1">
-                  <span className="text-[28px] leading-[42px] font-[380] text-white tracking-[-0.03em] font-display">
+                  <span className="text-[28px] leading-[42px] font-[400] text-white tracking-tight font-sans">
                     $5,216,471.18
                   </span>
                  <span className="text-[13px] font-[400] text-mercury-green flex items-center gap-1">
@@ -50,7 +50,7 @@ export default function HomeVisuals() {
            </div>
 
            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
-              <span className="text-[11px] font-[400] text-foreground/60 tracking-tight">Last 30 Days</span>
+              <span className="text-[12px] font-[400] text-white/60 tracking-tight font-sans">Last 30 days</span>
               <Plus className="w-3 h-3 opacity-40 shrink-0" rotate={45} />
            </div>
         </div>
@@ -96,7 +96,7 @@ export default function HomeVisuals() {
        <div className="lg:col-span-1 mercury-card">
           
           <div className="flex justify-between items-center mb-6">
-             <h3 className="text-[15px] font-[400] text-white tracking-tight">Accounts</h3>
+             <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Accounts</h3>
             <div className="flex items-center gap-2">
                <button className="p-1 hover:bg-white/5 rounded-full transition-colors">
                   <Plus className="w-3.5 h-3.5 text-muted-foreground/40" />
@@ -111,14 +111,14 @@ export default function HomeVisuals() {
             {ledgers.map((ledger) => (
                <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-10 px-2 -mx-2 hover:bg-white/[0.03] rounded-[6px] transition-all">
                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-muted-foreground/30 group-hover:text-foreground/60 transition-colors shrink-0">
+                     <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white/60 transition-colors shrink-0">
                         <ledger.icon className="w-4 h-4" />
                      </div>
-                     <span className="text-[13px] font-[400] text-foreground/80">{ledger.name}</span>
+                     <span className="text-[15px] font-[400] text-white tracking-tight font-sans">{ledger.name}</span>
                   </div>
                   <span className={cn(
-                    "text-[14px] font-[380] font-finance tracking-tight",
-                    ledger.balance < 0 ? "text-foreground/40" : "text-foreground"
+                    "text-[14px] font-[400] font-sans tracking-tight",
+                    ledger.balance < 0 ? "text-white/40" : "text-white"
                   )}>
                      {ledger.balance < 0 ? '−' : ''}${Math.abs(ledger.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>

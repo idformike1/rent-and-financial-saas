@@ -43,10 +43,10 @@ export default function CashFlowGrid() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* ── CARD A: MONEY IN ────────────────────────────────────────────────── */}
-        <Card className="bg-card border-border shadow-none rounded-[12px] p-6 flex flex-col">
+        <div className="mercury-card">
           <div className="space-y-1">
-            <h3 className="text-[12px] font-[400] text-muted-foreground tracking-wider">Money in</h3>
-            <p className="text-[32px] font-[380] text-mercury-green tracking-tight font-finance">$154,609.29</p>
+            <h3 className="text-[15px] font-[400] text-white/50 tracking-tight font-sans">Money in</h3>
+            <p className="text-[28px] leading-[42px] font-[400] text-mercury-green tracking-tight font-sans">$154,609.29</p>
           </div>
 
           <div className="mt-8 flex-1">
@@ -58,16 +58,16 @@ export default function CashFlowGrid() {
                     <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
                        {source.name.charAt(0)}
                     </div>
-                    <span className="text-[13px] font-[380] text-foreground/80">{source.name}</span>
+                    <span className="text-[15px] font-[400] text-white font-sans">{source.name}</span>
                   </div>
-                  <span className="text-[14px] font-[380] text-mercury-green font-finance">${source.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span className="text-[15px] font-[400] text-mercury-green font-sans">${source.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-            <span className="text-[12px] font-[400] text-muted-foreground">Last 3 months average $585K</span>
+          <div className="mt-6 pt-4 border-t border-white/[0.04] flex justify-between items-center">
+            <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average $585K</span>
             <div className="w-[80px] h-[30px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={sparklineData}>
@@ -80,16 +80,16 @@ export default function CashFlowGrid() {
               </ResponsiveContainer>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* ── CARD B: MONEY OUT ───────────────────────────────────────────────── */}
-        <Card className="bg-card border-border shadow-none rounded-[12px] p-6 flex flex-col">
+        <div className="mercury-card">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5">
-                  <p className="text-[12px] font-[400] text-[#9D9DA8] tracking-wider mb-1">Money out</p>
-               <Info className="w-3.5 h-3.5 text-muted-foreground/60" />
+                  <p className="text-[15px] font-[400] text-white/50 tracking-tight font-sans">Money out</p>
+               <Info className="w-3.5 h-3.5 text-white/20" />
             </div>
-            <p className="text-[32px] font-[380] text-foreground tracking-tight font-finance">-$211,661.22</p>
+            <p className="text-[28px] leading-[42px] font-[400] text-white tracking-tight font-sans">-$211,661.22</p>
           </div>
 
           <div className="mt-8 flex-1">
@@ -101,9 +101,9 @@ export default function CashFlowGrid() {
                     <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
                        {source.name.charAt(0)}
                     </div>
-                    <span className="text-[13px] font-[380] text-foreground/80">{source.name}</span>
+                    <span className="text-[15px] font-[400] text-white/80 font-sans">{source.name}</span>
                   </div>
-                  <span className="text-[14px] font-[380] text-foreground font-finance">
+                  <span className="text-[15px] font-[400] text-white font-sans">
                      {source.amount < 0 ? '−' : ''}${Math.abs(source.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -111,8 +111,8 @@ export default function CashFlowGrid() {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-            <span className="text-[12px] font-[400] text-muted-foreground">Last 3 months average -$220K</span>
+          <div className="mt-6 pt-4 border-t border-white/[0.04] flex justify-between items-center">
+            <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average -$220K</span>
             <div className="w-[80px] h-[30px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={sparklineData}>
@@ -125,7 +125,7 @@ export default function CashFlowGrid() {
               </ResponsiveContainer>
             </div>
           </div>
-        </Card>
+        </div>
 
       </div>
     </div>
