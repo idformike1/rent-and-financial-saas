@@ -1,6 +1,7 @@
 import { getCurrentSession } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 import HomeVisuals from './HomeVisuals'
+import OperationalGrid from './OperationalGrid'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui-finova'
 import Link from 'next/link'
@@ -39,6 +40,7 @@ export default async function HomePage() {
 
       {/* ── CORE VISUALS ──────────────────────────────────────────────────── */}
       <HomeVisuals />
+      <OperationalGrid />
 
     </div>
   )
