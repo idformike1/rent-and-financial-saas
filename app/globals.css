@@ -107,10 +107,15 @@
     letter-spacing: -0.015em !important;
   }
   
-  /* WORKSTATION 3.2 MOTION */
-  .transition-all, .transition-colors, .transition-opacity {
-    transition-duration: 150ms !important;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  /* ── MERCURY V.4.0 UNIVERSAL CARD PROTOCOL ──────────────────────────────── */
+  .mercury-card {
+    background-color: #1e1e2a !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    padding: 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 }
 
