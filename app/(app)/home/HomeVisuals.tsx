@@ -38,8 +38,8 @@ export default function HomeVisuals() {
         <div className="flex justify-between items-start">
             <div className="space-y-1">
                <h3 className="text-[15px] font-[400] text-white tracking-tight">Mercury balance</h3>
-               <div className="flex items-baseline gap-3">
-                  <span className="text-[28px] font-[380] text-white tracking-[-0.03em] font-finance">
+               <div className="flex items-baseline gap-3 mt-1">
+                  <span className="text-[28px] leading-[42px] font-[380] text-white tracking-[-0.03em] font-display">
                     $5,216,471.18
                   </span>
                  <span className="text-[13px] font-[400] text-mercury-green flex items-center gap-1">
