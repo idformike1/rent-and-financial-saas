@@ -19,55 +19,81 @@
   /* Universal Mercury Scaling */
   --text-base: 15px;
   --text-display: 28px;
-  --font-weight-display: 380;
+  --font-weight-display: 450;
+  --height-button: 38px;
 }
 
 :root {
-  --background: #F5F6F8;
-  --foreground: #14161A;
-  --card: #FFFFFF;
-  --card-foreground: #14161A;
-  --muted: #F0F1F3;
-  --muted-foreground: #5C6470;
-  --border: #E5E7EB;
-  --primary: #0047FF;
-  --primary-foreground: #FFFFFF;
-  --radius: 8px;
+  --background: #FFFFFF;
+  --foreground: #111317;
+  --card: #F8FAF9;
+  --card-foreground: #111317;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: #111317;
+  --primary-foreground: 210 40% 98%;
+  --secondary: #F1F3F2;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: #F8FAF9;
+  --muted-foreground: #6B7280;
+  --accent: #F1F3F2;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: #E8EBE9;
+  --input: #E8EBE9;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
 }
 
 .dark {
   --background: #111317;
-  --foreground: #F5F6F8;
+  --foreground: #E8E9EB;
   --card: #181B21;
-  --card-foreground: #F5F6F8;
+  --card-foreground: #E8E9EB;
   --popover: #181B21;
-  --popover-foreground: #F5F6F8;
-  --primary: #F5F6F8;
+  --popover-foreground: 210 40% 98%;
+  --primary: #E8E9EB;
   --primary-foreground: #111317;
-  --secondary: #23252A;
-  --secondary-foreground: #F5F6F8;
-  --muted: #23252A;
+  --secondary: #1C1F26;
+  --secondary-foreground: #E8E9EB;
+  --muted: #1C1F26;
   --muted-foreground: #8A919E;
-  --accent: #23252A;
-  --accent-foreground: #F5F6F8;
-  --destructive: #E5484D;
-  --destructive-foreground: #F5F6F8;
+  --accent: #1C1F26;
+  --accent-foreground: #E8E9EB;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
   --border: #2A2D35;
   --input: #2A2D35;
-  --ring: #F5F6F8;
+  --ring: #2A2D35;
   --chart-1: #3B82F6;
   --chart-2: #10B981;
   --chart-3: #F59E0B;
   --chart-4: #8B5CF6;
   --chart-5: #EC4899;
-  --radius: 8px;
 }
 
-html, body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  * {
+    border-color: var(--border);
+    letter-spacing: -0.01em;
+    outline-color: var(--foreground);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: rgba(232, 233, 235, 0.1);
+    color: var(--foreground);
+  }
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgba(232, 233, 235, 0.2);
+  }
 }
 
 /* ── STEP 2: FINANICAL TYPOGRAPHY ────────────────────────────────────────── */

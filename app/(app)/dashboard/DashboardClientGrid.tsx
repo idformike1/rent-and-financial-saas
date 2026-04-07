@@ -68,8 +68,8 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
                 </Badge>
             </div>
 
-            <div className="mt-6">
-              <span className="font-finance text-[24px] font-[380] text-foreground leading-none block">
+            <div className="mt-8">
+              <span className="font-finance text-[28px] font-[450] text-foreground tracking-[-0.02em] leading-none block">
                 {s.isPercent ? "" : "$"}{s.val.toLocaleString()}{s.isPercent ? "%" : ""}
               </span>
             </div>

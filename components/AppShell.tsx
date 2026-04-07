@@ -111,9 +111,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* Brand bar */}
         <div className="h-14 flex items-center px-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <Zap className="text-primary w-4 h-4 fill-primary" />
-            <h2 className="text-[13px] font-bold tracking-tight text-foreground">
-              Mercury <span className="text-muted-foreground font-normal text-[11px]">OS</span>
+            <svg width="20" height="20" viewBox="0 0 512 512" className="text-foreground fill-current">
+               <path d="M504.1 256C504.1 119 393 7.9 256 7.9S7.9 119 7.9 256 119 504.1 256 504.1 504.1 393 504.1 256z" opacity=".4"/>
+               <path d="M256 504.1c137 0 248.1-111.1 248.1-248.1S393 7.9 256 7.9 7.9 119 7.9 256 119 504.1 256 504.1z"/>
+            </svg>
+            <h2 className="text-[14px] font-medium tracking-tight text-foreground">
+              Mercury
             </h2>
           </div>
         </div>
@@ -185,7 +188,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 ml-[184px] h-screen overflow-hidden flex flex-col bg-background">
 
         {/* ── TOP BAR / HEADER ─────────────────────────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-14 px-6 flex items-center justify-between bg-background border-b border-border shrink-0">
+        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center justify-between bg-background border-b border-border shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -211,8 +214,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* ── MAIN CANVAS ───────────────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-12">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto p-6 lg:p-10">
+          <div className="max-w-[1600px] mx-auto">
             {children}
           </div>
         </main>

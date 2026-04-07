@@ -41,53 +41,48 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse">
-              <thead className="bg-[#1C1F26]/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">
-                <tr>
-                  <th className="px-[22px]">Identity Protocol</th>
-                  <th className="px-[22px]">Lease Portfolio</th>
-                  <th className="px-[22px]">Risk Matrix</th>
-                  <th className="px-[22px] text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredTenants.map((tenant) => {
-                  const activeLeases = (tenant.leases as any[]).filter(l => l.isActive);
-                  const primaryLease = activeLeases.find(l => l.isPrimary) || activeLeases[0];
-                  
-                  return (
-                    <tr key={tenant.id} className="hover:bg-[#1C1F26] transition-none h-[38px] group">
-                      <td className="px-[22px]">
-                        <div className="flex items-center gap-3">
-                          <div className="h-6 w-6 rounded-[4px] bg-muted text-foreground flex items-center justify-center text-[10px] font-bold">
-                            {tenant.name.charAt(0)}
-                          </div>
-                          <div className="flex flex-col leading-none">
-                            <span className="text-[13px] text-foreground font-medium">{tenant.name}</span>
-                            <span className="text-[11px] text-muted-foreground">{tenant.email || 'N/A'}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-[22px]">
-                        <div className="flex flex-col leading-none">
-                          <span className="text-[12px] text-foreground font-medium">{primaryLease?.unit.unitNumber || 'Unassigned'}</span>
-                          <span className="text-[10px] text-muted-foreground">{primaryLease?.unit.type || 'Standard'}</span>
-                        </div>
-                      </td>
-                      <td className="px-[22px]">
-                         <Badge variant={activeLeases.length > 0 ? 'success' : 'default'} className="font-medium">
-                           {activeLeases.length > 0 ? 'Active' : 'Reserved'}
-                         </Badge>
-                      </td>
-                      <td className="px-[22px] text-right">
-                        <Link href={`/tenants/${tenant.id}`}>
-                           <Button variant="secondary" size="sm" className="h-7 w-7 p-0 rounded-full">
-                              <ArrowRight className="w-3.5 h-3.5" />
-                           </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
+            <thead>
+              <tr className="border-b border-[#2A2D35] bg-[#1C1F26]/30 h-[35px]">
+                <th className="text-[11px] font-medium text-muted-foreground px-3 text-left">Identity</th>
+                <th className="text-[11px] font-medium text-muted-foreground px-3 text-left">Unit capacity</th>
+                <th className="text-[11px] font-medium text-muted-foreground px-3 text-left">Status profile</th>
+                <th className="text-[11px] font-medium text-muted-foreground px-3 text-left">Financial health</th>
+                <th className="text-[11px] font-medium text-muted-foreground px-3 text-right">Access</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#2A2D35]">
+                {filteredTenants.map((tenant) => (
+                  <tr key={tenant.id} className="h-[38px] group hover:bg-[#1C1F26] transition-colors">
+                    <td className="px-3 text-[12px] font-medium text-foreground">
+                      {tenant.name}
+                    </td>
+                    <td className="px-3">
+                      <span className="text-[12px] text-muted-foreground font-medium">
+                        {tenant.units?.[0]?.property?.name || 'Unassigned'} Unit {tenant.units?.[0]?.unitNumber}
+                      </span>
+                    </td>
+                    <td className="px-3">
+                      <Badge variant={tenant.isActive ? "success" : "danger"} className="text-[10px] py-0 px-2 font-medium rounded-full">
+                        {tenant.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </td>
+                    <td className="px-3">
+                      <div className="flex items-center gap-2">
+                         <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full bg-emerald-500 w-[95%]" />
+                         </div>
+                         <span className="text-[10px] font-bold text-emerald-500">95%</span>
+                      </div>
+                    </td>
+                    <td className="px-3 text-right">
+                      <Link href={`/tenants/${tenant.id}`}>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full">
+                          <ArrowRight className="w-3 h-3" />
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

@@ -42,42 +42,45 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-background p-6 animate-in fade-in duration-1000 selection:bg-primary/10">
       <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[12px] animate-in zoom-in-95 duration-700 bg-card">
         <div className="space-y-10">
-          <div className="text-center space-y-6">
-             <div className="w-16 h-16 bg-card border border-border rounded-[12px] flex items-center justify-center mx-auto mb-8 transition-none shadow-sm">
-                <Zap className="w-8 h-8 text-primary fill-primary" />
+          <div className="text-center space-y-4">
+             <div className="w-12 h-12 bg-[#181B21] border border-[#2A2D35] rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
+                <svg width="24" height="24" viewBox="0 0 512 512" className="text-foreground fill-current">
+                   <path d="M504.1 256C504.1 119 393 7.9 256 7.9S7.9 119 7.9 256 119 504.1 256 504.1 504.1 393 504.1 256z" opacity=".4"/>
+                   <path d="M256 504.1c137 0 248.1-111.1 248.1-248.1S393 7.9 256 7.9 7.9 119 7.9 256 119 504.1 256 504.1z"/>
+                </svg>
              </div>
              <div>
-                <h1 className="text-2xl font-bold tracking-tight text-foreground leading-none">Mercury <span className="text-muted-foreground font-normal">OS</span></h1>
-                <p className="text-[11px] font-bold   text-muted-foreground mt-4 leading-relaxed">Enterprise Financial Terminal</p>
+                <h1 className="text-[20px] font-medium tracking-tight text-foreground leading-none">Mercury</h1>
+                <p className="text-[13px] font-medium text-muted-foreground mt-3 leading-relaxed">System login required for terminal access.</p>
              </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
-              <div className="space-y-4">
-                <label className="text-[12px] font-bold  text-muted-foreground ml-1">Identity Protocol</label>
+              <div className="space-y-3">
+                <label className="text-[11px] font-medium text-muted-foreground ml-1">Email address</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 group-focus-within:text-foreground transition-colors" />
                   <Input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 h-12 rounded-[8px] text-[15px] font-bold border-border focus:border-primary bg-muted/50" 
-                    placeholder="admin@mercury.com"
+                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] focus:border-foreground/20 bg-[#1C1F26]" 
+                    placeholder="Enter email..."
                     required
                   />
                 </div>
               </div>
               
-              <div className="space-y-4">
-                <label className="text-[12px] font-bold  text-muted-foreground ml-1">Access Cipher</label>
+              <div className="space-y-3">
+                <label className="text-[11px] font-medium text-muted-foreground ml-1">Password</label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 group-focus-within:text-foreground transition-colors" />
                   <Input 
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 h-12 rounded-[8px] text-[15px] font-bold border-border focus:border-primary bg-muted/50"
+                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] focus:border-foreground/20 bg-[#1C1F26]"
                     placeholder="••••••••"
                     required
                   />
@@ -95,15 +98,15 @@ export default function LoginPage() {
               type="submit"
               disabled={isLoading}
               variant="primary"
-              className="w-full h-12 rounded-full text-[14px] font-bold   bg-primary hover:bg-primary/95 text-foreground border-none mt-2"
+              className="w-full h-[38px] rounded-full text-[13px] font-medium border-none mt-2"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-3 animate-spin" /> Verifying...
+                  <Loader2 className="w-4 h-4 mr-3 animate-spin" /> Authenticating...
                 </>
               ) : (
                 <>
-                  Authorize Session <ArrowRight className="w-5 h-5 ml-2" />
+                  Sign In <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}
             </Button>

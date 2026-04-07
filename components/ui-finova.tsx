@@ -29,12 +29,14 @@ export function Card({
 
   return (
     <motion.div
+      whileTap={{ scale: 0.995 }}
+      transition={{ duration: 0.1 }}
       className={cn(
         "rounded-[12px] p-6 transition-none",
         variants[variant as keyof typeof variants],
         className
       )}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </motion.div>
@@ -67,27 +69,29 @@ export function Button({
   };
 
   const sizes = {
-    sm:  "px-3 py-1.5 text-xs font-bold h-8",
-    md:  "px-4 py-2 text-[13px] font-bold h-10",
-    lg:  "px-6 py-3 text-[14px] font-bold h-12"
+    sm:  "px-3 py-1 text-xs font-medium h-8",
+    md:  "px-4 py-2 text-[13px] font-medium h-[38px]",
+    lg:  "px-6 py-3 text-[14px] font-medium h-12"
   };
 
   return (
-    <button
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.1 }}
       className={cn(
         "inline-flex items-center justify-center transition-none disabled:opacity-40 disabled:pointer-events-none leading-none tracking-tight",
-        variants[variant],
-        sizes[size],
+        variants[variant as keyof typeof variants],
+        sizes[size as keyof typeof sizes],
         className
       )}
       disabled={isLoading || props.disabled}
-      {...props}
+      {...(props as any)}
     >
       {isLoading && (
         <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin mr-2" />
       )}
       {children}
-    </button>
+    </motion.button>
   )
 }
 

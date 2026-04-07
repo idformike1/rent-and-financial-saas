@@ -124,47 +124,38 @@ export default function OnboardingWizard() {
 
   if (step === 4) {
     return (
-      <div className="max-w-3xl mx-auto py-12 px-6 animate-in zoom-in-95 duration-500">
-        <Card className="p-6 text-center space-y-6 rounded-[8px] border-none bg-card/80">
-          <div className="w-24 h-24 bg-[var(--primary-muted)] rounded-[8px] flex items-center justify-center mx-auto mb-10-sm">
-            <CheckCircle2 className="w-12 h-12 text-[var(--primary)]" />
+      <div className="max-w-xl mx-auto py-12 px-6 animate-in zoom-in-95 duration-500">
+        <Card className="p-8 text-center space-y-6 rounded-[12px] border-none bg-card">
+          <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
           </div>
-          <h2 className="text-display font-weight-display text-foreground border-b-2 border-border pb-10">Materialized</h2>
-          <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-lg mx-auto">The agreement and master ledger entries have been successfully cashed into the registry.</p>
+          <h2 className="text-[20px] font-medium text-foreground tracking-tight">Onboarding complete</h2>
+          <p className="text-muted-foreground font-medium text-[13px] leading-relaxed max-w-sm mx-auto">The tenant registry has been updated and the initial ledger entries have been generated.</p>
           
-          <div className="bg-card rounded-[8px] p-6 text-left space-y-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-6 opacity-10">
-               <Fingerprint className="w-32 h-32 text-foreground" />
-            </div>
-            <div className="space-y-6 relative z-10">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-3">
-                     <p className="text-[11px] text-muted-foreground  ">Fiscal Lease Identifier</p>
-                     <div className="bg-muted/50 border border-border p-5 rounded-[8px]">
-                        <p className="text-sm text-foreground truncate font-bold">{successData?.leaseId}</p>
-                     </div>
-                  </div>
-                  <div className="space-y-3">
-                     <p className="text-[11px] text-muted-foreground  ">Master Tenant Hash</p>
-                     <div className="bg-muted/50 border border-border p-5 rounded-[8px]">
-                        <p className="text-sm text-foreground truncate font-bold">{successData?.tenantId}</p>
-                     </div>
-                  </div>
-               </div>
-            </div>
+          <div className="bg-[#1C1F26] rounded-[8px] p-6 text-left space-y-4">
+             <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1">
+                   <p className="text-[11px] text-muted-foreground">Lease ID</p>
+                   <p className="text-[13px] text-foreground font-medium">{successData?.leaseId}</p>
+                </div>
+                <div className="space-y-1">
+                   <p className="text-[11px] text-muted-foreground">Tenant ID</p>
+                   <p className="text-[13px] text-foreground font-medium">{successData?.tenantId}</p>
+                </div>
+             </div>
           </div>
 
-          <div className="flex flex-col gap-6 pt-6">
-            <Button variant="primary" onClick={() => window.location.href = '/tenants'} className="h-16 rounded-[8px]  text-xl">
-               Enter Command Center <ChevronRight className="w-6 h-6 ml-3" />
+          <div className="flex flex-col gap-3 pt-4">
+            <Button variant="primary" onClick={() => window.location.href = '/tenants'} className="w-full h-[38px] rounded-full text-[13px] font-medium">
+               Go to tenants <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
-            <button 
+            <Button 
+               variant="ghost" 
                onClick={() => { reset(); setStep(1); }} 
-               className="h-14 rounded-[8px]  text-[11px] text-[var(--muted)] hover:text-rose-400 hover:bg-rose-500/10 transition-all flex items-center justify-center group"
+               className="w-full h-[38px] rounded-full text-[13px] font-medium text-muted-foreground hover:text-foreground"
             >
-               <AlertCircle className="w-4 h-4 mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-               Reset Activation Wizard
-            </button>
+               Add another tenant
+            </Button>
           </div>
         </Card>
       </div>
@@ -172,101 +163,91 @@ export default function OnboardingWizard() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-6 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
-        <div className="space-y-1">
-          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
-            Activation Wizard
-          </h1>
-          <p className="text-[15px] font-[400] text-muted-foreground">
-            Enterprise provisioning and tenancy initiation
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="default" className="h-10 px-4 flex items-center bg-muted/50 border border-border text-muted-foreground font-bold text-[10px]  tracking-widest">
-            v3.1 Stable
-          </Badge>
-        </div>
+    <div className="max-w-[640px] mx-auto py-10 space-y-8">
+      <div className="space-y-2">
+        <h1 className="text-[24px] font-medium text-foreground tracking-tight leading-none">
+          Add tenant
+        </h1>
+        <p className="text-[13px] font-medium text-muted-foreground">
+          Fill out the details below to onboard a new resident.
+        </p>
       </div>
 
-      <div className="flex items-center justify-between mb-16 px-12 relative">
-         <div className="absolute left-12 right-12 top-7 h-0.5 bg-muted -z-0" />
-         {[User, DollarSign, CheckCircle2].map((Icon, i) => (
-           <div key={i} className="relative z-10">
-              <div className={`w-14 h-14 rounded-[8px] border-2 flex items-center justify-center transition-all duration-300 ${step > i + 1 ? 'bg-card border-foreground text-foreground' : step === i + 1 ? 'bg-brand border-brand text-foreground' : 'bg-card border-border text-foreground'}`}>
-                 <Icon className="w-6 h-6" />
-              </div>
+      <div className="flex items-center gap-2 mb-8">
+         {[1, 2, 3].map((s) => (
+           <div key={s} className="flex items-center gap-2">
+              <div className={cn(
+                "h-1.5 w-12 rounded-full transition-all duration-300",
+                step >= s ? "bg-primary" : "bg-muted"
+              )} />
            </div>
          ))}
       </div>
 
-      <Card className="rounded-[8px] border-none overflow-hidden bg-card">
+      <Card className="rounded-[12px] border-[#2A2D35] bg-[#181B21] overflow-hidden shadow-none">
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
           {step === 1 && (
-            <div className="space-y-10 animate-in slide-in-from-right-8 duration-500">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="md:col-span-2 space-y-4">
-                  <label className="text-[10px] text-muted-foreground  ml-1">Identity Aggregate</label>
-                  <div className="relative">
-                    <User className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
-                    <Input {...register('tenantName')} className={cn("pl-16 py-7 text-2xl h-16", errors.tenantName && "border-rose-500")} placeholder="Full Legal Name" />
-                  </div>
+            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[11px] font-medium text-muted-foreground ml-1">Full name</label>
+                  <Input {...register('tenantName')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.tenantName && "border-rose-500")} placeholder="Legal name" />
                 </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] text-muted-foreground  ml-1">Protocol Email</label>
-                  <Input {...register('email')} className={cn("h-16", errors.email && "border-rose-500")} placeholder="tenant@axiom.com" />
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium text-muted-foreground ml-1">Email</label>
+                  <Input {...register('email')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.email && "border-rose-500")} placeholder="Email address" />
                 </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] text-muted-foreground  ml-1">Contact String</label>
-                  <Input {...register('phone')} className={cn("h-16", errors.phone && "border-rose-500")} placeholder="+1 (555) 000" />
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium text-muted-foreground ml-1">Phone</label>
+                  <Input {...register('phone')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.phone && "border-rose-500")} placeholder="Phone number" />
                 </div>
-                <div className="md:col-span-2 space-y-4">
-                   <label className="text-[10px] text-muted-foreground  ml-1">Registry Identifier</label>
-                   <Input {...register('nationalId')} className={cn("h-16", errors.nationalId && "border-rose-500")} placeholder="ID / Passport / SSN" />
+                <div className="md:col-span-2 space-y-2">
+                   <label className="text-[11px] font-medium text-muted-foreground ml-1">National ID</label>
+                   <Input {...register('nationalId')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.nationalId && "border-rose-500")} placeholder="Identification string" />
                 </div>
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div className="space-y-10 animate-in slide-in-from-right-8 duration-500">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="md:col-span-2 space-y-4">
-                     <label className="text-[10px] text-muted-foreground  ml-1">Asset Allocation</label>
-                      <select {...register('unitId')} className={cn("w-full bg-[var(--card)] text-[var(--foreground)] border-2 rounded-[8px] px-6 py-5 text-lg h-16 outline-none appearance-none focus:ring-2 focus:ring-[var(--primary)]", errors.unitId ? 'border-rose-500' : 'border-[var(--border)]')}>
-                        <option value="">Select Target Unit</option>
-                        {units.map(u => <option key={u.id} value={u.id}>Unit {u.unitNumber} // {u.type}</option>)}
+            <div className="space-y-6 animate-in fade-in duration-500">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2 space-y-2">
+                     <label className="text-[11px] font-medium text-muted-foreground ml-1">Asset allocation</label>
+                      <select {...register('unitId')} className={cn("w-full bg-[#1C1F26] text-foreground border border-[#2A2D35] rounded-[8px] px-4 py-2 text-[13px] h-[38px] outline-none appearance-none focus:ring-2 focus:ring-primary/10", errors.unitId ? 'border-rose-500' : 'border-[#2A2D35]')}>
+                        <option value="">Select unit...</option>
+                        {units.map(u => <option key={u.id} value={u.id}>Unit {u.unitNumber} - {u.type}</option>)}
                      </select>
                   </div>
-                  <div className="space-y-4">
-                     <label className="text-[10px] text-muted-foreground  ml-1">Subscription Rate</label>
-                     <Input type="number" {...register('baseRent', {valueAsNumber: true})} className={cn("h-16", errors.baseRent && "border-rose-500")} placeholder="0.00" />
+                  <div className="space-y-2">
+                     <label className="text-[11px] font-medium text-muted-foreground ml-1">Base rent</label>
+                     <Input type="number" {...register('baseRent', {valueAsNumber: true})} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.baseRent && "border-rose-500")} placeholder="0.00" />
                   </div>
-                  <div className="space-y-4">
-                     <label className="text-[10px] text-muted-foreground  ml-1">Collateral Deposit</label>
-                     <Input type="number" {...register('securityDeposit', {valueAsNumber: true})} className={cn("h-16", errors.securityDeposit && "border-rose-500")} placeholder="0.00" />
+                  <div className="space-y-2">
+                     <label className="text-[11px] font-medium text-muted-foreground ml-1">Security deposit</label>
+                     <Input type="number" {...register('securityDeposit', {valueAsNumber: true})} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.securityDeposit && "border-rose-500")} placeholder="0.00" />
                   </div>
-                  <div className="space-y-4">
-                     <label className="text-[10px] text-muted-foreground  ml-1">Commencement</label>
-                     <Input type="date" {...register('moveInDate')} className={cn("h-16", errors.moveInDate && "border-rose-500")} />
+                  <div className="space-y-2">
+                     <label className="text-[11px] font-medium text-muted-foreground ml-1">Move-in date</label>
+                     <Input type="date" {...register('moveInDate')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.moveInDate && "border-rose-500")} />
                   </div>
                </div>
             </div>
           )}
 
           {step === 3 && (
-            <div className="space-y-8 animate-in slide-in-from-right-8 duration-500">
-               <Card className="bg-card border-none p-6 space-y-8 text-foreground rounded-[8px]">
-                  <h4 className="text-[10px]   text-brand border-b border-border pb-4">Audit Projection</h4>
+            <div className="space-y-6 animate-in fade-in duration-500">
+               <div className="bg-[#1C1F26] p-6 space-y-6 text-foreground rounded-[8px] border border-[#2A2D35]">
+                  <h4 className="text-[11px] font-medium text-muted-foreground border-b border-[#2A2D35] pb-4 uppercase tracking-wider">Audit projection</h4>
                   <div className="flex justify-between items-end">
                      <div>
-                        <p className="text-[9px] font-bold text-muted-foreground ">Aggregate Liquid Requirement</p>
-                        <p className="text-sm font-medium mt-1">Prorated Initial + Collateral</p>
+                        <p className="text-[12px] font-medium text-foreground">Total initial payment</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">Prorated rent + security deposit</p>
                      </div>
-                     <span className="text-display font-weight-display text-foreground">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                     <span className="text-[28px] font-[450] text-foreground tracking-[-0.02em] leading-none">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                   </div>
-               </Card>
-               {serverError && <div className="bg-rose-500/10 p-6 rounded-[8px] border-l-8 border-rose-500 text-rose-600 font-bold text-xs ">{serverError}</div>}
+               </div>
+               {serverError && <div className="bg-rose-500/10 p-4 rounded-[8px] border border-rose-500/20 text-rose-500 font-medium text-[12px]">{serverError}</div>}
             </div>
           )}
 
@@ -277,18 +258,18 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-10 border-t border-border">
+          <div className="flex justify-between items-center pt-8 border-t border-[#2A2D35]">
              {step > 1 ? (
-               <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[10px]  text-muted-foreground hover:text-foreground flex items-center transition-colors"><ChevronLeft className="w-4 h-4 mr-2" /> Reverse</button>
+               <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[13px] font-medium text-muted-foreground hover:text-foreground flex items-center transition-none"><ChevronLeft className="w-4 h-4 mr-2" /> Back</button>
              ) : <div />}
              
              {step < 3 ? (
-               <Button type="button" variant="primary" onClick={nextStep} className="px-10 h-16 rounded-[8px] ">Proceed <ChevronRight className="w-4 h-4 ml-2" /></Button>
+               <Button type="button" variant="primary" onClick={nextStep} className="px-8 h-[38px] rounded-full text-[13px] font-medium">Continue <ChevronRight className="w-4 h-4 ml-2" /></Button>
              ) : (
-               <Button type="submit" variant="primary" disabled={isSubmitting} className="px-12 h-16 rounded-[8px]  bg-[var(--primary)] hover:bg-[var(--primary)]">
+               <Button type="submit" variant="primary" disabled={isSubmitting} className="px-10 h-[38px] rounded-full text-[13px] font-medium">
                   {isSubmitting ? (
-                    <div className="flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" /> Provisioning...</div>
-                  ) : 'Activate Tenancy'}
+                    <div className="flex items-center gap-3"><Loader2 className="w-4 h-4 animate-spin" /> Provisioning...</div>
+                  ) : 'Onboard tenant'}
                </Button>
              )}
           </div>

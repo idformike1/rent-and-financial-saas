@@ -92,48 +92,49 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
         <div className="flex items-center gap-3 pr-2">
            <Badge variant="brand" className="h-8 flex items-center font-bold">
               {filtered.length} MATCHES
+              {filtered.length} matches
            </Badge>
         </div>
       </Card>
 
       {/* THE REGISTRY TABLE */}
-      <Card className="p-0 overflow-hidden border border-border shadow-none">
+      <Card className="p-0 overflow-hidden border border-[#2A2D35] shadow-none">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-[#1C1F26]/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">
+            <thead className="bg-[#1C1F26]/30 text-[12px] text-muted-foreground font-medium border-b border-[#2A2D35] h-[35px]">
               <tr>
-                <th className="px-[22px]">Execution Date</th>
-                <th className="px-[22px]">Payee / Entity</th>
-                <th className="px-[22px]">Description</th>
-                <th className="px-[22px]">Categorization</th>
-                <th className="px-[22px]">Asset Scope</th>
-                <th className="px-[22px] text-right">Value</th>
+                <th className="px-3">Execution date</th>
+                <th className="px-3">Payee / Entity</th>
+                <th className="px-3">Description</th>
+                <th className="px-3">Categorization</th>
+                <th className="px-3">Asset scope</th>
+                <th className="px-3 text-right">Value</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-[#2A2D35]">
               {filtered.map((entry: any) => (
                 <tr key={entry.id} className="hover:bg-[#1C1F26] transition-none h-[38px] group">
-                  <td className="px-[22px]">
+                  <td className="px-3">
                     <span className="text-[12px] text-muted-foreground font-finance tabular-nums">
                       {new Date(entry.transactionDate || entry.date).toISOString().split('T')[0]}
                     </span>
                   </td>
-                  <td className="px-[22px]">
+                  <td className="px-3">
                     <span className="text-[13px] font-medium text-foreground">
-                       {entry.payee || "Internal Transfer"}
+                       {entry.payee || "Internal transfer"}
                     </span>
                   </td>
-                  <td className="px-[22px]">
+                  <td className="px-3">
                     <span className="text-[12px] text-muted-foreground truncate max-w-[200px] block">
                        {entry.description || "N/A"}
                     </span>
                   </td>
-                  <td className="px-[22px]">
+                  <td className="px-3">
                     <Badge variant="default" className="bg-muted text-muted-foreground border-none font-medium">
                       {entry.expenseCategory?.name || "Unclassified"}
                     </Badge>
                   </td>
-                  <td className="px-[22px]">
+                  <td className="px-3">
                     {entry.propertyId ? (
                       <Link 
                         href={`/properties/${entry.propertyId}`}

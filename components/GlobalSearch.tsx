@@ -75,29 +75,29 @@ export default function GlobalSearch() {
   }
 
   return (
-    <div className="relative flex-1 max-w-xl mx-8" ref={dropdownRef}>
+    <div className="relative flex-1 max-w-[640px] mx-8" ref={dropdownRef}>
       {/* Search Input Bar */}
       <div className={cn(
-        "flex items-center gap-4 h-11 px-5 rounded-[8px] bg-muted/50 border border-border transition-all duration-200",
+        "flex items-center gap-4 h-[38px] px-4 rounded-[8px] bg-[#1C1F26] border border-[#2A2D35] transition-all duration-200",
         isOpen
-          ? "bg-card border-primary ring-2 ring-primary/10"
-          : "hover:border-muted-foreground/30"
+          ? "bg-[#181B21] border-[#E8E9EB]/20 ring-4 ring-[#E8E9EB]/5"
+          : "hover:border-[#E8E9EB]/10"
       )}>
         {isSearching
-          ? <Loader2 className="w-4 h-4 animate-spin text-primary" />
-          : <Search className="w-4 h-4 text-muted-foreground" />
+          ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+          : <Search className="w-4 h-4 text-muted-foreground/50" />
         }
         <input
           type="text"
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
-          placeholder="Search Assets & Tenants..."
-          className="flex-1 bg-transparent border-none text-[13px] font-bold text-foreground placeholder:text-muted-foreground outline-none uppercase tracking-tight"
+          placeholder="Search..."
+          className="flex-1 bg-transparent border-none text-[13px] font-medium text-foreground placeholder:text-muted-foreground/50 outline-none"
         />
-        <div className="flex items-center gap-1 opacity-40">
-          <span className="text-[10px] font-bold border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">⌘</span>
-          <span className="text-[10px] font-bold border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">K</span>
+        <div className="flex items-center gap-1 opacity-20">
+          <span className="text-[10px] font-medium border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">⌘</span>
+          <span className="text-[10px] font-medium border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">K</span>
         </div>
       </div>
 
@@ -115,39 +115,39 @@ export default function GlobalSearch() {
 
               {/* Search Results Section */}
               <div className="space-y-3">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase pl-3 border-l-2 border-primary">
-                  Quantum Suggestions
+                <p className="text-[11px] font-medium text-muted-foreground pl-3 border-l border-foreground/20">
+                  Search results
                 </p>
                 {results.length === 0 && !isSearching ? (
-                  <p className="p-6 text-center text-[12px] font-bold text-muted-foreground bg-muted/50 rounded-[8px] border border-dashed border-border uppercase">
-                    No signals detected for search parameters.
+                  <p className="p-12 text-center text-[13px] font-medium text-muted-foreground/50">
+                    Search for transactions, accounts, or properties
                   </p>
                 ) : (
-                  <div className="grid grid-cols-1 gap-1">
+                  <div className="grid grid-cols-1 gap-0.5">
                     {results.map((r) => (
                       <Link
                         key={`${r.type}-${r.id}`}
                         href={r.href}
-                        className="flex items-center justify-between p-3 rounded-[8px] hover:bg-foreground/[0.03] transition-none group border border-transparent hover:border-border"
+                        className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-[#1C1F26] transition-none group border border-transparent"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-10 h-10 rounded-[8px] flex items-center justify-center border transition-none bg-muted text-muted-foreground border-border", getTypeStyle(r.type))}>
+                          <div className={cn("w-10 h-10 rounded-[8px] flex items-center justify-center border transition-none bg-[#1C1F26] text-muted-foreground border-[#2A2D35]", getTypeStyle(r.type))}>
                             {getIcon(r.type)}
                           </div>
                           <div>
-                            <h4 className="text-[13px] font-bold text-foreground tracking-tight leading-none mb-1 transition-none uppercase">
+                            <h4 className="text-[13px] font-medium text-foreground tracking-tight leading-none mb-1 transition-none">
                               {r.title}
                             </h4>
-                            <p className="text-[11px] font-bold text-muted-foreground uppercase opacity-60">
+                            <p className="text-[11px] font-medium text-muted-foreground opacity-60">
                               {r.description || r.type}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-none">
-                          <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-[4px] border uppercase", getTypeStyle(r.type))}>
+                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full border", getTypeStyle(r.type))}>
                             {r.type}
                           </span>
-                          <ArrowRight className="w-4 h-4 text-primary" />
+                          <ArrowRight className="w-4 h-4 text-foreground/40" />
                         </div>
                       </Link>
                     ))}
@@ -155,27 +155,27 @@ export default function GlobalSearch() {
                 )}
               </div>
 
-              {/* Sovereign Shortcuts Section */}
+              {/* Suggested Actions Section */}
               <div className="space-y-3">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase pl-3 border-l-2 border-border">
-                  Sovereign Shortcuts
+                <p className="text-[11px] font-medium text-muted-foreground pl-3 border-l border-[#2A2D35]">
+                  Suggested actions
                 </p>
-                <div className="grid grid-cols-1 gap-1">
+                <div className="grid grid-cols-1 gap-0.5">
                   {staticNav.map((s) => (
                     <Link
                       key={s.title}
                       href={s.href}
-                      className="flex items-center justify-between p-3 rounded-[8px] hover:bg-foreground/[0.03] transition-none border border-transparent hover:border-border group"
+                      className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-[#1C1F26] transition-none border border-transparent group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-[8px] bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-none border border-border">
+                        <div className="w-10 h-10 rounded-[8px] bg-[#1C1F26] flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-none border border-[#2A2D35]">
                           <s.icon className="w-4 h-4" />
                         </div>
-                        <h4 className="text-[12px] font-bold text-muted-foreground group-hover:text-foreground uppercase transition-none">
+                        <h4 className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-none">
                           {s.title}
                         </h4>
                       </div>
-                      <Target className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-none" />
+                      <ArrowRight className="w-4 h-4 text-foreground/40 opacity-0 group-hover:opacity-100 transition-none" />
                     </Link>
                   ))}
                 </div>
