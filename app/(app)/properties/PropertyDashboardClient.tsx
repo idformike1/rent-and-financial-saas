@@ -49,11 +49,10 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
         <Button 
           variant="primary"
           onClick={() => setIsAddModalOpen(true)}
-          className="h-14 px-8 rounded-[8px]  flex items-center group overflow-hidden relative"
+          className="h-8 rounded-full text-[15px] px-6"
         >
-          <div className="absolute inset-0 bg-muted translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-          <Building2 className="w-5 h-5 mr-3 relative z-10" /> 
-          <span className="relative z-10">Add Property</span>
+          <Building2 className="w-3.5 h-3.5 mr-2" /> 
+          <span>Add property</span>
         </Button>
       </div>
 
@@ -64,33 +63,33 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
             href={`/properties/${p.id}`}
             className="group"
           >
-            <Card className="p-6 rounded-[8px] border-none hover:-translate-y-2 transition-all relative overflow-hidden bg-card dark:bg-card h-full">
+            <Card className="hover:bg-white/[0.04] transition-all">
               <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all duration-700">
                  <Building2 className="w-32 h-32 text-brand" />
               </div>
               
               <div className="mb-8 space-y-3">
                 <div className="flex items-center gap-2">
-                   <Badge className="bg-brand/5 text-brand border-brand/20 text-[8px] px-2 py-0">Asset ID: {p.id.slice(0,4)}</Badge>
-                   <Badge variant="success" className="text-[8px] px-2 py-0">Status: Active</Badge>
+                   <Badge variant="default" className="text-[10px] px-2 py-0">Asset ID: {p.id.slice(0,4)}</Badge>
+                   <Badge variant="success" className="text-[10px] px-2 py-0 font-sans">Active</Badge>
                 </div>
-                <h2 className="text-2xl text-foreground dark:text-foreground  leading-tight group-hover:text-brand transition-colors">{p.name}</h2>
-                <div className="flex items-center text-muted-foreground text-[10px]  leading-relaxed">
-                  <Navigation className="w-3 h-3 mr-2 text-brand" /> {p.address}
+                <h1 className="text-[28px] leading-[36px] font-[400] text-white tracking-tight font-sans">{p.name}</h1>
+                <div className="flex items-center text-white/40 text-[12px] font-[400] font-sans">
+                  <Navigation className="w-3 h-3 mr-2 text-white/20" /> {p.address}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-8 border-t border-border border-border">
+              <div className="flex items-center justify-between pt-8 border-t border-white/[0.04]">
                  <div className="flex items-center space-x-6">
                     <div className="flex flex-col">
-                      <span className="text-[9px] text-muted-foreground  ">Deployment Count</span>
-                      <span className="text-xl text-foreground dark:text-foreground flex items-center mt-1">
-                        <Hash className="w-4 h-4 mr-1.5 text-brand" /> {p._count.units}
+                      <span className="text-[12px] text-white/40 font-sans">Units</span>
+                      <span className="text-[20px] font-[400] text-white flex items-center mt-1 font-sans">
+                        {p._count.units}
                       </span>
                     </div>
                  </div>
-                 <div className="w-12 h-12 bg-muted dark:bg-muted rounded-[8px] flex items-center justify-center group-hover:bg-brand group-hover:text-foreground transition-all">
-                    <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                 <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
+                    <ChevronRight className="w-4 h-4 text-white/40 transition-transform group-hover:translate-x-0.5" />
                  </div>
               </div>
             </Card>
