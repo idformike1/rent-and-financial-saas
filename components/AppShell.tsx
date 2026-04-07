@@ -41,6 +41,7 @@ const navigationSections = [
     label: 'Command',
     items: [
       { name: 'Home',              href: '/home',        icon: Icons.Home },
+      { name: 'Transactions',      href: '/transactions',icon: Icons.Transactions },
       { name: 'Dashboard',        href: '/dashboard',   icon: Icons.Home },
       { name: 'Properties',       href: '/properties',  icon: Icons.Accounts },
       { name: 'Tenants',          href: '/tenants',     icon: Icons.Accounts },
@@ -53,7 +54,7 @@ const navigationSections = [
     label: 'Intelligence hub',
     items: [
       { name: 'Analytic Hub',  href: '/reports',                       icon: Icons.Home },
-      { name: 'Master Ledger', href: '/reports/master-ledger',         icon: Icons.Transactions },
+      { name: 'Master Ledger', href: '/transactions',         icon: Icons.Transactions },
       { name: 'Waterfall Core',href: '/reports/ledger-waterfall',      icon: Icons.Payments },
       { name: 'Forex Engine',  href: '/reports/financial-connections', icon: Icons.Accounts },
       { name: 'Aging Matrix',  href: '/receivables/aging',             icon: Icons.Transactions },
