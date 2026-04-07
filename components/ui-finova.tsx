@@ -63,8 +63,8 @@ export function Button({
 }: ButtonProps) {
   const variants = {
     primary: "bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-none rounded-full",
-    secondary: "bg-[#1F222A] border border-[#1C1C26] text-foreground hover:bg-[#1C1C26] shadow-none rounded-full",
-    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-[#1C1C26]/50 rounded-full",
+    secondary: "bg-secondary border border-border text-foreground hover:bg-secondary/80 shadow-none rounded-full",
+    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/30 rounded-full",
     danger: "bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 shadow-none rounded-full",
   };
 
@@ -120,7 +120,7 @@ export function Badge({
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand'
 }) {
   const variants = {
-    default: "border-[#1C1C26] text-muted-foreground bg-[#1F222A]",
+    default: "border-border text-muted-foreground bg-secondary",
     success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
     danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",

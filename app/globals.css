@@ -27,6 +27,8 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-mercury-green: var(--mercury-green);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-accent: var(--sidebar-accent);
   --radius-sm: var(--radius);
   
   --font-sans: 'Arcadia Text', ui-sans-serif, system-ui, sans-serif;
@@ -68,27 +70,29 @@
 }
 
 .dark {
-  --background: #10101A;
+  --background: #161821;
+  --sidebar: #0f0f1a;
+  --sidebar-accent: #201f2b;
   --foreground: #FFFFFF;
-  --card: rgba(255, 255, 255, 0.06);
+  --card: #1e1e2a;
   --card-foreground: #FFFFFF;
-  --popover: #10101A;
+  --popover: #161821;
   --popover-foreground: #FFFFFF;
-  --primary: #5266EB;
+  --primary: #5166eb;
   --primary-foreground: #FFFFFF;
-  --secondary: #171721;
+  --secondary: #2d2e39;
   --secondary-foreground: #FFFFFF;
-  --muted: rgba(255, 255, 255, 0.03);
-  --muted-foreground: #8A919D;
-  --accent: rgba(255, 255, 255, 0.06);
+  --muted: #1e1e2a;
+  --muted-foreground: #8A919E;
+  --accent: #201f2b;
   --accent-foreground: #FFFFFF;
   --destructive: #FF6B6B;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #5266EB;
-  --mercury-green: #4ADE80;
-  --chart-1: #4ADE80;
+  --border: #2d2e39;
+  --input: #2d2e39;
+  --ring: #5166eb;
+  --mercury-green: #77c599;
+  --chart-1: #77c599;
   --chart-2: #3B82F6;
   --chart-3: #F59E0B;
   --chart-4: #8B5CF6;

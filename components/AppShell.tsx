@@ -104,12 +104,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-[232px] bg-[#10101A] border-r border-[#1C1C26] flex flex-col transform transition-transform duration-300 lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-[232px] bg-sidebar border-r border-[#1C1C26] flex flex-col transform transition-transform duration-300 lg:translate-x-0",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
 
         {/* Brand bar */}
-        <div className="h-14 flex items-center px-4 border-b border-[#1C1C26] shrink-0">
+        <div className="h-14 flex items-center px-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
             <svg width="20" height="20" viewBox="0 0 512 512" className="text-foreground fill-current">
                <path d="M504.1 256C504.1 119 393 7.9 256 7.9S7.9 119 7.9 256 119 504.1 256 504.1 504.1 393 504.1 256z" opacity=".4"/>
@@ -145,8 +145,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         className={cn(
                           "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-none transition-all duration-150 my-0.5 group",
                           isActive
-                            ? "text-foreground bg-white/[0.08] border-l-2 border-primary"
-                            : "text-muted-foreground/40 hover:text-foreground hover:bg-white/[0.04]"
+                            ? "text-foreground bg-sidebar-accent border-l-2 border-primary"
+                            : "text-muted-foreground/40 hover:text-foreground hover:bg-sidebar-accent/50"
                         )}
                       >
                         <item.icon 
@@ -166,7 +166,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
-        <div className="mt-auto p-3 border-t border-[#1C1C26] flex items-center gap-2 bg-card/30">
+        <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card/10">
           <div className="w-7 h-7 rounded-[4px] bg-foreground text-background flex items-center justify-center text-[10px] font-bold shrink-0">
             {userName.charAt(0)}
           </div>
@@ -185,17 +185,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── MAIN COLUMN ─────────────────────────────────────────────────────── */}
-      <div className="flex-1 ml-[232px] h-screen overflow-hidden flex flex-col bg-white/[0.03]">
+      <div className="flex-1 ml-[232px] h-screen overflow-hidden flex flex-col bg-background">
 
         {/* ── TOP BAR / HEADER (CENTERED SEARCH SYNC) ────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center bg-[#171721] border-b border-[#1C1C26] shrink-0">
+        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center bg-background border-b border-border shrink-0">
           <div className="flex-1 flex items-center justify-center">
              <div className="w-full max-w-[512px] relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-muted-foreground/40 group-focus-within:text-foreground transition-colors" />
                 <input 
                   type="text" 
                   placeholder="Search for anything" 
-                  className="w-full h-8 bg-[#10101A] border border-white/5 rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
+                  className="w-full h-8 bg-sidebar border border-border rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
                    <kbd className="text-[10px] font-sans">⌘</kbd>
@@ -230,7 +230,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
 function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' }) {
   const variants = {
-    default: "border-border text-muted-foreground bg-muted",
+    default: "border-border text-muted-foreground bg-secondary",
     success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
     danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",
