@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from 'next-themes'
 import SessionProvider from '@/components/providers/SessionProvider'
 import Toaster from '@/components/Toaster'
 
@@ -37,12 +36,10 @@ export default function RootLayout({
         className="antialiased min-h-screen overflow-hidden bg-background text-foreground transition-colors duration-300"
         suppressHydrationWarning
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <SessionProvider>
             <Toaster />
             {children}
           </SessionProvider>
-        </ThemeProvider>
       </body>
     </html>
   )

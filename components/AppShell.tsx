@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useTheme } from 'next-themes'
+import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Sun, Moon, Menu, ChevronDown,
+  Menu, ChevronDown,
   Users, LayoutDashboard, Database, Layers, Zap, Clock,
   ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut, Orbit
 } from 'lucide-react'
@@ -76,13 +75,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const userRole = session?.user?.role || 'MANAGER'
   const userName = session?.user?.name || 'Sovereign Auditor'
 
-  const { setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [openSections, setOpenSections] = useState<string[]>(['Core Operations', 'Intelligence Hub', 'Governance Control'])
   const pathname = usePathname()
-
-  useEffect(() => setMounted(true), [])
 
   const toggleSection = (label: string) => {
     setOpenSections(prev =>
@@ -97,7 +92,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return true
   })
 
-  if (!mounted) return null
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden font-sans selection:bg-primary/10 text-foreground">
@@ -205,12 +199,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           
           <div className="flex items-center gap-4 ml-auto">
-             <button 
-               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-               className="text-muted-foreground hover:text-foreground transition-none p-2 rounded-full hover:bg-foreground/[0.05]"
-             >
-               {resolvedTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-             </button>
              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
                 <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
              </div>
