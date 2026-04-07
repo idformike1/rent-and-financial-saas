@@ -124,9 +124,9 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                        {row.type === 'DEBIT' ? (
                          <ArrowUpRight className="w-3 h-3 text-rose-500/50" />
                        ) : (
-                         <ArrowDownLeft className="w-3 h-3 text-emerald-500/50" />
+                         <ArrowDownLeft className="w-3 h-3 text-mercury-green/50" />
                        )}
-                       <span className="text-xs font-bold text-foreground  tracking-tight truncate max-w-sm">{row.description}</span>
+                       <span className="text-xs font-medium text-foreground  tracking-tight truncate max-w-sm">{row.description}</span>
                     </div>
                   </td>
                   <td className="px-10 py-6 text-right">
@@ -136,13 +136,13 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                   </td>
                   <td className="px-10 py-6 text-right">
                     {row.creditAmount ? (
-                      <span className="text-sm text-emerald-500 font-finance tabular-nums">-${row.creditAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      <span className="text-sm text-mercury-green font-finance tabular-nums">-${row.creditAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     ) : '-'}
                   </td>
                   <td className="px-10 py-6 text-right">
                     <span className={cn(
                       "text-md font-finance tabular-nums",
-                      row.runningBalance > 0 ? "text-rose-500" : "text-emerald-500"
+                      row.runningBalance > 0 ? "text-rose-500" : "text-mercury-green"
                     )}>
                       ${row.runningBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
@@ -186,7 +186,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                           {(matchedEntry && c.isFullyPaid) ? (
                             <span className={cn(
                               "text-[10px] ",
-                              isLate ? "text-amber-500" : "text-emerald-500"
+                              isLate ? "text-amber-500" : "text-mercury-green"
                             )}>
                               {new Date(matchedEntry.transactionDate).toLocaleDateString()}
                             </span>
@@ -202,7 +202,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                        <td className="px-10 py-8 text-right">
                           <span className={cn(
                              "px-4 py-1.5 rounded-full text-[8px]  border-2",
-                             c.isFullyPaid ? "border-emerald-500/30 text-emerald-500" : "border-rose-500/30 text-rose-500"
+                             c.isFullyPaid ? "border-mercury-green/30 text-mercury-green" : "border-rose-500/30 text-rose-500"
                           )}>
                              {c.isFullyPaid ? 'SETTLED' : 'OUTSTANDING'}
                           </span>

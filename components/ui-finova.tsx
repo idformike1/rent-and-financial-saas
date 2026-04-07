@@ -21,18 +21,18 @@ export function Card({
   ...props
 }: CardProps) {
   const variants = {
-    default: "bg-card border border-border shadow-none",
-    muted:   "bg-muted border border-border shadow-none",
-    outline: "bg-transparent border border-border shadow-none",
-    glass:   "bg-card/80 border border-border shadow-none",
+    default: "bg-white/[0.06] border border-white/[0.08] shadow-none",
+    muted:   "bg-white/[0.02] border border-white/[0.08] shadow-none",
+    outline: "bg-transparent border border-white/[0.08] shadow-none",
+    glass:   "bg-white/[0.04] backdrop-blur-md border border-white/[0.08] shadow-none",
   };
 
   return (
     <motion.div
       whileTap={{ scale: 0.995 }}
-      transition={{ duration: 0.1 }}
+      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
-        "rounded-[12px] p-6 transition-none",
+        "rounded-[8px] px-6 py-8 transition-all duration-150",
         variants[variant as keyof typeof variants],
         className
       )}
@@ -45,7 +45,7 @@ export function Card({
 
 /**
  * MERCURY: BUTTON (WORKSTATION STANDARD)
- * High contrast, no glows, 8px/Pill radius.
+ * High contrast, no glows, 16px/Pill radius.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -62,24 +62,24 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-primary text-primary-foreground hover:bg-primary/95 border-none shadow-none rounded-full",
-    secondary: "bg-card border border-border text-foreground hover:bg-muted shadow-none rounded-full",
-    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted rounded-full",
-    danger: "bg-muted border border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 shadow-none rounded-full",
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-none rounded-full",
+    secondary: "bg-[#1F222A] border border-[#1C1C26] text-foreground hover:bg-[#1C1C26] shadow-none rounded-full",
+    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-[#1C1C26]/50 rounded-full",
+    danger: "bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 shadow-none rounded-full",
   };
 
   const sizes = {
-    sm:  "px-3 py-1 text-xs font-medium h-8",
-    md:  "px-4 py-2 text-[13px] font-medium h-[38px]",
-    lg:  "px-6 py-3 text-[14px] font-medium h-12"
+    sm:  "px-3 py-1 text-[12px] font-medium h-7",
+    md:  "px-4 py-2 text-[13px] font-medium h-8",
+    lg:  "px-6 py-3 text-[14px] font-medium h-10"
   };
 
   return (
     <motion.button
       whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.1 }}
+      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
-        "inline-flex items-center justify-center transition-none disabled:opacity-40 disabled:pointer-events-none leading-none tracking-tight",
+        "inline-flex items-center justify-center transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none leading-none tracking-tight",
         variants[variant as keyof typeof variants],
         sizes[size as keyof typeof sizes],
         className
@@ -100,7 +100,7 @@ export function Button({
  */
 export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <label className={cn("text-[12px] font-bold text-muted-foreground block mb-2", className)}>
+    <label className={cn("text-[12px] font-medium text-muted-foreground block mb-2", className)}>
       {children}
     </label>
   )
@@ -120,8 +120,8 @@ export function Badge({
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand'
 }) {
   const variants = {
-    default: "border-border text-muted-foreground bg-muted",
-    success: "border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10",
+    default: "border-[#1C1C26] text-muted-foreground bg-[#1F222A]",
+    success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
     danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",
     brand:   "border-primary/20 text-primary bg-primary/10",
@@ -129,12 +129,95 @@ export function Badge({
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold leading-none tracking-tight",
+      "inline-flex items-center px-2 py-0 rounded-full border text-[9px] font-bold leading-none tracking-tight uppercase",
       variants[variant],
       className
     )}>
       {children}
     </span>
+  )
+}
+
+/**
+ * MERCURY: UNIVERSAL DATA GRID (WORKSTATION 3.2 STANDARD)
+ * These components enforce strict 1:1 parity and should be used for all tables.
+ */
+export function MercuryTable({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <div className={cn("w-full overflow-hidden rounded-[8px] border border-white/[0.08] bg-transparent", className)}>
+      <table className="w-full border-collapse">
+        {children}
+      </table>
+    </div>
+  )
+}
+
+export function THead({ children }: { children: React.ReactNode }) {
+  return (
+    <thead className="h-[40px] border-b border-white/[0.08] bg-transparent">
+      {children}
+    </thead>
+  )
+}
+
+export function TBody({ children }: { children: React.ReactNode }) {
+  return (
+    <tbody className="divide-y divide-white/[0.04]">
+      {children}
+    </tbody>
+  )
+}
+
+export function TR({ children, className, isHeader = false }: { children: React.ReactNode, className?: string, isHeader?: boolean }) {
+  return (
+    <tr className={cn(
+      "group transition-colors duration-150",
+      isHeader ? "h-[40px]" : "h-[50.5px] hover:bg-white/[0.04]",
+      className
+    )}>
+      {children}
+    </tr>
+  )
+}
+
+export function TD({ 
+  children, 
+  className, 
+  isHeader = false,
+  variant = 'default' 
+}: { 
+  children: React.ReactNode, 
+  className?: string, 
+  isHeader?: boolean,
+  variant?: 'default' | 'positive' | 'negative' | 'date' | 'large'
+}) {
+  if (isHeader) {
+    return (
+      <th className={cn(
+        "px-[10px] text-left text-[12px] font-[400] text-[#9D9DA8] tracking-normal leading-none capitalize",
+        className
+      )}>
+        {children}
+      </th>
+    )
+  }
+
+  const variants = {
+    default:  "text-foreground/90 font-[380]",
+    positive: "text-[#37CC73] font-[380]",
+    negative: "text-foreground font-[380]",
+    date:     "text-muted-foreground/60 font-[380]",
+    large:    "text-[16px] font-[380] text-foreground/90"
+  }
+
+  return (
+    <td className={cn(
+      "px-[10px] text-[16px] leading-[1.2] whitespace-nowrap",
+      variants[variant as keyof typeof variants],
+      className
+    )}>
+      {children}
+    </td>
   )
 }
 
@@ -145,14 +228,13 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "w-full bg-card border border-border text-foreground px-3 py-2 rounded-[8px] text-sm font-medium placeholder-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none",
+        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground/90 px-3 rounded-[6px] text-[13px] font-[380] placeholder-muted-foreground/20 focus:outline-none focus:border-white/10 transition-all duration-150",
         className
       )}
       {...props}
     />
   )
 }
-
 /**
  * MERCURY: SELECT (Basic override)
  */
@@ -160,7 +242,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
   return (
     <select
       className={cn(
-        "w-full bg-card border border-border text-foreground px-3 py-2 rounded-[8px] text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none appearance-none cursor-pointer",
+        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground/90 px-3 rounded-[6px] text-[13px] font-[380] focus:outline-none focus:border-white/10 transition-all duration-150 appearance-none cursor-pointer",
         className
       )}
       {...props}

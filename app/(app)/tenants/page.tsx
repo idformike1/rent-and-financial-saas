@@ -38,20 +38,20 @@ export default async function TenantsPage() {
   }));
 
   return (
-    <div className="py-6 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
+    <div className="pt-10 pb-12 max-w-7xl mx-auto animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10">
         <div className="space-y-1">
-          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
+          <h1 className="text-[28px] font-display text-foreground leading-none">
             Occupant Directory
           </h1>
-          <p className="text-[15px] font-[400] text-muted-foreground">
+          <p className="text-[15px] font-[400] text-muted-foreground opacity-60">
             Master index of portfolio identity and lease governance
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/onboarding">
-            <Button className="bg-primary text-primary-foreground h-10 px-4 rounded-[8px] font-bold  tracking-widest text-[10px] flex items-center">
-              <Plus className="w-4 h-4 mr-2" /> New Provisioning
+            <Button size="sm" className="bg-[#5266EB] hover:bg-[#5266EB]/90 h-8 px-4 rounded-full text-[13px] border-none">
+              <Plus className="w-[14px] h-[14px] mr-2" /> New Provisioning
             </Button>
           </Link>
         </div>

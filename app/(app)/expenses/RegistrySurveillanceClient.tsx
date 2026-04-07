@@ -157,7 +157,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                   <td className="px-[22px] text-right">
                     <span className={cn(
                       "text-[13px] font-bold font-finance tabular-nums",
-                      Number(entry.amount) < 0 ? "text-rose-400" : "text-emerald-400"
+                      Number(entry.amount) < 0 ? "text-rose-400" : "text-mercury-green"
                     )}>
                       {Number(entry.amount) < 0 ? '-' : '+'}${Math.abs(Number(entry.amount)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>

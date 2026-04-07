@@ -1,5 +1,5 @@
-import { Card, Badge, Button } from '@/components/ui-finova'
-import { Activity, Zap, LayoutDashboard } from 'lucide-react'
+import { Card, Button } from '@/components/ui-finova'
+import { Plus, Send, ArrowRightLeft, Download, Activity, Zap, LayoutDashboard } from 'lucide-react'
 import ExportControls from '@/components/ExportControls'
 import DashboardClientGrid from './DashboardClientGrid'
 import { getGlobalPortfolioTelemetry } from '@/actions/analytics.actions'
@@ -40,22 +40,29 @@ async function ReconTerminal() {
 
 export default async function FinovaDashboard() {
   return (
-    <div className="space-y-6 px-4 md:px-8 max-w-7xl mx-auto pb-12 pt-8">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
-        <div className="space-y-1">
-          <h1 className="text-[24px] font-medium text-foreground tracking-tight leading-none">
-            Treasury Oversight
-          </h1>
-          <p className="text-[14px] text-muted-foreground">
-            Portfolio-level macro analysis and risk aggregation
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="default" className="px-3 py-1.5 font-medium h-9 border border-border bg-muted/30 text-muted-foreground flex items-center rounded-full">
-            <Zap size={12} className="mr-2" /> Live Sync
-          </Badge>
-          <ExportControls />
-        </div>
+    <div className="px-4 md:px-8 max-w-7xl mx-auto pb-12 pt-10">
+      {/* ── MERCURY: DASHBOARD HEADER (Welcome Block) ─────────────────────────── */}
+      <div className="mb-10">
+        <h1 className="text-display font-display text-foreground">Welcome, Rajm</h1>
+        <p className="text-[13px] font-[360] text-muted-foreground mt-1">Portfolio-level macro analysis and risk aggregation</p>
+      </div>
+
+      {/* ── MERCURY: ACTION STRIP (Tactical Buttons) ───────────────────────────── */}
+      <div className="flex items-center gap-2 mb-8">
+        <Button variant="primary" size="sm" className="bg-[#5266EB] hover:bg-[#5266EB]/90 h-8 px-4 rounded-full text-[13px] border-none">
+          <Send size={14} className="mr-2" /> Send
+        </Button>
+        <Button variant="secondary" size="sm" className="h-8 px-4 rounded-full text-[13px]">
+          <ArrowRightLeft size={14} className="mr-2" /> Transfer
+        </Button>
+        <Button variant="secondary" size="sm" className="h-8 px-4 rounded-full text-[13px]">
+          <Plus size={14} className="mr-2" /> Deposit
+        </Button>
+        <Button variant="secondary" size="sm" className="h-8 px-4 rounded-full text-[13px]">
+           Request
+        </Button>
+        <div className="h-6 w-[1px] bg-[#1C1C26] mx-2" />
+        <ExportControls />
       </div>
 
       <Suspense fallback={<MacroSkeleton />}>

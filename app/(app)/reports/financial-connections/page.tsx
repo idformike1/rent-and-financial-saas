@@ -135,7 +135,7 @@ export default function FinanceTranslationHub() {
                     }`}
                   >
                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center mr-6 transition-all ${
-                      isActive ? 'bg-card/20' : 'bg-muted dark:bg-surface-700'
+                      isActive ? 'bg-card/20' : 'bg-muted'
                     }`}>
                       <Icon className={`w-6 h-6 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`} />
                     </div>
@@ -180,7 +180,7 @@ export default function FinanceTranslationHub() {
                 </p>
               </Card>
 
-              <Card className="bg-surface-900 border-none p-6 rounded-[8px] text-foreground relative overflow-hidden group">
+              <Card className="bg-background border-none p-6 rounded-[8px] text-foreground relative overflow-hidden group">
                  <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-transform">
                     <Database className="w-48 h-48 text-brand" />
                  </div>
@@ -191,7 +191,7 @@ export default function FinanceTranslationHub() {
                         <Link className="w-4 h-4 text-brand" />
                         <h5 className="text-[10px]   text-muted-foreground">Persistence Model</h5>
                       </div>
-                      <div className="bg-surface-800/80 border border-surface-700 px-5 py-4 rounded-xl text-xs text-brand/80">
+                      <div className="bg-card/80 border border-border px-5 py-4 rounded-xl text-xs text-brand/80">
                         {selected.axiom_model}
                       </div>
                    </section>
@@ -203,7 +203,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
-                           <div key={i} className="flex items-center space-x-4 bg-surface-800/40 p-4 rounded-xl border border-surface-700/50">
+                           <div key={i} className="flex items-center space-x-4 bg-card/40 p-4 rounded-xl border border-border/50">
                               <ArrowRight className="w-3 h-3 text-muted-foreground" />
                               <span className="text-[11px] font-bold tracking-tight text-muted-foreground">{f}</span>
                            </div>
@@ -218,7 +218,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
-                           <div key={i} className="flex items-center justify-between bg-surface-800 p-4 rounded-xl border-l-[4px] border-emerald-500 group cursor-default">
+                           <div key={i} className="flex items-center justify-between bg-card p-4 rounded-xl border-l-[4px] border-mercury-green group cursor-default">
                               <span className="text-[10px] text-[var(--primary)]/80">{act}</span>
                               <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] text-[8px] px-1.5 py-0">Active</Badge>
                            </div>

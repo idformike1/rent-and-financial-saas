@@ -126,13 +126,14 @@ export default function OnboardingWizard() {
     return (
       <div className="max-w-xl mx-auto py-12 px-6 animate-in zoom-in-95 duration-500">
         <Card className="p-8 text-center space-y-6 rounded-[12px] border-none bg-card">
-          <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+          <div className="w-16 h-16 bg-mercury-green/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-8 h-8 text-mercury-green" />
           </div>
-          <h2 className="text-[20px] font-medium text-foreground tracking-tight">Onboarding complete</h2>
-          <p className="text-muted-foreground font-medium text-[13px] leading-relaxed max-w-sm mx-auto">The tenant registry has been updated and the initial ledger entries have been generated.</p>
+          <h2 className="text-display font-weight-display text-foreground mb-4">Activation Sequence Complete</h2>
+          <p className="text-sm text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto">
+The tenant registry has been updated and the initial ledger entries have been generated.</p>
           
-          <div className="bg-[#1C1F26] rounded-[8px] p-6 text-left space-y-4">
+          <div className="bg-muted rounded-[8px] p-6 text-left space-y-4">
              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1">
                    <p className="text-[11px] text-muted-foreground">Lease ID</p>
@@ -184,26 +185,26 @@ export default function OnboardingWizard() {
          ))}
       </div>
 
-      <Card className="rounded-[12px] border-[#2A2D35] bg-[#181B21] overflow-hidden shadow-none">
+      <Card className="rounded-[12px] border-border bg-card overflow-hidden shadow-none">
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in duration-500">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-[11px] font-medium text-muted-foreground ml-1">Full name</label>
-                  <Input {...register('tenantName')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.tenantName && "border-rose-500")} placeholder="Legal name" />
+                  <Input {...register('tenantName')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.tenantName && "border-rose-500")} placeholder="Legal name" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[11px] font-medium text-muted-foreground ml-1">Email</label>
-                  <Input {...register('email')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.email && "border-rose-500")} placeholder="Email address" />
+                  <Input {...register('email')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.email && "border-rose-500")} placeholder="Email address" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[11px] font-medium text-muted-foreground ml-1">Phone</label>
-                  <Input {...register('phone')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.phone && "border-rose-500")} placeholder="Phone number" />
+                  <Input {...register('phone')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.phone && "border-rose-500")} placeholder="Phone number" />
                 </div>
                 <div className="md:col-span-2 space-y-2">
                    <label className="text-[11px] font-medium text-muted-foreground ml-1">National ID</label>
-                   <Input {...register('nationalId')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.nationalId && "border-rose-500")} placeholder="Identification string" />
+                   <Input {...register('nationalId')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.nationalId && "border-rose-500")} placeholder="Identification string" />
                 </div>
               </div>
             </div>
@@ -214,22 +215,22 @@ export default function OnboardingWizard() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2 space-y-2">
                      <label className="text-[11px] font-medium text-muted-foreground ml-1">Asset allocation</label>
-                      <select {...register('unitId')} className={cn("w-full bg-[#1C1F26] text-foreground border border-[#2A2D35] rounded-[8px] px-4 py-2 text-[13px] h-[38px] outline-none appearance-none focus:ring-2 focus:ring-primary/10", errors.unitId ? 'border-rose-500' : 'border-[#2A2D35]')}>
+                      <select {...register('unitId')} className={cn("w-full bg-muted text-foreground border border-border rounded-[8px] px-4 py-2 text-[13px] h-[38px] outline-none appearance-none focus:ring-2 focus:ring-primary/10", errors.unitId ? 'border-rose-500' : 'border-border')}>
                         <option value="">Select unit...</option>
                         {units.map(u => <option key={u.id} value={u.id}>Unit {u.unitNumber} - {u.type}</option>)}
                      </select>
                   </div>
                   <div className="space-y-2">
                      <label className="text-[11px] font-medium text-muted-foreground ml-1">Base rent</label>
-                     <Input type="number" {...register('baseRent', {valueAsNumber: true})} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.baseRent && "border-rose-500")} placeholder="0.00" />
+                     <Input type="number" {...register('baseRent', {valueAsNumber: true})} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.baseRent && "border-rose-500")} placeholder="0.00" />
                   </div>
                   <div className="space-y-2">
                      <label className="text-[11px] font-medium text-muted-foreground ml-1">Security deposit</label>
-                     <Input type="number" {...register('securityDeposit', {valueAsNumber: true})} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.securityDeposit && "border-rose-500")} placeholder="0.00" />
+                     <Input type="number" {...register('securityDeposit', {valueAsNumber: true})} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.securityDeposit && "border-rose-500")} placeholder="0.00" />
                   </div>
                   <div className="space-y-2">
                      <label className="text-[11px] font-medium text-muted-foreground ml-1">Move-in date</label>
-                     <Input type="date" {...register('moveInDate')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] bg-[#1C1F26]", errors.moveInDate && "border-rose-500")} />
+                     <Input type="date" {...register('moveInDate')} className={cn("h-[38px] rounded-[8px] text-[13px] font-medium border-border bg-muted", errors.moveInDate && "border-rose-500")} />
                   </div>
                </div>
             </div>
@@ -237,8 +238,8 @@ export default function OnboardingWizard() {
 
           {step === 3 && (
             <div className="space-y-6 animate-in fade-in duration-500">
-               <div className="bg-[#1C1F26] p-6 space-y-6 text-foreground rounded-[8px] border border-[#2A2D35]">
-                  <h4 className="text-[11px] font-medium text-muted-foreground border-b border-[#2A2D35] pb-4 uppercase tracking-wider">Audit projection</h4>
+               <div className="bg-muted p-6 space-y-6 text-foreground rounded-[8px] border border-border">
+                  <h4 className="text-[11px] font-medium text-muted-foreground border-b border-border pb-4 uppercase tracking-wider">Audit projection</h4>
                   <div className="flex justify-between items-end">
                      <div>
                         <p className="text-[12px] font-medium text-foreground">Total initial payment</p>
@@ -258,7 +259,7 @@ export default function OnboardingWizard() {
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-8 border-t border-[#2A2D35]">
+          <div className="flex justify-between items-center pt-8 border-t border-border">
              {step > 1 ? (
                <button type="button" onClick={() => { setStep(step-1); setServerError(''); }} className="text-[13px] font-medium text-muted-foreground hover:text-foreground flex items-center transition-none"><ChevronLeft className="w-4 h-4 mr-2" /> Back</button>
              ) : <div />}

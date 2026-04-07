@@ -104,12 +104,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-[184px] bg-background border-r border-border flex flex-col transform transition-transform duration-300 lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-[232px] bg-[#10101A] border-r border-[#1C1C26] flex flex-col transform transition-transform duration-300 lg:translate-x-0",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
 
         {/* Brand bar */}
-        <div className="h-14 flex items-center px-4 border-b border-border shrink-0">
+        <div className="h-14 flex items-center px-4 border-b border-[#1C1C26] shrink-0">
           <div className="flex items-center gap-2">
             <svg width="20" height="20" viewBox="0 0 512 512" className="text-foreground fill-current">
                <path d="M504.1 256C504.1 119 393 7.9 256 7.9S7.9 119 7.9 256 119 504.1 256 504.1 504.1 393 504.1 256z" opacity=".4"/>
@@ -127,7 +127,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div key={section.label} className="space-y-0.5">
               <button
                 onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors"
+                className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors tracking-tight"
               >
                 {section.label}
                 <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", openSections.includes(section.label) ? 'rotate-180' : '')} />
@@ -143,19 +143,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center w-full px-2 h-[31px] text-[13px] font-medium rounded-[6px] transition-none my-0.5 group",
+                          "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-none transition-all duration-150 my-0.5 group",
                           isActive
-                            ? "text-foreground bg-[#1C1F26] border border-border/50 shadow-sm"
-                            : "text-muted-foreground hover:text-foreground hover:bg-[#1C1F26]/30"
+                            ? "text-foreground bg-white/[0.08] border-l-2 border-primary"
+                            : "text-muted-foreground/40 hover:text-foreground hover:bg-white/[0.04]"
                         )}
                       >
                         <item.icon 
                           className={cn(
-                            "w-[18px] h-[18px] transition-colors mr-3 shrink-0",
-                            isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                            "w-[15px] h-[14px] mr-3 transition-opacity duration-150 shrink-0",
+                            isActive ? "opacity-100 text-foreground" : "opacity-40 text-muted-foreground group-hover:opacity-100 group-hover:text-foreground"
                           )} 
                         />
-                        <span className="truncate">{item.name}</span>
+                        <span className="truncate tracking-tight">{item.name}</span>
                       </Link>
                     )
                   })}
@@ -166,12 +166,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
-        <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card/30">
+        <div className="mt-auto p-3 border-t border-[#1C1C26] flex items-center gap-2 bg-card/30">
           <div className="w-7 h-7 rounded-[4px] bg-foreground text-background flex items-center justify-center text-[10px] font-bold shrink-0">
             {userName.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold text-foreground truncate leading-none">
+            <p className="text-[11px] font-bold text-foreground truncate leading-none tracking-tight">
               {userName}
             </p>
           </div>
@@ -185,36 +185,40 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── MAIN COLUMN ─────────────────────────────────────────────────────── */}
-      <div className="flex-1 ml-[184px] h-screen overflow-hidden flex flex-col bg-background">
+      <div className="flex-1 ml-[232px] h-screen overflow-hidden flex flex-col bg-white/[0.03]">
 
-        {/* ── TOP BAR / HEADER ─────────────────────────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center justify-between bg-background border-b border-border shrink-0">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-muted-foreground hover:text-foreground"
-            >
-              <Menu size={18} />
-            </button>
-            <div className="text-[13px] font-bold text-foreground tracking-tight">
-              {pathname.split('/').pop()?.replace(/-/g, ' ') || 'Workstation'}
-            </div>
+        {/* ── TOP BAR / HEADER (CENTERED SEARCH SYNC) ────────────────────────── */}
+        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center bg-[#171721] border-b border-[#1C1C26] shrink-0">
+          <div className="flex-1 flex items-center justify-center">
+             <div className="w-full max-w-[512px] relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-muted-foreground/40 group-focus-within:text-foreground transition-colors" />
+                <input 
+                  type="text" 
+                  placeholder="Search for anything" 
+                  className="w-full h-8 bg-[#10101A] border border-white/5 rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
+                   <kbd className="text-[10px] font-sans">⌘</kbd>
+                   <kbd className="text-[10px] font-sans">K</kbd>
+                </div>
+             </div>
           </div>
-
-          <div className="flex items-center gap-4">
-            <GlobalSearch />
-            <div className="h-4 w-px bg-border" />
-            <button
-              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="text-muted-foreground hover:text-foreground transition-none p-2 rounded-full hover:bg-foreground/[0.05]"
-            >
-              {resolvedTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+          
+          <div className="flex items-center gap-4 ml-auto">
+             <button 
+               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+               className="text-muted-foreground hover:text-foreground transition-none p-2 rounded-full hover:bg-foreground/[0.05]"
+             >
+               {resolvedTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+             </button>
+             <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
+             </div>
           </div>
         </header>
 
         {/* ── MAIN CANVAS ───────────────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-10">
+        <main className="flex-1 overflow-y-auto p-8">
           <div className="max-w-[1600px] mx-auto">
             {children}
           </div>
@@ -227,7 +231,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' }) {
   const variants = {
     default: "border-border text-muted-foreground bg-muted",
-    success: "border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10",
+    success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
     danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",
   };

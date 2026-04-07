@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Arcadia Text';
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 900;
+  src: url('/fonts/ArcadiaText-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Arcadia Display';
+  font-style: normal;
+  font-display: block;
+  font-weight: 300 900;
+  src: url('/fonts/ArcadiaDisplay-Variable.woff2') format('woff2');
+}
+
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -10,17 +26,21 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-mercury-green: var(--mercury-green);
   --radius-sm: var(--radius);
   
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Arcadia Text', ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Arcadia Display', ui-sans-serif, system-ui, sans-serif;
 
-  /* Universal Mercury Scaling */
+  /* Universal Mercury Scaling (V.3.2) */
   --text-base: 15px;
   --text-display: 28px;
-  --font-weight-display: 450;
-  --height-button: 38px;
+  --radius: 8px;
+  --radius-button: 16px;
+  --height-button: 32px;
+  --height-header: 56px;
+  --width-sidebar: 232px;
 }
 
 :root {
@@ -44,30 +64,32 @@
   --input: #E8EBE9;
   --ring: 222.2 84% 4.9%;
   --radius: 0.5rem;
+  --mercury-green: #50A480;
 }
 
 .dark {
-  --background: #111317;
-  --foreground: #E8E9EB;
-  --card: #181B21;
-  --card-foreground: #E8E9EB;
-  --popover: #181B21;
-  --popover-foreground: 210 40% 98%;
-  --primary: #E8E9EB;
-  --primary-foreground: #111317;
-  --secondary: #1C1F26;
-  --secondary-foreground: #E8E9EB;
-  --muted: #1C1F26;
-  --muted-foreground: #8A919E;
-  --accent: #1C1F26;
-  --accent-foreground: #E8E9EB;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: #2A2D35;
-  --input: #2A2D35;
-  --ring: #2A2D35;
-  --chart-1: #3B82F6;
-  --chart-2: #10B981;
+  --background: #10101A;
+  --foreground: #FFFFFF;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-foreground: #FFFFFF;
+  --popover: #10101A;
+  --popover-foreground: #FFFFFF;
+  --primary: #5266EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #171721;
+  --secondary-foreground: #FFFFFF;
+  --muted: rgba(255, 255, 255, 0.03);
+  --muted-foreground: #8A919D;
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF6B6B;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #5266EB;
+  --mercury-green: #4ADE80;
+  --chart-1: #4ADE80;
+  --chart-2: #3B82F6;
   --chart-3: #F59E0B;
   --chart-4: #8B5CF6;
   --chart-5: #EC4899;
@@ -78,31 +100,59 @@
     border-color: var(--border);
     letter-spacing: -0.01em;
     outline-color: var(--foreground);
+    box-shadow: none !important;
   }
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Arcadia Text', ui-sans-serif, system-ui, sans-serif !important;
+    font-feature-settings: "rlig" 1, "calt" 1, "cv01" 1, "cv02" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background: rgba(232, 233, 235, 0.1);
+    background: rgba(180, 183, 200, 0.15);
     color: var(--foreground);
   }
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgba(232, 233, 235, 0.2);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary) !important;
+  }
+  h1, h2, h3, h4, h5, h6, .text-display {
+    font-family: 'Arcadia Display', ui-sans-serif, system-ui, sans-serif !important;
+    font-size: 28px;
+    font-weight: 380 !important;
+    line-height: 36px !important;
+    letter-spacing: -0.025em !important;
+  }
+  h2 {
+    font-size: 16px;
+    font-weight: 380 !important;
+    line-height: 24px !important;
+    letter-spacing: -0.015em !important;
+  }
+  
+  /* WORKSTATION 3.2 MOTION */
+  .transition-all, .transition-colors, .transition-opacity {
+    transition-duration: 150ms !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 }
 
-/* ── STEP 2: FINANICAL TYPOGRAPHY ────────────────────────────────────────── */
+/* ── STEP 2: TRANSLUCENT OVERLAYS (ARCADIA STANDARD) ────────────────────────── */
+.bg-workstation-card {
+  background: rgba(180, 183, 200, 0.08) !important;
+  border: 1px solid rgba(180, 183, 200, 0.2) !important;
+}
+
+.border-workstation {
+  border-color: rgba(180, 183, 200, 0.12) !important;
+}
+
+/* ── STEP 2: FINANICAL TYPOGRAPHY (ARCADIA STANDARD) ────────────────────────── */
 .font-finance {
-  font-family: var(--font-mono) !important;
+  font-family: 'Arcadia Text' !important;
   font-variant-numeric: tabular-nums;
-  -webkit-font-feature-settings: "tnum";
-  font-feature-settings: "tnum";
-  letter-spacing: -0.01em;
 }
 
 /* ── PURGE LEGACY ─────────────────────────────────────────────────────────── */

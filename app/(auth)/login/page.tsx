@@ -43,7 +43,7 @@ export default function LoginPage() {
       <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[12px] animate-in zoom-in-95 duration-700 bg-card">
         <div className="space-y-10">
           <div className="text-center space-y-4">
-             <div className="w-12 h-12 bg-[#181B21] border border-[#2A2D35] rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
+             <div className="w-12 h-12 bg-card border border-border rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
                 <svg width="24" height="24" viewBox="0 0 512 512" className="text-foreground fill-current">
                    <path d="M504.1 256C504.1 119 393 7.9 256 7.9S7.9 119 7.9 256 119 504.1 256 504.1 504.1 393 504.1 256z" opacity=".4"/>
                    <path d="M256 504.1c137 0 248.1-111.1 248.1-248.1S393 7.9 256 7.9 7.9 119 7.9 256 119 504.1 256 504.1z"/>
@@ -65,7 +65,7 @@ export default function LoginPage() {
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] focus:border-foreground/20 bg-[#1C1F26]" 
+                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted" 
                     placeholder="Enter email..."
                     required
                   />
@@ -80,7 +80,7 @@ export default function LoginPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-[#2A2D35] focus:border-foreground/20 bg-[#1C1F26]"
+                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted"
                     placeholder="••••••••"
                     required
                   />
@@ -113,7 +113,7 @@ export default function LoginPage() {
           </form>
 
           <div className="pt-10 border-t border-border flex justify-between items-center text-[10px] font-bold text-muted-foreground ">
-            <span className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-500" /> V.3.2 Secure Pipeline</span>
+            <span className="flex items-center gap-2 font-medium"><ShieldCheck className="w-4 h-4 text-mercury-green" /> V.3.2 Secure Pipeline</span>
             <span>Ref: 0xMERCURY</span>
           </div>
         </div>

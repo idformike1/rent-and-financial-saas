@@ -287,7 +287,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
           <Button 
             size="sm"
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-primary text-primary-foreground font-bold text-[11px]"
+            className="bg-primary text-primary-foreground font-medium text-[11px]"
           >
             <Plus className="w-4 h-4 mr-2" />
             Provision Unit
@@ -296,18 +296,18 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       </div>
 
       {/* STEP 1: FISCAL HUD */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-[#181B21]/50 divide-x divide-border overflow-hidden rounded-[12px]">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-card/50 divide-x divide-border overflow-hidden rounded-[12px]">
         
         {/* NOI */}
         <button 
           onClick={() => setDrillDownType('NOI')}
-          className="p-6 text-left hover:bg-[#1C1F26] transition-all group"
+          className="p-6 text-left hover:bg-muted transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
              <span className="text-[11px] text-muted-foreground font-medium">Net Operating Income</span>
-             <TrendingUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
+             <TrendingUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-mercury-green transition-colors" />
           </div>
-          <div className={cn("text-[24px] font-[380] font-finance tabular-nums", data.hud.noi >= 0 ? "text-emerald-500" : "text-rose-500")}>
+          <div className={cn("text-[24px] font-[380] font-finance tabular-nums", data.hud.noi >= 0 ? "text-mercury-green" : "text-rose-500")}>
              <span className="font-finance">${data.hud.noi.toLocaleString()}</span>
           </div>
           <div className="mt-3 flex items-center gap-2">
@@ -352,9 +352,9 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
         >
           <div className="flex justify-between items-start mb-4">
              <span className="text-[9px] text-muted-foreground  ">Collection Efficiency</span>
-             <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
+             <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground group-hover:text-mercury-green transition-colors" />
           </div>
-          <div className={cn("text-display font-weight-display font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-emerald-400" : "text-amber-500")}>
+          <div className={cn("text-display font-weight-display font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-mercury-green" : "text-amber-500")}>
              <span className="font-finance">{data.hud.collectionEfficiency}%</span>
           </div>
           <p className="text-[8px] text-muted-foreground  mt-3">Current_Month_Inflow_Ratio</p>
@@ -379,15 +379,15 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                <div className="space-y-10 relative z-10 w-full">
                   <div className="flex justify-between items-end border-b border-border pb-4">
                      <span className="text-[8px] text-muted-foreground ">Gross Revenue</span>
-                     <span className="text-emerald-500 font-bold">+${data.waterfall.revenue.toLocaleString()}</span>
+                     <span className="text-mercury-green font-medium">+${data.waterfall.revenue.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-end border-b border-border pb-4 pl-6">
                      <span className="text-[8px] text-muted-foreground ">Operating Expenses</span>
-                     <span className="text-rose-500 font-bold">-${data.waterfall.opex.toLocaleString()}</span>
+                     <span className="text-rose-500 font-medium">-${data.waterfall.opex.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-end border-b border-border pb-4 pl-6">
                      <span className="text-[8px] text-muted-foreground ">Capital Expenditure</span>
-                     <span className="text-rose-500 font-bold">-${data.waterfall.capex.toLocaleString()}</span>
+                     <span className="text-rose-500 font-medium">-${data.waterfall.capex.toLocaleString()}</span>
                   </div>
                </div>
 
@@ -408,7 +408,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
               </h3>
               <div className="flex gap-4">
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <div className="w-2 h-2 rounded-full bg-mercury-green" />
                     <span className="text-[10px] text-muted-foreground font-medium">Prime</span>
                  </div>
                  <div className="flex items-center gap-2">
@@ -428,15 +428,15 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                    key={unit.id}
                    onClick={() => setEditingUnit(unit)}
                    className={cn(
-                     "border border-border bg-[#181B21] p-5 rounded-[12px] flex flex-col justify-between h-[120px] text-left group relative transition-all active:scale-[0.98]",
-                     unit.occupancy ? "hover:border-foreground/20 hover:bg-[#1C1F26]" : "opacity-40 grayscale grayscale hover:grayscale-0 transition-all cursor-not-allowed"
+                     "border border-border bg-card p-5 rounded-[12px] flex flex-col justify-between h-[120px] text-left group relative transition-all active:scale-[0.98]",
+                     unit.occupancy ? "hover:border-foreground/20 hover:bg-muted" : "opacity-40 grayscale grayscale hover:grayscale-0 transition-all cursor-not-allowed"
                    )}
                  >
                     <div className="flex justify-between items-start">
                        <span className="text-lg font-medium text-foreground">{unit.unitNumber}</span>
                        <div className={cn(
                          "w-2 h-2 rounded-full",
-                         unit.riskScore === 'GREEN' ? "bg-emerald-500" :
+                         unit.riskScore === 'GREEN' ? "bg-mercury-green" :
                          unit.riskScore === 'YELLOW' ? "bg-amber-500" :
                          "bg-rose-500 animate-pulse"
                        )} />
@@ -446,7 +446,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                        <div className="flex items-center justify-between">
                          <span className={cn(
                            "text-[10px] font-medium",
-                           unit.occupancy ? "text-emerald-500/80" : "text-muted-foreground/60"
+                           unit.occupancy ? "text-mercury-green/80" : "text-muted-foreground/60"
                          )}>
                             {unit.occupancy ? 'Active' : 'Vacant'}
                          </span>
@@ -509,9 +509,9 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                                   <span className="text-[10px] text-muted-foreground">{new Date(e.transactionDate).toLocaleDateString()}</span>
                                   <Badge className="bg-muted/50 text-muted-foreground border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
                                </div>
-                               <p className="text-foreground font-bold text-xs  tracking-tight">{e.description}</p>
+                               <p className="text-foreground font-medium text-xs  tracking-tight">{e.description}</p>
                             </div>
-                            <div className={cn("text-xl font-finance tabular-nums", e.amount < 0 ? "text-rose-500" : "text-emerald-500")}>
+                            <div className={cn("text-xl font-finance tabular-nums", e.amount < 0 ? "text-rose-500" : "text-mercury-green")}>
                                {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString()}
                             </div>
                          </div>
@@ -545,21 +545,21 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
               <form onSubmit={handleSubmit(onAddUnit)} className="space-y-8">
                  <div>
                     <label className="text-[9px] text-muted-foreground  block mb-3">Structural Index Mapping</label>
-                    <input {...register('unitNumber')} className="w-full bg-background border border-border h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="e.g. N-101" />
+                    <input {...register('unitNumber')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="e.g. N-101" />
                  </div>
                  <div className="grid grid-cols-2 gap-6">
                     <div>
                        <label className="text-[9px] text-muted-foreground  block mb-3">Hardware Type</label>
-                       <input {...register('type')} className="w-full bg-background border border-border h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="Apartment" />
+                       <input {...register('type')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="Apartment" />
                     </div>
                     <div>
                        <label className="text-[9px] text-muted-foreground  block mb-3">Market Rent ($)</label>
-                       <input {...register('marketRent')} className="w-full bg-background border border-border h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="0.00" type="number" step="0.01" />
+                       <input {...register('marketRent')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="0.00" type="number" step="0.01" />
                     </div>
                  </div>
                  <div>
                     <label className="text-[9px] text-muted-foreground  block mb-3">Atomic Category</label>
-                    <select {...register('category')} className="w-full bg-background border border-border h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-[8px] appearance-none">
+                    <select {...register('category')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px] appearance-none">
                        <option value="FLAT">FLAT (RESIDENTIAL)</option>
                        <option value="STORE">STORE (COMMERCIAL)</option>
                        <option value="SHUTTER">SHUTTER (RETAIL)</option>
@@ -593,7 +593,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                     <label className="text-[9px] text-muted-foreground  block mb-4">Integrity Status</label>
                     <div className="grid grid-cols-1 gap-3">
                        {[
-                         { id: 'OPERATIONAL', label: 'OPERATIONAL', color: 'text-emerald-500' },
+                         { id: 'OPERATIONAL', label: 'OPERATIONAL', color: 'text-mercury-green' },
                          { id: 'UNDER_REPAIR', label: 'REPAIR_PHASE', color: 'text-amber-500' },
                          { id: 'DECOMMISSIONED', label: 'VOID_RESOURCE', color: 'text-rose-500' }
                        ].map(s => (
@@ -618,7 +618,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                       type="number"
                       defaultValue={editingUnit.marketRent || 0}
                       onBlur={(e) => onUpdateUnit(undefined, Number(e.target.value))}
-                      className="w-full bg-background border border-border h-16 px-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all rounded-[8px]"
+                      className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]"
                     />
                  </div>
               </div>

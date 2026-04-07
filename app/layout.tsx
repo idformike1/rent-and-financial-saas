@@ -1,16 +1,12 @@
 import type { Metadata } from 'next'
-import { Inter, IBM_Plex_Mono } from 'next/font/google'
+import { Plus_Jakarta_Sans, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from 'next-themes'
 import SessionProvider from '@/components/providers/SessionProvider'
 import Toaster from '@/components/Toaster'
 
-// ── PRIMARY SANS-SERIF: INTER ─────────────────────────────────────────────────
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
+// ── PROJECT ARCADIA: DIRECT CDN FONT INJECTION (globals.css) ───────────────
+// No static Next.js loaders used for proprietary variable fonts.
 
 // ── MONOSPACE: IBM PLEX MONO (financial figures & tabular data) ───────────────
 const ibmPlexMono = IBM_Plex_Mono({
@@ -35,13 +31,13 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${ibmPlexMono.variable}`}
+      className={`${ibmPlexMono.variable} font-sans`}
     >
       <body 
-        className="antialiased min-h-screen overflow-hidden font-sans bg-background text-foreground transition-colors duration-300"
+        className="antialiased min-h-screen overflow-hidden bg-background text-foreground transition-colors duration-300"
         suppressHydrationWarning
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <SessionProvider>
             <Toaster />
             {children}

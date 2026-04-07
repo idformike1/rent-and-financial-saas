@@ -53,23 +53,23 @@ export default function DashboardClientGrid({ data }: DashboardClientGridProps) 
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {CARDS.map((s) => (
-        <Card key={s.label} className="p-6 flex flex-col justify-between min-h-[140px] shadow-none">
+        <Card key={s.label} className="flex flex-col justify-between min-h-[140px] shadow-none rounded-[8px] p-6 bg-white/[0.02]">
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
                <div>
-                  <p className="text-[12px] font-medium text-muted-foreground mb-0.5">{s.label}</p>
-                  <p className="text-[10px] text-muted-foreground/50 font-medium lowercase italic">{s.subtitle}</p>
+                  <p className="text-[12px] font-[400] text-[#9D9DA8] uppercase tracking-wider mb-1">{s.label}</p>
+                  <p className="text-[10px] text-muted-foreground/30 font-medium lowercase italic">{s.subtitle}</p>
                </div>
-                <Badge variant={s.inverse ? (s.delta > 0 ? 'danger' : 'success') : (s.delta >= 0 ? 'success' : 'danger')} className="text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <Badge variant={s.inverse ? (s.delta > 0 ? 'danger' : 'success') : (s.delta >= 0 ? 'success' : 'danger')} className="text-[9px] font-bold px-1.5 py-0 rounded-full tracking-tight desaturate">
                   {s.delta >= 0 ? <UpArrow /> : <DownArrow />}
                   {Math.abs(s.delta).toFixed(1)}%
                 </Badge>
             </div>
 
             <div className="mt-8">
-              <span className="font-finance text-[28px] font-[450] text-foreground tracking-[-0.02em] leading-none block">
+              <span className="text-[32px] font-[380] text-foreground tracking-[-0.03em] leading-none block font-finance">
                 {s.isPercent ? "" : "$"}{s.val.toLocaleString()}{s.isPercent ? "%" : ""}
               </span>
             </div>
