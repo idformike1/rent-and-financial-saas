@@ -183,7 +183,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 4. DATA STRATUM (HYPER-DENSITY) ──────────────────────────────── */}
       <div className="space-y-0 relative">
          {/* THEAD (SURFACE LEVEL) */}
-         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-[457px] z-10")}>
+         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-[457px] z-50")}>
             <div className="flex justify-center">
               <div className="w-3.5 h-3.5 border border-white/20 rounded-[3px]" />
             </div>
@@ -209,7 +209,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
                  transition={{ delay: idx * 0.012, duration: 0.18 }}
-                 className={cn(GRID_CLASS, "h-[48px] hover:bg-white/[0.03] transition-colors border-b border-white/[0.025] group cursor-pointer active:bg-white/[0.05]")}
+                 className={cn(GRID_CLASS, "h-[48px] hover:bg-white/[0.03] transition-colors border-b border-white/[0.025] group cursor-pointer active:bg-white/[0.05] relative z-0")}
                >
                  {/* CHECKBOX BLOCK */}
                  <div className="flex justify-center">

@@ -53,8 +53,9 @@ const navigationSections = [
   {
     label: 'Intelligence hub',
     items: [
+      { name: 'Insights',      href: '/insights',                      icon: Icons.Home },
       { name: 'Analytic Hub',  href: '/reports',                       icon: Icons.Home },
-      { name: 'Master Ledger', href: '/transactions',         icon: Icons.Transactions },
+      { name: 'Master Ledger', href: '/transactions',                  icon: Icons.Transactions },
       { name: 'Waterfall Core',href: '/reports/ledger-waterfall',      icon: Icons.Payments },
       { name: 'Forex Engine',  href: '/reports/financial-connections', icon: Icons.Accounts },
       { name: 'Aging Matrix',  href: '/receivables/aging',             icon: Icons.Transactions },
