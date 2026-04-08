@@ -2,10 +2,10 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import LedgerChart from "@/components/insights/LedgerChart";
 import prisma from "@/lib/prisma";
-import { 
-  generateRunwayNarrative, 
-  generateIncomeNarrative, 
-  generateOutflowNarrative 
+import {
+  generateRunwayNarrative,
+  generateIncomeNarrative,
+  generateOutflowNarrative
 } from "./semanticGenerator";
 
 export const metadata = {
@@ -46,12 +46,12 @@ export default async function InsightsPage() {
 
   // Generate Array for LedgerChart (Grouped by month, simulating a daily/monthly series)
   const chartDataMap: Record<string, { income: number, expense: number }> = {};
-  
+
   sanitizedEntries.forEach((e: any) => {
     // Format to "Jan 25" style
     const month = new Date(e.transactionDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
     if (!chartDataMap[month]) chartDataMap[month] = { income: 0, expense: 0 };
-    
+
     if (e.account?.category === "INCOME") chartDataMap[month].income += e.amount;
     if (e.account?.category === "EXPENSE") chartDataMap[month].expense += e.amount;
   });
@@ -65,7 +65,7 @@ export default async function InsightsPage() {
 
   // Ensure there's at least one data point to render the chart grid
   if (chartData.length === 0) {
-     chartData.push({ date: 'Today', netCashflow: 0, moneyIn: 0, moneyOut: 0 });
+    chartData.push({ date: 'Today', netCashflow: 0, moneyIn: 0, moneyOut: 0 });
   }
 
   // Simplified burn rate for demonstration (total expenses / months active)
@@ -79,7 +79,7 @@ export default async function InsightsPage() {
 
   return (
     <div className="min-h-screen bg-[#090A0E] text-white p-8">
-      
+
       {/* ── TASK 1: CONTROL STRATUM ──────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div className="flex items-center gap-6 border-b border-white/5 pb-1">
@@ -123,13 +123,12 @@ export default async function InsightsPage() {
 
       {/* ── TASK 3: THE MAIN WORKSTATION GRID ────────────────────────────── */}
       <div className="flex flex-col gap-10">
-        
-        {/* Main Chart Area (Top) */}
-        <div className="w-full bg-[#161821] border border-[#2D2E39] rounded-lg h-[450px] relative overflow-hidden shadow-lg">
-          {/* Subtle grid background to simulate Mercury workstation */}
-          <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle at center, #8a8b94 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+
+        {/* Main Chart Area (Top) - UNBOXED for Mercury Parity */}
+        <div className="w-full h-[400px] relative overflow-hidden">
+          {/* The subtle atmospheric glow stays, but the dotted grid is gone */}
           <div className="absolute inset-0 bg-gradient-radial from-[#6C6C8F]/10 to-transparent opacity-50 blur-2xl"></div>
-          
+
           <LedgerChart data={chartData} />
         </div>
 
