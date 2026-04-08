@@ -1,296 +1,135 @@
-import { PrismaClient, MaintenanceStatus, ChargeType, AccountCategory, PaymentMode } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
-import bcrypt from 'bcryptjs'
-import { randomUUID } from 'crypto'
+import { PrismaClient, AccountCategory, PaymentMode } from '@prisma/client';
 
-/**
- * ENTERPRISE HARDENING SEED ENGINE
- * Creates a robust 11-month fiscal history under a Master Organization.
- */
+const prisma = new PrismaClient();
+
 async function main() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
-  const adapter = new PrismaPg(pool)
-  const prisma = new PrismaClient({ adapter });
+  console.log("🚀 Initializing Axiom 2026 Telemetry Seed Engine...");
 
-  console.log('🚀 INITIALIZING ENTERPRISE ENVIRONMENT...')
-  
-  // -- 0. MASTER ORGANIZATION --
-  const org = await prisma.organization.create({
-    data: { name: 'Global Enterprise Holdings' }
+  // 1. Identify Target Organization
+  // We'll target the first user's organization which is typically the testing account
+  const user = await prisma.user.findFirst({
+    include: { organization: true },
+    orderBy: { createdAt: 'asc' }
   });
-  console.log(`🏢 Organization Created: ${org.name} (${org.id})`)
 
-  // -- 1. ADMIN USER --
-  const passwordHash = await bcrypt.hash('admin123', 10);
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@system.com' },
-    update: {
-      organizationId: org.id,
-      role: 'OWNER',
-      isActive: true,
-      canEdit: true
-    },
-    create: {
-      email: 'admin@system.com',
-      passwordHash: passwordHash,
-      name: 'System Administrator',
-      role: 'OWNER',
-      organizationId: org.id,
-      isActive: true,
-      canEdit: true
-    }
-  });
-  console.log(`👤 Admin User Materialized: ${admin.email}`)
-
-  // -- 2. EXPENSE CATEGORIES --
-  console.log('📂 Seeding Chart of Accounts (Expense Categories)...')
-  const categoriesData = [
-    { name: 'Building Utilities', children: ['Water', 'Electricity'] },
-    { name: 'Maintenance', children: ['Plumbing', 'Electrical'] },
-    { name: 'Home Utilities', children: ['Water', 'Internet'] },
-    { name: 'Person 1', children: ['Food', 'Travel'] },
-    { name: 'Person 2', children: ['Food', 'Medical'] },
-  ];
-
-  for (const cat of categoriesData) {
-    const ledger = await prisma.financialLedger.create({
-      data: { name: `${cat.name} Ledger`, organizationId: org.id }
-    });
-    
-    const parent = await prisma.expenseCategory.create({
-      data: { name: cat.name, organizationId: org.id, ledgerId: ledger.id }
-    });
-    
-    for (const childName of cat.children) {
-      await prisma.expenseCategory.create({
-        data: { name: childName, parentId: parent.id, organizationId: org.id, ledgerId: ledger.id }
-      });
-    }
+  if (!user || !user.organization) {
+    console.error("❌ CRTICAL ERROR: No master organization found. Please sign up first.");
+    process.exit(1);
   }
 
-  // -- 3. CHART OF ACCOUNTS --
-  const accountsData = [
-    { name: 'Bank Checking (Chase)', category: AccountCategory.ASSET, organizationId: org.id },
-    { name: 'Cash in Hand', category: AccountCategory.ASSET, organizationId: org.id },
-    { name: 'Savings Reserve', category: AccountCategory.ASSET, organizationId: org.id },
-    { name: 'Rental Revenue', category: AccountCategory.INCOME, organizationId: org.id },
-    { name: 'Utility Recovery (Water)', category: AccountCategory.INCOME, organizationId: org.id },
-    { name: 'Utility Recovery (Elec)', category: AccountCategory.INCOME, organizationId: org.id },
-    { name: 'Master Water Bill', category: AccountCategory.EXPENSE, organizationId: org.id },
-    { name: 'Master Elec Bill', category: AccountCategory.EXPENSE, organizationId: org.id },
-    { name: 'Maintenance Expense', category: AccountCategory.EXPENSE, organizationId: org.id },
-    { name: 'Owner Draw', category: AccountCategory.EXPENSE, organizationId: org.id },
-  ]
+  const orgId = user.organization.id;
+  console.log(`✅ Target Locked: ${user.organization.name} (${orgId})`);
 
-  const accounts: Record<string, string> = {};
-  for (const acc of accountsData) {
-    const record = await prisma.account.create({
-      data: acc
-    });
-    accounts[acc.name] = record.id;
-  }
-
-  // -- 4. PHYSICAL ASSETS (Properties & Units) --
-  console.log('🏗️  Materializing Properties...')
-  const northComplex = await prisma.property.create({
-    data: {
-      name: 'North Complex',
-      address: '123 Sky Tower Blvd, Sector North',
-      organizationId: org.id
-    }
+  // 2. Nuclear Purge: Clean existing Ledger telemetry to prevent contamination
+  console.log("🧹 Purging existing ledger entries...");
+  await prisma.ledgerEntry.deleteMany({
+    where: { organizationId: orgId }
   });
 
-  const southPlaza = await prisma.property.create({
-    data: {
-      name: 'South Plaza',
-      address: '456 Market Road, Central District',
-      organizationId: org.id
-    }
+  // 3. Treasury Verification: Ensure INCOME and EXPENSE accounts exist
+  let incomeAccount = await prisma.account.findFirst({
+    where: { organizationId: orgId, category: AccountCategory.INCOME }
   });
 
-  console.log('🏘️  Allocating Units to Properties...')
-  const units = [];
-  
-  for (let i = 101; i <= 115; i++) {
-    units.push(await prisma.unit.create({
+  if (!incomeAccount) {
+    incomeAccount = await prisma.account.create({
       data: {
-        unitNumber: `N-${i}`,
-        propertyId: northComplex.id,
-        type: i % 5 === 0 ? 'Studio' : 'Apartment',
-        category: 'FLAT',
-        maintenanceStatus: MaintenanceStatus.OPERATIONAL,
-        organizationId: org.id
+        organizationId: orgId,
+        name: 'General Revenue Treasury',
+        category: AccountCategory.INCOME
       }
-    }));
+    });
+    console.log("✅ Created INCOME treasury node.");
   }
 
-  for (let i = 201; i <= 215; i++) {
-    units.push(await prisma.unit.create({
+  let expenseAccount = await prisma.account.findFirst({
+    where: { organizationId: orgId, category: AccountCategory.EXPENSE }
+  });
+
+  if (!expenseAccount) {
+    expenseAccount = await prisma.account.create({
       data: {
-        unitNumber: `S-${i}`,
-        propertyId: southPlaza.id,
-        type: i % 3 === 0 ? 'Store' : 'Retail Shutter',
-        category: i % 3 === 0 ? 'STORE' : 'SHUTTER',
-        maintenanceStatus: MaintenanceStatus.OPERATIONAL,
-        organizationId: org.id
+        organizationId: orgId,
+        name: 'Operating Expenditures',
+        category: AccountCategory.EXPENSE
       }
-    }));
+    });
+    console.log("✅ Created EXPENSE treasury node.");
   }
 
-  // -- 5. TENANT POPULATION (30 Tenants) --
-  console.log('👥 Populating Tenants & Leases...')
+  // 4. Temporal Sequence Generation
+  const entries = [];
+  const TOTAL_ENTRIES = 300;
   const now = new Date();
-  
-  for (let i = 0; i < 30; i++) {
-    const tenant = await prisma.tenant.create({
-      data: { 
-        name: `Tenant ${i + 1}`,
-        email: `tenant${i + 1}@enterprise.inc`,
-        phone: `+1-555-${(1000 + i).toString().padStart(4, '0')}`,
-        nationalId: `ID-CORP-${(10000 + i).toString()}`,
-        organizationId: org.id
-      }
-    });
+  const pastYear = new Date(now.getTime() - (365 * 24 * 60 * 60 * 1000));
 
-    const unit = units[i];
-    const rent = 1000 + (i * 50);
-    const startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-    const endDate = new Date(startDate);
-    endDate.setFullYear(endDate.getFullYear() + 1);
+  console.log(`⏳ Synthesizing ${TOTAL_ENTRIES} entries across 365 day temporal window...`);
 
-    const lease = await prisma.lease.create({
-      data: {
-        tenantId: tenant.id,
-        unitId: unit.id,
-        isPrimary: i < 15,
-        rentAmount: rent,
-        depositAmount: rent,
-        startDate,
-        endDate,
-        isActive: true,
-        organizationId: org.id
-      }
-    });
-
-    for (let m = 0; m <= 11; m++) {
-      const dueDate = new Date(startDate.getFullYear(), startDate.getMonth() + m, 1);
-      if (dueDate > now) continue;
-
-      const isPaid = Math.random() > 0.15;
-      const amountPaid = isPaid ? rent : 0;
-
-      const charge = await prisma.charge.create({
-        data: {
-          tenantId: tenant.id,
-          leaseId: lease.id,
-          type: ChargeType.RENT,
-          amount: rent,
-          amountPaid,
-          dueDate,
-          isFullyPaid: isPaid,
-          organizationId: org.id
-        }
-      });
-
-      if (isPaid) {
-        const txId = randomUUID();
-        await prisma.ledgerEntry.create({
-          data: {
-            transactionId: txId,
-            accountId: accounts['Bank Checking (Chase)'],
-            amount: rent,
-            date: dueDate,
-            description: `Rent Pmt: ${tenant.name}`,
-            organizationId: org.id
-          }
-        });
-        await prisma.ledgerEntry.create({
-          data: {
-            transactionId: txId,
-            accountId: accounts['Rental Revenue'],
-            amount: -rent,
-            date: dueDate,
-            description: `Rent Pmt: ${tenant.name}`,
-            organizationId: org.id
-          }
-        });
-      }
-
-      if (m % 2 === 0) {
-        const utilAmt = 45.50 + i;
-        await prisma.charge.create({
-          data: {
-            tenantId: tenant.id,
-            leaseId: lease.id,
-            type: ChargeType.WATER_SUBMETER,
-            amount: utilAmt,
-            amountPaid: utilAmt,
-            dueDate,
-            isFullyPaid: true,
-            organizationId: org.id
-          }
-        });
-
-        const utilTxId = randomUUID();
-        await prisma.ledgerEntry.create({
-          data: {
-            transactionId: utilTxId,
-            accountId: accounts['Bank Checking (Chase)'],
-            amount: utilAmt,
-            date: dueDate,
-            description: `Utility: ${tenant.name}`,
-            organizationId: org.id
-          }
-        });
-        await prisma.ledgerEntry.create({
-          data: {
-            transactionId: utilTxId,
-            accountId: accounts['Utility Recovery (Water)'],
-            amount: -utilAmt,
-            date: dueDate,
-            description: `Utility: ${tenant.name}`,
-            organizationId: org.id
-          }
-        });
+  for (let i = 0; i < TOTAL_ENTRIES; i++) {
+    // Generate an evenly distributed random date within the last 365 days
+    const randomDate = new Date(pastYear.getTime() + Math.random() * (now.getTime() - pastYear.getTime()));
+    
+    // Probabilistic Flow Distribution: 40% Inflow, 60% Outflow
+    const isInflow = Math.random() < 0.40;
+    
+    let amount = 0;
+    let description = '';
+    let accountId = '';
+    
+    if (isInflow) {
+      accountId = incomeAccount.id;
+      // Revenue Generation: Highly variable positive amounts ($500 to $15,000)
+      amount = Math.floor(Math.random() * 14500) + 500; // 500 to 15,000
+      
+      const revenueSources = ['Stripe Payout', 'Mercury Capital Deposit', 'ACH Transfer (Client)', 'Wire Transfer (Holding)'];
+      description = revenueSources[Math.floor(Math.random() * revenueSources.length)];
+    } else {
+      accountId = expenseAccount.id;
+      const expenseProbability = Math.random();
+      
+      // Outflow Generation rules via probability distribution
+      if (expenseProbability < 0.13) {
+        // Payroll (~13% of 60% outflow = ~23 entries -> Roughly 2x/month)
+        amount = -(Math.floor(Math.random() * 60000) + 20000); // -20k to -80k
+        description = Math.random() > 0.5 ? 'Gusto Payroll Integration' : 'Deel Global Contractors';
+      } else if (expenseProbability < 0.23) {
+        // Infrastructure (~10% of 60% outflow = ~18 entries)
+        amount = -(Math.floor(Math.random() * 8000) + 2000); // -2k to -10k
+        description = Math.random() > 0.5 ? 'Amazon Web Services (AWS)' : 'Google Cloud Platform';
+      } else {
+        // Operating SaaS / Micro-expenses (Bulk of entries)
+        amount = -(Math.floor(Math.random() * 450) + 50); // -50 to -500
+        const saas = ['Linear Subscription', 'Notion Team Plan', 'GitHub Copilot', 'Vercel Pro', 'Figma Organization', 'Slack Enterprise'];
+        description = saas[Math.floor(Math.random() * saas.length)];
       }
     }
-  }
 
-  // -- 6. GLOBAL EXPENSES --
-  console.log('💸 Injecting Master Expenses...')
-  for (let m = 0; m <= 11; m++) {
-    const monthDate = new Date(now.getFullYear(), now.getMonth() - m, 1);
-    const masterBillTxId = randomUUID();
-    
-    await prisma.ledgerEntry.create({
-      data: {
-        transactionId: masterBillTxId,
-        accountId: accounts['Master Water Bill'],
-        amount: 1200 + (Math.random() * 300),
-        date: monthDate,
-        description: `City Water Master Bill ${monthDate.toLocaleString('default', {month:'short'})}`,
-        organizationId: org.id
-      }
-    });
-
-    await prisma.ledgerEntry.create({
-      data: {
-        transactionId: masterBillTxId,
-        accountId: accounts['Bank Checking (Chase)'],
-        amount: -(1200 + (Math.random() * 300)),
-        date: monthDate,
-        description: `City Water Master Bill Pmt`,
-        organizationId: org.id
-      }
+    entries.push({
+      organizationId: orgId,
+      transactionId: `TXN-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
+      accountId: accountId,
+      amount: amount,
+      transactionDate: randomDate,
+      date: randomDate,
+      description: description,
+      paymentMode: PaymentMode.BANK // Workstation defaults to digital flows
     });
   }
 
-  console.log('✅ ENTERPRISE ENVIRONMENT MATERIALIZED.')
-  await prisma.$disconnect();
+  // 5. Batch Execution
+  console.log("💾 Writing telemetry matrix to Prisma backend...");
+  await prisma.ledgerEntry.createMany({
+    data: entries
+  });
+
+  console.log(`✅ SUCCESS: System seeded with ${entries.length} realistic fiscal parameters.`);
 }
 
-main().catch(err => {
-  console.error("❌ SEED FAILED:", err);
-  process.exit(1);
-});
+main()
+  .catch((e) => {
+    console.error("❌ EXCEPTION OVERRIDE:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
