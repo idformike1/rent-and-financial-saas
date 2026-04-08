@@ -11,32 +11,6 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-// --- Task 1: Robust Mock Data ---
-const generateMockData = () => {
-  const data = [];
-  const now = new Date();
-  let baseCashflow = 50000;
-
-  for (let i = 30; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    
-    // Simulate some realistic volatility
-    const change = Math.floor(Math.random() * 8000) - 3000;
-    baseCashflow += change;
-
-    data.push({
-      date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      netCashflow: baseCashflow,
-      moneyIn: Math.max(0, change + (Math.random() * 2000)),
-      moneyOut: Math.min(0, change - (Math.random() * 2000)),
-    });
-  }
-  return data;
-};
-
-const mockData = generateMockData();
-
 // --- Task 2: The Drop-Line Cursor ---
 const CustomCursor = (props: any) => {
   const { points, width, height } = props;
@@ -107,13 +81,17 @@ const MinimalTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+interface LedgerChartProps {
+  data: any[];
+}
+
 // --- Main Chart Component ---
-export default function LedgerChart() {
+export default function LedgerChart({ data }: LedgerChartProps) {
   return (
     <div className="w-full h-full p-4 relative z-20">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart 
-            data={mockData} 
+            data={data} 
             margin={{ top: 20, right: 20, left: 20, bottom: 0 }}
         >
           {/* Subtle horizontal grid lines only, to mimic workstation depth */}
