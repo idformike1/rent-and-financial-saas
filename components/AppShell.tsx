@@ -185,14 +185,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 ml-[232px] h-screen overflow-hidden flex flex-col bg-background">
 
         {/* ── TOP BAR / HEADER (CENTERED SEARCH SYNC) ────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center bg-background border-b border-border shrink-0">
+        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center bg-background border-b border-[#1C1C26] shrink-0">
           <div className="flex-1 flex items-center justify-center">
              <div className="w-full max-w-[512px] relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-muted-foreground/40 group-focus-within:text-foreground transition-colors" />
                 <input 
                   type="text" 
                   placeholder="Search for anything" 
-                  className="w-full h-8 bg-sidebar border border-border rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
+                  className="w-full h-8 bg-[#16161D] border border-[#2D2E39] rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
                    <kbd className="text-[10px] font-sans">⌘</kbd>

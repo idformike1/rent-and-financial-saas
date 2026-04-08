@@ -37,9 +37,9 @@ export default async function InsightsPage() {
   let totalAssets = 0;
 
   sanitizedEntries.forEach((e: any) => {
-    if (e.account?.category === "INCOME") totalIncome += e.amount;
-    if (e.account?.category === "EXPENSE") totalExpense += e.amount;
-    if (e.account?.category === "ASSET") totalAssets += e.amount;
+    if (e.account?.category === "INCOME") totalIncome += Math.abs(e.amount);
+    if (e.account?.category === "EXPENSE") totalExpense += Math.abs(e.amount);
+    if (e.account?.category === "ASSET") totalAssets += Math.abs(e.amount);
   });
 
   const netCashflow = totalIncome - totalExpense;
@@ -51,8 +51,8 @@ export default async function InsightsPage() {
     const month = new Date(e.transactionDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
     if (!chartDataMap[month]) chartDataMap[month] = { income: 0, expense: 0 };
 
-    if (e.account?.category === "INCOME") chartDataMap[month].income += e.amount;
-    if (e.account?.category === "EXPENSE") chartDataMap[month].expense += e.amount;
+    if (e.account?.category === "INCOME") chartDataMap[month].income += Math.abs(e.amount);
+    if (e.account?.category === "EXPENSE") chartDataMap[month].expense += Math.abs(e.amount);
   });
 
   const chartData = Object.entries(chartDataMap).map(([month, data]) => ({
@@ -69,20 +69,11 @@ export default async function InsightsPage() {
   const activeMonths = chartData.length > 0 ? chartData.length : 1;
   const burnRate = totalExpense / activeMonths;
 
-  // --- Semantic Engine Generators ---
-  const runwayNode = generateRunwayNarrative(burnRate, totalAssets);
-  const incomeNode = generateIncomeNarrative(totalIncome, sanitizedEntries);
-  const outflowNode = generateOutflowNarrative(totalExpense, sanitizedEntries);
-
   return (
     <InsightsClient 
-      netCashflow={netCashflow}
-      totalIncome={totalIncome}
-      totalExpense={totalExpense}
       chartData={chartData}
-      runwayNode={runwayNode}
-      outflowNode={outflowNode}
-      incomeNode={incomeNode}
+      entries={sanitizedEntries}
+      totalAssets={totalAssets}
     />
   );
 }

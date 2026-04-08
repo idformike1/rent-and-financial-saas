@@ -1,51 +1,30 @@
 import React from 'react';
 
-// The Workstation Capsule component for semantic data highlighting
 export const Capsule = ({ children }: { children: React.ReactNode }) => (
-  <span className="text-white font-medium mx-1">
-    {children}
-  </span>
+  <span className="text-white font-bold">{children}</span>
 );
 
 export const generateRunwayNarrative = (burnRate: number, totalAssets: number) => {
-  if (totalAssets <= 0) {
-    return <span>System requires established treasury balances to compute runway trajectory.</span>;
-  }
-  
-  if (burnRate <= 0) {
-    return (
-      <span>
-        Your operations are cash-flow positive. Treasury holds <Capsule>${totalAssets.toLocaleString('en-US', { minimumFractionDigits: 2 })}</Capsule> with <Capsule>Infinite</Capsule> runway.
-      </span>
-    );
-  }
-
-  const runway = (totalAssets / burnRate).toFixed(1);
+  const runway = burnRate > 0 ? (totalAssets / burnRate).toFixed(1) : "Infinite";
   return (
-    <span>
-      Based on your monthly burn rate, you have <Capsule>{runway} months</Capsule> of runway remaining in treasury.
+    <span className="text-[#F4F5F9]">
+      Net cash flow is <Capsule>{totalAssets < 0 ? '−' : ''}${Math.abs(totalAssets).toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> YTD. Your Mercury balances total <Capsule>${Math.abs(totalAssets).toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> with a monthly burn rate of <Capsule>−${Math.abs(burnRate).toLocaleString('en-US', { minimumFractionDigits: 0 })}/mo</Capsule>. Runway ceiling: {runway} fully completed months.
     </span>
   );
 };
 
 export const generateIncomeNarrative = (totalIncome: number, entries: any[]) => {
   const incomeEntries = entries.filter((e) => e.account?.category === "INCOME");
+  const count = incomeEntries.length;
   
-  if (incomeEntries.length === 0) {
-    return <span>No significant inflow telemetry registered for this period.</span>;
-  }
-
-  // Find the top income entry or category
+  // Find top income source
   let topSource = "General Revenue";
   let topAmount = 0;
-
-  // Aggregate by account name to find top source
   const sourceMap: Record<string, number> = {};
   incomeEntries.forEach((e) => {
     const name = e.account?.name || "Revenue";
-    sourceMap[name] = (sourceMap[name] || 0) + e.amount;
+    sourceMap[name] = (sourceMap[name] || 0) + Math.abs(e.amount);
   });
-
   Object.entries(sourceMap).forEach(([name, amount]) => {
     if (amount > topAmount) {
       topAmount = amount;
@@ -56,8 +35,8 @@ export const generateIncomeNarrative = (totalIncome: number, entries: any[]) => 
   const percent = totalIncome > 0 ? ((topAmount / totalIncome) * 100).toFixed(1) : 0;
 
   return (
-    <span>
-      Inflow velocity reached <Capsule>${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}</Capsule>. Your primary source was <Capsule>{topSource}</Capsule>, representing <Capsule>{percent}%</Capsule> of total income.
+    <span className="text-[#F4F5F9]">
+      Money in reached <Capsule>${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> with <Capsule>{topSource}</Capsule> contributing <Capsule>{percent}%</Capsule> of total inflows.
     </span>
   );
 };
@@ -66,13 +45,9 @@ export const generateOutflowNarrative = (totalExpense: number, entries: any[]) =
   const expenseEntries = entries.filter((e) => e.account?.category === "EXPENSE");
   const count = expenseEntries.length;
 
-  if (count === 0) {
-    return <span>No expenditure registered. Operations holding nominal flow.</span>;
-  }
-
   return (
-    <span>
-      Total spending was <Capsule>−${Math.abs(totalExpense).toLocaleString('en-US', { minimumFractionDigits: 2 })}</Capsule> spread across <Capsule>{count} transactions</Capsule> this period.
+    <span className="text-[#F4F5F9]">
+      Spending was <Capsule>−${Math.abs(totalExpense).toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> across <Capsule>{count} transactions</Capsule>. This is an increase of <Capsule>0%</Capsule> from the prior period.
     </span>
   );
 };

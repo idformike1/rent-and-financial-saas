@@ -47,15 +47,14 @@ export default function InsightsDatePicker({
           <button
             id="date"
             className={cn(
-              "px-3 py-1.5 bg-white/5 border border-white/10 rounded-md text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition flex items-center gap-2 font-medium shadow-sm",
+              "h-8 px-4 bg-white/[0.03] border border-[#2D2E39] rounded-[8px] text-[15px] leading-[24px] text-[#F4F5F9] hover:bg-white/5 transition flex items-center gap-1.5 font-normal shadow-sm",
               !date && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-0 h-3.5 w-3.5" />
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd")} - {format(date.to, "LLL dd")}
+                  {format(date.from, "LLL dd")} – {format(date.to, "LLL dd")}
                 </>
               ) : (
                 format(date.from, "LLL dd, y")
@@ -74,7 +73,7 @@ export default function InsightsDatePicker({
               <button
                 key={p.value}
                 onClick={() => handlePresetClick(p.value)}
-                className="text-left px-3 py-2 text-[13px] text-[#A1A1AA] hover:text-white hover:bg-white/5 rounded-md transition-all font-medium"
+                className="text-left px-3 py-2 text-[15px] leading-[24px] text-[#F4F5F9] hover:bg-white/5 rounded-md transition-all font-normal"
               >
                 {p.label}
               </button>

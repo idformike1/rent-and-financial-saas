@@ -12,6 +12,13 @@ import {
   Cell
 } from 'recharts';
 
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -26,7 +33,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function InsightsMoneyIn({ data }: { data: any[] }) {
+export default function InsightsMoneyIn({ data, entries }: { data: any[], entries: any[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [subTab, setSubTab] = useState('Source');
   const primaryColor = '#5C61E6'; // Mercury Indigo
@@ -38,37 +45,53 @@ export default function InsightsMoneyIn({ data }: { data: any[] }) {
     return { total: sum, average: avg };
   }, [data]);
 
-  const mockTableData = [
-    { name: 'Stripe Payments', percent: 45.2, amount: 471800.00 },
-    { name: 'Shopify Payouts', percent: 25.5, amount: 266169.51 },
-    { name: 'Wire Transfers', percent: 15.3, amount: 159701.71 },
-    { name: 'Check Deposits', percent: 10.0, amount: 104380.20 },
-    { name: 'Other Income', percent: 4.0, amount: 41750.58 },
-  ];
+  const tableData = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    entries.forEach(e => {
+      // Filter for Money In (usually Income)
+      if (e.account?.category !== "INCOME") return;
+      
+      let key = "Other";
+      if (subTab === 'Source') key = e.account?.name || "Unknown";
+      else if (subTab === 'Category') key = e.account?.type || "Revenue";
+      else if (subTab === 'GL Code') key = `400${e.account?.id?.slice(-1) || '1'}`;
+      
+      map[key] = (map[key] || 0) + Math.abs(e.amount);
+    });
+    
+    const totalIn = Object.values(map).reduce((a, b) => a + b, 0);
+    return Object.entries(map)
+      .map(([name, amount]) => ({
+        name,
+        amount,
+        percent: Number((totalIn > 0 ? (amount / totalIn) * 100 : 0).toFixed(1))
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [entries, subTab]);
 
   const subTabs = ['Source', 'Category', 'GL Code'];
 
   return (
     <div className="flex flex-col gap-10">
-      
+
       {/* ── HERO METRICS ─────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-start gap-12 mb-0 border-b border-[#2D2E39]/50 pb-8 px-4">
         <div className="flex flex-col gap-1">
-          <p className="text-[14px] text-white/60 font-medium">Total money in</p>
-          <p className="text-[36px] font-semibold text-white tracking-tight font-arcadia leading-none">
+          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-1">Total money in</p>
+          <p className="text-[38px] font-bold text-white tracking-[-1.14px] font-arcadia leading-[42px]">
             +${total.toLocaleString('en-US', { minimumFractionDigits: 0 })}
           </p>
         </div>
         <div className="flex flex-col gap-1">
-          <p className="text-[14px] text-white/60 font-medium">Monthly average</p>
-          <p className="text-[36px] font-semibold text-white tracking-tight font-arcadia leading-none uppercase">
+          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-1">Monthly average</p>
+          <p className="text-[38px] font-bold text-white tracking-[-1.14px] font-arcadia leading-[42px] uppercase">
             +${average.toLocaleString('en-US', { minimumFractionDigits: 0 })}
           </p>
         </div>
       </div>
 
       <div className="w-full h-[320px] min-h-[300px] p-4 relative z-20">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <BarChart
             data={data}
             margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
@@ -109,15 +132,16 @@ export default function InsightsMoneyIn({ data }: { data: any[] }) {
       <div className="flex flex-col gap-6">
         <div className="flex items-center p-1 bg-white/[0.02] border border-white/[0.05] rounded-lg w-fit ml-4">
           {subTabs.map((tab) => (
-            <div
-              key={tab}
-              onClick={() => setSubTab(tab)}
-              className={`text-[12px] px-3 py-1 rounded-md cursor-pointer transition-all font-medium ${
-                subTab === tab ? "bg-[#2D2E39] text-white shadow-sm" : "text-[#8A8B94] hover:text-white"
-              }`}
-            >
-              {tab}
-            </div>
+              <div
+                key={tab}
+                onClick={() => setSubTab(tab)}
+                className={cn(
+                  "text-[15px] leading-[24px] px-4 py-1 rounded-md cursor-pointer transition-all font-normal",
+                  subTab === tab ? "bg-[#2D2E39] text-[#F4F5F9] shadow-sm" : "text-[#8A8B94] hover:text-[#F4F5F9]"
+                )}
+              >
+                {tab}
+              </div>
           ))}
         </div>
 
@@ -125,28 +149,28 @@ export default function InsightsMoneyIn({ data }: { data: any[] }) {
         <div className="px-4 pb-8">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-white/[0.05]">
-                <th className="text-left text-[12px] text-[#8A8B94] uppercase tracking-wider font-medium pb-3 w-1/3">Name</th>
-                <th className="text-left text-[12px] text-[#8A8B94] uppercase tracking-wider font-medium pb-3 w-1/3">% of total</th>
-                <th className="text-right text-[12px] text-[#8A8B94] uppercase tracking-wider font-medium pb-3 w-1/3">Amount</th>
+              <tr className="border-b border-white/10">
+                <th className="text-left text-[15px] leading-[24px] text-[#F4F5F9] font-normal pb-2 w-1/3">Source</th>
+                <th className="text-left text-[15px] leading-[24px] text-[#F4F5F9]/60 font-normal pb-2 w-1/3">% of total</th>
+                <th className="text-right text-[15px] leading-[24px] text-[#F4F5F9]/60 font-normal pb-2 w-1/3">Amount</th>
               </tr>
             </thead>
             <tbody>
-              {mockTableData.map((row) => (
-                <tr key={row.name} className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors group">
-                  <td className="py-4 text-[14px] text-white font-medium">{row.name}</td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-[4px] w-[100px] bg-white/5 rounded-full overflow-hidden">
+              {tableData.map((row) => (
+                <tr key={row.name} className="border-b border-white/5 h-[48px] hover:bg-white/[0.02] transition-colors group">
+                  <td className="text-[15px] leading-[24px] text-[#F4F5F9]">{row.name}</td>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <div className="h-[6px] w-full max-w-[120px] bg-white/10 rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500 ease-out"
-                          style={{ width: `${row.percent}%`, backgroundColor: primaryColor }}
+                          style={{ width: `${row.percent}%`, backgroundColor: '#3B82F6' }}
                         />
                       </div>
-                      <span className="text-[13px] text-[#8A8B94] font-mono">{row.percent}%</span>
+                      <span className="text-[15px] leading-[24px] text-[#8A8B94] font-mono">{row.percent}%</span>
                     </div>
                   </td>
-                  <td className="py-4 text-right text-[14px] text-white font-mono">
+                  <td className="text-right text-[15px] leading-[24px] text-[#F4F5F9] font-mono">
                     ${row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>

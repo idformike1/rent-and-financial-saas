@@ -2,14 +2,14 @@
 
 import React from 'react';
 import {
-  AreaChart,
+  ComposedChart,
   Area,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Brush,
   ReferenceLine,
 } from 'recharts';
 
@@ -17,64 +17,32 @@ import {
 const formatYAxis = (value: number) => {
   if (value === 0) return '$0';
   const absValue = Math.abs(value);
+  if (absValue >= 1000000) {
+    return `${value < 0 ? '-' : ''}$${(absValue / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+  }
   if (absValue >= 1000) {
     return `${value < 0 ? '-' : ''}$${(absValue / 1000).toFixed(0)}k`;
   }
   return `${value < 0 ? '-' : ''}$${absValue}`;
 };
 
-// --- Task 2: The Drop-Line Cursor ---
+// --- Task 3: Vertical Highlight Band ---
 const CustomCursor = (props: any) => {
-  const { points, width, height } = props;
+  const { points, height } = props;
   if (!points || !points.length) return null;
-
-  const { x, y } = points[0];
-
-  // Define the highlight column width
+  const { x } = points[0];
   const columnWidth = 40;
-
   return (
-    <svg>
-      {/* The glowing vertical highlight column */}
-      <rect
-        x={x - columnWidth / 2}
-        y={0}
-        width={columnWidth}
-        height={height + 20} // Extend slightly down
-        fill="rgba(255,255,255,0.03)"
-      />
-      {/* The strict vertical drop-line from node to X-axis */}
-      <line
-        x1={x}
-        y1={y}
-        x2={x}
-        y2={height + 20} // Assuming standard axis offset
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth={1}
-        strokeDasharray="4 4"
-      />
-    </svg>
-  );
-};
-
-// --- Task 3: The Custom Workstation Node ---
-const CustomActiveDot = (props: any) => {
-  const { cx, cy } = props;
-
-  return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={5}
-      fill="#ffffff"
-      stroke="#1E1E2A"
-      strokeWidth={3}
-      style={{
-        filter: 'drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.4))'
-      }}
+    <rect
+      x={x - columnWidth / 2}
+      y={0}
+      width={columnWidth}
+      height={height}
+      fill="rgba(255,255,255,0.05)"
     />
   );
 };
+
 
 // Custom Tooltip to override the default Recharts box
 const MinimalTooltip = ({ active, payload, label }: any) => {
@@ -96,16 +64,17 @@ const MinimalTooltip = ({ active, payload, label }: any) => {
 interface LedgerChartProps {
   data: any[];
   color?: string;
+  type?: 'area' | 'bar';
 }
 
 // --- Main Chart Component ---
-export default function LedgerChart({ data, color = '#10b981' }: LedgerChartProps) {
+export default function LedgerChart({ data, color = '#10b981', type = 'area' }: LedgerChartProps) {
   return (
     <div className="w-full h-full p-4 relative z-20">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
+      <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+        <ComposedChart
           data={data}
-          margin={{ top: 50, right: 0, left: 0, bottom: 0 }}
+          margin={{ top: 16, right: 0, left: 0, bottom: 24 }}
         >
           <defs>
             <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
@@ -114,61 +83,64 @@ export default function LedgerChart({ data, color = '#10b981' }: LedgerChartProp
             </linearGradient>
           </defs>
 
-          {/* TASK 2: Data Brush Minimap Integration - Top Mounted */}
-          <Brush
-            dataKey="date"
-            height={30}
-            y={0}
-            stroke="#8a8b94"
-            fill="rgba(255,255,255,0.05)"
-            travellerWidth={2}
-          />
-
-          {/* Subtle horizontal grid lines only, to mimic workstation depth */}
-          <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.02)" strokeDasharray="3 3" />
+          <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
 
           <XAxis
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#8a8b94', fontSize: 12, fontFamily: 'inherit' }}
+            tick={{ fill: '#9ca3af', fontSize: 12, fontFamily: 'inherit' }}
             dy={10}
             minTickGap={30}
           />
 
-          <YAxis 
-            hide={false} 
+          <YAxis
+            hide={false}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#8A8B94', fontSize: 11, fontFamily: 'inherit' }}
+            tick={{ fill: '#9ca3af', fontSize: 12, fontFamily: 'inherit' }}
             tickFormatter={formatYAxis}
-            domain={['dataMin - 10000', 'dataMax + 10000']} 
+            domain={['auto', 'auto']}
+            dx={-10}
           />
 
-          <ReferenceLine 
-            y={0} 
-            stroke="rgba(255,255,255,0.15)" 
-            strokeWidth={1} 
+          <ReferenceLine
+            y={0}
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={1}
           />
 
           <Tooltip
             content={<MinimalTooltip />}
             cursor={<CustomCursor />}
-            isAnimationActive={false} // Disable standard animation for tighter responsiveness
+            isAnimationActive={false}
           />
 
-          <Area
-            type="linear" // <-- Changed from "monotone"
-            dataKey="netCashflow"
-            stroke={color}
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#colorNet)"
-            dot={{ r: 3, fill: '#090A0E', stroke: color, strokeWidth: 2 }} // <-- Changed from false
-            activeDot={<CustomActiveDot />}
-            isAnimationActive={true}
-          />
-        </AreaChart>
+          <Bar dataKey="moneyIn" fill="#3B82F6" fillOpacity={0.15} radius={[2,2,0,0]} barSize={12} isAnimationActive={false} />
+          <Bar dataKey="moneyOut" fill="#EF4444" fillOpacity={0.15} radius={[0,0,2,2]} barSize={12} isAnimationActive={false} />
+
+          {type === 'area' ? (
+            <Area
+              type="linear"
+              dataKey="netCashflow"
+              stroke={color}
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorNet)"
+              dot={{ r: 4, strokeWidth: 2, fill: '#161821', stroke: color }}
+              activeDot={{ r: 6, fill: color, stroke: '#161821', strokeWidth: 2 }}
+              isAnimationActive={true}
+            />
+          ) : (
+            <Bar
+              dataKey="netCashflow"
+              fill={color}
+              radius={[4, 4, 0, 0]}
+              barSize={24}
+              isAnimationActive={true}
+            />
+          )}
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
