@@ -61,7 +61,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
     <div className="space-y-0 bg-[#161821] -mx-10 -mt-6 min-h-screen font-sans selection:bg-white/10 overflow-hidden">
       
       {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
-      <div className="px-10 pt-10 pb-6 space-y-8">
+      <div className="px-10 pt-10 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
         <div className="flex items-center justify-between">
             <h1 className="text-[28px] font-[400] text-[#DDE1E5]">
                Master Ledger Feed
@@ -98,7 +98,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 2. ANALYTICAL VISUALIZER BLOCK ────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05]">
+      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] sticky top-[152px] z-30 bg-[#161821]">
          {/* Net Summary Column */}
          <div className="p-10 border-r border-white/[0.05] space-y-6">
             <div className="space-y-1">
@@ -156,7 +156,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 3. FILTER TOOLBAR ────────────────────────────────────────────── */}
-      <div className="px-10 py-5 flex items-center justify-between bg-white/[0.01] border-b border-white/[0.05]">
+      <div className="px-10 py-5 flex items-center justify-between bg-[#161821] border-b border-white/[0.05] sticky top-[388px] z-20">
           <div className="flex items-center gap-3">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#2d2e39] border border-white/[0.08] rounded-full text-[13px] text-white">
                 My transactions <X size={12} className="text-[#9D9DA8] cursor-pointer hover:text-white" />
@@ -183,7 +183,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 4. DATA STRATUM (HYPER-DENSITY) ──────────────────────────────── */}
       <div className="space-y-0 relative">
          {/* THEAD (SURFACE LEVEL) */}
-         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-0 z-20")}>
+         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-[457px] z-10")}>
             <div className="flex justify-center">
               <div className="w-3.5 h-3.5 border border-white/20 rounded-[3px]" />
             </div>
