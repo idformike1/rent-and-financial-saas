@@ -73,7 +73,6 @@
 @layer base {
   * {
     border-color: var(--border);
-    letter-spacing: -0.01em;
     outline-color: var(--foreground);
     box-shadow: none !important;
   }
