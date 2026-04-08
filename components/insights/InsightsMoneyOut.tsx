@@ -70,21 +70,47 @@ export default function InsightsMoneyOut({ data, entries }: { data: any[], entri
 
   const subTabs = ['Source', 'Category', 'GL Code'];
 
+  const formatValue = (val: number) => {
+    const absVal = Math.abs(val);
+    if (absVal >= 1000000) return Math.round(absVal / 1000).toLocaleString('en-US') + 'K';
+    return {
+      full: absVal.toLocaleString('en-US', { minimumFractionDigits: 0 }),
+      compact: Math.round(absVal / 1000).toLocaleString('en-US') + 'K'
+    };
+  };
+
+  const renderMetric = (val: number) => {
+    const formatted = formatValue(val);
+    if (typeof formatted === 'string') return formatted;
+    return (
+      <>
+        <span className="hidden xl:inline">{formatted.full}</span>
+        <span className="xl:hidden">{formatted.compact}</span>
+      </>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-10">
 
       {/* ── HERO METRICS ─────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-start gap-12 mb-0 border-b border-[#2D2E39]/50 pb-8 px-4">
-        <div className="flex flex-col gap-1">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-1">Total money out</p>
-          <p className="text-[38px] font-bold text-white tracking-[-1.14px] font-arcadia leading-[42px]">
-            −${Math.abs(total).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+      <div className="flex flex-col sm:flex-row sm:items-end flex-wrap mb-0 border-b border-[#2D2E39]/50 pb-8 px-4">
+        <div className="flex flex-col mr-[144px]">
+          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money out</p>
+          <p 
+            className="text-[38px] text-white tracking-[-0.02em] leading-[42px] flex items-baseline"
+            style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}
+          >
+            −${renderMetric(total)}
           </p>
         </div>
-        <div className="flex flex-col gap-1">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-1">Monthly average</p>
-          <p className="text-[38px] font-bold text-white tracking-[-1.14px] font-arcadia leading-[42px] uppercase">
-            −${Math.abs(average).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+        <div className="flex flex-col md:pb-0.5">
+          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
+          <p 
+            className="text-[24px] text-white tracking-[-0.01em] leading-[28px]"
+            style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}
+          >
+            −${renderMetric(average)}
           </p>
         </div>
       </div>

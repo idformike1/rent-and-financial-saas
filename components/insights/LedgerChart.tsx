@@ -3,8 +3,8 @@
 import React from 'react';
 import {
   ComposedChart,
-  Area,
   Bar,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -13,7 +13,14 @@ import {
   ReferenceLine,
 } from 'recharts';
 
-// --- Task 2: Y-Axis Shorthand Formatter ---
+// --- Analytical Formatting ---
+const formatCurrency = (val: number) => {
+  return val.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 const formatYAxis = (value: number) => {
   if (value === 0) return '$0';
   const absValue = Math.abs(value);
@@ -26,35 +33,72 @@ const formatYAxis = (value: number) => {
   return `${value < 0 ? '-' : ''}$${absValue}`;
 };
 
-// --- Task 3: Vertical Highlight Band ---
-const CustomCursor = (props: any) => {
-  const { points, height } = props;
-  if (!points || !points.length) return null;
-  const { x } = points[0];
-  const columnWidth = 40;
+// --- Custom Bar with Corrected Vector Positioning ---
+const CustomBipolarBar = (props: any) => {
+  const { x, y, width, height, fill, dataKey } = props;
+  if (!height || height === 0) return null;
+
+  // Recharts passes 'y' as one edge and 'height' as the vector magnitude (can be negative).
+  // SVG <rect> requires 'y' to be the minimum Y (visual top) and 'height' to be positive.
+  const visualTop = height < 0 ? y + height : y;
+  const absHeight = Math.abs(height);
+  
+  const isPositive = dataKey === 'moneyIn';
+  // Rule lines should be at the "outer" edge (Top for positive, Bottom for negative)
+  const lineY = isPositive ? visualTop : visualTop + absHeight;
+  const strokeColor = isPositive ? 'rgba(80, 120, 255, 0.95)' : 'rgba(255, 120, 140, 0.95)';
+
   return (
-    <rect
-      x={x - columnWidth / 2}
-      y={0}
-      width={columnWidth}
-      height={height}
-      fill="rgba(255,255,255,0.05)"
-    />
+    <g>
+      <rect x={x} y={visualTop} width={width} height={absHeight} fill={fill} />
+      <line 
+        x1={x} 
+        y1={lineY} 
+        x2={x + width} 
+        y2={lineY} 
+        stroke={strokeColor} 
+        strokeWidth={2} 
+      />
+    </g>
   );
 };
 
-
-// Custom Tooltip to override the default Recharts box
-const MinimalTooltip = ({ active, payload, label }: any) => {
+// --- High-Fidelity Tooltip ---
+const ClinicalTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
-    const value = payload[0].value;
-    const isNegative = value < 0;
+    const net = payload.find((p: any) => p.dataKey === 'netCashflow')?.value || 0;
+    const income = payload.find((p: any) => p.dataKey === 'moneyIn')?.value || 0;
+    const expense = payload.find((p: any) => p.dataKey === 'moneyOut')?.value || 0;
+    const month = label?.split(' ')[0] || '';
+
     return (
-      <div className="bg-[#161821] border border-white/[0.08] shadow-2xl p-3 rounded-lg flex flex-col gap-1 z-50">
-        <p className="text-[11px] text-[#9D9DA8] uppercase tracking-widest">{label}</p>
-        <p className="text-[15px] text-white font-[400] font-finance">
-          {isNegative ? '−' : ''}${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}
-        </p>
+      <div className="bg-[#1C1D24] border border-white/[0.08] shadow-[0_32px_64px_rgba(0,0,0,0.8)] px-6 py-5 rounded-[12px] flex flex-col gap-5 z-50 min-w-[280px] backdrop-blur-xl">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-10">
+            <span className="text-[15px] text-[#8E8F99] font-normal font-finance tracking-tight">Money in</span>
+            <span className="text-[17px] text-white font-medium font-finance">
+              ${formatCurrency(income)}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between gap-10">
+            <span className="text-[15px] text-[#8E8F99] font-normal font-finance tracking-tight">Money out</span>
+            <span className="text-[17px] text-white font-medium font-finance">
+              ${formatCurrency(Math.abs(expense))}
+            </span>
+          </div>
+        </div>
+
+        <div className="h-[1px] bg-white/[0.05]" />
+
+        <div className="flex items-center justify-between gap-10">
+          <span className="text-[15px] text-[#8E8F99] font-normal lowercase first-letter:uppercase font-finance tracking-tight">
+            {month} cashflow
+          </span>
+          <span className="text-[18px] text-white font-bold font-finance">
+            {net < 0 ? '-' : ''}${formatCurrency(Math.abs(net))}
+          </span>
+        </div>
       </div>
     );
   }
@@ -63,83 +107,101 @@ const MinimalTooltip = ({ active, payload, label }: any) => {
 
 interface LedgerChartProps {
   data: any[];
-  color?: string;
-  type?: 'area' | 'bar';
 }
 
-// --- Main Chart Component ---
-export default function LedgerChart({ data, color = '#10b981', type = 'area' }: LedgerChartProps) {
+export default function LedgerChart({ data }: LedgerChartProps) {
   return (
     <div className="w-full h-full p-4 relative z-20">
       <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
         <ComposedChart
           data={data}
-          margin={{ top: 16, right: 0, left: 0, bottom: 24 }}
+          margin={{ top: 20, right: 0, left: 32, bottom: 24 }}
+          barGap={-40} 
         >
           <defs>
-            <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={color} stopOpacity={0.2} />
-              <stop offset="95%" stopColor={color} stopOpacity={0} />
+            <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#4F6EF7" stopOpacity={0.45} />
+              <stop offset="100%" stopColor="#4F6EF7" stopOpacity={0.08} />
+            </linearGradient>
+            <linearGradient id="glowOut" x1="0" y1="0" x2="0" y2="1">
+              {/* For downward bars, gradient should ramp from baseline to base */}
+              <stop offset="0%" stopColor="#FF788C" stopOpacity={0.08} />
+              <stop offset="100%" stopColor="#FF788C" stopOpacity={0.45} />
             </linearGradient>
           </defs>
 
-          <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
+          <CartesianGrid 
+            vertical={true}
+            horizontal={true}
+            stroke="rgba(255,255,255,0.05)"
+            strokeDasharray="1 39" 
+          />
 
           <XAxis
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#9ca3af', fontSize: 12, fontFamily: 'inherit' }}
-            dy={10}
-            minTickGap={30}
+            tick={{ fill: 'rgb(157, 157, 168)', fontSize: 13, fontFamily: '"Arcadia Text", system-ui, sans-serif' }}
+            dy={16}
+            minTickGap={20}
+            padding={{ left: 40, right: 40 }}
           />
 
-          <YAxis
-            hide={false}
+          <YAxis 
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#9ca3af', fontSize: 12, fontFamily: 'inherit' }}
+            tick={{ 
+              fill: 'rgb(157, 157, 168)', 
+              fontSize: 13, 
+              fontFamily: '"Arcadia Text", system-ui, sans-serif',
+              fontWeight: 400
+            }}
             tickFormatter={formatYAxis}
-            domain={['auto', 'auto']}
             dx={-10}
+            width={70}
           />
 
-          <ReferenceLine
-            y={0}
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={1}
+          <Tooltip 
+            content={<ClinicalTooltip />} 
+            cursor={{ fill: 'rgba(255,255,255,0.015)' }}
+            allowEscapeViewBox={{ x: false, y: true }}
           />
 
-          <Tooltip
-            content={<MinimalTooltip />}
-            cursor={<CustomCursor />}
-            isAnimationActive={false}
+          <ReferenceLine y={0} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+
+          <Bar 
+            dataKey="moneyIn" 
+            fill="url(#glowIn)" 
+            barSize={40}
+            shape={<CustomBipolarBar dataKey="moneyIn" />}
           />
 
-          <Bar dataKey="moneyIn" fill="#3B82F6" fillOpacity={0.15} radius={[2,2,0,0]} barSize={12} isAnimationActive={false} />
-          <Bar dataKey="moneyOut" fill="#EF4444" fillOpacity={0.15} radius={[0,0,2,2]} barSize={12} isAnimationActive={false} />
+          <Bar 
+            dataKey="moneyOut" 
+            fill="url(#glowOut)" 
+            barSize={40} 
+            shape={<CustomBipolarBar dataKey="moneyOut" />}
+          />
 
-          {type === 'area' ? (
-            <Area
-              type="linear"
-              dataKey="netCashflow"
-              stroke={color}
-              strokeWidth={2}
-              fillOpacity={1}
-              fill="url(#colorNet)"
-              dot={{ r: 4, strokeWidth: 2, fill: '#161821', stroke: color }}
-              activeDot={{ r: 6, fill: color, stroke: '#161821', strokeWidth: 2 }}
-              isAnimationActive={true}
-            />
-          ) : (
-            <Bar
-              dataKey="netCashflow"
-              fill={color}
-              radius={[4, 4, 0, 0]}
-              barSize={24}
-              isAnimationActive={true}
-            />
-          )}
+          <Line
+            type="monotone"
+            dataKey="netCashflow"
+            stroke="#5078FF"
+            strokeWidth={2}
+            dot={{ 
+              r: 4, 
+              fill: '#5078FF', 
+              stroke: '#FFFFFF', 
+              strokeWidth: 2,
+              fillOpacity: 1
+            }}
+            activeDot={{ 
+              r: 5, 
+              fill: '#5078FF', 
+              stroke: '#FFFFFF', 
+              strokeWidth: 2 
+            }}
+          />
         </ComposedChart>
       </ResponsiveContainer>
     </div>

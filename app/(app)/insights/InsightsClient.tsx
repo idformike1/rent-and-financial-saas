@@ -199,9 +199,6 @@ export default function InsightsClient(props: InsightsClientProps) {
       {/* ── CONTEXT RESTORATION (Page Identity) ── */}
       <h1 className="text-[24px] font-normal text-[#F4F5F9] mb-6 flex items-center gap-3 tracking-tight font-arcadia">
         Insights
-        <button className="text-[10px] px-2 py-[2px] bg-white/[0.04] border border-white/5 hover:bg-white/10 transition-colors rounded-[4px] text-[#F4F5F9]/70 font-sans tracking-normal font-normal flex items-center mt-[4px]">
-          Share feedback
-        </button>
       </h1>
 
       {/* ── CONTROL STRATUM (State Machine) ────────────────────────────────── */}
@@ -214,7 +211,7 @@ export default function InsightsClient(props: InsightsClientProps) {
                 <div
                   onClick={() => setActiveTab(tab.id as TabType)}
                   className={cn(
-                    "text-[14px] leading-none h-full flex items-center px-4 rounded-[6px] cursor-pointer transition-all font-normal whitespace-nowrap",
+                    "text-[15px] leading-[24px] h-full flex items-center px-4 rounded-[6px] cursor-pointer transition-all font-normal whitespace-nowrap",
                     activeTab === tab.id
                       ? "bg-[#2D2E39] text-white shadow-sm"
                       : "text-[#8A8B94] hover:text-[#F4F5F9]"
@@ -279,8 +276,8 @@ export default function InsightsClient(props: InsightsClientProps) {
             onPointerDown={handlePointerDown}
             style={{ left: `${scrubberState.left}%`, width: `${scrubberState.width}%` }}
             className={cn(
-              "absolute bottom-[4px] h-[48px] bg-[#5063F4]/15 border border-[#5063F4]/60 rounded-[4px] cursor-grab active:cursor-grabbing transition-[background-color,border-color] z-10 select-none backdrop-blur-[1px]",
-              isDragging ? "bg-[#5063F4]/25" : "hover:bg-[#5063F4]/20"
+              "absolute bottom-[4px] h-[48px] bg-[#5063F4]/[0.03] border border-[#5063F4]/[0.12] rounded-[4px] cursor-grab active:cursor-grabbing transition-[background-color,border-color] z-10 select-none backdrop-blur-[1px]",
+              isDragging ? "bg-[#5063F4]/[0.05]" : "hover:bg-[#5063F4]/[0.04]"
             )}
           >
             {/* Date Text - Top Left Aligned */}
@@ -297,14 +294,14 @@ export default function InsightsClient(props: InsightsClientProps) {
               onPointerDown={(e) => { e.stopPropagation(); handleLeftDown(e); }}
               className="absolute top-0 left-0 bottom-0 w-[20px] flex items-center justify-start cursor-col-resize z-20 group"
             >
-              <div className="w-[2px] h-[16px] bg-[#5063F4] opacity-40 group-hover:opacity-100 transition-opacity ml-1 rounded-full"></div>
+              <div className="w-[2px] h-[16px] bg-[#5063F4] opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-full"></div>
             </div>
 
             <div
               onPointerDown={(e) => { e.stopPropagation(); handleRightDown(e); }}
               className="absolute top-0 right-0 bottom-0 w-[20px] flex items-center justify-end cursor-col-resize z-20 group"
             >
-              <div className="w-[2px] h-[16px] bg-[#5063F4] opacity-40 group-hover:opacity-100 transition-opacity mr-1 rounded-full"></div>
+              <div className="w-[2px] h-[16px] bg-[#5063F4] opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-full"></div>
             </div>
           </div>
         </div>

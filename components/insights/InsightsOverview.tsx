@@ -52,10 +52,10 @@ export default function InsightsOverview({
       
       {/* ── HERO METRICS ─────────────────────────────────────────── */}
       <div className="flex flex-col mb-8 border-b border-[#2D2E39]/50 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+        <div className="flex flex-row items-end flex-wrap">
           
           {/* COLUMN 1: Net Cashflow (Alpha) */}
-          <div className="flex flex-col">
+          <div className="flex flex-col mr-[144px]">
             <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
             <p 
               className="text-[38px] text-white tracking-[-0.02em] leading-[42px] flex items-baseline"
@@ -74,7 +74,7 @@ export default function InsightsOverview({
           </div>
 
           {/* COLUMN 2: Money In (Beta) */}
-          <div className="flex flex-col pb-0.5">
+          <div className="flex flex-col mr-12 md:pb-0.5">
             <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
             <p 
               className="text-[24px] text-white tracking-[-0.01em] leading-[28px]"
@@ -92,8 +92,8 @@ export default function InsightsOverview({
             </p>
           </div>
 
-          {/* COLUMN 3: Money Out & Context Controls */}
-          <div className="flex justify-between items-end pb-0.5">
+          {/* COLUMN 3: Money Out (Gamma) */}
+          <div className="flex flex-row flex-1 justify-between items-end md:pb-0.5">
             <div className="flex flex-col">
               <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
               <p 
