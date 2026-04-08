@@ -80,68 +80,87 @@ export default async function InsightsPage() {
   return (
     <div className="min-h-screen bg-[#090A0E] text-white p-8">
       
-      {/* ── TASK 1: THE METRIC HEADER ────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline gap-6 sm:gap-14 mb-10 pb-8 border-b border-[#2D2E39]">
-        <div className="space-y-1">
-          <p className="text-[13px] uppercase tracking-wider text-[#9D9DA8] font-medium mb-2">Net cashflow</p>
-          <p className="text-4xl md:text-5xl font-semibold text-white tracking-tight">
-            {netCashflow < 0 ? '−' : ''}${Math.abs(netCashflow).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+      {/* ── TASK 1: CONTROL STRATUM ──────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="flex items-center gap-6 border-b border-white/5 pb-1">
+          <span className="text-[14px] text-white border-b-2 border-white pb-2 font-medium cursor-pointer tracking-wide">Overview</span>
+          <span className="text-[14px] text-white/50 hover:text-white pb-2 font-medium cursor-pointer transition-colors tracking-wide">Money in</span>
+          <span className="text-[14px] text-white/50 hover:text-white pb-2 font-medium cursor-pointer transition-colors tracking-wide">Money out</span>
+        </div>
+        <div className="flex gap-3">
+          <button className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-md text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition flex items-center gap-2 font-medium shadow-sm">
+            <span>Dec 29 - Today</span>
+            <span className="text-[10px]">▼</span>
+          </button>
+          <button className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-md text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition flex items-center gap-2 font-medium shadow-sm">
+            <span>Compare to</span>
+            <span className="text-[10px]">▼</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── TASK 2: HERO METRICS ─────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-start gap-12 mb-8 border-b border-[#2D2E39]/50 pb-8">
+        <div className="flex flex-col gap-1">
+          <p className="text-[14px] text-white/60 font-medium">Net cashflow</p>
+          <p className="text-[40px] font-semibold text-white tracking-tight font-arcadia leading-none">
+            {netCashflow < 0 ? '−' : ''}${Math.abs(netCashflow).toLocaleString('en-US', { minimumFractionDigits: 0 })}
           </p>
         </div>
-        <div className="space-y-1">
-          <p className="text-[11px] uppercase tracking-wider text-[#9D9DA8] font-medium mb-1">Money in</p>
-          <p className="text-xl md:text-2xl font-medium text-[#6CC08F]">
-            +${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        <div className="flex flex-col gap-1">
+          <p className="text-[14px] text-white/60 font-medium">Money in</p>
+          <p className="text-[36px] font-semibold text-white tracking-tight font-arcadia leading-none">
+            +${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 0 })}
           </p>
         </div>
-        <div className="space-y-1">
-          <p className="text-[11px] uppercase tracking-wider text-[#9D9DA8] font-medium mb-1">Money out</p>
-          <p className="text-xl md:text-2xl font-medium text-white">
-            −${Math.abs(totalExpense).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        <div className="flex flex-col gap-1">
+          <p className="text-[14px] text-white/60 font-medium">Money out</p>
+          <p className="text-[36px] font-semibold text-white tracking-tight font-arcadia leading-none">
+            −${Math.abs(totalExpense).toLocaleString('en-US', { minimumFractionDigits: 0 })}
           </p>
         </div>
       </div>
 
-      {/* ── TASK 2: THE TELEPORTING GRID ─────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8">
+      {/* ── TASK 3: THE MAIN WORKSTATION GRID ────────────────────────────── */}
+      <div className="flex flex-col gap-10">
         
-        {/* Narrative Text Block Column (Teleports Right -> Bottom) */}
-        <div className="order-2 lg:order-1 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-6">
-          <div className="bg-[#1E1E2A] border border-[#2D2E39] rounded-lg p-6 min-h-[160px] shadow-sm flex flex-col justify-start">
-            <p className="text-sm text-white mb-3 font-medium flex items-center gap-2">
-              <span className="text-[#9D9DA8]">↘</span> Runway
-            </p>
-            <div className="text-[14px] text-[#DDE1E5] leading-relaxed">
-              {runwayNode}
-            </div>
-          </div>
-
-          <div className="bg-[#1E1E2A] border border-[#2D2E39] rounded-lg p-6 min-h-[160px] shadow-sm flex flex-col justify-start">
-            <p className="text-sm text-white mb-3 font-medium flex items-center gap-2">
-              <span className="text-[#9D9DA8]">↗</span> Money out trends
-            </p>
-            <div className="text-[14px] text-[#DDE1E5] leading-relaxed">
-              {outflowNode}
-            </div>
-          </div>
-
-          <div className="bg-[#1E1E2A] border border-[#2D2E39] rounded-lg p-6 min-h-[160px] shadow-sm flex flex-col justify-start">
-            <p className="text-sm text-white mb-3 font-medium flex items-center gap-2">
-              <span className="text-[#9D9DA8]">*</span> Money in trends
-            </p>
-            <div className="text-[14px] text-[#DDE1E5] leading-relaxed">
-              {incomeNode}
-            </div>
-          </div>
-        </div>
-
-        {/* Main Chart Area */}
-        <div className="order-1 lg:order-2 bg-[#1E1E2A] border border-[#2D2E39] rounded-lg lg:h-[450px] md:h-[450px] h-[350px] flex items-center justify-center relative overflow-hidden shadow-lg">
+        {/* Main Chart Area (Top) */}
+        <div className="w-full bg-[#161821] border border-[#2D2E39] rounded-lg h-[450px] relative overflow-hidden shadow-lg">
           {/* Subtle grid background to simulate Mercury workstation */}
           <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle at center, #8a8b94 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
           <div className="absolute inset-0 bg-gradient-radial from-[#6C6C8F]/10 to-transparent opacity-50 blur-2xl"></div>
           
           <LedgerChart data={chartData} />
+        </div>
+
+        {/* Narrative Text Block Row (Bottom, Flat layout) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-2">
+          <div className="bg-transparent flex flex-col justify-start">
+            <p className="text-[14px] text-white mb-2 font-medium flex items-center gap-2">
+              <span className="text-[#9D9DA8]">↘</span> Runway and cash position
+            </p>
+            <div className="text-[14px] text-[#A1A1AA] leading-relaxed">
+              {runwayNode}
+            </div>
+          </div>
+
+          <div className="bg-transparent flex flex-col justify-start">
+            <p className="text-[14px] text-white mb-2 font-medium flex items-center gap-2">
+              <span className="text-[#9D9DA8]">↗</span> Money out trends
+            </p>
+            <div className="text-[14px] text-[#A1A1AA] leading-relaxed">
+              {outflowNode}
+            </div>
+          </div>
+
+          <div className="bg-transparent flex flex-col justify-start">
+            <p className="text-[14px] text-white mb-2 font-medium flex items-center gap-2">
+              <span className="text-[#9D9DA8]">*</span> Money in trends
+            </p>
+            <div className="text-[14px] text-[#A1A1AA] leading-relaxed">
+              {incomeNode}
+            </div>
+          </div>
         </div>
 
       </div>
