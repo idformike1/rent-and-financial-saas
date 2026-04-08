@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import LedgerChart from "@/components/insights/LedgerChart";
 
 export const metadata = {
   title: "Insights | Axiom Finova",
@@ -63,14 +64,12 @@ export default async function InsightsPage() {
         </div>
 
         {/* Main Chart Area */}
-        <div className="order-1 lg:order-2 bg-[#1E1E2A] border border-[#2D2E39] rounded-lg lg:h-auto md:h-[450px] h-[350px] flex items-center justify-center relative overflow-hidden">
+        <div className="order-1 lg:order-2 bg-[#1E1E2A] border border-[#2D2E39] rounded-lg lg:h-[450px] md:h-[450px] h-[350px] flex items-center justify-center relative overflow-hidden shadow-lg">
           {/* Subtle grid background to simulate Mercury workstation */}
-          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at center, #6C6C8F 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+          <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle at center, #8a8b94 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+          <div className="absolute inset-0 bg-gradient-radial from-[#6C6C8F]/10 to-transparent opacity-50 blur-2xl"></div>
           
-          <div className="z-10 flex flex-col items-center gap-3">
-             <p className="text-[#9D9DA8] font-medium tracking-[0.2em] text-xs uppercase animate-pulse">Visualization Canvas Ready</p>
-             <p className="text-[#9D9DA8]/50 text-[10px] font-mono">awaiting bespoke node/line component injection</p>
-          </div>
+          <LedgerChart />
         </div>
 
       </div>
