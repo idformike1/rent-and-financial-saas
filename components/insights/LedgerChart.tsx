@@ -33,7 +33,7 @@ const formatYAxis = (value: number) => {
   return `${value < 0 ? '-' : ''}$${absValue}`;
 };
 
-// --- Custom Bar with Corrected Vector Positioning & Hover Context ---
+// --- Custom Bar with Global Muting Logic ---
 const CustomBipolarBar = (props: any) => {
   const { x, y, width, height, fill, dataKey, index, hoverIndex } = props;
   if (!height || height === 0) return null;
@@ -43,23 +43,31 @@ const CustomBipolarBar = (props: any) => {
   const absHeight = Math.abs(height);
   
   const isPositive = dataKey === 'moneyIn';
-  const isMuted = hoverIndex !== null && hoverIndex !== index;
+  
+  // Interaction Logic: "All are muted on hover"
+  // If any point is being hovered, every bar (including the active one) is dimmed.
+  const anyHovered = hoverIndex !== null;
+  const opacity = anyHovered ? 0.3 : 0.8; 
   
   // Rule lines at the outer edge
   const lineY = isPositive ? visualTop : visualTop + absHeight;
   const strokeColor = isPositive 
-    ? (isMuted ? 'rgba(80, 120, 255, 0.2)' : 'rgba(80, 120, 255, 0.8)') 
-    : (isMuted ? 'rgba(255, 120, 140, 0.2)' : 'rgba(255, 120, 140, 0.8)');
+    ? (anyHovered ? 'rgba(80, 120, 255, 0.4)' : 'rgba(80, 120, 255, 0.8)') 
+    : (anyHovered ? 'rgba(255, 120, 140, 0.4)' : 'rgba(255, 120, 140, 0.8)');
 
   return (
-    <g style={{ transition: 'all 0.3s ease' }}>
+    <g style={{ transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)' }}>
       <rect 
         x={x} 
         y={visualTop} 
         width={width} 
         height={absHeight} 
         fill={fill} 
-        style={{ opacity: isMuted ? 0.3 : 1, transition: 'opacity 0.3s ease', cursor: 'pointer' }}
+        style={{ 
+          opacity: opacity, 
+          transition: 'opacity 0.25s ease',
+          cursor: 'pointer'
+        }}
       />
       <line 
         x1={x} 
@@ -68,7 +76,7 @@ const CustomBipolarBar = (props: any) => {
         y2={lineY} 
         stroke={strokeColor} 
         strokeWidth={2} 
-        style={{ transition: 'stroke 0.3s ease' }}
+        style={{ transition: 'stroke 0.25s ease' }}
       />
     </g>
   );
@@ -123,15 +131,13 @@ interface LedgerChartProps {
 export default function LedgerChart({ data }: LedgerChartProps) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-  const handleMouseMove = (state: any) => {
+  const onMouseMove = (state: any) => {
     if (state && state.activeTooltipIndex !== undefined) {
       setHoverIndex(state.activeTooltipIndex);
     } else {
       setHoverIndex(null);
     }
   };
-
-  const handleMouseLeave = () => setHoverIndex(null);
 
   return (
     <div className="w-full h-full p-4 relative z-20">
@@ -140,8 +146,8 @@ export default function LedgerChart({ data }: LedgerChartProps) {
           data={data}
           margin={{ top: 20, right: 0, left: 32, bottom: 24 }}
           barGap={-40} 
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          onMouseMove={onMouseMove}
+          onMouseLeave={() => setHoverIndex(null)}
         >
           <defs>
             <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
@@ -187,7 +193,7 @@ export default function LedgerChart({ data }: LedgerChartProps) {
 
           <Tooltip 
             content={<ClinicalTooltip />} 
-            cursor={{ fill: 'transparent' }} 
+            cursor={false}
             allowEscapeViewBox={{ x: false, y: true }}
           />
 
@@ -210,22 +216,25 @@ export default function LedgerChart({ data }: LedgerChartProps) {
           <Line
             type="monotone"
             dataKey="netCashflow"
-            stroke="#5078FF"
+            stroke="#10B981" // Precision Emerald / Mint - Best non-red/blue standard for cashflow.
             strokeWidth={2}
             dot={{ 
               r: 4, 
-              fill: '#5078FF', 
+              fill: '#059669', // Darker emerald for point stability
               stroke: '#FFFFFF', 
               strokeWidth: 2,
               fillOpacity: 1
             }}
             activeDot={{ 
               r: 5, 
-              fill: '#5078FF', 
+              fill: '#10B981', 
               stroke: '#FFFFFF', 
               strokeWidth: 2 
             }}
-            style={{ opacity: hoverIndex !== null ? 0.3 : 1, transition: 'opacity 0.3s ease' }}
+            style={{ 
+              opacity: hoverIndex !== null ? 0.3 : 1, 
+              transition: 'opacity 0.25s ease' 
+            }}
           />
         </ComposedChart>
       </ResponsiveContainer>
