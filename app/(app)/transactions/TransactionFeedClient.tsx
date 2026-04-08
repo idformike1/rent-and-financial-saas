@@ -63,7 +63,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
       <div className="px-10 pt-10 pb-6 space-y-8">
         <div className="flex items-center justify-between">
-            <h1 className="text-[28px] font-[400] tracking-tight text-[#DDE1E5]">
+            <h1 className="text-[28px] font-[400] text-[#DDE1E5]">
                Master Ledger Feed
             </h1>
             <div className="flex items-center gap-3">
@@ -85,7 +85,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
                   : "text-[#9D9DA8] hover:text-white/60"
               )}
             >
-              <span className="tracking-tight">{tab}</span>
+              <span>{tab}</span>
               {activeTab === tab && (
                 <motion.div 
                   layoutId="activeTab"
@@ -103,20 +103,20 @@ export default function TransactionFeedClient({ initialData }: Props) {
          <div className="p-10 border-r border-white/[0.05] space-y-6">
             <div className="space-y-1">
                <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Net change this month</p>
-               <p className="text-[24px] text-white font-[400] tracking-tight">
+               <p className="text-[24px] text-white font-[400]">
                   {summary.netChange < 0 ? '−' : ''}${Math.abs(summary.netChange).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                </p>
             </div>
             <div className="flex items-center gap-10 pt-2">
                <div className="space-y-1">
                   <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">Money in</p>
-                  <p className="text-[16px] text-[#6CC08F] font-[400] tracking-tight">
+                  <p className="text-[16px] text-[#6CC08F] font-[400]">
                      +${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </p>
                </div>
                <div className="space-y-1">
                   <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">Money out</p>
-                  <p className="text-[16px] text-[#DDE1E5] font-[400] tracking-tight">
+                  <p className="text-[16px] text-[#DDE1E5] font-[400]">
                      −${summary.moneyOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </p>
                </div>
@@ -217,7 +217,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
                  </div>
 
                  {/* DATE BLOCK */}
-                 <div className="text-[14px] leading-[20px] text-[#C3C3CC] font-[400] tracking-tight">
+                 <div className="text-[14px] leading-[20px] text-[#C3C3CC] font-[400]">
                     {format(new Date(tx.transactionDate), 'MMM d')}
                  </div>
 
@@ -226,7 +226,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
                     <div className="w-7 h-7 rounded-full bg-white/[0.05] border border-white/[0.03] flex items-center justify-center text-[10px] text-white/50 font-[400] shrink-0">
                       {initials}
                     </div>
-                    <span className="text-[15px] leading-[24px] text-[#DDDDE5] font-[400] tracking-tight truncate">
+                    <span className="text-[15px] leading-[24px] text-[#DDDDE5] font-[400] truncate">
                        {tx.description || tx.payee}
                      </span>
                  </div>
@@ -241,18 +241,18 @@ export default function TransactionFeedClient({ initialData }: Props) {
 
                  {/* ACCOUNT BLOCK */}
                  <div className="pl-6">
-                    <span className="text-[14px] leading-[20px] text-[#F4F5F9] font-[400] tracking-tight truncate block">
+                    <span className="text-[14px] leading-[20px] text-[#F4F5F9] font-[400] truncate block">
                       {tx.account.name}
                     </span>
                  </div>
 
                  {/* METHOD BLOCK */}
-                 <div className="text-[14px] leading-[20px] text-[#F4F5F9] font-[400] tracking-tight">
+                 <div className="text-[14px] leading-[20px] text-[#F4F5F9] font-[400]">
                     Direct Transfer
                  </div>
 
                  {/* CATEGORY BLOCK */}
-                 <div className="text-[14px] leading-[20px] text-[#9D9DA8] font-[400] tracking-tight truncate">
+                 <div className="text-[14px] leading-[20px] text-[#9D9DA8] font-[400] truncate">
                     {tx.expenseCategory?.name || 'Inflow'}
                  </div>
                </motion.div>
@@ -266,7 +266,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
          <p className="text-[12px] text-[#9D9DA8] font-[400]">
             Displaying {initialData.length} records in this view
          </p>
-         <button className="px-6 h-9 rounded-full border border-white/[0.1] text-[13px] text-[#9D9DA8] hover:text-white hover:bg-white/[0.05] transition-all font-[400] tracking-tight">
+         <button className="px-6 h-9 rounded-full border border-white/[0.1] text-[13px] text-[#9D9DA8] hover:text-white hover:bg-white/[0.05] transition-all font-[400]">
            Load More Activity
          </button>
       </div>
