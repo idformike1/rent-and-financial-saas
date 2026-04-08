@@ -58,7 +58,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
   }
 
   return (
-    <div className="space-y-0 bg-[#161821] -mx-10 -mt-6 min-h-screen font-sans selection:bg-white/10 overflow-hidden">
+    <div className="space-y-0 bg-[#161821] -mx-10 -mt-6 min-h-screen font-sans selection:bg-white/10">
       
       {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
       <div className="px-10 pt-10 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
