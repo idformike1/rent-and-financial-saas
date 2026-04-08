@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ComposedChart,
   Bar,
@@ -33,24 +33,34 @@ const formatYAxis = (value: number) => {
   return `${value < 0 ? '-' : ''}$${absValue}`;
 };
 
-// --- Custom Bar with Corrected Vector Positioning ---
+// --- Custom Bar with Corrected Vector Positioning & Hover Context ---
 const CustomBipolarBar = (props: any) => {
-  const { x, y, width, height, fill, dataKey } = props;
+  const { x, y, width, height, fill, dataKey, index, hoverIndex } = props;
   if (!height || height === 0) return null;
 
-  // Recharts passes 'y' as one edge and 'height' as the vector magnitude (can be negative).
-  // SVG <rect> requires 'y' to be the minimum Y (visual top) and 'height' to be positive.
+  // Recharts vector math
   const visualTop = height < 0 ? y + height : y;
   const absHeight = Math.abs(height);
   
   const isPositive = dataKey === 'moneyIn';
-  // Rule lines should be at the "outer" edge (Top for positive, Bottom for negative)
+  const isMuted = hoverIndex !== null && hoverIndex !== index;
+  
+  // Rule lines at the outer edge
   const lineY = isPositive ? visualTop : visualTop + absHeight;
-  const strokeColor = isPositive ? 'rgba(80, 120, 255, 0.95)' : 'rgba(255, 120, 140, 0.95)';
+  const strokeColor = isPositive 
+    ? (isMuted ? 'rgba(80, 120, 255, 0.2)' : 'rgba(80, 120, 255, 0.8)') 
+    : (isMuted ? 'rgba(255, 120, 140, 0.2)' : 'rgba(255, 120, 140, 0.8)');
 
   return (
-    <g>
-      <rect x={x} y={visualTop} width={width} height={absHeight} fill={fill} />
+    <g style={{ transition: 'all 0.3s ease' }}>
+      <rect 
+        x={x} 
+        y={visualTop} 
+        width={width} 
+        height={absHeight} 
+        fill={fill} 
+        style={{ opacity: isMuted ? 0.3 : 1, transition: 'opacity 0.3s ease', cursor: 'pointer' }}
+      />
       <line 
         x1={x} 
         y1={lineY} 
@@ -58,6 +68,7 @@ const CustomBipolarBar = (props: any) => {
         y2={lineY} 
         stroke={strokeColor} 
         strokeWidth={2} 
+        style={{ transition: 'stroke 0.3s ease' }}
       />
     </g>
   );
@@ -110,6 +121,18 @@ interface LedgerChartProps {
 }
 
 export default function LedgerChart({ data }: LedgerChartProps) {
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
+  const handleMouseMove = (state: any) => {
+    if (state && state.activeTooltipIndex !== undefined) {
+      setHoverIndex(state.activeTooltipIndex);
+    } else {
+      setHoverIndex(null);
+    }
+  };
+
+  const handleMouseLeave = () => setHoverIndex(null);
+
   return (
     <div className="w-full h-full p-4 relative z-20">
       <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
@@ -117,16 +140,17 @@ export default function LedgerChart({ data }: LedgerChartProps) {
           data={data}
           margin={{ top: 20, right: 0, left: 32, bottom: 24 }}
           barGap={-40} 
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           <defs>
             <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4F6EF7" stopOpacity={0.45} />
-              <stop offset="100%" stopColor="#4F6EF7" stopOpacity={0.08} />
+              <stop offset="0%" stopColor="#4F6EF7" stopOpacity={0.22} />
+              <stop offset="100%" stopColor="#4F6EF7" stopOpacity={0.04} />
             </linearGradient>
             <linearGradient id="glowOut" x1="0" y1="0" x2="0" y2="1">
-              {/* For downward bars, gradient should ramp from baseline to base */}
-              <stop offset="0%" stopColor="#FF788C" stopOpacity={0.08} />
-              <stop offset="100%" stopColor="#FF788C" stopOpacity={0.45} />
+              <stop offset="0%" stopColor="#FF788C" stopOpacity={0.04} />
+              <stop offset="100%" stopColor="#FF788C" stopOpacity={0.22} />
             </linearGradient>
           </defs>
 
@@ -163,7 +187,7 @@ export default function LedgerChart({ data }: LedgerChartProps) {
 
           <Tooltip 
             content={<ClinicalTooltip />} 
-            cursor={{ fill: 'rgba(255,255,255,0.015)' }}
+            cursor={{ fill: 'transparent' }} 
             allowEscapeViewBox={{ x: false, y: true }}
           />
 
@@ -173,14 +197,14 @@ export default function LedgerChart({ data }: LedgerChartProps) {
             dataKey="moneyIn" 
             fill="url(#glowIn)" 
             barSize={40}
-            shape={<CustomBipolarBar dataKey="moneyIn" />}
+            shape={<CustomBipolarBar dataKey="moneyIn" hoverIndex={hoverIndex} />}
           />
 
           <Bar 
             dataKey="moneyOut" 
             fill="url(#glowOut)" 
             barSize={40} 
-            shape={<CustomBipolarBar dataKey="moneyOut" />}
+            shape={<CustomBipolarBar dataKey="moneyOut" hoverIndex={hoverIndex} />}
           />
 
           <Line
@@ -201,6 +225,7 @@ export default function LedgerChart({ data }: LedgerChartProps) {
               stroke: '#FFFFFF', 
               strokeWidth: 2 
             }}
+            style={{ opacity: hoverIndex !== null ? 0.3 : 1, transition: 'opacity 0.3s ease' }}
           />
         </ComposedChart>
       </ResponsiveContainer>
