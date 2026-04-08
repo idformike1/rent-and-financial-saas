@@ -2,7 +2,7 @@ import React from 'react';
 
 // The Workstation Capsule component for semantic data highlighting
 export const Capsule = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-block bg-white/10 text-white rounded-[4px] px-1.5 py-0.5 font-mono text-[13px] mx-1 border border-white/5 shadow-sm">
+  <span className="text-white font-medium mx-1">
     {children}
   </span>
 );

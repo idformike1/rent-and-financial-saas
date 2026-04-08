@@ -18,8 +18,11 @@
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "@react-pdf/renderer": "^4.3.2",
+    "@radix-ui/react-popover": "^1.1.2",
+    "react-day-picker": "^9.1.3",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
@@ -34,9 +37,6 @@
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
-  },
-  "prisma": {
-    "seed": "node -r ts-node/register prisma/seed.ts"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -10,7 +10,18 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Brush,
+  ReferenceLine,
 } from 'recharts';
+
+// --- Task 2: Y-Axis Shorthand Formatter ---
+const formatYAxis = (value: number) => {
+  if (value === 0) return '$0';
+  const absValue = Math.abs(value);
+  if (absValue >= 1000) {
+    return `${value < 0 ? '-' : ''}$${(absValue / 1000).toFixed(0)}k`;
+  }
+  return `${value < 0 ? '-' : ''}$${absValue}`;
+};
 
 // --- Task 2: The Drop-Line Cursor ---
 const CustomCursor = (props: any) => {
@@ -84,10 +95,11 @@ const MinimalTooltip = ({ active, payload, label }: any) => {
 
 interface LedgerChartProps {
   data: any[];
+  color?: string;
 }
 
 // --- Main Chart Component ---
-export default function LedgerChart({ data }: LedgerChartProps) {
+export default function LedgerChart({ data, color = '#10b981' }: LedgerChartProps) {
   return (
     <div className="w-full h-full p-4 relative z-20">
       <ResponsiveContainer width="100%" height="100%">
@@ -97,8 +109,8 @@ export default function LedgerChart({ data }: LedgerChartProps) {
         >
           <defs>
             <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#37CC73" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#37CC73" stopOpacity={0} />
+              <stop offset="5%" stopColor={color} stopOpacity={0.2} />
+              <stop offset="95%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
 
@@ -124,7 +136,20 @@ export default function LedgerChart({ data }: LedgerChartProps) {
             minTickGap={30}
           />
 
-          <YAxis hide={true} domain={['dataMin - 5000', 'dataMax + 5000']} />
+          <YAxis 
+            hide={false} 
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#8A8B94', fontSize: 11, fontFamily: 'inherit' }}
+            tickFormatter={formatYAxis}
+            domain={['dataMin - 10000', 'dataMax + 10000']} 
+          />
+
+          <ReferenceLine 
+            y={0} 
+            stroke="rgba(255,255,255,0.15)" 
+            strokeWidth={1} 
+          />
 
           <Tooltip
             content={<MinimalTooltip />}
@@ -135,11 +160,11 @@ export default function LedgerChart({ data }: LedgerChartProps) {
           <Area
             type="linear" // <-- Changed from "monotone"
             dataKey="netCashflow"
-            stroke="#10b981"
+            stroke={color}
             strokeWidth={2}
             fillOpacity={1}
             fill="url(#colorNet)"
-            dot={{ r: 3, fill: '#090A0E', stroke: '#10b981', strokeWidth: 2 }} // <-- Changed from false
+            dot={{ r: 3, fill: '#090A0E', stroke: color, strokeWidth: 2 }} // <-- Changed from false
             activeDot={<CustomActiveDot />}
             isAnimationActive={true}
           />
