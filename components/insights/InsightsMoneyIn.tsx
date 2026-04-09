@@ -9,8 +9,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell
+  Cell,
+  ReferenceLine
 } from 'recharts';
+import { format } from 'date-fns';
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -19,22 +21,86 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// --- Hardened Mercury Tooltip ---
+const ClinicalTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    const value = payload[0].value || 0;
+    
+    let monthLabel = '';
+    try {
+      const date = new Date(label);
+      monthLabel = isNaN(date.getTime()) ? label.split(' ')[0] : format(date, 'MMMM');
+    } catch (e) {
+      monthLabel = label.split(' ')[0];
+    }
+
     return (
-      <div className="bg-[#161821] border border-white/[0.08] shadow-2xl p-3 rounded-lg flex flex-col gap-1 z-50">
-        <p className="text-[11px] text-[#9D9DA8] uppercase tracking-widest">{label}</p>
-        <p className="text-[15px] text-white font-[400] font-finance">
-          +${Math.abs(payload[0].value).toLocaleString('en-US', { minimumFractionDigits: 0 })}
-        </p>
+      <div
+        className="bg-[#0a0a0b]/95 border border-white/[0.1] shadow-[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[8px] flex flex-col gap-3 z-50 min-w-[200px] backdrop-blur-3xl"
+      >
+        <div className="flex flex-col gap-1">
+          <span className="text-[11px] text-white/50 font-normal uppercase tracking-[0.08em]">Money in</span>
+          <div className="flex items-center justify-between gap-6">
+            <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">{monthLabel}</span>
+            <span className="text-[15px] text-white font-medium font-finance">
+              +${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </span>
+          </div>
+        </div>
       </div>
     );
   }
   return null;
 };
 
+// --- Custom Bar with Surgical Highlight Logic ---
+const CustomBar = (props: any) => {
+  const { x, y, width, height, fill, payload, hoveredDate } = props;
+  if (!height || height === 0) return null;
+
+  // Recharts vector math: visualTop is always the uppermost Y coordinate
+  const visualTop = height < 0 ? y + height : y;
+  const absHeight = Math.abs(height);
+
+  const isHighlighted = hoveredDate && payload?.date === hoveredDate;
+
+  let finalOpacity = 0.8;
+  if (hoveredDate !== null) {
+    finalOpacity = isHighlighted ? 1 : 0.15;
+  }
+
+  // Rule line at the tip (outer edge)
+  const lineY = height < 0 ? visualTop + absHeight : visualTop;
+
+  return (
+    <g style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+      <rect
+        x={x}
+        y={visualTop}
+        width={width}
+        height={absHeight}
+        fill={fill}
+        style={{
+          opacity: finalOpacity,
+          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          cursor: 'pointer'
+        }}
+      />
+      <line
+        x1={x}
+        y1={lineY}
+        x2={x + width}
+        y2={lineY}
+        stroke={hoveredDate !== null && !isHighlighted ? 'rgba(80, 120, 255, 0.15)' : 'rgba(80, 120, 255, 0.95)'}
+        strokeWidth={2}
+        style={{ transition: 'stroke 0.3s ease' }}
+      />
+    </g>
+  );
+};
+
 export default function InsightsMoneyIn({ data, entries }: { data: any[], entries: any[] }) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
   const [subTab, setSubTab] = useState('Source');
   const primaryColor = '#5C61E6'; // Mercury Indigo
 
@@ -95,24 +161,26 @@ export default function InsightsMoneyIn({ data, entries }: { data: any[], entrie
     <div className="flex flex-col gap-10">
 
       {/* ── HERO METRICS ─────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-end flex-wrap mb-0 border-b border-[#2D2E39]/50 pb-8 px-4">
-        <div className="flex flex-col mr-[144px]">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money in</p>
-          <p 
-            className="text-[38px] text-white tracking-[-0.02em] leading-[42px] flex items-baseline"
-            style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}
-          >
-            +${renderMetric(total)}
-          </p>
-        </div>
-        <div className="flex flex-col md:pb-0.5">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
-          <p 
-            className="text-[24px] text-white tracking-[-0.01em] leading-[28px]"
-            style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}
-          >
-            +${renderMetric(average)}
-          </p>
+      <div className="flex flex-col mb-8 border-b border-[#2D2E39]/50 pb-8 px-4">
+        <div className="flex flex-row items-end flex-wrap">
+          <div className="flex flex-col mr-[144px]">
+            <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money in</p>
+            <p 
+              className="text-[38px] text-white tracking-[-0.02em] leading-[42px] flex items-baseline"
+              style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}
+            >
+              +${renderMetric(total)}
+            </p>
+          </div>
+          <div className="flex flex-col md:pb-0.5">
+            <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
+            <p 
+              className="text-[24px] text-white tracking-[-0.01em] leading-[28px]"
+              style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}
+            >
+              +${renderMetric(average)}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -120,33 +188,63 @@ export default function InsightsMoneyIn({ data, entries }: { data: any[], entrie
         <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <BarChart
             data={data}
-            margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
+            margin={{ top: 20, right: 0, left: 32, bottom: 24 }}
+            onMouseMove={(state) => {
+              if (state && state.activeLabel) setHoveredDate(state.activeLabel);
+              else setHoveredDate(null);
+            }}
+            onMouseLeave={() => setHoveredDate(null)}
           >
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.02)" strokeDasharray="3 3" />
+            <defs>
+              <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#4F6EF7" stopOpacity={0.22} />
+                <stop offset="100%" stopColor="#4F6EF7" stopOpacity={0.04} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid 
+              vertical={true} 
+              horizontal={true} 
+              stroke="rgba(255,255,255,0.05)" 
+              strokeDasharray="1 39" 
+            />
             <XAxis
               dataKey="date"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#8a8b94', fontSize: 12 }}
-              dy={10}
+              tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 13, fontFamily: '"Arcadia Text", system-ui, sans-serif' }}
+              dy={16}
+              minTickGap={20}
+              padding={{ left: 40, right: 40 }}
             />
-            <YAxis hide={true} />
+            <YAxis 
+              axisLine={false}
+              tickLine={false}
+              tick={{
+                fill: 'rgba(255,255,255,0.5)',
+                fontSize: 13,
+                fontFamily: '"Arcadia Text", system-ui, sans-serif'
+              }}
+              dx={-10}
+              width={70}
+              tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`}
+            />
             <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+              content={<ClinicalTooltip />}
+              cursor={false}
+              allowEscapeViewBox={{ x: false, y: true }}
             />
+            <ReferenceLine y={0} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
             <Bar
               dataKey="moneyIn"
-              radius={[4, 4, 0, 0]}
-              onMouseEnter={(_, index) => setActiveIndex(index)}
-              onMouseLeave={() => setActiveIndex(null)}
+              fill="url(#glowIn)"
+              barSize={40}
+              shape={<CustomBar hoveredDate={hoveredDate} />}
             >
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={primaryColor}
-                  fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.3}
-                  className="transition-all duration-300"
+                  fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
+                  style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
                 />
               ))}
             </Bar>
