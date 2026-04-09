@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma'
+import Link from 'next/link'
 import { AlertTriangle, Clock } from 'lucide-react'
 
 export default async function DelinquencyReport() {
@@ -68,7 +69,9 @@ export default async function DelinquencyReport() {
                 reportData.map((tenant: any) => (
                   <tr key={tenant.id} className={tenant.isSevere ? 'bg-red-50/50 dark:bg-red-500/5' : 'hover:bg-muted transition-colors'}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-foreground">
-                      {tenant.name}
+                      <Link href={`/tenants/${tenant.id}`} className="hover:text-brand transition-colors">
+                        {tenant.name}
+                      </Link>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-foreground font-finance">
                       ${tenant.totalDue.toFixed(2)}

@@ -69,12 +69,12 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                        {"Apr 7"}
                     </TD>
                     <TD>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-[11px] text-foreground/40 font-bold shrink-0">
+                      <Link href={`/tenants/${tenant.id}`} className="flex items-center gap-3 group/name hover:opacity-80 transition-opacity cursor-pointer">
+                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-[11px] text-foreground/40 font-bold shrink-0 group-hover/name:border-white/20 transition-all">
                           {tenant.name.charAt(0)}
                         </div>
-                        <span className="font-[380] tracking-tight">{tenant.name}</span>
-                      </div>
+                        <span className="font-[380] tracking-tight border-b border-transparent group-hover/name:border-white/20">{tenant.name}</span>
+                      </Link>
                     </TD>
                     <TD>
                       <span className="text-muted-foreground/60 font-[380] tracking-tight">

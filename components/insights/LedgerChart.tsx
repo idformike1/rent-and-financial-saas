@@ -89,11 +89,15 @@ const CustomBipolarBar = (props: any) => {
 };
 
 // --- Hardened Mercury Tooltip ---
-const ClinicalTooltip = ({ active, payload, label }: any) => {
+const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
   if (active && payload && payload.length) {
     const income = payload.find((p: any) => p.dataKey === 'moneyIn')?.value || 0;
     const expense = payload.find((p: any) => p.dataKey === 'moneyOut')?.value || 0;
     const net = payload.find((p: any) => p.dataKey === 'netCashflow')?.value || 0;
+
+    const showIn = mode === 'overview' || mode === 'money-in';
+    const showOut = mode === 'overview' || mode === 'money-out';
+    const showNet = mode === 'overview';
 
     // Technical Formatting
     let monthLabel = '';
@@ -109,31 +113,44 @@ const ClinicalTooltip = ({ active, payload, label }: any) => {
         className="bg-[#0a0a0b]/95 border border-white/[0.1] shadow-[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[8px] flex flex-col gap-3 z-50 min-w-[220px] backdrop-blur-3xl"
       >
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between gap-6">
-            <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">Money in</span>
-            <span className="text-[13px] text-white font-medium font-finance">
-              ${formatCurrency(income)}
-            </span>
-          </div>
+          {showIn && (
+            <div className="flex items-center justify-between gap-6">
+              <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">Money in</span>
+              <span className="text-[13px] text-white font-medium font-finance">
+                ${formatCurrency(income)}
+              </span>
+            </div>
+          )}
 
-          <div className="flex items-center justify-between gap-6">
-            <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">Money out</span>
-            <span className="text-[13px] text-white font-medium font-finance">
-              ${formatCurrency(Math.abs(expense))}
-            </span>
-          </div>
+          {showOut && (
+            <div className="flex items-center justify-between gap-6">
+              <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">Money out</span>
+              <span className="text-[13px] text-white font-medium font-finance">
+                ${formatCurrency(Math.abs(expense))}
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="h-[1px] bg-white/10" />
+        {showNet && (
+          <>
+            <div className="h-[1px] bg-white/10" />
+            <div className="flex items-center justify-between gap-6">
+              <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">
+                {monthLabel} cashflow
+              </span>
+              <span className="text-[14px] text-white font-bold font-finance">
+                {net < 0 ? '-' : ''}${formatCurrency(Math.abs(net))}
+              </span>
+            </div>
+          </>
+        )}
 
-        <div className="flex items-center justify-between gap-6">
-          <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">
-            {monthLabel} cashflow
-          </span>
-          <span className="text-[14px] text-white font-bold font-finance">
-            {net < 0 ? '-' : ''}${formatCurrency(Math.abs(net))}
-          </span>
-        </div>
+        {!showNet && (
+          <div className="flex items-center justify-between gap-6 pt-1 border-t border-white/5">
+            <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">{monthLabel}</span>
+          </div>
+        )}
       </div>
     );
   }
@@ -142,14 +159,16 @@ const ClinicalTooltip = ({ active, payload, label }: any) => {
 
 interface LedgerChartProps {
   data: any[];
+  type?: 'area' | 'bar';
+  mode?: 'overview' | 'money-in' | 'money-out';
 }
 
-export default function LedgerChart({ data }: LedgerChartProps) {
+export default function LedgerChart({ data, type = 'area', mode = 'overview' }: LedgerChartProps) {
   // Switched from Index to ID/Date string to avoid Recharts internal index offset issues
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   const onMouseMove = (state: any) => {
-    // Standardize on the actviveLabel (X-Axis string) for 100% accurate grouping
+    // Standardize on the activeLabel (X-Axis string) for 100% accurate grouping
     if (state && state.activeLabel) {
       setHoveredDate(state.activeLabel);
     } else {
@@ -157,12 +176,16 @@ export default function LedgerChart({ data }: LedgerChartProps) {
     }
   };
 
+  const showIncome = mode === 'overview' || mode === 'money-in';
+  const showExpense = mode === 'overview' || mode === 'money-out';
+  const showNet = mode === 'overview';
+
   return (
     <div className="w-full h-full p-4 relative z-20">
       <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
         <ComposedChart
           data={data}
-          margin={{ top: 20, right: 0, left: 32, bottom: 24 }}
+          margin={{ top: 20, right: 0, left: 0, bottom: 24 }}
           barGap={-40}
           onMouseMove={onMouseMove}
           onMouseLeave={() => setHoveredDate(null)}
@@ -210,66 +233,72 @@ export default function LedgerChart({ data }: LedgerChartProps) {
           />
 
           <Tooltip
-            content={<ClinicalTooltip />}
+            content={<ClinicalTooltip mode={mode} />}
             cursor={false}
             allowEscapeViewBox={{ x: false, y: true }}
           />
 
           <ReferenceLine y={0} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
 
-          <Bar
-            dataKey="moneyIn"
-            fill="url(#glowIn)"
-            barSize={40}
-            shape={<CustomBipolarBar dataKey="moneyIn" hoveredDate={hoveredDate} />}
-          >
-            {data.map((entry, i) => (
-              <Cell
-                key={`cell-in-${i}`}
-                fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
-                style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
-              />
-            ))}
-          </Bar>
+          {showIncome && (
+            <Bar
+              dataKey="moneyIn"
+              fill="url(#glowIn)"
+              barSize={40}
+              shape={<CustomBipolarBar dataKey="moneyIn" hoveredDate={hoveredDate} />}
+            >
+              {data.map((entry, i) => (
+                <Cell
+                  key={`cell-in-${i}`}
+                  fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
+                  style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                />
+              ))}
+            </Bar>
+          )}
 
-          <Bar
-            dataKey="moneyOut"
-            fill="url(#glowOut)"
-            barSize={40}
-            shape={<CustomBipolarBar dataKey="moneyOut" hoveredDate={hoveredDate} />}
-          >
-            {data.map((entry, i) => (
-              <Cell
-                key={`cell-out-${i}`}
-                fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
-                style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
-              />
-            ))}
-          </Bar>
+          {showExpense && (
+            <Bar
+              dataKey="moneyOut"
+              fill="url(#glowOut)"
+              barSize={40}
+              shape={<CustomBipolarBar dataKey="moneyOut" hoveredDate={hoveredDate} />}
+            >
+              {data.map((entry, i) => (
+                <Cell
+                  key={`cell-out-${i}`}
+                  fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
+                  style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                />
+              ))}
+            </Bar>
+          )}
 
-          <Line
-            type="monotone"
-            dataKey="netCashflow"
-            stroke="#10B981"
-            strokeWidth={2}
-            dot={{
-              r: 4,
-              fill: '#059669',
-              stroke: '#FFFFFF',
-              strokeWidth: 2,
-              fillOpacity: 1
-            }}
-            activeDot={{
-              r: 5,
-              fill: '#10B981',
-              stroke: '#FFFFFF',
-              strokeWidth: 2
-            }}
-            style={{
-              opacity: hoveredDate !== null ? 0.15 : 1,
-              transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-            }}
-          />
+          {showNet && (
+            <Line
+              type="monotone"
+              dataKey="netCashflow"
+              stroke="#10B981"
+              strokeWidth={2}
+              dot={{
+                r: 4,
+                fill: '#059669',
+                stroke: '#FFFFFF',
+                strokeWidth: 2,
+                fillOpacity: 1
+              }}
+              activeDot={{
+                r: 5,
+                fill: '#10B981',
+                stroke: '#FFFFFF',
+                strokeWidth: 2
+              }}
+              style={{
+                opacity: hoveredDate !== null ? 0.15 : 1,
+                transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            />
+          )}
         </ComposedChart>
       </ResponsiveContainer>
     </div>
