@@ -270,7 +270,7 @@ export default function InsightsClient(props: InsightsClientProps) {
   };
 
   return (
-    <div className="pt-8 pb-16 px-8 max-w-[1280px] mx-auto w-full">
+    <div className="w-full">
       {/* ── CONTEXT RESTORATION (Page Identity) ── */}
       <h1 className="text-[24px] font-normal text-[#F4F5F9] mb-6 flex items-center gap-3 tracking-tight font-arcadia">
         Insights

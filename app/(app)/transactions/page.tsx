@@ -13,9 +13,15 @@ export default async function TransactionsPage() {
 
   const ledgerData = await getMasterLedger();
 
+  // SERIALIZATION: Prisma.Decimal is not allowed in Client Components. 
+  const serializedLedger = ledgerData.map((tx: any) => ({
+    ...tx,
+    amount: tx.amount ? Number(tx.amount) : 0
+  }));
+
   return (
     <div className="py-6 w-full px-6">
-      <TransactionFeedClient initialData={ledgerData as any} />
+      <TransactionFeedClient initialData={serializedLedger as any} />
     </div>
   );
 }

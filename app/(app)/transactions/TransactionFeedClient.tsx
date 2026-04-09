@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { 
   X, Filter, RotateCcw, LayoutGrid, LayoutList, Download,
-  TrendingUp, BarChart3, ChevronDown
+  TrendingUp, BarChart3, ChevronDown, Search
 } from 'lucide-react'
 
 interface Transaction {
@@ -27,13 +27,39 @@ const GRID_CLASS = "grid grid-cols-[32px_80px_minmax(250px,2fr)_120px_200px_180p
 
 export default function TransactionFeedClient({ initialData }: Props) {
   const [activeTab, setActiveTab] = useState('Recent')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('ALL')
+  const [isExportOpen, setIsExportOpen] = useState(false)
+
   const tabs = ['Recent', 'My transactions', 'Operating expenses']
+
+  const filteredData = useMemo(() => {
+    return initialData.filter(tx => {
+      const matchesSearch = 
+        tx.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tx.account?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tx.payee?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const date = new Date(tx.transactionDate);
+      const matchesStart = startDate ? date >= new Date(startDate) : true;
+      const matchesEnd = endDate ? date <= new Date(endDate) : true;
+      
+      const matchesCategory = categoryFilter === 'ALL' ? true : 
+                            categoryFilter === 'INCOME' ? Number(tx.amount) >= 0 :
+                            categoryFilter === 'EXPENSE' ? Number(tx.amount) < 0 :
+                            true;
+
+      return matchesSearch && matchesStart && matchesEnd && matchesCategory;
+    });
+  }, [initialData, searchTerm, startDate, endDate, categoryFilter]);
 
   // Fiscal calculations
   const summary = useMemo(() => {
     let moneyIn = 0
     let moneyOut = 0
-    initialData.forEach(tx => {
+    filteredData.forEach(tx => {
       const amt = Number(tx.amount)
       if (amt >= 0) moneyIn += amt
       else moneyOut += Math.abs(amt)
@@ -43,7 +69,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       moneyOut,
       netChange: moneyIn - moneyOut
     }
-  }, [initialData])
+  }, [filteredData])
 
   const formatAmountParts = (amount: number) => {
     const formatted = amount.toLocaleString('en-US', { 
@@ -58,15 +84,25 @@ export default function TransactionFeedClient({ initialData }: Props) {
   }
 
   return (
-    <div className="space-y-0 bg-[#161821] -mx-10 -mt-6 min-h-screen font-sans selection:bg-white/10">
+    <div className="space-y-0 bg-[#161821] -mx-8 -mt-8 min-h-screen font-sans selection:bg-white/10">
       
       {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
-      <div className="px-10 pt-10 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
+      <div className="px-8 pt-8 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
         <div className="flex items-center justify-between">
             <h1 className="text-[28px] font-[400] text-[#DDE1E5]">
                Master Ledger Feed
             </h1>
             <div className="flex items-center gap-3">
+               <div className="relative group w-64 mr-4">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9D9DA8] group-focus-within:text-white transition-colors" />
+                  <input 
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search ledger..."
+                    className="w-full h-8 bg-white/[0.03] border border-white/[0.08] rounded-full pl-9 pr-4 text-[13px] text-white placeholder-[#9D9DA8]/40 focus:outline-none focus:border-white/20 transition-all font-[380] tracking-tight"
+                  />
+               </div>
                <button className="px-3 py-1.5 rounded-full border border-white/[0.08] text-[12px] text-[#9D9DA8] flex items-center gap-2 hover:bg-white/[0.03] transition-all">
                   <LayoutGrid size={13} /> Grid
                </button>
@@ -166,17 +202,70 @@ export default function TransactionFeedClient({ initialData }: Props) {
              </button>
           </div>
           <div className="flex items-center gap-6">
-             <button className="text-[12px] text-[#9D9DA8] flex items-center gap-2 hover:text-white transition-all">
+             <button 
+               onClick={() => {
+                 setSearchTerm('');
+                 setStartDate('');
+                 setEndDate('');
+                 setCategoryFilter('ALL');
+               }}
+               className="text-[12px] text-[#9D9DA8] flex items-center gap-2 hover:text-white transition-all"
+             >
                 <RotateCcw size={12} /> Reset
              </button>
+             <div className="h-4 w-[1px] bg-white/[0.05]" />
+             
+             {/* Category Toggle */}
+             <select 
+               value={categoryFilter}
+               onChange={(e) => setCategoryFilter(e.target.value)}
+               className="bg-transparent text-[12px] text-[#C3C3CC] border-none outline-none cursor-pointer hover:text-white transition-colors"
+             >
+                <option value="ALL">All Flows</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expenses</option>
+             </select>
+
              <div className="h-4 w-[1px] bg-white/[0.05]" />
              <div className="flex items-center gap-2">
                 <LayoutList size={14} className="text-white" />
                 <LayoutGrid size={14} className="text-[#9D9DA8] opacity-40 cursor-not-allowed" />
              </div>
-             <button className="flex items-center gap-2 text-[12px] text-[#C3C3CC] hover:text-white px-3 py-1.5 border border-white/[0.08] rounded-md transition-all">
-                <Download size={13} /> Export filtered
-             </button>
+             
+             <div className="relative">
+                <button 
+                  onClick={() => setIsExportOpen(!isExportOpen)}
+                  className="flex items-center gap-2 text-[12px] text-[#C3C3CC] hover:text-white px-3 py-1.5 border border-white/[0.08] rounded-md transition-all bg-white/[0.02]"
+                >
+                   <Download size={13} /> Export
+                   <ChevronDown size={12} className={cn("transition-transform", isExportOpen ? "rotate-180" : "")} />
+                </button>
+
+                <AnimatePresence>
+                  {isExportOpen && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 mt-2 w-40 bg-[#1e1e2a] border border-white/[0.08] rounded-lg shadow-xl z-[100] overflow-hidden"
+                    >
+                      {['CSV', 'PDF', 'Word'].map((format) => (
+                        <button
+                          key={format}
+                          onClick={() => {
+                            const params = new URLSearchParams({ searchTerm, startDate, endDate, category: categoryFilter });
+                            window.open(`/api/reports/${format.toLowerCase()}?${params.toString()}`, '_blank');
+                            setIsExportOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-[12px] text-[#9D9DA8] hover:text-white hover:bg-white/[0.03] transition-colors"
+                        >
+                          Export to {format}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+             </div>
           </div>
       </div>
 
@@ -196,7 +285,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
          </div>
 
          <AnimatePresence mode="popLayout">
-           {initialData.map((tx, idx) => {
+           {filteredData.map((tx, idx) => {
              const amt = Number(tx.amount)
              const isNegative = amt < 0;
              const displayAmount = Math.abs(amt);
@@ -264,7 +353,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 5. OPERATIONAL FOOTER ───────────────────────────────────────── */}
       <div className="py-12 px-10 flex items-center justify-between border-t border-white/[0.05]">
          <p className="text-[12px] text-[#9D9DA8] font-[400]">
-            Displaying {initialData.length} records in this view
+            Displaying {filteredData.length} records in this view
          </p>
          <button className="px-6 h-9 rounded-full border border-white/[0.1] text-[13px] text-[#9D9DA8] hover:text-white hover:bg-white/[0.05] transition-all font-[400]">
            Load More Activity

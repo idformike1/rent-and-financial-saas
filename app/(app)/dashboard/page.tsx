@@ -40,7 +40,7 @@ async function ReconTerminal() {
 
 export default async function FinovaDashboard() {
   return (
-    <div className="px-4 md:px-8 max-w-7xl mx-auto pb-12 pt-10">
+    <div className="w-full">
       {/* ── MERCURY: DASHBOARD HEADER (Welcome Block) ─────────────────────────── */}
       <div className="mb-10">
         <h1 className="text-display font-display text-foreground">Welcome, Rajm</h1>

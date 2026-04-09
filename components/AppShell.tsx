@@ -55,7 +55,6 @@ const navigationSections = [
     items: [
       { name: 'Insights',      href: '/insights',                      icon: Icons.Home },
       { name: 'Analytic Hub',  href: '/reports',                       icon: Icons.Home },
-      { name: 'Master Ledger', href: '/transactions',                  icon: Icons.Transactions },
       { name: 'Waterfall Core',href: '/reports/ledger-waterfall',      icon: Icons.Payments },
       { name: 'Forex Engine',  href: '/reports/financial-connections', icon: Icons.Accounts },
       { name: 'Aging Matrix',  href: '/receivables/aging',             icon: Icons.Transactions },
@@ -185,32 +184,34 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 ml-[232px] h-screen overflow-hidden flex flex-col bg-background">
 
         {/* ── TOP BAR / HEADER (CENTERED SEARCH SYNC) ────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-[56px] px-8 flex items-center bg-background border-b border-[#1C1C26] shrink-0">
-          <div className="flex-1 flex items-center justify-center">
-             <div className="w-full max-w-[512px] relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-muted-foreground/40 group-focus-within:text-foreground transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search for anything" 
-                  className="w-full h-8 bg-[#16161D] border border-[#2D2E39] rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
-                   <kbd className="text-[10px] font-sans">⌘</kbd>
-                   <kbd className="text-[10px] font-sans">K</kbd>
-                </div>
-             </div>
-          </div>
-          
-          <div className="flex items-center gap-4 ml-auto">
-             <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-                <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
-             </div>
+        <header className="sticky top-0 z-40 w-full h-[56px] flex items-center bg-background border-b border-[#1C1C26] shrink-0">
+          <div className="w-full max-w-[1440px] mx-auto px-8 flex items-center">
+            <div className="flex-1 flex items-center justify-center">
+               <div className="w-full max-w-[512px] relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-muted-foreground/40 group-focus-within:text-foreground transition-colors" />
+                  <input 
+                    type="text" 
+                    placeholder="Search for anything" 
+                    className="w-full h-8 bg-[#16161D] border border-[#2D2E39] rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
+                     <kbd className="text-[10px] font-sans">⌘</kbd>
+                     <kbd className="text-[10px] font-sans">K</kbd>
+                  </div>
+               </div>
+            </div>
+            
+            <div className="flex items-center gap-4 ml-auto">
+               <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                  <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
+               </div>
+            </div>
           </div>
         </header>
 
         {/* ── MAIN CANVAS ───────────────────────────────────────────────────── */}
         <main className="flex-1 overflow-y-auto">
-          <div className="w-full">
+          <div className="w-full max-w-[1440px] mx-auto px-8 pt-8 pb-16">
             {children}
           </div>
         </main>

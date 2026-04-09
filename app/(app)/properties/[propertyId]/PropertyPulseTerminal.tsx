@@ -525,7 +525,7 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
                     <History className="w-6 h-6" />
                     <span className="text-[10px] ">Immutable Audit Data Verified</span>
                  </div>
-                 <Button variant="secondary" onClick={() => window.location.href = '/expenses'}>Go to Master Ledger</Button>
+                 <Button variant="secondary" onClick={() => window.location.href = '/transactions'}>Go to Master Ledger</Button>
               </div>
            </Card>
         </div>

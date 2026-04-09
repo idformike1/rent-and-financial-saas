@@ -12,10 +12,10 @@ export default async function PropertiesPage() {
   });
 
   return (
-    <div className="py-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
         <div className="space-y-1">
-          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
+          <h1 className="text-[display] font-display text-foreground">
             Portfolio Management
           </h1>
           <p className="text-[15px] font-[400] text-muted-foreground">

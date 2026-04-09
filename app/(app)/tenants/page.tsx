@@ -38,7 +38,7 @@ export default async function TenantsPage() {
   }));
 
   return (
-    <div className="pt-10 pb-12 max-w-7xl mx-auto animate-in fade-in duration-700">
+    <div className="animate-in fade-in duration-700">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10">
         <div className="space-y-1">
           <h1 className="text-[28px] font-display text-foreground leading-none">
