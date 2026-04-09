@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   ComposedChart,
   Bar,
+  Cell,
   Line,
   XAxis,
   YAxis,
@@ -33,9 +34,9 @@ const formatYAxis = (value: number) => {
   return `${value < 0 ? '-' : ''}$${absValue}`;
 };
 
-// --- Custom Bar with Global Muting Logic ---
+// --- Custom Bar with Surgical Group Highlight Logic ---
 const CustomBipolarBar = (props: any) => {
-  const { x, y, width, height, fill, dataKey, index, hoverIndex } = props;
+  const { x, y, width, height, fill, dataKey, payload, hoveredDate } = props;
   if (!height || height === 0) return null;
 
   // Recharts vector math
@@ -44,19 +45,23 @@ const CustomBipolarBar = (props: any) => {
   
   const isPositive = dataKey === 'moneyIn';
   
-  // Interaction Logic: "All are muted on hover"
-  // If any point is being hovered, every bar (including the active one) is dimmed.
-  const anyHovered = hoverIndex !== null;
-  const opacity = anyHovered ? 0.3 : 0.8; 
+  // High-Fidelity Logic: Compare payload date to the hovered date string
+  // This bypasses any Recharts internal index offset issues.
+  const isHighlighted = hoveredDate && payload?.date === hoveredDate;
+  
+  let finalOpacity = 0.8; // Baseline
+  if (hoveredDate !== null) {
+    finalOpacity = isHighlighted ? 1 : 0.15;
+  }
   
   // Rule lines at the outer edge
   const lineY = isPositive ? visualTop : visualTop + absHeight;
   const strokeColor = isPositive 
-    ? (anyHovered ? 'rgba(80, 120, 255, 0.4)' : 'rgba(80, 120, 255, 0.8)') 
-    : (anyHovered ? 'rgba(255, 120, 140, 0.4)' : 'rgba(255, 120, 140, 0.8)');
+    ? (hoveredDate !== null && !isHighlighted ? 'rgba(80, 120, 255, 0.15)' : 'rgba(80, 120, 255, 0.95)') 
+    : (hoveredDate !== null && !isHighlighted ? 'rgba(255, 120, 140, 0.15)' : 'rgba(255, 120, 140, 0.95)');
 
   return (
-    <g style={{ transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+    <g style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
       <rect 
         x={x} 
         y={visualTop} 
@@ -64,8 +69,8 @@ const CustomBipolarBar = (props: any) => {
         height={absHeight} 
         fill={fill} 
         style={{ 
-          opacity: opacity, 
-          transition: 'opacity 0.25s ease',
+          opacity: finalOpacity, 
+          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           cursor: 'pointer'
         }}
       />
@@ -76,7 +81,7 @@ const CustomBipolarBar = (props: any) => {
         y2={lineY} 
         stroke={strokeColor} 
         strokeWidth={2} 
-        style={{ transition: 'stroke 0.25s ease' }}
+        style={{ transition: 'stroke 0.3s ease' }}
       />
     </g>
   );
@@ -129,13 +134,15 @@ interface LedgerChartProps {
 }
 
 export default function LedgerChart({ data }: LedgerChartProps) {
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  // Switched from Index to ID/Date string to avoid Recharts internal index offset issues
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   const onMouseMove = (state: any) => {
-    if (state && state.activeTooltipIndex !== undefined) {
-      setHoverIndex(state.activeTooltipIndex);
+    // Standardize on the actviveLabel (X-Axis string) for 100% accurate grouping
+    if (state && state.activeLabel) {
+      setHoveredDate(state.activeLabel);
     } else {
-      setHoverIndex(null);
+      setHoveredDate(null);
     }
   };
 
@@ -147,7 +154,7 @@ export default function LedgerChart({ data }: LedgerChartProps) {
           margin={{ top: 20, right: 0, left: 32, bottom: 24 }}
           barGap={-40} 
           onMouseMove={onMouseMove}
-          onMouseLeave={() => setHoverIndex(null)}
+          onMouseLeave={() => setHoveredDate(null)}
         >
           <defs>
             <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
@@ -203,24 +210,40 @@ export default function LedgerChart({ data }: LedgerChartProps) {
             dataKey="moneyIn" 
             fill="url(#glowIn)" 
             barSize={40}
-            shape={<CustomBipolarBar dataKey="moneyIn" hoverIndex={hoverIndex} />}
-          />
+            shape={<CustomBipolarBar dataKey="moneyIn" hoveredDate={hoveredDate} />}
+          >
+            {data.map((entry, i) => (
+              <Cell 
+                key={`cell-in-${i}`} 
+                fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
+                style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+              />
+            ))}
+          </Bar>
 
           <Bar 
             dataKey="moneyOut" 
             fill="url(#glowOut)" 
             barSize={40} 
-            shape={<CustomBipolarBar dataKey="moneyOut" hoverIndex={hoverIndex} />}
-          />
+            shape={<CustomBipolarBar dataKey="moneyOut" hoveredDate={hoveredDate} />}
+          >
+            {data.map((entry, i) => (
+              <Cell 
+                key={`cell-out-${i}`} 
+                fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
+                style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+              />
+            ))}
+          </Bar>
 
           <Line
             type="monotone"
             dataKey="netCashflow"
-            stroke="#10B981" // Precision Emerald / Mint - Best non-red/blue standard for cashflow.
+            stroke="#10B981" 
             strokeWidth={2}
             dot={{ 
               r: 4, 
-              fill: '#059669', // Darker emerald for point stability
+              fill: '#059669', 
               stroke: '#FFFFFF', 
               strokeWidth: 2,
               fillOpacity: 1
@@ -232,8 +255,8 @@ export default function LedgerChart({ data }: LedgerChartProps) {
               strokeWidth: 2 
             }}
             style={{ 
-              opacity: hoverIndex !== null ? 0.3 : 1, 
-              transition: 'opacity 0.25s ease' 
+              opacity: hoveredDate !== null ? 0.15 : 1, 
+              transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' 
             }}
           />
         </ComposedChart>
