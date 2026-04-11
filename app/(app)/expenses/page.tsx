@@ -57,6 +57,7 @@ export default async function ExpenseRegistryPage() {
     date: e.date?.toISOString() || null
   }));
 
+  return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
         <div className="space-y-1">
