@@ -37,7 +37,7 @@ export default async function DelinquencyReport() {
   }).filter((t: any) => t.totalDue > 0).sort((a: any, b: any) => b.totalDue - a.totalDue);
 
   return (
-    <div className="py-6 max-w-7xl mx-auto">
+    <div className="w-full">
       <div className="mb-8 flex justify-between items-end">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground ">Delinquency Report</h1>

@@ -13,7 +13,7 @@ export default async function HomePage() {
   if (!session) redirect('/login');
 
   return (
-    <div className="pt-10 pb-12 max-w-7xl mx-auto animate-in fade-in duration-700">
+    <div className="animate-in fade-in duration-700">
       
       {/* ── HEADER STRATUM ─────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10 px-1">

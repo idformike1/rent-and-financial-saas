@@ -23,7 +23,7 @@ interface Props {
   initialData: Transaction[]
 }
 
-const GRID_CLASS = "grid grid-cols-[32px_80px_minmax(250px,2fr)_120px_200px_180px_180px] gap-6 items-center px-8"
+const GRID_CLASS = "grid grid-cols-[32px_80px_minmax(250px,2fr)_120px_200px_180px_180px] gap-6 items-center"
 
 export default function TransactionFeedClient({ initialData }: Props) {
   const [activeTab, setActiveTab] = useState('Recent')
@@ -84,10 +84,10 @@ export default function TransactionFeedClient({ initialData }: Props) {
   }
 
   return (
-    <div className="space-y-0 bg-[#161821] -mx-8 -mt-8 min-h-screen font-sans selection:bg-white/10">
+    <div className="space-y-0 bg-[#161821] min-h-screen font-sans selection:bg-white/10">
       
       {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
-      <div className="px-8 pt-8 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
+      <div className="pt-2 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
         <div className="flex items-center justify-between">
             <h1 className="text-[28px] font-[400] text-[#DDE1E5]">
                Master Ledger Feed
@@ -134,9 +134,9 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 2. ANALYTICAL VISUALIZER BLOCK ────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] sticky top-[152px] z-30 bg-[#161821]">
+      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] sticky top-[120px] z-30 bg-[#161821]">
          {/* Net Summary Column */}
-         <div className="p-10 border-r border-white/[0.05] space-y-6">
+         <div className="py-10 border-r border-white/[0.05] space-y-6">
             <div className="space-y-1">
                <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Net change this month</p>
                <p className="text-[24px] text-white font-[400]">
@@ -160,7 +160,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
          </div>
 
          {/* Trend Line Visualizer (Placeholder) */}
-         <div className="p-10 border-r border-white/[0.05] flex flex-col justify-between">
+         <div className="py-10 border-r border-white/[0.05] flex flex-col justify-between">
             <div className="flex items-center justify-between">
                <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Cashflow Velocity</p>
                <TrendingUp size={14} className="text-[#6CC08F]" />
@@ -174,7 +174,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
          </div>
 
          {/* Category Bar Visualizer (Placeholder) */}
-         <div className="p-10 flex flex-col justify-between">
+         <div className="py-10 flex flex-col justify-between">
             <div className="flex items-center justify-between">
                <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">To/From Breakdown</p>
                <BarChart3 size={14} className="text-[#9D9DA8]" />
@@ -192,7 +192,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 3. FILTER TOOLBAR ────────────────────────────────────────────── */}
-      <div className="px-10 py-5 flex items-center justify-between bg-[#161821] border-b border-white/[0.05] sticky top-[388px] z-20">
+      <div className="py-5 flex items-center justify-between bg-[#161821] border-b border-white/[0.05] sticky top-[324px] z-20">
           <div className="flex items-center gap-3">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#2d2e39] border border-white/[0.08] rounded-full text-[13px] text-white">
                 My transactions <X size={12} className="text-[#9D9DA8] cursor-pointer hover:text-white" />
@@ -272,7 +272,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 4. DATA STRATUM (HYPER-DENSITY) ──────────────────────────────── */}
       <div className="space-y-0 relative">
          {/* THEAD (SURFACE LEVEL) */}
-         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-[457px] z-50")}>
+         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-[385px] z-50")}>
             <div className="flex justify-center">
               <div className="w-3.5 h-3.5 border border-white/20 rounded-[3px]" />
             </div>
@@ -351,7 +351,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 5. OPERATIONAL FOOTER ───────────────────────────────────────── */}
-      <div className="py-12 px-10 flex items-center justify-between border-t border-white/[0.05]">
+      <div className="py-12 flex items-center justify-between border-t border-white/[0.05]">
          <p className="text-[12px] text-[#9D9DA8] font-[400]">
             Displaying {filteredData.length} records in this view
          </p>

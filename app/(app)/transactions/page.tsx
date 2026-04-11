@@ -20,7 +20,7 @@ export default async function TransactionsPage() {
   }));
 
   return (
-    <div className="py-6 w-full px-6">
+    <div className="w-full">
       <TransactionFeedClient initialData={serializedLedger as any} />
     </div>
   );
