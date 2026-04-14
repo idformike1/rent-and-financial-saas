@@ -20,6 +20,11 @@ export enum PaymentMode {
   CREDIT_CARD = 'CREDIT_CARD'
 }
 
+export enum EntryStatus {
+  ACTIVE = 'ACTIVE',
+  VOIDED = 'VOIDED'
+}
+
 export enum AccountCategory {
   ASSET = 'ASSET',
   LIABILITY = 'LIABILITY',

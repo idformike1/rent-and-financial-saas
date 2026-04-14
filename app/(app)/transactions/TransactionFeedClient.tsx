@@ -7,8 +7,7 @@ import { cn } from '@/lib/utils'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import {
   X, Filter, RotateCcw, LayoutGrid, LayoutList, Download,
-  TrendingUp, BarChart3, ChevronDown, Search, ArrowUpRight,
-  Check
+  TrendingUp, BarChart3, ChevronDown, Search, ArrowUpRight
 } from 'lucide-react'
 
 import TransactionFilterBar from './TransactionFilterBar'
@@ -16,7 +15,6 @@ import { DateRange } from 'react-day-picker'
 import { startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 
 import TransactionDetailSheet from './TransactionDetailSheet'
-import BulkActionsBar from './BulkActionsBar'
 import { pdf } from '@react-pdf/renderer'
 import { ReportPDF } from '@/components/ReportPDF'
 
@@ -41,7 +39,7 @@ interface Props {
   tenants: { id: string, name: string }[]
 }
 
-const TABS = ['Recent', 'Operating expenses', 'My transactions']
+const TABS = ['All Activity', 'Revenue Hub', 'Expense Registry', 'Treasury Control']
 const GRID_CLASS = "grid grid-cols-[100px_1fr_120px_180px_120px_150px] gap-4 items-center px-4"
 
 export default function TransactionFeedClient({ initialData, properties, tenants }: Props) {
@@ -52,19 +50,19 @@ export default function TransactionFeedClient({ initialData, properties, tenants
   // 1. URL-Synchronized State
   const q = searchParams.get('q') || ''
   const cat = searchParams.get('cat') || 'ALL'
-  const start = searchParams.get('start') || ''
-  const end = searchParams.get('end') || ''
-  const tab = searchParams.get('tab') || 'Recent'
+  const start = searchParams.get('from') || ''
+  const end = searchParams.get('to') || ''
+  const tab = searchParams.get('tab') || 'All Activity'
   const pid = searchParams.get('pid') || ''
   const tid = searchParams.get('tid') || ''
   const min = searchParams.get('min') || ''
   const max = searchParams.get('max') || ''
-  const txid = searchParams.get('txid') || ''
+  const [txid, setTxid] = useState(searchParams.get('txid') || '')
 
   // Local UI state
   const [searchInput, setSearchInput] = useState(q)
-  const [activeTab, setActiveTab] = useState(tab)
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [minInput, setMinInput] = useState(min)
+  const [maxInput, setMaxInput] = useState(max)
 
   // Forensic Drill-down State
   const selectedTransaction = useMemo(() => {
@@ -77,9 +75,8 @@ export default function TransactionFeedClient({ initialData, properties, tenants
     to: end ? new Date(end) : undefined
   }), [start, end])
 
-  const tabs = ['Recent', 'My transactions', 'Operating expenses']
 
-  // 2. Navigation Helper
+  // 2. Navigation Helpers
   const createQueryString = useCallback(
     (params: Record<string, string | null>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -95,6 +92,17 @@ export default function TransactionFeedClient({ initialData, properties, tenants
     [searchParams]
   )
 
+  const onTabChange = (newTab: string) => {
+    const updates: Record<string, string | null> = { tab: newTab }
+    
+    // Domain Synchronization (Preset Logic)
+    if (newTab === 'Revenue Hub') updates.cat = 'INCOME'
+    if (newTab === 'Expense Registry') updates.cat = 'EXPENSE'
+    if (newTab === 'All Activity') updates.cat = 'ALL'
+
+    router.replace(pathname + '?' + createQueryString(updates), { scroll: false })
+  }
+
   // 3. Debounced Search & URL Sync
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -106,31 +114,36 @@ export default function TransactionFeedClient({ initialData, properties, tenants
   }, [searchInput, q, pathname, router, createQueryString])
 
   useEffect(() => {
-    if (activeTab !== tab) {
-      router.replace(pathname + '?' + createQueryString({ tab: activeTab }), { scroll: false })
-    }
-  }, [activeTab, tab, pathname, router, createQueryString])
+    setMinInput(min)
+    setMaxInput(max)
+    setSearchInput(q)
+    setTxid(searchParams.get('txid') || '')
+  }, [min, max, q, searchParams])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (minInput !== min || maxInput !== max) {
+        router.replace(pathname + '?' + createQueryString({ min: minInput, max: maxInput }), { scroll: false })
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [minInput, maxInput, min, max, pathname, router, createQueryString])
 
   const setDateRange = (range: DateRange | undefined) => {
     router.replace(pathname + '?' + createQueryString({
-      start: range?.from ? range.from.toISOString() : null,
-      end: range?.to ? range.to.toISOString() : null
+      from: range?.from ? range.from.toISOString() : null,
+      to: range?.to ? range.to.toISOString() : null
     }), { scroll: false })
   }
 
-  const toggleSelection = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    const newSelected = new Set(selectedIds)
-    if (newSelected.has(id)) newSelected.delete(id)
-    else newSelected.add(id)
-    setSelectedIds(newSelected)
-  }
 
   const openTransaction = (id: string) => {
+    setTxid(id)
     router.replace(pathname + '?' + createQueryString({ txid: id }), { scroll: false })
   }
 
   const closeTransaction = () => {
+    setTxid('')
     router.replace(pathname + '?' + createQueryString({ txid: null }), { scroll: false })
   }
 
@@ -238,10 +251,12 @@ export default function TransactionFeedClient({ initialData, properties, tenants
       const matchesMin = min ? amt >= Number(min) : true;
       const matchesMax = max ? amt <= Number(max) : true;
 
-      const matchesTab = tab === 'Recent' ? true :
-        tab === 'Operating expenses' ? Number(tx.amount) < 0 :
-          tab === 'My transactions' ? true :
-            true;
+      const matchesTab = 
+        tab === 'All Activity' ? true :
+        tab === 'Revenue Hub' ? (tx.account as any)?.category === 'INCOME' :
+        tab === 'Expense Registry' ? (tx.account as any)?.category === 'EXPENSE' :
+        tab === 'Treasury Control' ? (tx.paymentMode === 'BANK' || (tx.account as any)?.category === 'ASSET') :
+        true;
 
       // Property & Tenant Filtering (Workstation Isolation)
       const matchesProperty = pid ? (tx as any).propertyId === pid : true;
@@ -272,48 +287,45 @@ export default function TransactionFeedClient({ initialData, properties, tenants
     return { whole: parts[0], cents: parts[1] }
   }
 
-  const trendPoints = useMemo(() => {
-    if (filteredData.length === 0) return ""
-    const sorted = [...filteredData].sort((a, b) => new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime())
-    const minDate = new Date(sorted[0].transactionDate).getTime()
-    const maxDate = new Date(sorted[sorted.length - 1].transactionDate).getTime()
-    const dr = maxDate - minDate || 1
-    const amounts = sorted.map(tx => Number(tx.amount))
-    const minAmt = Math.min(...amounts, 0)
-    const maxAmt = Math.max(...amounts, 1)
-    const ar = maxAmt - minAmt || 1
-
-    return sorted.map((tx, i) => {
-      const x = ((new Date(tx.transactionDate).getTime() - minDate) / dr) * 100
-      const y = 60 - ((Number(tx.amount) - minAmt) / ar) * 50
-      return `${i === 0 ? 'M' : 'L'} ${x}% ${y}`
-    }).join(' ')
-  }, [filteredData])
-
-  const topCategories = useMemo(() => {
+  const topEntities = useMemo(() => {
     const counts: Record<string, number> = {}
     filteredData.forEach(tx => {
-      const name = tx.expenseCategory?.name || 'Inflow'
+      const name = tx.payee || tx.tenant?.name || 'Unknown Entity'
       counts[name] = (counts[name] || 0) + Math.abs(Number(tx.amount))
     })
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
-      .map(([name, value]) => ({ name, value }))
+      .map(([name, volume]) => ({ name, volume }))
+  }, [filteredData])
+
+  const { accountActivity, totalActivityVolume } = useMemo(() => {
+    const counts: Record<string, number> = {}
+    let total = 0
+    filteredData.forEach(tx => {
+      const name = tx.account.name
+      const vol = Math.abs(Number(tx.amount))
+      counts[name] = (counts[name] || 0) + vol
+      total += vol
+    })
+    const activity = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, volume]) => ({ name, volume }))
+    return { accountActivity: activity, totalActivityVolume: total }
   }, [filteredData])
 
   return (
-    <div className="min-h-screen font-sans selection:bg-white/10 space-y-[10px] -mt-8 pt-8 relative px-1">
+    <div className="min-h-screen font-sans selection:bg-white/10 space-y-[10px] relative">
       {/* Frozen Command Shell */}
-      <div className="sticky top-0 z-50 bg-[#161821] pt-8 pb-[10px] space-y-[10px]">
-        <h1 className="text-[24px] font-normal text-[#F4F5F9] tracking-tight font-arcadia">
+      <div className="sticky top-0 z-50 bg-[#161821] -mx-8 px-8 pt-0 pb-[10px] space-y-[10px]">
+        <h1 className="text-display font-display text-[#F4F5F9] tracking-tight">
           Transactions
         </h1>
         <TransactionFilterBar
           q={searchInput}
           onSearchChange={setSearchInput}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
+          activeTab={tab}
+          onTabChange={onTabChange}
           tabs={TABS} 
           properties={properties}
           tenants={tenants}
@@ -331,9 +343,12 @@ export default function TransactionFeedClient({ initialData, properties, tenants
               to: format(range.to, 'yyyy-MM-dd')
             }), { scroll: false })
           }}
-          minAmount={min}
-          maxAmount={max}
-          onAmountChange={(minV, maxV) => router.replace(pathname + '?' + createQueryString({ min: minV, max: maxV }), { scroll: false })}
+          minAmount={minInput}
+          maxAmount={maxInput}
+          onAmountChange={(minV, maxV) => {
+            setMinInput(minV)
+            setMaxInput(maxV)
+          }}
           onReset={() => {
             setSearchInput('')
             const cleaned = new URLSearchParams()
@@ -366,28 +381,46 @@ export default function TransactionFeedClient({ initialData, properties, tenants
         </div>
 
         <div className="py-6 border-r border-white/[0.05] flex flex-col justify-between px-8">
-          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest">Velocity</p>
-          <div className="flex-1 w-full flex items-center justify-center relative mt-4 h-16">
-            <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
-              <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }} d={trendPoints} stroke="white" strokeWidth="1.5" fill="none" />
-            </svg>
+          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest font-medium">Top Counterparties</p>
+          <div className="flex-1 mt-4 space-y-0">
+            {topEntities.map((entity, i) => (
+              <div key={entity.name} className={cn(
+                "grid grid-cols-[1fr_auto] items-center py-2 h-8",
+                i !== topEntities.length - 1 && "border-b border-white/5"
+              )}>
+                <span className="text-slate-200 text-sm font-medium truncate pr-4">{entity.name}</span>
+                <span className="text-slate-400 font-mono text-xs">${entity.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+              </div>
+            ))}
+            {topEntities.length === 0 && (
+              <div className="h-full flex items-center text-[11px] text-white/20 uppercase tracking-widest">No Activity Recorded</div>
+            )}
           </div>
         </div>
 
         <div className="py-6 flex flex-col justify-between px-8">
-          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest">Breakdown</p>
-          <div className="space-y-3 pt-4">
-            {topCategories.map(c => (
-              <div key={c.name} className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-[10px] uppercase text-[#9D9DA8]">
-                  <span>{c.name}</span>
-                  <span>{((c.value / (summary.moneyOut || 1)) * 100).toFixed(0)}%</span>
+          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest font-medium">Account Exposure</p>
+          <div className="space-y-4 mt-4 h-full flex flex-col justify-center">
+            {accountActivity.slice(0, 3).map(account => (
+              <div key={account.name} className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] text-slate-300 font-medium truncate pr-2 uppercase tracking-wide">{account.name}</span>
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    ${account.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </span>
                 </div>
-                <div className="h-1 rounded-full overflow-hidden">
-                  <motion.div animate={{ width: `${(c.value / summary.moneyOut) * 100}%` }} className="h-full bg-white/40" />
+                <div className="h-1.5 rounded-full w-full bg-slate-800 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(account.volume / (totalActivityVolume || 1)) * 100}%` }}
+                    className="h-full bg-slate-300"
+                  />
                 </div>
               </div>
             ))}
+            {accountActivity.length === 0 && (
+              <div className="flex-1 flex items-center text-[11px] text-white/20 uppercase tracking-widest">Awaiting Ledger Input</div>
+            )}
           </div>
         </div>
       </div>
@@ -395,7 +428,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       {/* Data Strata */}
       <div className="space-y-0 relative">
-        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-[#9D9DA8] uppercase tracking-[0.1em] border-b border-white/[0.05] sticky top-[140px] z-40 bg-[#161821]")}>
+        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-[#9D9DA8] uppercase tracking-[0.1em] border-b border-white/[0.05] sticky top-[108px] z-40 bg-[#161821]")}>
           <div>Date</div>
           <div>Entity & Description</div>
           <div className="text-right">Amount</div>
@@ -415,22 +448,30 @@ export default function TransactionFeedClient({ initialData, properties, tenants
                 onClick={() => openTransaction(tx.id)}
                 className={cn(
                   GRID_CLASS, 
-                  "h-[48px] border-b border-white/[0.025] group cursor-pointer transition-all"
+                  "min-h-[48px] py-3 border-b border-white/[0.025] group cursor-pointer transition-all duration-500 hover:bg-white/[0.02]",
+                  tx.status === 'VOIDED' && "opacity-40 grayscale"
                 )}
               >
                 <div className="text-[14px] text-[#C3C3CC]">{format(new Date(tx.transactionDate), 'MMM d')}</div>
-                <div className="flex items-center gap-4 truncate">
+                <div className="flex items-center gap-4">
                    <div className="w-7 h-7 rounded-full bg-white/[0.05] flex items-center justify-center text-[10px] text-white/40 shrink-0">
                      {(tx.payee || tx.description || 'U').substring(0, 1).toUpperCase()}
                    </div>
-                   <span className="text-[15px] text-[#DDDDE5] truncate">{tx.description || tx.payee}</span>
+                   <span className="text-[15px] text-[#DDDDE5] leading-relaxed">{tx.description || tx.payee}</span>
                 </div>
                 <div className={cn("text-[15px] text-right font-finance", isNeg ? "text-white" : "text-[#6CC08F]")}>
                   {isNeg ? '−' : ''}${whole}<span className="text-[11px] opacity-40 ml-0.5">{cents}</span>
                 </div>
-                <div className="pl-6 text-[14px] text-[#F4F5F9] truncate">{tx.account.name}</div>
+                <div className="text-[14px] text-[#F4F5F9]">{tx.account.name}</div>
                 <div className="text-[14px] text-[#F4F5F9]">{tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash'}</div>
-                <div className="text-[14px] text-[#9D9DA8] truncate">{tx.expenseCategory?.name || 'Inflow'}</div>
+                <div className="text-[14px] text-[#9D9DA8] flex items-center gap-2">
+                  {tx.expenseCategory?.name || 'Inflow'}
+                  {tx.status === 'VOIDED' && (
+                    <span className="text-[10px] font-mono border border-white/20 px-1 rounded-sm text-white/40 uppercase tracking-tighter">
+                      VOID
+                    </span>
+                  )}
+                </div>
               </motion.div>
             )
           })}

@@ -10,7 +10,8 @@ import {
   processPaymentService,
   reconcileUtilitiesService,
   logExpenseService,
-  waiveChargeService
+  waiveChargeService,
+  voidLedgerEntryService
 } from '@/src/services/mutations/finance.services'
 import { PaymentSubmissionPayload, SystemResponse } from '@/types'
 
@@ -250,6 +251,28 @@ export async function reconcileUtilities(propertyId: string, startDate: Date, en
     } catch (e: any) {
       console.error('[FINANCE_RECONCILE_FATAL]', e);
       return { success: false, message: "ERR_RECONCILE_SERVICE_FAILURE" };
+    }
+  });
+}
+
+export async function voidTransaction(transactionId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      await voidLedgerEntryService(
+        transactionId,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+
+      revalidatePath('/transactions');
+      revalidatePath('/dashboard');
+
+      return { success: true, message: "Forensic Decommissioning Successful: Entry status set to VOIDED." };
+    } catch (e: any) {
+      console.error('[FINANCE_VOID_FATAL]', e);
+      return { success: false, message: e.message || "ERR_VOID_SERVICE_FAILURE" };
     }
   });
 }
