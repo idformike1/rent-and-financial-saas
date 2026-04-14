@@ -392,3 +392,51 @@ export async function reconcileUtilitiesService(
     recoveryRate: rate.toNumber()
   };
 }
+
+/* ── 7. FORENSIC DECOMMISSIONING ─────────────────────────────────────────── */
+
+/**
+ * VOID LEDGER ENTRY SERVICE
+ * 
+ * Non-destructively decommissions a fiscal record.
+ * Mandate: Atomic Status Update + Forensic Audit Signature.
+ */
+export async function voidLedgerEntryService(
+  entryId: string,
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    // 1. Fetch record for forensic snapshot
+    const entry = await tx.ledgerEntry.findUnique({
+      where: { id: entryId, organizationId: context.organizationId }
+    });
+
+    if (!entry) throw new Error("ERR_FISCAL_ABSENT: Target decommissioning record not found.");
+    if (entry.status === 'VOIDED') throw new Error("ERR_STATE_CONFLICT: Record already decommissioned.");
+
+    // 2. Execute Voiding
+    const updated = await tx.ledgerEntry.update({
+      where: { id: entryId },
+      data: { status: 'VOIDED' }
+    });
+
+    // 3. Dispatch Nuclear Purge Audit Signature
+    await recordAuditLog({
+      action: 'NUCLEAR_PURGE',
+      entityType: 'LEDGER_ENTRY',
+      entityId: entryId,
+      metadata: { 
+        prevStatus: 'ACTIVE', 
+        amount: entry.amount.toNumber(),
+        description: entry.description,
+        payee: entry.payee,
+        forensicTimestamp: new Date().toISOString()
+      },
+      tx: tx as any
+    });
+
+    return updated;
+  });
+}

@@ -50,7 +50,7 @@ interface FilterBarProps {
   onExport: (format: 'csv' | 'pdf' | 'excel') => void
 }
 
-type TabPanel = 'nature' | 'properties' | 'tenants' | 'taxonomy'
+type TabPanel = 'properties' | 'tenants' | 'taxonomy'
 
 export default function TransactionFilterBar({
   q, onSearchChange,
@@ -61,14 +61,15 @@ export default function TransactionFilterBar({
   cat = 'ALL', onCategoryChange,
   onReset, onExport
 }: FilterBarProps) {
-  const [activeTabPanel, setActiveTabPanel] = useState<TabPanel>('nature')
+  const [activeTabPanel, setActiveTabPanel] = useState<TabPanel>('properties')
+  const [isTabPopoverOpen, setIsTabPopoverOpen] = useState(false)
 
   return (
     <div className="w-full h-14 flex items-center px-0">
       <div className="flex items-center gap-x-4 h-full w-full">
 
         {/* PILLAR 1: DATA VIEWS (Dropdown) */}
-        <Popover>
+        <Popover open={isTabPopoverOpen} onOpenChange={setIsTabPopoverOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" className="h-8 gap-x-2 text-sm font-normal text-white/60 hover:text-white px-2">
               <Layers size={14} className="opacity-70" />
@@ -80,7 +81,10 @@ export default function TransactionFilterBar({
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => onTabChange(tab)}
+                onClick={() => {
+                  onTabChange(tab)
+                  setIsTabPopoverOpen(false)
+                }}
                 className={cn(
                   "w-full text-left px-3 py-2 text-sm transition-colors rounded-md",
                   activeTab === tab 
@@ -121,16 +125,6 @@ export default function TransactionFilterBar({
               {/* Sidebar Tabs */}
               <div className="w-[180px] border-r border-white/5 bg-white/[0.01] flex flex-col p-2 gap-1">
                 <button 
-                  onClick={() => setActiveTabPanel('nature')}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-all",
-                    activeTabPanel === 'nature' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
-                  )}
-                >
-                  <DollarSign size={14} />
-                  Nature
-                </button>
-                <button 
                   onClick={() => setActiveTabPanel('properties')}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-all",
@@ -165,43 +159,6 @@ export default function TransactionFilterBar({
               {/* Dynamic Options Content */}
               <div className="flex-1 p-6 overflow-y-auto">
                 <AnimatePresence mode="wait">
-                  {activeTabPanel === 'nature' && (
-                    <motion.div 
-                      key="nature" 
-                      initial={{ opacity: 0, y: 4 }} 
-                      animate={{ opacity: 1, y: 0 }}
-                      className="space-y-6"
-                    >
-                      <div className="space-y-3">
-                         <label className="text-[11px] uppercase tracking-widest text-white/30 font-semibold">Fiscal Nature</label>
-                         <div className="grid grid-cols-1 gap-2">
-                           {[
-                             { id: 'ALL', label: 'All Flows', icon: Database },
-                             { id: 'INCOME', label: 'Revenue (Inflow)', icon: ArrowUpRight, color: 'text-[#6CC08F]' },
-                             { id: 'EXPENSE', label: 'Expenses (Outflow)', icon: ArrowDownLeft, color: 'text-white/70' }
-                           ].map((item) => (
-                             <button
-                               key={item.id}
-                               onClick={() => onCategoryChange(item.id)}
-                               className={cn(
-                                 "flex items-center justify-between p-3 rounded-lg border transition-all group",
-                                 cat === item.id 
-                                   ? "border-primary/30 bg-primary/5 text-white" 
-                                   : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
-                               )}
-                             >
-                               <div className="flex items-center gap-3">
-                                 <item.icon size={14} className={cn(cat === item.id ? "text-primary" : item.color)} />
-                                 <span className="text-sm font-medium">{item.label}</span>
-                               </div>
-                               {cat === item.id && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                             </button>
-                           ))}
-                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-
                   {activeTabPanel === 'properties' && (
                     <motion.div 
                       key="properties" 
@@ -360,6 +317,26 @@ export default function TransactionFilterBar({
 
         {/* GLOBAL ACTIONS (Aligned Right) */}
         <div className="ml-auto flex-1 flex items-center gap-x-4 max-w-[600px]">
+            <Button variant="ghost" size="sm" onClick={onReset} className="text-white/40 hover:text-white h-8 text-sm whitespace-nowrap">
+              Reset Filters
+            </Button>
+
+            <div className="flex-1 flex items-center h-8 border border-white/5 rounded-full px-4 group focus-within:border-white/10 transition-all">
+              <Search size={14} className="text-white/20 group-focus-within:text-white/60 transition-colors mr-3" />
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder="Deep scan keywords..."
+                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/10 w-full font-normal tracking-tight"
+              />
+              {q && (
+                <button onClick={() => onSearchChange('')} className="text-white/20 hover:text-white transition-colors">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button 
@@ -396,26 +373,6 @@ export default function TransactionFilterBar({
                 </button>
               </PopoverContent>
             </Popover>
-
-            <div className="flex-1 flex items-center h-8 border border-white/5 rounded-full px-4 group focus-within:border-white/10 transition-all">
-              <Search size={14} className="text-white/20 group-focus-within:text-white/60 transition-colors mr-3" />
-              <input
-                type="text"
-                value={q}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Deep scan keywords..."
-                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/10 w-full font-normal tracking-tight"
-              />
-              {q && (
-                <button onClick={() => onSearchChange('')} className="text-white/20 hover:text-white transition-colors">
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            <Button variant="ghost" size="sm" onClick={onReset} className="text-white/40 hover:text-white h-8 text-sm whitespace-nowrap">
-              Reset Filters
-            </Button>
         </div>
 
       </div>

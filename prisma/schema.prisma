@@ -155,6 +155,11 @@ enum PaymentMode {
   BANK
 }
 
+enum EntryStatus {
+  ACTIVE
+  VOIDED
+}
+
 model LedgerEntry {
   id                String           @id @default(uuid())
   organizationId    String
@@ -166,6 +171,7 @@ model LedgerEntry {
   description       String
   paymentMode       PaymentMode      @default(CASH)
   referenceText     String?
+  status            EntryStatus      @default(ACTIVE)
   
   // Unified Wealth Ledger Upgrades
   expenseCategoryId String?

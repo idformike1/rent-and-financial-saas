@@ -4,7 +4,7 @@ import * as React from 'react';
 import { 
   format, startOfYear, subMonths, startOfMonth, 
   endOfMonth, startOfQuarter, endOfQuarter, 
-  eachMonthOfInterval, startOfToday 
+  eachMonthOfInterval, startOfToday, subDays 
 } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronDown, LayoutGrid, Calendar as CalendarDays } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
@@ -49,6 +49,12 @@ export default function InsightsDatePicker({
     const today = startOfToday();
     if (preset === 'all') {
       applyRange(new Date(2024, 0, 1), today, true);
+    } else if (preset === 'today') {
+      applyRange(today, today, true);
+    } else if (preset === '7-days') {
+      applyRange(subDays(today, 6), today, true);
+    } else if (preset === '30-days') {
+      applyRange(subDays(today, 29), today, true);
     } else if (preset === 'ytd') {
       applyRange(startOfYear(today), today, true);
     } else if (preset === 'last-month') {
@@ -64,7 +70,7 @@ export default function InsightsDatePicker({
           <Button
             variant="ghost"
             className={cn(
-              "h-8 px-2 gap-2 text-sm font-normal text-white/60 hover:text-white transition-all shadow-none",
+              "h-8 px-2.5 gap-2 text-sm font-normal text-white/60 hover:text-white transition-all shadow-none",
               !date && "text-white/20"
             )}
           >
@@ -73,10 +79,11 @@ export default function InsightsDatePicker({
               {date?.from ? (
                 date.to ? (
                   <>
-                    {format(date.from, "MMM dd")} – {format(date.to, "MMM dd")}
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
                   </>
                 ) : (
-                  format(date.from, "MMM dd, y")
+                  format(date.from, "LLL dd, y")
                 )
               ) : (
                 "Select Period"
@@ -86,75 +93,61 @@ export default function InsightsDatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 flex flex-col bg-[#161821]/95 border-white/10 backdrop-blur-xl shadow-2xl rounded-xl overflow-hidden" 
+          className="w-auto p-0 flex flex-col bg-[#161821] border-white/10 backdrop-blur-xl shadow-2xl rounded-xl overflow-hidden" 
           align="start"
           sideOffset={12}
         >
           {/* Top Header Area */}
-          <div className="flex items-center justify-between p-3 border-b border-white/5 bg-white/[0.01]">
-             <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest ml-3">Fiscal Period Selector</p>
-             <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest mr-2">Workstation V.3.3</p>
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-white/[0.01]">
+             <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Fiscal Period Selector</p>
+             <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Workstation V.3.3</p>
           </div>
 
           <div className="flex flex-row">
             {/* Left Column: Presets */}
-            <div className="w-[160px] border-r border-white/5 p-2 flex flex-col gap-1 bg-white/[0.005]">
+            <div className="w-[140px] border-r border-white/5 p-2 flex flex-col gap-1 bg-white/[0.005] shrink-0">
               <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold px-3 py-2">Quick Pick</p>
-              {['all', 'ytd', 'last-month'].map((p) => (
+              {['all', 'today', '7-days', '30-days', 'ytd', 'last-month'].map((p) => (
                 <button
                   key={p}
                   onClick={() => handlePresetClick(p)}
-                  className="text-left px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all font-normal"
+                  className="text-left px-3 py-2 text-[12px] text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all font-normal"
                 >
-                  {p === 'all' ? 'Full Ledger' : p === 'ytd' ? 'Year to Date' : 'Last Month'}
+                  {p === 'all' ? 'Full Ledger' : 
+                   p === 'today' ? 'Today' : 
+                   p === '7-days' ? 'Last 7 Days' : 
+                   p === '30-days' ? 'Last 30 Days' : 
+                   p === 'ytd' ? 'Year to Date' : 
+                   'Last Month'}
                 </button>
               ))}
             </div>
 
-            {/* Right Column: Months & Quarters */}
-            <div className="p-4 min-w-[340px]">
-              <div className="space-y-6 py-2">
-                <div className="space-y-3">
-                  <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">2026 Quarters</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {quarters.map((q) => (
-                      <Button 
-                        key={q.label}
-                        variant="ghost" 
-                        onClick={() => applyRange(q.start, q.end, true)}
-                        className={cn(
-                          "h-10 justify-start px-4 text-sm font-normal border border-white/5 bg-white/[0.01] hover:bg-white/[0.05]",
-                          date?.from && format(date.from, 'M') === format(q.start, 'M') && "bg-white/10 text-white"
-                        )}
-                      >
-                        {q.label} ({format(q.start, 'MMM')} - {format(q.end, 'MMM')})
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">2026 Months</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, idx) => {
-                      const monthDate = new Date(new Date().getFullYear(), idx, 1);
-                      return (
-                        <Button 
-                          key={m}
-                          variant="ghost" 
-                          onClick={() => applyRange(startOfMonth(monthDate), endOfMonth(monthDate), true)}
-                          className={cn(
-                            "h-10 text-sm font-normal border border-white/5 bg-white/[0.01] hover:bg-white/[0.05]",
-                            date?.from && isSameMonth(monthDate, date.from) && "bg-white/10 text-white"
-                          )}
-                        >
-                          {m}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+            {/* Right Column: Calendar (Custom Range) */}
+            <div className="p-3 bg-white/[0.002] flex items-center justify-center">
+               <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={(newRange) => {
+                  if (newRange?.from && newRange?.to) {
+                    applyRange(newRange.from, newRange.to, true);
+                  } else if (newRange?.from) {
+                    setDate(newRange);
+                  } else {
+                    setDate(undefined);
+                  }
+                }}
+                numberOfMonths={2}
+                className="bg-transparent text-white"
+                classNames={{
+                  nav_button: "h-7 w-7 bg-white/5 hover:bg-white/10 text-white rounded-md transition-all",
+                  caption_label: "text-sm font-semibold tracking-tight text-white",
+                  head_cell: "text-white/20 font-bold text-[11px] uppercase p-2 w-9",
+                  day: "h-9 w-9 text-sm font-medium hover:bg-white/5 rounded-md transition-all transition-colors",
+                }}
+              />
             </div>
           </div>
         </PopoverContent>
