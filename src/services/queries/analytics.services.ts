@@ -428,22 +428,88 @@ export async function getPropertyLedgerEntriesService(
  * Materializes the Master Ledger (Transaction Archive) for search/filter.
  */
 export async function getMasterLedgerService(
-  query: string | undefined,
-  context: { operatorId: string, organizationId: string }
+  context: { operatorId: string, organizationId: string },
+  filters?: {
+    query?: string;
+    startDate?: Date;
+    endDate?: Date;
+    category?: string;
+    propertyId?: string;
+    tenantId?: string;
+    minAmount?: number;
+    maxAmount?: number;
+    skip?: number;
+    take?: number;
+  }
 ) {
   const db = getSovereignClient(context.operatorId);
+  const { query, startDate, endDate, category, propertyId, tenantId, minAmount, maxAmount, skip = 0, take = 100 } = filters || {};
+
+  const where: Prisma.LedgerEntryWhereInput = {
+    organizationId: context.organizationId,
+  };
+
+  if (query) {
+    where.OR = [
+      { description: { contains: query, mode: 'insensitive' } },
+      { account: { name: { contains: query, mode: 'insensitive' } } },
+      { expenseCategory: { name: { contains: query, mode: 'insensitive' } } },
+      { payee: { contains: query, mode: 'insensitive' } }
+    ];
+  }
+
+  if (startDate || endDate) {
+    where.transactionDate = {
+      gte: startDate,
+      lte: endDate,
+    };
+  }
+
+  if (category && category !== 'ALL') {
+    if (category === 'INCOME') {
+      where.amount = { gte: 0 };
+    } else if (category === 'EXPENSE') {
+      where.amount = { lt: 0 };
+    }
+  }
+
+  if (propertyId && propertyId !== 'ALL') {
+    where.propertyId = propertyId;
+  }
+
+  if (tenantId && tenantId !== 'ALL') {
+    where.tenantId = tenantId;
+  }
+  
+  if (minAmount !== undefined || maxAmount !== undefined) {
+    const amtFilter: any = {};
+    if (minAmount !== undefined) amtFilter.gte = minAmount;
+    if (maxAmount !== undefined) amtFilter.lte = maxAmount;
+    
+    // We filter by absolute amount if possible, but Prisma doesn't support .abs() in where directly easily.
+    // However, for income/expense we can handle it.
+    // Given the Axiom choice of absolute matching:
+    where.AND = [
+      ...(where.AND as any[] || []),
+      {
+        OR: [
+          { amount: { ...amtFilter } },
+          { amount: { ...Object.fromEntries(Object.entries(amtFilter).map(([k, v]) => [k, -(v as number)])) } }
+        ]
+      }
+    ];
+  }
 
   return await db.ledgerEntry.findMany({
-    where: {
-      organizationId: context.organizationId,
-      OR: [
-        { description: { contains: query || '', mode: 'insensitive' } },
-        { account: { name: { contains: query || '', mode: 'insensitive' } } },
-        { expenseCategory: { name: { contains: query || '', mode: 'insensitive' } } }
-      ]
+    where,
+    include: { 
+      account: true, 
+      expenseCategory: true,
+      property: { select: { name: true } },
+      tenant: { select: { name: true } }
     },
-    include: { account: true, expenseCategory: true },
     orderBy: { transactionDate: 'desc' },
-    take: 100
+    skip,
+    take
   });
 }

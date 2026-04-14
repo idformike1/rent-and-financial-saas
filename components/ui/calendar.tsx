@@ -38,18 +38,18 @@ function Calendar({
         head_cell: 'text-[#8A8B94] rounded-md w-9 font-normal text-[0.8rem]',
         row: 'flex w-full mt-2',
         cell: cn(
-          'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-[#5C61E6]/20 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md'
+          'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-white/10 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md'
         ),
         day: cn(
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100 text-white hover:bg-white/10 rounded-md transition-colors'
         ),
-        day_range_start: 'day-range-start bg-[#5C61E6] text-white rounded-l-md',
-        day_range_end: 'day-range-end bg-[#5C61E6] text-white rounded-r-md',
-        day_selected: 'bg-[#5C61E6] text-white hover:bg-[#5C61E6] hover:text-white focus:bg-[#5C61E6] focus:text-white',
-        day_today: 'bg-white/5 text-white',
+        day_range_start: 'day-range-start !bg-white !text-black !rounded-l-md !opacity-100 z-30 relative',
+        day_range_end: 'day-range-end !bg-white !text-black !rounded-r-md !opacity-100 z-30 relative',
+        day_selected: '!bg-white !text-black hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black !opacity-100',
+        day_today: 'bg-white/10 text-white',
         day_outside: 'text-[#8A8B94]/30 opacity-50',
         day_disabled: 'text-[#8A8B94]/30 opacity-50',
-        day_range_middle: 'aria-selected:bg-[#5C61E6]/20 aria-selected:text-white',
+        day_range_middle: '!bg-white/10 !text-white !rounded-none',
         day_hidden: 'invisible',
         ...classNames,
       }}

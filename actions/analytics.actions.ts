@@ -13,6 +13,7 @@ import {
   getPropertyLedgerEntriesService,
   getMasterLedgerService
 } from '@/src/services/queries/analytics.services'
+import { getLedgerFilterMetadataService } from '@/src/services/queries/metadata.services'
 
 /**
  * ANALYTICS DOMAIN ACTIONS (SOVEREIGN AUTHORITY)
@@ -192,16 +193,51 @@ export async function getPropertyLedgerEntries(propertyId: string, type: string)
 /**
  * MASTER LEDGER GATEKEEPER
  */
-export async function getMasterLedger(query?: string) {
+export async function getMasterLedger(filters?: {
+  query?: string;
+  startDate?: string;
+  endDate?: string;
+  category?: string;
+  propertyId?: string;
+  tenantId?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  skip?: number;
+  take?: number;
+}) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      return await getMasterLedgerService(query, {
+      return await getMasterLedgerService(
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        },
+        {
+          ...filters,
+          startDate: filters?.startDate ? new Date(filters.startDate) : undefined,
+          endDate: filters?.endDate ? new Date(filters.endDate) : undefined,
+        }
+      );
+    } catch (e: any) {
+      console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
+      return [];
+    }
+  });
+}
+
+/**
+ * LEDGER FILTER METADATA GATEKEEPER
+ */
+export async function getLedgerFilterMetadata() {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      return await getLedgerFilterMetadataService({
         operatorId: session.userId || "OP_SYSTEM_ADMIN",
         organizationId: session.organizationId
       });
     } catch (e: any) {
-      console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
-      return [];
+      console.error('[ANALYTICS_METADATA_FATAL]', e);
+      return { properties: [], tenants: [] };
     }
   });
 }
