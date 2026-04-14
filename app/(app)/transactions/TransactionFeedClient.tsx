@@ -5,10 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
-import { 
+import {
   X, Filter, RotateCcw, LayoutGrid, LayoutList, Download,
-  TrendingUp, BarChart3, ChevronDown, Search
+  TrendingUp, BarChart3, ChevronDown, Search, ArrowUpRight,
+  Check
 } from 'lucide-react'
+
+import TransactionFilterBar from './TransactionFilterBar'
+import { DateRange } from 'react-day-picker'
+import { startOfMonth, endOfMonth, isSameDay } from 'date-fns'
+
+import TransactionDetailSheet from './TransactionDetailSheet'
+import BulkActionsBar from './BulkActionsBar'
+import { pdf } from '@react-pdf/renderer'
+import { ReportPDF } from '@/components/ReportPDF'
 
 interface Transaction {
   id: string
@@ -18,15 +28,22 @@ interface Transaction {
   account: { name: string }
   expenseCategory?: { name: string }
   payee?: string
+  paymentMode?: 'CASH' | 'BANK'
+  referenceText?: string
+  property?: { name: string }
+  tenant?: { name: string }
+  receiptUrl?: string
 }
 
 interface Props {
   initialData: Transaction[]
+  properties: { id: string, name: string }[]
+  tenants: { id: string, name: string }[]
 }
 
-const GRID_CLASS = "grid grid-cols-[32px_80px_minmax(250px,2fr)_120px_200px_180px_180px] gap-6 items-center"
+const GRID_CLASS = "grid grid-cols-[100px_1fr_120px_180px_120px_150px] gap-4 items-center px-4"
 
-export default function TransactionFeedClient({ initialData }: Props) {
+export default function TransactionFeedClient({ initialData, properties, tenants }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -36,15 +53,32 @@ export default function TransactionFeedClient({ initialData }: Props) {
   const cat = searchParams.get('cat') || 'ALL'
   const start = searchParams.get('start') || ''
   const end = searchParams.get('end') || ''
+  const tab = searchParams.get('tab') || 'Recent'
+  const pid = searchParams.get('pid') || ''
+  const tid = searchParams.get('tid') || ''
+  const min = searchParams.get('min') || ''
+  const max = searchParams.get('max') || ''
+  const txid = searchParams.get('txid') || ''
 
-  // Local UI state for fluid typing (immediate feedback)
+  // Local UI state
   const [searchInput, setSearchInput] = useState(q)
-  const [activeTab, setActiveTab] = useState('Recent')
-  const [isExportOpen, setIsExportOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState(tab)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  // Forensic Drill-down State
+  const selectedTransaction = useMemo(() => {
+    return initialData.find(tx => tx.id === txid) || null
+  }, [txid, initialData])
+
+  // Date range state
+  const dateRange = useMemo<DateRange | undefined>(() => ({
+    from: start ? new Date(start) : undefined,
+    to: end ? new Date(end) : undefined
+  }), [start, end])
 
   const tabs = ['Recent', 'My transactions', 'Operating expenses']
 
-  // 2. Navigation Helper (Deep Linking)
+  // 2. Navigation Helper
   const createQueryString = useCallback(
     (params: Record<string, string | null>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -60,35 +94,161 @@ export default function TransactionFeedClient({ initialData }: Props) {
     [searchParams]
   )
 
-  // 3. Debounced Search Synchronization
+  // 3. Debounced Search & URL Sync
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchInput !== q) {
-        router.push(pathname + '?' + createQueryString({ q: searchInput }), { scroll: false })
+        router.replace(pathname + '?' + createQueryString({ q: searchInput }), { scroll: false })
       }
     }, 300)
     return () => clearTimeout(timer)
   }, [searchInput, q, pathname, router, createQueryString])
 
+  useEffect(() => {
+    if (activeTab !== tab) {
+      router.replace(pathname + '?' + createQueryString({ tab: activeTab }), { scroll: false })
+    }
+  }, [activeTab, tab, pathname, router, createQueryString])
+
+  const setDateRange = (range: DateRange | undefined) => {
+    router.replace(pathname + '?' + createQueryString({
+      start: range?.from ? range.from.toISOString() : null,
+      end: range?.to ? range.to.toISOString() : null
+    }), { scroll: false })
+  }
+
+  const toggleSelection = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(id)) newSelected.delete(id)
+    else newSelected.add(id)
+    setSelectedIds(newSelected)
+  }
+
+  const openTransaction = (id: string) => {
+    router.replace(pathname + '?' + createQueryString({ txid: id }), { scroll: false })
+  }
+
+  const closeTransaction = () => {
+    router.replace(pathname + '?' + createQueryString({ txid: null }), { scroll: false })
+  }
+
+  const handleExport = async (formatType: 'csv' | 'pdf' | 'excel') => {
+    if (filteredData.length === 0) return
+
+    if (formatType === 'csv') {
+      const headers = ["Date", "Description", "Amount", "Account", "Method", "Category"].join(",")
+      const rows = filteredData.map(tx => {
+        return [
+          format(new Date(tx.transactionDate), 'yyyy-MM-dd'),
+          `"${(tx.description || tx.payee || '').replace(/"/g, '""')}"`,
+          Number(tx.amount),
+          `"${tx.account.name}"`,
+          tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash',
+          `"${tx.expenseCategory?.name || 'Inflow'}"`
+        ].join(",")
+      }).join("\n")
+
+      const csvContent = `data:text/csv;charset=utf-8,${headers}\n${rows}`
+      const encodedUri = encodeURI(csvContent)
+      const link = document.createElement("a")
+      link.setAttribute("href", encodedUri)
+      link.setAttribute("download", `axiom_ledger_${format(new Date(), 'yyyyMMdd')}.csv`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } else if (formatType === 'pdf') {
+      try {
+        const pdfData = {
+          reportDate: format(new Date(), 'MMM dd, yyyy'),
+          netRealizableRevenue: summary.netChange,
+          totalCollectedIncome: summary.moneyIn,
+          totalOperationalExpense: Math.abs(summary.moneyOut)
+        }
+        
+        const pdfEntries = filteredData.map(tx => ({
+          id: tx.id,
+          date: new Date(tx.transactionDate),
+          transactionId: tx.id.substring(0, 12).toUpperCase(),
+          account: tx.account,
+          amount: tx.amount
+        }))
+
+        const doc = <ReportPDF data={pdfData} entries={pdfEntries} />
+        const blob = await pdf(doc).toBlob()
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `axiom_ledger_${format(new Date(), 'yyyyMMdd')}.pdf`
+        link.click()
+        URL.revokeObjectURL(url)
+      } catch (err) {
+        console.error("PDF_EXPORT_FAILURE:", err)
+        alert("PDF Materialization failure. Check logs.")
+      }
+    } else if (formatType === 'excel') {
+      const headers = ["Date", "Description", "Amount", "Account", "Method", "Category"]
+      const rows = filteredData.map(tx => [
+        format(new Date(tx.transactionDate), 'yyyy-MM-dd'),
+        tx.description || tx.payee || '',
+        Number(tx.amount),
+        tx.account.name,
+        tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash',
+        tx.expenseCategory?.name || 'Inflow'
+      ])
+
+      // XML/HTML Template for native Excel compatibility with clinical styling
+      let excelContent = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">'
+      excelContent += '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Forensic Ledger</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta charset="utf-8"></head>'
+      excelContent += '<body><table border="1">'
+      excelContent += '<tr style="background-color: #14161A; color: #FFFFFF; font-weight: bold;">' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>'
+      rows.forEach(row => {
+        excelContent += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>'
+      })
+      excelContent += '</table></body></html>'
+
+      const blob = new Blob([excelContent], { type: 'application/vnd.ms-excel' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `axiom_ledger_${format(new Date(), 'yyyyMMdd')}.xls`
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+  }
+
   const filteredData = useMemo(() => {
     return initialData.filter(tx => {
-      const matchesSearch = 
+      const matchesSearch =
         tx.description?.toLowerCase().includes(q.toLowerCase()) ||
         tx.account?.name?.toLowerCase().includes(q.toLowerCase()) ||
         tx.payee?.toLowerCase().includes(q.toLowerCase());
-      
+
       const date = new Date(tx.transactionDate);
       const matchesStart = start ? date >= new Date(start) : true;
       const matchesEnd = end ? date <= new Date(end) : true;
-      
-      const matchesCategory = cat === 'ALL' ? true : 
-                            cat === 'INCOME' ? Number(tx.amount) >= 0 :
-                            cat === 'EXPENSE' ? Number(tx.amount) < 0 :
-                            true;
 
-      return matchesSearch && matchesStart && matchesEnd && matchesCategory;
+      const matchesCategory = cat === 'ALL' ? true :
+        cat === 'INCOME' ? Number(tx.amount) >= 0 :
+          cat === 'EXPENSE' ? Number(tx.amount) < 0 :
+            true;
+
+      const amt = Math.abs(Number(tx.amount));
+      const matchesMin = min ? amt >= Number(min) : true;
+      const matchesMax = max ? amt <= Number(max) : true;
+
+      const matchesTab = tab === 'Recent' ? true :
+        tab === 'Operating expenses' ? Number(tx.amount) < 0 :
+          tab === 'My transactions' ? true :
+            true;
+
+      // Property & Tenant Filtering (Workstation Isolation)
+      const matchesProperty = pid ? (tx as any).propertyId === pid : true;
+      const matchesTenant = tid ? (tx as any).tenantId === tid : true;
+
+      return matchesSearch && matchesStart && matchesEnd && matchesCategory && matchesMin && matchesMax && matchesTab && matchesProperty && matchesTenant;
     });
-  }, [initialData, q, start, end, cat]);
+  }, [initialData, q, start, end, cat, min, max, tab, pid, tid]);
 
   // Fiscal calculations
   const summary = useMemo(() => {
@@ -99,301 +259,185 @@ export default function TransactionFeedClient({ initialData }: Props) {
       if (amt >= 0) moneyIn += amt
       else moneyOut += Math.abs(amt)
     })
-    return {
-      moneyIn,
-      moneyOut,
-      netChange: moneyIn - moneyOut
-    }
+    return { moneyIn, moneyOut, netChange: moneyIn - moneyOut }
   }, [filteredData])
 
   const formatAmountParts = (amount: number) => {
-    const formatted = amount.toLocaleString('en-US', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
+    const formatted = Math.abs(amount).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     })
     const parts = formatted.split('.')
-    return {
-      whole: parts[0],
-      cents: parts[1]
-    }
+    return { whole: parts[0], cents: parts[1] }
   }
 
+  const trendPoints = useMemo(() => {
+    if (filteredData.length === 0) return ""
+    const sorted = [...filteredData].sort((a, b) => new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime())
+    const minDate = new Date(sorted[0].transactionDate).getTime()
+    const maxDate = new Date(sorted[sorted.length - 1].transactionDate).getTime()
+    const dr = maxDate - minDate || 1
+    const amounts = sorted.map(tx => Number(tx.amount))
+    const minAmt = Math.min(...amounts, 0)
+    const maxAmt = Math.max(...amounts, 1)
+    const ar = maxAmt - minAmt || 1
+
+    return sorted.map((tx, i) => {
+      const x = ((new Date(tx.transactionDate).getTime() - minDate) / dr) * 100
+      const y = 60 - ((Number(tx.amount) - minAmt) / ar) * 50
+      return `${i === 0 ? 'M' : 'L'} ${x}% ${y}`
+    }).join(' ')
+  }, [filteredData])
+
+  const topCategories = useMemo(() => {
+    const counts: Record<string, number> = {}
+    filteredData.forEach(tx => {
+      const name = tx.expenseCategory?.name || 'Inflow'
+      counts[name] = (counts[name] || 0) + Math.abs(Number(tx.amount))
+    })
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, value]) => ({ name, value }))
+  }, [filteredData])
+
   return (
-    <div className="space-y-0 bg-[#161821] min-h-screen font-sans selection:bg-white/10">
-      
-      {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
-      <div className="pt-2 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]/80 backdrop-blur-md border-b border-white/[0.05]">
-        <div className="flex items-center justify-between px-0">
-            <h1 className="text-[28px] font-[400] text-[#DDE1E5]">
-               Master Ledger Feed
-            </h1>
-            <div className="flex items-center gap-3">
-               <div className="relative group w-64 mr-4">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9D9DA8] group-focus-within:text-white transition-colors" />
-                  <input 
-                    type="text"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Search ledger..."
-                    className="w-full h-8 bg-white/[0.03] border border-white/[0.08] rounded-full pl-9 pr-4 text-[13px] text-white placeholder-[#9D9DA8]/40 focus:outline-none focus:border-white/20 transition-all font-[380] tracking-tight"
-                  />
-               </div>
-               <button className="px-3 py-1.5 rounded-full border border-white/[0.08] text-[12px] text-[#9D9DA8] flex items-center gap-2 hover:bg-white/[0.03] transition-all">
-                  <LayoutGrid size={13} /> Grid
-               </button>
-            </div>
-        </div>
-        
-        <div className="flex items-center gap-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "pb-5 text-[15px] font-[400] transition-colors relative",
-                activeTab === tab 
-                  ? "text-white" 
-                  : "text-[#9D9DA8] hover:text-white/60"
-              )}
-            >
-              <span>{tab}</span>
-              {activeTab === tab && (
-                <motion.div 
-                  layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-[1px] bg-white"
-                />
-              )}
-            </button>
-          ))}
-        </div>
+    <div className="min-h-screen font-sans selection:bg-white/10 space-y-[10px] -mt-8 pt-8 relative px-1">
+      <h1 className="text-[24px] font-normal text-[#F4F5F9] mb-[10px] tracking-tight font-arcadia">
+        Transactions
+      </h1>
+      <div className="sticky top-[-32px] z-40">
+        <TransactionFilterBar
+          q={searchInput}
+          onSearchChange={setSearchInput}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          tabs={tabs}
+          properties={properties}
+          tenants={tenants}
+          activePropertyId={pid}
+          activeTenantId={tid}
+          onPropertyChange={(id) => router.replace(pathname + '?' + createQueryString({ pid: id }), { scroll: false })}
+          onTenantChange={(id) => router.replace(pathname + '?' + createQueryString({ tid: id }), { scroll: false })}
+          cat={cat}
+          onCategoryChange={(val) => router.replace(pathname + '?' + createQueryString({ cat: val }), { scroll: false })}
+          dateRange={dateRange}
+          onDateChange={setDateRange}
+          minAmount={min}
+          maxAmount={max}
+          onAmountChange={(minV, maxV) => router.replace(pathname + '?' + createQueryString({ min: minV, max: maxV }), { scroll: false })}
+          onReset={() => {
+            setSearchInput('')
+            const cleaned = new URLSearchParams()
+            const take = searchParams.get('take')
+            if (take) cleaned.set('take', take)
+            router.replace(pathname + '?' + cleaned.toString(), { scroll: false })
+          }}
+          onExport={handleExport}
+        />
       </div>
 
-      {/* ── 2. ANALYTICAL VISUALIZER BLOCK ────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] sticky top-[120px] z-30 bg-[#161821]/80 backdrop-blur-md">
-         {/* Net Summary Column */}
-         <div className="py-10 border-r border-white/[0.05] space-y-6">
+      <div className="grid grid-cols-3 gap-0 border-y border-white/[0.05]">
+        <div className="py-6 border-r border-white/[0.05] space-y-2 flex flex-col justify-center px-8">
+          <div className="space-y-1">
+            <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Net change</p>
+            <p className="text-[24px] text-white font-[400]">
+              {summary.netChange < 0 ? '−' : ''}${Math.abs(summary.netChange).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+          <div className="flex items-center gap-10 pt-2">
             <div className="space-y-1">
-               <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Net change this month</p>
-               <p className="text-[24px] text-white font-[400]">
-                  {summary.netChange < 0 ? '−' : ''}${Math.abs(summary.netChange).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-               </p>
+              <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">In</p>
+              <p className="text-[16px] text-[#6CC08F] font-[400] tracking-tight">+${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
             </div>
-            <div className="flex items-center gap-10 pt-2">
-               <div className="space-y-1">
-                  <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">Money in</p>
-                  <p className="text-[16px] text-[#6CC08F] font-[400]">
-                     +${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </p>
-               </div>
-               <div className="space-y-1">
-                  <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">Money out</p>
-                  <p className="text-[16px] text-[#DDE1E5] font-[400]">
-                     −${summary.moneyOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </p>
-               </div>
+            <div className="space-y-1">
+              <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">Out</p>
+              <p className="text-[16px] text-white/40 font-[400] tracking-tight">−${summary.moneyOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
             </div>
-         </div>
+          </div>
+        </div>
 
-         {/* Trend Line Visualizer (Placeholder) */}
-         <div className="py-10 border-r border-white/[0.05] flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-               <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Cashflow Velocity</p>
-               <TrendingUp size={14} className="text-[#6CC08F]" />
-            </div>
-            <div className="flex-1 w-full flex items-center justify-center opacity-20">
-               <svg className="w-full h-16" preserveAspectRatio="none">
-                  <path d="M0 40 Q 50 10, 100 30 T 200 10 T 300 40 T 400 20" stroke="white" strokeWidth="1.5" fill="none" />
-               </svg>
-            </div>
-         </div>
+        <div className="py-6 border-r border-white/[0.05] flex flex-col justify-between px-8">
+          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest">Velocity</p>
+          <div className="flex-1 w-full flex items-center justify-center relative mt-4 h-16">
+            <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
+              <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }} d={trendPoints} stroke="white" strokeWidth="1.5" fill="none" />
+            </svg>
+          </div>
+        </div>
 
-         {/* Category Bar Visualizer (Placeholder) */}
-         <div className="py-10 flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-               <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">To/From Breakdown</p>
-               <BarChart3 size={14} className="text-[#9D9DA8]" />
-            </div>
-            <div className="space-y-3 pt-4">
-               {[1, 2, 3].map(i => (
-                  <div key={i} className="flex flex-col gap-1.5 opacity-20">
-                     <div className="h-1 bg-white/40 rounded-full w-full overflow-hidden">
-                        <div className="h-full bg-white w-[60%]" />
-                     </div>
-                  </div>
-               ))}
-            </div>
-         </div>
+        <div className="py-6 flex flex-col justify-between px-8">
+          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest">Breakdown</p>
+          <div className="space-y-3 pt-4">
+            {topCategories.map(c => (
+              <div key={c.name} className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center text-[10px] uppercase text-[#9D9DA8]">
+                  <span>{c.name}</span>
+                  <span>{((c.value / (summary.moneyOut || 1)) * 100).toFixed(0)}%</span>
+                </div>
+                <div className="h-1 rounded-full overflow-hidden">
+                  <motion.div animate={{ width: `${(c.value / summary.moneyOut) * 100}%` }} className="h-full bg-white/40" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* ── 3. FILTER TOOLBAR ────────────────────────────────────────────── */}
-      <div className="py-5 flex items-center justify-between bg-[#161821]/80 backdrop-blur-md border-b border-white/[0.05] sticky top-[324px] z-20">
-          <div className="flex items-center gap-3">
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-[#2d2e39] border border-white/[0.08] rounded-full text-[13px] text-white">
-                Active View <X 
-                  size={12} 
-                  className="text-[#9D9DA8] cursor-pointer hover:text-white" 
-                  onClick={() => router.push(pathname)}
-                />
-             </div>
-             <button className="flex items-center gap-2 px-4 py-1.5 border border-white/[0.08] rounded-full text-[13px] text-[#C3C3CC] hover:bg-white/[0.03]">
-                <Filter size={13} /> Filters <span className="opacity-40 ml-1">({q || cat !== 'ALL' ? 1 : 0})</span>
-             </button>
-          </div>
-          <div className="flex items-center gap-6">
-             <button 
-               onClick={() => {
-                 setSearchInput('');
-                 router.push(pathname);
-               }}
-               className="text-[12px] text-[#9D9DA8] flex items-center gap-2 hover:text-white transition-all"
-             >
-                <RotateCcw size={12} /> Reset
-             </button>
-             <div className="h-4 w-[1px] bg-white/[0.05]" />
-             
-             {/* Category Toggle */}
-             <select 
-               value={cat}
-               onChange={(e) => router.push(pathname + '?' + createQueryString({ cat: e.target.value }))}
-               className="bg-transparent text-[12px] text-[#C3C3CC] border-none outline-none cursor-pointer hover:text-white transition-colors"
-             >
-                <option value="ALL">All Flows</option>
-                <option value="INCOME">Income</option>
-                <option value="EXPENSE">Expenses</option>
-             </select>
 
-             <div className="h-4 w-[1px] bg-white/[0.05]" />
-             <div className="flex items-center gap-2">
-                <LayoutList size={14} className="text-white" />
-                <LayoutGrid size={14} className="text-[#9D9DA8] opacity-40 cursor-not-allowed" />
-             </div>
-             
-             <div className="relative">
-                <button 
-                  onClick={() => setIsExportOpen(!isExportOpen)}
-                  className="flex items-center gap-2 text-[12px] text-[#C3C3CC] hover:text-white px-3 py-1.5 border border-white/[0.08] rounded-md transition-all bg-white/[0.02]"
-                >
-                   <Download size={13} /> Export
-                   <ChevronDown size={12} className={cn("transition-transform", isExportOpen ? "rotate-180" : "")} />
-                </button>
-
-                <AnimatePresence>
-                  {isExportOpen && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-40 bg-[#1e1e2a] border border-white/[0.08] rounded-lg shadow-xl z-[100] overflow-hidden"
-                    >
-                      {['CSV', 'PDF', 'Word'].map((format) => (
-                        <button
-                          key={format}
-                          onClick={() => {
-                            const params = new URLSearchParams({ q, start, end, cat });
-                            window.open(`/api/reports/${format.toLowerCase()}?${params.toString()}`, '_blank');
-                            setIsExportOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2.5 text-[12px] text-[#9D9DA8] hover:text-white hover:bg-white/[0.03] transition-colors"
-                        >
-                          Export to {format}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-             </div>
-          </div>
-      </div>
-
-      {/* ── 4. DATA STRATUM (HYPER-DENSITY) ──────────────────────────────── */}
+      {/* Data Strata */}
       <div className="space-y-0 relative">
-         {/* THEAD (SURFACE LEVEL) */}
-         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821]/80 backdrop-blur-md sticky top-[385px] z-50")}>
-            <div className="flex justify-center">
-              <div className="w-3.5 h-3.5 border border-white/20 rounded-[3px]" />
-            </div>
-            <div>Date</div>
-            <div>Entity & Description</div>
-            <div className="text-right">Amount</div>
-            <div className="text-left pl-6">Account</div>
-            <div className="text-left">Method</div>
-            <div className="text-left">Category</div>
-         </div>
+        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-[#9D9DA8] uppercase tracking-[0.1em] border-b border-white/[0.05]")}>
+          <div>Date</div>
+          <div>Entity & Description</div>
+          <div className="text-right">Amount</div>
+          <div className="text-left">Account</div>
+          <div className="text-left">Method</div>
+          <div className="text-left">Category</div>
+        </div>
 
-         <AnimatePresence mode="popLayout">
-           {filteredData.map((tx, idx) => {
-             const amt = Number(tx.amount)
-             const isNegative = amt < 0;
-             const displayAmount = Math.abs(amt);
-             const { whole, cents } = formatAmountParts(displayAmount);
-             const initials = (tx.payee || tx.description || 'U').substring(0, 2).toUpperCase();
-             
-             return (
-               <motion.div
-                 key={tx.id}
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: idx * 0.012, duration: 0.18 }}
-                 className={cn(GRID_CLASS, "h-[48px] hover:bg-white/[0.03] transition-colors border-b border-white/[0.025] group cursor-pointer active:bg-white/[0.05] relative z-0")}
-               >
-                 {/* CHECKBOX BLOCK */}
-                 <div className="flex justify-center">
-                    <div className="w-3.5 h-3.5 border border-white/10 rounded-[3px] group-hover:border-white/30 transition-colors" />
-                 </div>
+        <AnimatePresence mode="popLayout">
+          {filteredData.map((tx, idx) => {
+            const isNeg = Number(tx.amount) < 0;
+            const { whole, cents } = formatAmountParts(Number(tx.amount));
 
-                 {/* DATE BLOCK */}
-                 <div className="text-[14px] leading-[20px] text-[#C3C3CC] font-[400]">
-                    {format(new Date(tx.transactionDate), 'MMM d')}
-                 </div>
-
-                 {/* ENTITY BLOCK */}
-                 <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-7 h-7 rounded-full bg-white/[0.05] border border-white/[0.03] flex items-center justify-center text-[10px] text-white/50 font-[400] shrink-0">
-                      {initials}
-                    </div>
-                    <span className="text-[15px] leading-[24px] text-[#DDDDE5] font-[400] truncate">
-                       {tx.description || tx.payee}
-                     </span>
-                 </div>
-
-                 {/* FISCAL BLOCK */}
-                 <div className={cn(
-                    "text-[15px] font-[400] text-right font-finance whitespace-nowrap",
-                    isNegative ? "text-[#F4F5F9]" : "text-[#6CC08F]"
-                 )}>
-                   {isNegative ? '−' : ''}${whole}<span className="text-[11px] opacity-60 ml-0.5">{cents}</span>
-                 </div>
-
-                 {/* ACCOUNT BLOCK */}
-                 <div className="pl-6">
-                    <span className="text-[14px] leading-[20px] text-[#F4F5F9] font-[400] truncate block">
-                      {tx.account.name}
-                    </span>
-                 </div>
-
-                 {/* METHOD BLOCK */}
-                 <div className="text-[14px] leading-[20px] text-[#F4F5F9] font-[400]">
-                    Direct Transfer
-                 </div>
-
-                 {/* CATEGORY BLOCK */}
-                 <div className="text-[14px] leading-[20px] text-[#9D9DA8] font-[400] truncate">
-                    {tx.expenseCategory?.name || 'Inflow'}
-                 </div>
-               </motion.div>
-             )
-           })}
-         </AnimatePresence>
+            return (
+              <motion.div
+                key={tx.id}
+                onClick={() => openTransaction(tx.id)}
+                className={cn(
+                  GRID_CLASS, 
+                  "h-[48px] border-b border-white/[0.025] group cursor-pointer transition-all"
+                )}
+              >
+                <div className="text-[14px] text-[#C3C3CC]">{format(new Date(tx.transactionDate), 'MMM d')}</div>
+                <div className="flex items-center gap-4 truncate">
+                   <div className="w-7 h-7 rounded-full bg-white/[0.05] flex items-center justify-center text-[10px] text-white/40 shrink-0">
+                     {(tx.payee || tx.description || 'U').substring(0, 1).toUpperCase()}
+                   </div>
+                   <span className="text-[15px] text-[#DDDDE5] truncate">{tx.description || tx.payee}</span>
+                </div>
+                <div className={cn("text-[15px] text-right font-finance", isNeg ? "text-white" : "text-[#6CC08F]")}>
+                  {isNeg ? '−' : ''}${whole}<span className="text-[11px] opacity-40 ml-0.5">{cents}</span>
+                </div>
+                <div className="pl-6 text-[14px] text-[#F4F5F9] truncate">{tx.account.name}</div>
+                <div className="text-[14px] text-[#F4F5F9]">{tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash'}</div>
+                <div className="text-[14px] text-[#9D9DA8] truncate">{tx.expenseCategory?.name || 'Inflow'}</div>
+              </motion.div>
+            )
+          })}
+        </AnimatePresence>
       </div>
 
-      {/* ── 5. OPERATIONAL FOOTER ───────────────────────────────────────── */}
-      <div className="py-12 flex items-center justify-between border-t border-white/[0.05]">
-         <p className="text-[12px] text-[#9D9DA8] font-[400]">
-            Displaying {filteredData.length} records in this view
-         </p>
-         <button className="px-6 h-9 rounded-full border border-white/[0.1] text-[13px] text-[#9D9DA8] hover:text-white hover:bg-white/[0.05] transition-all font-[400]">
-           Load More Activity
-         </button>
+      <TransactionDetailSheet 
+        transaction={selectedTransaction} 
+        onClose={closeTransaction} 
+      />
+
+
+      <div className="py-12 border-t border-white/[0.05] flex justify-between items-center px-4">
+        <p className="text-[12px] text-white/20 uppercase tracking-widest font-medium">Volumetric Report: {filteredData.length} entries</p>
+        <button className="h-9 px-8 rounded-full border border-white/10 text-[12px] text-[#9D9DA8] hover:text-white transition-all">Load Forensic History</button>
       </div>
     </div>
   )
