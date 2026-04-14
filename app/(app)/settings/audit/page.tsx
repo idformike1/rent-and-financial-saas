@@ -9,7 +9,7 @@ export default async function AuditLogPage() {
   const session = await auth();
 
   if (!session?.user || session.user.role !== 'OWNER') {
-    return redirect('/dashboard');
+    return redirect('/home');
   }
 
   const logs = await prisma.auditLog.findMany({
