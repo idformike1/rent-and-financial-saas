@@ -25,21 +25,22 @@ export default async function TransactionsPage({
     take?: string;
   } 
 }) {
+  const params = await searchParams;
   const session = await auth();
   if (!session?.user) redirect("/login");
 
   const [ledgerData, metadata] = await Promise.all([
      getMasterLedger({
-       query: searchParams.q,
-       category: searchParams.cat,
-       startDate: searchParams.start,
-       endDate: searchParams.end,
-       propertyId: searchParams.pid,
-       tenantId: searchParams.tid,
-       minAmount: searchParams.min ? parseFloat(searchParams.min) : undefined,
-       maxAmount: searchParams.max ? parseFloat(searchParams.max) : undefined,
-       skip: searchParams.skip ? parseInt(searchParams.skip) : 0,
-       take: searchParams.take ? parseInt(searchParams.take) : 100
+       query: params.q,
+       category: params.cat,
+       startDate: params.start,
+       endDate: params.end,
+       propertyId: params.pid,
+       tenantId: params.tid,
+       minAmount: params.min ? parseFloat(params.min) : undefined,
+       maxAmount: params.max ? parseFloat(params.max) : undefined,
+       skip: params.skip ? parseInt(params.skip) : 0,
+       take: params.take ? parseInt(params.take) : 100
      }),
      getLedgerFilterMetadata()
   ]);

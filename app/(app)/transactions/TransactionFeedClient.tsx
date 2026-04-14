@@ -41,6 +41,7 @@ interface Props {
   tenants: { id: string, name: string }[]
 }
 
+const TABS = ['Recent', 'Operating expenses', 'My transactions']
 const GRID_CLASS = "grid grid-cols-[100px_1fr_120px_180px_120px_150px] gap-4 items-center px-4"
 
 export default function TransactionFeedClient({ initialData, properties, tenants }: Props) {
@@ -303,16 +304,17 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
   return (
     <div className="min-h-screen font-sans selection:bg-white/10 space-y-[10px] -mt-8 pt-8 relative px-1">
-      <h1 className="text-[24px] font-normal text-[#F4F5F9] mb-[10px] tracking-tight font-arcadia">
-        Transactions
-      </h1>
-      <div className="sticky top-[-32px] z-40">
+      {/* Frozen Command Shell */}
+      <div className="sticky top-0 z-50 bg-[#161821] pt-8 pb-[10px] space-y-[10px]">
+        <h1 className="text-[24px] font-normal text-[#F4F5F9] tracking-tight font-arcadia">
+          Transactions
+        </h1>
         <TransactionFilterBar
           q={searchInput}
           onSearchChange={setSearchInput}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          tabs={tabs}
+          tabs={TABS} 
           properties={properties}
           tenants={tenants}
           activePropertyId={pid}
@@ -322,7 +324,13 @@ export default function TransactionFeedClient({ initialData, properties, tenants
           cat={cat}
           onCategoryChange={(val) => router.replace(pathname + '?' + createQueryString({ cat: val }), { scroll: false })}
           dateRange={dateRange}
-          onDateChange={setDateRange}
+          onDateChange={(range) => {
+            if (!range?.from || !range?.to) return
+            router.replace(pathname + '?' + createQueryString({
+              from: format(range.from, 'yyyy-MM-dd'),
+              to: format(range.to, 'yyyy-MM-dd')
+            }), { scroll: false })
+          }}
           minAmount={min}
           maxAmount={max}
           onAmountChange={(minV, maxV) => router.replace(pathname + '?' + createQueryString({ min: minV, max: maxV }), { scroll: false })}
@@ -387,7 +395,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       {/* Data Strata */}
       <div className="space-y-0 relative">
-        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-[#9D9DA8] uppercase tracking-[0.1em] border-b border-white/[0.05]")}>
+        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-[#9D9DA8] uppercase tracking-[0.1em] border-b border-white/[0.05] sticky top-[140px] z-40 bg-[#161821]")}>
           <div>Date</div>
           <div>Entity & Description</div>
           <div className="text-right">Amount</div>
