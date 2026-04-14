@@ -8,7 +8,7 @@ export default function TreasuryRedirect() {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace('/dashboard')
+    router.replace('/home')
   }, [router])
 
   return (

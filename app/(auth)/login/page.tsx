@@ -28,7 +28,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Invalid credentials. Access restricted.')
       } else {
-        router.push('/dashboard')
+        router.push('/home')
         router.refresh()
       }
     } catch (err) {

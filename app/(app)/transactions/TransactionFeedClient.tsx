@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { 
   X, Filter, RotateCcw, LayoutGrid, LayoutList, Download,
   TrendingUp, BarChart3, ChevronDown, Search
@@ -26,34 +27,68 @@ interface Props {
 const GRID_CLASS = "grid grid-cols-[32px_80px_minmax(250px,2fr)_120px_200px_180px_180px] gap-6 items-center"
 
 export default function TransactionFeedClient({ initialData }: Props) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // 1. URL-Synchronized State
+  const q = searchParams.get('q') || ''
+  const cat = searchParams.get('cat') || 'ALL'
+  const start = searchParams.get('start') || ''
+  const end = searchParams.get('end') || ''
+
+  // Local UI state for fluid typing (immediate feedback)
+  const [searchInput, setSearchInput] = useState(q)
   const [activeTab, setActiveTab] = useState('Recent')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('ALL')
   const [isExportOpen, setIsExportOpen] = useState(false)
 
   const tabs = ['Recent', 'My transactions', 'Operating expenses']
 
+  // 2. Navigation Helper (Deep Linking)
+  const createQueryString = useCallback(
+    (params: Record<string, string | null>) => {
+      const newParams = new URLSearchParams(searchParams.toString())
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === null || value === '' || value === 'ALL') {
+          newParams.delete(key)
+        } else {
+          newParams.set(key, value)
+        }
+      })
+      return newParams.toString()
+    },
+    [searchParams]
+  )
+
+  // 3. Debounced Search Synchronization
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== q) {
+        router.push(pathname + '?' + createQueryString({ q: searchInput }), { scroll: false })
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchInput, q, pathname, router, createQueryString])
+
   const filteredData = useMemo(() => {
     return initialData.filter(tx => {
       const matchesSearch = 
-        tx.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.account?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.payee?.toLowerCase().includes(searchTerm.toLowerCase());
+        tx.description?.toLowerCase().includes(q.toLowerCase()) ||
+        tx.account?.name?.toLowerCase().includes(q.toLowerCase()) ||
+        tx.payee?.toLowerCase().includes(q.toLowerCase());
       
       const date = new Date(tx.transactionDate);
-      const matchesStart = startDate ? date >= new Date(startDate) : true;
-      const matchesEnd = endDate ? date <= new Date(endDate) : true;
+      const matchesStart = start ? date >= new Date(start) : true;
+      const matchesEnd = end ? date <= new Date(end) : true;
       
-      const matchesCategory = categoryFilter === 'ALL' ? true : 
-                            categoryFilter === 'INCOME' ? Number(tx.amount) >= 0 :
-                            categoryFilter === 'EXPENSE' ? Number(tx.amount) < 0 :
+      const matchesCategory = cat === 'ALL' ? true : 
+                            cat === 'INCOME' ? Number(tx.amount) >= 0 :
+                            cat === 'EXPENSE' ? Number(tx.amount) < 0 :
                             true;
 
       return matchesSearch && matchesStart && matchesEnd && matchesCategory;
     });
-  }, [initialData, searchTerm, startDate, endDate, categoryFilter]);
+  }, [initialData, q, start, end, cat]);
 
   // Fiscal calculations
   const summary = useMemo(() => {
@@ -87,8 +122,8 @@ export default function TransactionFeedClient({ initialData }: Props) {
     <div className="space-y-0 bg-[#161821] min-h-screen font-sans selection:bg-white/10">
       
       {/* ── 1. PRIMARY SECTOR: NAVIGATION & TITLE ────────────────────────── */}
-      <div className="pt-2 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]">
-        <div className="flex items-center justify-between">
+      <div className="pt-2 pb-6 space-y-8 sticky top-0 z-40 bg-[#161821]/80 backdrop-blur-md border-b border-white/[0.05]">
+        <div className="flex items-center justify-between px-0">
             <h1 className="text-[28px] font-[400] text-[#DDE1E5]">
                Master Ledger Feed
             </h1>
@@ -97,8 +132,8 @@ export default function TransactionFeedClient({ initialData }: Props) {
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9D9DA8] group-focus-within:text-white transition-colors" />
                   <input 
                     type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search ledger..."
                     className="w-full h-8 bg-white/[0.03] border border-white/[0.08] rounded-full pl-9 pr-4 text-[13px] text-white placeholder-[#9D9DA8]/40 focus:outline-none focus:border-white/20 transition-all font-[380] tracking-tight"
                   />
@@ -109,7 +144,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
             </div>
         </div>
         
-        <div className="flex items-center gap-10 border-b border-white/[0.05]">
+        <div className="flex items-center gap-10">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -134,7 +169,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 2. ANALYTICAL VISUALIZER BLOCK ────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] sticky top-[120px] z-30 bg-[#161821]">
+      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] sticky top-[120px] z-30 bg-[#161821]/80 backdrop-blur-md">
          {/* Net Summary Column */}
          <div className="py-10 border-r border-white/[0.05] space-y-6">
             <div className="space-y-1">
@@ -166,7 +201,6 @@ export default function TransactionFeedClient({ initialData }: Props) {
                <TrendingUp size={14} className="text-[#6CC08F]" />
             </div>
             <div className="flex-1 w-full flex items-center justify-center opacity-20">
-               {/* SVG Mock for Trend Line */}
                <svg className="w-full h-16" preserveAspectRatio="none">
                   <path d="M0 40 Q 50 10, 100 30 T 200 10 T 300 40 T 400 20" stroke="white" strokeWidth="1.5" fill="none" />
                </svg>
@@ -192,22 +226,24 @@ export default function TransactionFeedClient({ initialData }: Props) {
       </div>
 
       {/* ── 3. FILTER TOOLBAR ────────────────────────────────────────────── */}
-      <div className="py-5 flex items-center justify-between bg-[#161821] border-b border-white/[0.05] sticky top-[324px] z-20">
+      <div className="py-5 flex items-center justify-between bg-[#161821]/80 backdrop-blur-md border-b border-white/[0.05] sticky top-[324px] z-20">
           <div className="flex items-center gap-3">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#2d2e39] border border-white/[0.08] rounded-full text-[13px] text-white">
-                My transactions <X size={12} className="text-[#9D9DA8] cursor-pointer hover:text-white" />
+                Active View <X 
+                  size={12} 
+                  className="text-[#9D9DA8] cursor-pointer hover:text-white" 
+                  onClick={() => router.push(pathname)}
+                />
              </div>
              <button className="flex items-center gap-2 px-4 py-1.5 border border-white/[0.08] rounded-full text-[13px] text-[#C3C3CC] hover:bg-white/[0.03]">
-                <Filter size={13} /> Filters <span className="opacity-40 ml-1">(1)</span>
+                <Filter size={13} /> Filters <span className="opacity-40 ml-1">({q || cat !== 'ALL' ? 1 : 0})</span>
              </button>
           </div>
           <div className="flex items-center gap-6">
              <button 
                onClick={() => {
-                 setSearchTerm('');
-                 setStartDate('');
-                 setEndDate('');
-                 setCategoryFilter('ALL');
+                 setSearchInput('');
+                 router.push(pathname);
                }}
                className="text-[12px] text-[#9D9DA8] flex items-center gap-2 hover:text-white transition-all"
              >
@@ -217,8 +253,8 @@ export default function TransactionFeedClient({ initialData }: Props) {
              
              {/* Category Toggle */}
              <select 
-               value={categoryFilter}
-               onChange={(e) => setCategoryFilter(e.target.value)}
+               value={cat}
+               onChange={(e) => router.push(pathname + '?' + createQueryString({ cat: e.target.value }))}
                className="bg-transparent text-[12px] text-[#C3C3CC] border-none outline-none cursor-pointer hover:text-white transition-colors"
              >
                 <option value="ALL">All Flows</option>
@@ -253,7 +289,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
                         <button
                           key={format}
                           onClick={() => {
-                            const params = new URLSearchParams({ searchTerm, startDate, endDate, category: categoryFilter });
+                            const params = new URLSearchParams({ q, start, end, cat });
                             window.open(`/api/reports/${format.toLowerCase()}?${params.toString()}`, '_blank');
                             setIsExportOpen(false);
                           }}
@@ -272,7 +308,7 @@ export default function TransactionFeedClient({ initialData }: Props) {
       {/* ── 4. DATA STRATUM (HYPER-DENSITY) ──────────────────────────────── */}
       <div className="space-y-0 relative">
          {/* THEAD (SURFACE LEVEL) */}
-         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821] sticky top-[385px] z-50")}>
+         <div className={cn(GRID_CLASS, "py-3 text-[11px] font-[400] text-[#9D9DA8] uppercase tracking-[0.08em] border-b border-white/[0.05] bg-[#161821]/80 backdrop-blur-md sticky top-[385px] z-50")}>
             <div className="flex justify-center">
               <div className="w-3.5 h-3.5 border border-white/20 rounded-[3px]" />
             </div>
