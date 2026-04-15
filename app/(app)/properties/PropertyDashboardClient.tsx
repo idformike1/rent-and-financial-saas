@@ -99,8 +99,8 @@ export default function PropertyDashboardClient({ initialProperties }: { initial
 
       {/* Add Property Modal: FINOVA STANDARD */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-card dark:bg-background/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-           <Card className="border-none rounded-[8px] w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 bg-card dark:bg-card">
+        <div className="fixed inset-0 bg-background/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <Card className="border-none rounded-[8px] w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300 bg-card">
              <div className="p-6 bg-card flex justify-between items-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-full -mr-16 -mt-16" />
                 <div className="relative z-10">

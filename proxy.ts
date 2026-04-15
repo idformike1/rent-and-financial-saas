@@ -22,8 +22,7 @@ export const proxy = auth((req) => {
                      pathname.startsWith('/insights') || 
                      pathname.startsWith('/tenants') ||
                      pathname.startsWith('/treasury') ||
-                     pathname.startsWith('/properties') ||
-                     pathname.startsWith('/dashboard');
+                     pathname.startsWith('/properties');
 
   // 3. Shield the Perimeter: Unauthorized access is immediately redirected
   if (!isAuth && isAppRoute) {

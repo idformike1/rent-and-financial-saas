@@ -89,7 +89,7 @@ export default async function AuditLogPage() {
       {/* Audit Log Table */}
       <div className="glass-panel rounded-[8px] border border-[var(--border)] overflow-hidden">
         {/* Table Header */}
-        <div className="bg-[var(--card-raised,#202840)] px-8 py-5 border-b border-[var(--border)] flex justify-between items-center">
+        <div className="bg-[var(--card-raised,var(--card-raised,var(--muted)))] px-8 py-5 border-b border-[var(--border)] flex justify-between items-center">
           <span className="text-[10px]  text-[var(--muted)]">Chronological Forensic Feed</span>
           <span className="text-[9px] text-[var(--primary)]">{logs.length} RECORDS</span>
         </div>

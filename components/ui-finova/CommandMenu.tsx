@@ -32,37 +32,31 @@ export default function CommandMenu() {
       onClick={() => setOpen(false)}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-[#090A0E]/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
 
       {/* Menu Container */}
       <Command
-        className="relative w-full max-w-[640px] bg-[#161821] border border-[#2D2E39] rounded-[12px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-[640px] bg-popover border border-border rounded-[12px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === 'Escape') setOpen(false);
         }}
       >
-        <div className="flex items-center px-4 border-b border-[#2D2E39]">
-          <Search className="w-5 h-5 text-[#8A8B94] mr-3" />
+        <div className="flex items-center px-4 border-b border-border">
+          <Search className="w-5 h-5 text-muted-foreground mr-3" />
           <Command.Input
             placeholder="Type a command or search..."
-            className="w-full h-14 bg-transparent border-none outline-none text-white text-[16px] placeholder:text-[#4A4B56]"
+            className="w-full h-14 bg-transparent border-none outline-none text-white text-[16px] placeholder:text-muted-foreground/50"
             autoFocus
           />
         </div>
 
         <Command.List className="p-2 max-h-[400px] overflow-y-auto custom-scrollbar">
-          <Command.Empty className="p-8 text-center text-[#8A8B94] text-[14px]">
+          <Command.Empty className="p-8 text-center text-muted-foreground text-[14px]">
             No results found.
           </Command.Empty>
 
-          <Command.Group heading="Navigation" className="px-2 py-3 text-[11px] uppercase tracking-widest text-[#4A4B56] font-bold">
-            <CommandItem
-              onSelect={() => navigate('/dashboard')}
-              icon={<LayoutDashboard className="w-4 h-4" />}
-            >
-              Overview
-            </CommandItem>
+          <Command.Group heading="Navigation" className="px-2 py-3 text-[11px] uppercase tracking-widest text-muted-foreground/50 font-bold">
             <CommandItem
               onSelect={() => navigate('/transactions')}
               icon={<History className="w-4 h-4" />}
@@ -77,9 +71,9 @@ export default function CommandMenu() {
             </CommandItem>
           </Command.Group>
 
-          <div className="h-[1px] bg-[#2D2E39] my-1 mx-2" />
+          <div className="h-[1px] bg-border my-1 mx-2" />
 
-          <Command.Group heading="Actions" className="px-2 py-3 text-[11px] uppercase tracking-widest text-[#4A4B56] font-bold">
+          <Command.Group heading="Actions" className="px-2 py-3 text-[11px] uppercase tracking-widest text-muted-foreground/50 font-bold">
             <CommandItem
               onSelect={() => { console.log('Log Expense'); setOpen(false); }}
               icon={<Plus className="w-4 h-4" />}
@@ -111,7 +105,7 @@ function CommandItem({ children, onSelect, icon }: { children: React.ReactNode, 
       onSelect={onSelect}
       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white text-[14px] cursor-pointer transition-all hover:bg-white/5 data-[selected=true]:bg-white/10 group"
     >
-      <span className="text-[#8A8B94] group-hover:text-white transition-colors">
+      <span className="text-muted-foreground group-hover:text-white transition-colors">
         {icon}
       </span>
       {children}

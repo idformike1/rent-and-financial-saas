@@ -365,7 +365,7 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
         <div className="flex items-center flex-1 min-w-0">
           <button onClick={() => toggleNode(node.id)} className={cn(
             "mr-3 transition-all duration-300",
-            hasDependencies ? "text-brand" : "text-foreground dark:text-foreground",
+            hasDependencies ? "text-brand" : "text-foreground",
             isExpanded && "rotate-90"
           )} disabled={!hasDependencies}>
             <ChevronRight className="w-4 h-4" />
@@ -375,11 +375,11 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
             <input 
               value={editName} 
               onChange={(e) => setEditName(e.target.value)} 
-              className="h-14 py-1 px-6 text-[12px]  tracking-tight border-2 border-brand/20 bg-card dark:bg-card rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-foreground" 
+              className="h-14 py-1 px-6 text-[12px]  tracking-tight border-2 border-brand/20 bg-card rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground" 
               autoFocus 
             />
           ) : (
-            <span className="text-[12px] text-muted-foreground dark:text-muted-foreground  tracking-tight truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
+            <span className="text-[12px] text-muted-foreground  tracking-tight truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
           )}
         </div>
 

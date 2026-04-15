@@ -19,11 +19,13 @@ import {
   FileText,
   Plus,
   Edit2,
-  Trash2
+  Trash2,
+  Loader2,
+  Sparkles
 } from 'lucide-react'
 import { getPropertyAssetPulse, getPropertyLedgerEntries } from '@/actions/analytics.actions'
-import { createUnit, updateUnit } from '@/actions/asset.actions'
-import { Card, Badge, Button } from '@/components/ui-finova'
+import { createUnit, updateUnit, updateProperty, deleteProperty } from '@/actions/asset.actions'
+import { Card, Badge, Button, Input, MercuryTable, THead, TBody, TR, TD } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -33,6 +35,7 @@ import * as z from 'zod'
 import { toast } from '@/lib/toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 const unitSchema = z.object({
   unitNumber: z.string().min(1, "Required"),
@@ -41,12 +44,19 @@ const unitSchema = z.object({
   marketRent: z.number().min(0)
 })
 
+const propertyEditSchema = z.object({
+  name: z.string().min(2, "Required"),
+  address: z.string().min(5, "Address too short")
+})
+
 type UnitForm = {
   unitNumber: string;
   type: string;
   category: string;
   marketRent: number;
 }
+
+type PropertyEditForm = z.infer<typeof propertyEditSchema>
 
 interface PulseData {
   hud: {
@@ -72,6 +82,7 @@ interface PulseData {
 }
 
 export default function PropertyPulseTerminal({ propertyId, propertyName }: { propertyId: string, propertyName: string }) {
+  const router = useRouter()
   const { data: session } = useSession()
   const userRole = session?.user?.role || 'MANAGER'
   const isSovereign = ['ADMIN', 'OWNER'].includes(userRole)
@@ -90,10 +101,19 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
   const [editingUnit, setEditingUnit] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { register, handleSubmit, reset } = useForm<UnitForm>({
+  const { register, handleSubmit, reset: resetUnitForm, formState: { errors } } = useForm<UnitForm>({
     resolver: zodResolver(unitSchema),
     defaultValues: {
-      category: 'FLAT'
+      category: 'FLAT',
+      marketRent: 0
+    }
+  });
+
+  const { register: registerEdit, handleSubmit: handleSubmitEdit, reset: resetEditForm, formState: { errors: editErrors } } = useForm<PropertyEditForm>({
+    resolver: zodResolver(propertyEditSchema),
+    defaultValues: {
+      name: propertyName,
+      address: ''
     }
   });
 
@@ -139,10 +159,50 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       if (result.success) {
         toast.success("Asset Materialized Successfully");
         setIsAddModalOpen(false);
-        reset();
+        resetUnitForm();
         await loadData();
       } else {
         toast.error(result.message || "Materialization failed");
+      }
+    } catch (e) {
+      toast.error("Network sync failure");
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const onEditProperty = async (formData: PropertyEditForm) => {
+    setIsSubmitting(true)
+    try {
+      const result = await updateProperty(propertyId, formData);
+      if (result.success) {
+        toast.success("Domain Mapping Overridden");
+        setIsEditPortfolioModalOpen(false);
+        await loadData();
+        router.refresh();
+      } else {
+        toast.error(result.message || "Update failed");
+      }
+    } catch (e) {
+      toast.error("Network sync failure");
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const onArchiveProperty = async () => {
+    if (confirmArchiveText !== propertyName) {
+      toast.error("SHIELD_ERROR: Confirmation label mismatch");
+      return;
+    }
+    setIsSubmitting(true)
+    try {
+      const result = await deleteProperty(propertyId);
+      if (result.success) {
+        toast.success("Resource Decommissioned Successfully");
+        router.push('/properties');
+      } else {
+        toast.error(result.message || "Decommissioning failed");
       }
     } catch (e) {
       toast.error("Network sync failure");
@@ -177,7 +237,6 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
   if (loading) {
     return (
       <div className="space-y-6 animate-in fade-in duration-300 pb-10">
-        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-border pb-10">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
@@ -193,7 +252,6 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
           </div>
         </div>
 
-        {/* STEP 1: FISCAL HUD */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-background divide-x divide-white/10">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="p-6 text-left group">
@@ -206,25 +264,6 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             </div>
           ))}
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-           <div className="lg:col-span-1 space-y-6">
-              <Skeleton className="w-48 h-4 rounded" />
-              <Skeleton className="w-full h-[450px] rounded-[8px]" />
-           </div>
-           <div className="lg:col-span-2 space-y-6">
-              <div className="flex justify-between items-end mb-4">
-                 <Skeleton className="w-64 h-4 rounded" />
-                 <Skeleton className="w-32 h-8 rounded" />
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                 {[...Array(10)].map((_, i) => (
-                   <Skeleton key={i} className="w-full h-[140px] rounded-none opacity-50" />
-                 ))}
-              </div>
-           </div>
-        </div>
-
       </div>
     )
   }
@@ -236,29 +275,29 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             <AlertCircle className="w-10 h-10 text-rose-500" />
          </div>
          <div>
-            <h3 className="text-2xl text-foreground ">Sovereign_Audit_Halt</h3>
-            <p className="text-muted-foreground text-[10px]  mt-2">{error || 'Unknown Pipeline Interruption'}</p>
+            <h3 className="text-[24px] font-display text-foreground leading-none">Sovereign_Audit_Halt</h3>
+            <p className="text-muted-foreground text-[14px] mt-2">{error || 'Unknown Pipeline Interruption'}</p>
          </div>
-         <Button variant="secondary" onClick={() => window.location.reload()} className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10">Re-Initialize Pipeline</Button>
+         <Button variant="secondary" onClick={() => window.location.reload()} className="h-10 px-8 rounded-full border-rose-500/30 text-rose-500 hover:bg-rose-500/10">Re-Initialize Pipeline</Button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-1000 pb-12">
+    <div className="space-y-8 animate-in fade-in duration-1000 pb-12">
       
       {/* UNIVERSAL MERCURY HEADER BLOCK */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Badge variant="brand" className="font-medium">Property Hub</Badge>
-            <Badge variant="default" className="font-medium text-[10px]">ID: {propertyId.slice(0, 8)}</Badge>
+            <Badge variant="brand" className="font-bold text-[10px] uppercase tracking-widest px-2 py-0.5">Property Hub</Badge>
+            <Badge variant="default" className="font-mono text-[10px] opacity-40">ID: {propertyId.slice(0, 8)}</Badge>
           </div>
-          <h1 className="text-[24px] font-medium text-foreground tracking-tight leading-none">
+          <h1 className="text-[28px] font-display text-foreground tracking-tight leading-none mt-2">
             {propertyName}
           </h1>
-          <p className="text-[14px] text-muted-foreground">
-            Asset performance vectors and unit level compliance matrix
+          <p className="text-[15px] text-muted-foreground">
+            Asset performance vectors and clinical level compliance matrix
           </p>
         </div>
         
@@ -267,27 +306,25 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
             <>
               <Button 
                 variant="secondary" 
-                size="sm"
                 onClick={() => setIsEditPortfolioModalOpen(true)}
+                className="h-10 px-4 rounded-full text-[13px] font-bold"
               >
                 <Edit2 className="w-3.5 h-3.5 mr-2" />
                 Edit Asset
               </Button>
               <Button 
                 variant="danger" 
-                size="sm" 
-                className="opacity-50 hover:opacity-100"
+                className="h-10 px-4 rounded-full text-[13px] font-bold opacity-50 hover:opacity-100"
                 onClick={() => setIsArchiveModalOpen(true)}
               >
-                <Trash2 className="w-3 h-3 mr-2" />
+                <Trash2 className="w-3.5 h-3.5 mr-2" />
                 Archive
               </Button>
             </>
           )}
           <Button 
-            size="sm"
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-primary text-primary-foreground font-medium text-[11px]"
+            className="h-10 px-6 rounded-full text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white shadow-lg"
           >
             <Plus className="w-4 h-4 mr-2" />
             Provision Unit
@@ -296,104 +333,102 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       </div>
 
       {/* STEP 1: FISCAL HUD */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-card/50 divide-x divide-border overflow-hidden rounded-[12px]">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-card divide-x divide-border overflow-hidden rounded-xl shadow-sm">
         
         {/* NOI */}
         <button 
           onClick={() => setDrillDownType('NOI')}
-          className="p-6 text-left hover:bg-muted transition-all group"
+          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[11px] text-muted-foreground font-medium">Net Operating Income</span>
-             <TrendingUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-mercury-green transition-colors" />
+             <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Net Operating Income</span>
+             <TrendingUp className="w-4 h-4 text-muted-foreground group-hover:text-mercury-green transition-colors" />
           </div>
-          <div className={cn("text-[24px] font-[380] font-finance tabular-nums", data.hud.noi >= 0 ? "text-mercury-green" : "text-rose-500")}>
+          <div className={cn("text-[28px] font-display tracking-tight", data.hud.noi >= 0 ? "text-mercury-green" : "text-rose-500")}>
              <span className="font-finance">${data.hud.noi.toLocaleString()}</span>
           </div>
-          <div className="mt-3 flex items-center gap-2">
-             <Badge variant="success" className="text-[9px] py-0 px-2 font-medium">Verified</Badge>
-          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground/40 font-medium">Verified FY2026</p>
         </button>
 
         {/* ADJUSTED NOI */}
         <button 
           onClick={() => setDrillDownType('ADJ_NOI')}
-          className="p-6 text-left hover:bg-card/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  ">Adjusted NOI (OPEX-Only)</span>
-             <Activity className="w-3.5 h-3.5 text-muted-foreground group-hover:text-brand transition-colors" />
+             <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Adjusted NOI</span>
+             <Activity className="w-4 h-4 text-muted-foreground group-hover:text-vibrant-blue transition-colors" />
           </div>
-          <div className="text-display font-weight-display text-foreground font-finance tabular-nums">
-             <span className="font-finance">${data.hud.adjustedNoi}</span>
+          <div className="text-[28px] font-display text-foreground tracking-tight font-finance">
+             <span className="font-finance">${data.hud.adjustedNoi.toLocaleString()}</span>
           </div>
-          <p className="text-[8px] text-muted-foreground  mt-3 underline decoration-border">Operational Health Index</p>
+          <p className="mt-3 text-[11px] text-muted-foreground/40 font-medium tracking-tight underline decoration-border/50">OPEX Adjusted Flow</p>
         </button>
 
         {/* REVENUE LEAKAGE */}
         <button 
           onClick={() => setDrillDownType('LEAKAGE')}
-          className="p-6 text-left hover:bg-card/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  ">Revenue Leakage (Gap)</span>
-             <AlertCircle className="w-3.5 h-3.5 text-muted-foreground group-hover:text-rose-500 transition-colors" />
+             <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Revenue Leakage</span>
+             <AlertCircle className="w-4 h-4 text-muted-foreground group-hover:text-rose-500 transition-colors" />
           </div>
-          <div className={cn("text-display font-weight-display font-finance tabular-nums", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-muted-foreground")}>
+          <div className={cn("text-[28px] font-display tracking-tight", data.hud.revenueLeakage > 10 ? "text-rose-500" : "text-foreground")}>
              <span className="font-finance">{data.hud.revenueLeakage}%</span>
           </div>
-          <p className="text-[8px] text-muted-foreground  mt-3">Market vs Contract Delta</p>
+          <p className="mt-3 text-[11px] text-muted-foreground/40 font-medium">Market Contract Delta</p>
         </button>
 
         {/* COLLECTION EFFICIENCY */}
         <button 
           onClick={() => setDrillDownType('COLLECTION')}
-          className="p-6 text-left hover:bg-card/[0.02] transition-all group"
+          className="p-8 text-left hover:bg-white/[0.02] transition-all group"
         >
           <div className="flex justify-between items-start mb-4">
-             <span className="text-[9px] text-muted-foreground  ">Collection Efficiency</span>
-             <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground group-hover:text-mercury-green transition-colors" />
+             <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Collection Ratio</span>
+             <ShieldCheck className="w-4 h-4 text-muted-foreground group-hover:text-mercury-green transition-colors" />
           </div>
-          <div className={cn("text-display font-weight-display font-finance tabular-nums", data.hud.collectionEfficiency >= 90 ? "text-mercury-green" : "text-amber-500")}>
+          <div className={cn("text-[28px] font-display tracking-tight", data.hud.collectionEfficiency >= 90 ? "text-mercury-green" : "text-amber-500")}>
              <span className="font-finance">{data.hud.collectionEfficiency}%</span>
           </div>
-          <p className="text-[8px] text-muted-foreground  mt-3">Current_Month_Inflow_Ratio</p>
+          <p className="mt-3 text-[11px] text-muted-foreground/40 font-medium">Current_Cycle_Inflow</p>
         </button>
 
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pt-4">
          
          {/* STEP 2: EXPENSE WATERFALL (SVG ENGINE) */}
          <div className="lg:col-span-1 space-y-6">
-            <h3 className="text-[10px] text-muted-foreground   mb-4 flex items-center gap-3">
-               <History className="w-3.5 h-3.5" /> Fiscal Materialization Flow
+            <h3 className="text-[12px] text-muted-foreground font-bold uppercase tracking-widest mb-4 flex items-center gap-3">
+               <History className="w-4 h-4" /> Fiscal Materialization
             </h3>
-            <Card className="bg-background border-border p-6 h-[450px] flex flex-col justify-between relative overflow-hidden group">
-               <div className="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none group-hover:opacity-20 transition-opacity">
+            <Card className="bg-card border-border p-10 h-[480px] flex flex-col justify-between relative overflow-hidden group rounded-2xl">
+               <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none group-hover:opacity-10 transition-opacity">
                   <svg width="100%" height="100%" viewBox="0 0 200 200" className="rotate-90">
-                     <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="0.5" fill="none" className="text-brand" />
+                     <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="0.5" fill="none" className="text-vibrant-blue" />
                   </svg>
                </div>
                
-               <div className="space-y-10 relative z-10 w-full">
-                  <div className="flex justify-between items-end border-b border-border pb-4">
-                     <span className="text-[8px] text-muted-foreground ">Gross Revenue</span>
-                     <span className="text-mercury-green font-medium">+${data.waterfall.revenue.toLocaleString()}</span>
+               <div className="space-y-12 relative z-10 w-full">
+                  <div className="flex justify-between items-end border-b border-white/[0.04] pb-6">
+                     <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Gross Revenue</span>
+                     <span className="text-mercury-green font-finance text-[17px] font-medium">+${data.waterfall.revenue.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between items-end border-b border-border pb-4 pl-6">
-                     <span className="text-[8px] text-muted-foreground ">Operating Expenses</span>
-                     <span className="text-rose-500 font-medium">-${data.waterfall.opex.toLocaleString()}</span>
+                  <div className="flex justify-between items-end border-b border-white/[0.04] pb-6 pl-8">
+                     <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">OpEx</span>
+                     <span className="text-rose-500/80 font-finance text-[17px] font-medium">-${data.waterfall.opex.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between items-end border-b border-border pb-4 pl-6">
-                     <span className="text-[8px] text-muted-foreground ">Capital Expenditure</span>
-                     <span className="text-rose-500 font-medium">-${data.waterfall.capex.toLocaleString()}</span>
+                  <div className="flex justify-between items-end border-b border-white/[0.04] pb-6 pl-8">
+                     <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">CapEx</span>
+                     <span className="text-rose-500/80 font-finance text-[17px] font-medium">-${data.waterfall.capex.toLocaleString()}</span>
                   </div>
                </div>
 
-               <div className="pt-10 border-t border-brand/30 relative z-10">
-                  <p className="text-[9px] text-muted-foreground  mb-2">Net Cash Realization</p>
-                  <div className="text-display font-weight-display text-foreground font-finance tabular-nums drop-shadow-none">
+               <div className="pt-12 border-t border-vibrant-blue/20 relative z-10">
+                  <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest mb-3">Net Cash Yield</p>
+                  <div className="text-[32px] font-display text-foreground font-finance drop-shadow-sm">
                      ${data.waterfall.netCash.toLocaleString()}
                   </div>
                </div>
@@ -401,58 +436,58 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
          </div>
 
          {/* STEP 3: THE MATRIX (HEATMAP) */}
-         <div className="lg:col-span-2 space-y-4">
-            <div className="flex justify-between items-end mb-2">
-              <h3 className="text-[11px] text-muted-foreground font-medium flex items-center gap-3">
-                 <Building2 className="w-3.5 h-3.5" /> Occupancy & Behavioral Risk Matrix
+         <div className="lg:col-span-2 space-y-6">
+            <div className="flex justify-between items-end mb-4">
+              <h3 className="text-[12px] text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-3">
+                 <Building2 className="w-4 h-4" /> Asset Compliance Matrix
               </h3>
-              <div className="flex gap-4">
+              <div className="flex gap-6">
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-mercury-green" />
-                    <span className="text-[10px] text-muted-foreground font-medium">Prime</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-mercury-green" />
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Prime</span>
                  </div>
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-amber-500" />
-                    <span className="text-[10px] text-muted-foreground font-medium">Watchlist</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Watchlist</span>
                  </div>
                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-rose-500" />
-                    <span className="text-[10px] text-muted-foreground font-medium">Default</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Default</span>
                  </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                {data.units.map(unit => (
                  <button 
                    key={unit.id}
                    onClick={() => setEditingUnit(unit)}
                    className={cn(
-                     "border border-border bg-card p-5 rounded-[12px] flex flex-col justify-between h-[120px] text-left group relative transition-all active:scale-[0.98]",
-                     unit.occupancy ? "hover:border-foreground/20 hover:bg-muted" : "opacity-40 grayscale grayscale hover:grayscale-0 transition-all cursor-not-allowed"
+                     "border border-border bg-card p-6 rounded-2xl flex flex-col justify-between h-[130px] text-left group relative transition-all active:scale-[0.97] hover:border-vibrant-blue/20",
+                     unit.occupancy ? "opacity-100" : "opacity-30 hover:opacity-100 transition-all cursor-pointer"
                    )}
                  >
                     <div className="flex justify-between items-start">
-                       <span className="text-lg font-medium text-foreground">{unit.unitNumber}</span>
+                       <span className="text-[18px] font-display font-medium text-foreground">{unit.unitNumber}</span>
                        <div className={cn(
-                         "w-2 h-2 rounded-full",
+                         "w-1.5 h-1.5 rounded-full",
                          unit.riskScore === 'GREEN' ? "bg-mercury-green" :
                          unit.riskScore === 'YELLOW' ? "bg-amber-500" :
                          "bg-rose-500 animate-pulse"
                        )} />
                     </div>
-                    <div className="space-y-0.5">
-                       <p className="text-[11px] text-muted-foreground truncate font-medium">{unit.tenantName}</p>
+                    <div className="space-y-1">
+                       <p className="text-[12px] text-muted-foreground truncate font-medium">{unit.tenantName || 'VACANT_SIGNAL'}</p>
                        <div className="flex items-center justify-between">
-                         <span className={cn(
-                           "text-[10px] font-medium",
-                           unit.occupancy ? "text-mercury-green/80" : "text-muted-foreground/60"
-                         )}>
-                            {unit.occupancy ? 'Active' : 'Vacant'}
-                         </span>
-                         {unit.occupancy && (
-                           <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                         )}
+                          <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-widest",
+                            unit.occupancy ? "text-mercury-green/60" : "text-muted-foreground/30"
+                          )}>
+                             {unit.occupancy ? 'Active' : 'Void'}
+                          </span>
+                          {unit.occupancy && (
+                            <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                        </div>
                     </div>
                  </button>
@@ -463,168 +498,341 @@ export default function PropertyPulseTerminal({ propertyId, propertyName }: { pr
       </div>
 
       {/* DRILL-DOWN OVERLAY (SURVEILLANCE) */}
-      {drillDownType && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex justify-end p-4 lg:p-6 animate-in fade-in duration-300">
-           <Card className="w-full max-w-4xl h-full border-none bg-card rounded-[8px] flex flex-col overflow-hidden animate-in slide-in-from-right-10 duration-500">
-              <div className="p-6 border-b border-border flex justify-between items-center bg-background">
-                 <div>
-                    <h2 className="text-display font-weight-display text-foreground leading-none">Registry Surveillance</h2>
-                    <p className="text-[10px] text-brand   mt-3">{propertyName} // Drill-Down: {drillDownType}</p>
-                 </div>
-                 <button 
-                  onClick={() => setDrillDownType(null)}
-                  className="w-14 h-14 rounded-[8px] bg-muted/50 border border-border flex items-center justify-center hover:bg-muted transition-colors"
-                 >
-                    <X className="w-6 h-6 text-muted-foreground" />
-                 </button>
-              </div>
-              
-              <div className="flex-1 p-6 overflow-y-auto space-y-6">
-                 <div className="flex items-center gap-6 mb-8">
-                    <div className="relative flex-1">
-                       <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                       <input 
-                         placeholder="SCAN DRILL-DOWN RECORDS..." 
-                         className="w-full bg-background border border-border h-16 pl-16 pr-6 text-[10px] text-foreground outline-none focus:border-brand/40 transition-all rounded-[8px]"
-                       />
-                    </div>
-                 </div>
+      <AnimatePresence>
+        {drillDownType && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ x: '100%' }}
+               animate={{ x: 0 }}
+               exit={{ x: '100%' }}
+               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+               className="w-full max-w-4xl h-full border-l border-border bg-background flex flex-col overflow-hidden shadow-2xl"
+             >
+                <div className="p-10 border-b border-border flex justify-between items-center bg-card">
+                   <div className="space-y-1">
+                      <h2 className="text-[28px] font-display text-foreground leading-tight tracking-tight">Ledger Surveillance</h2>
+                      <p className="text-[12px] text-vibrant-blue font-bold uppercase tracking-[0.2em]">{propertyName} // Drill-Down: {drillDownType}</p>
+                   </div>
+                   <button 
+                    onClick={() => setDrillDownType(null)}
+                    className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                   >
+                      <X className="w-5 h-5 text-muted-foreground" />
+                   </button>
+                </div>
+                
+                <div className="flex-1 p-10 overflow-y-auto space-y-8 scrollbar-hide">
+                   <div className="flex items-center gap-6">
+                      <div className="relative flex-1">
+                         <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground/40" />
+                         <input 
+                           placeholder="SCAN_LEADGER_POOL..." 
+                           className="w-full bg-card border border-border h-14 pl-14 pr-6 text-[13px] text-foreground outline-none focus:border-white/20 transition-all rounded-xl placeholder:text-muted-foreground/20 font-mono"
+                         />
+                      </div>
+                   </div>
 
-                 {drillDownLoading ? (
-                    <div className="h-64 flex flex-col items-center justify-center space-y-4 opacity-40">
-                       <div className="w-10 h-10 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-                       <p className="text-[8px]  ">Parsing Ledger Streams...</p>
-                    </div>
-                 ) : drillDownEntries.length === 0 ? (
-                    <div className="flex items-center justify-center h-[300px] border-2 border-dashed border-border opacity-10 rounded-[8px] flex-col space-y-4">
-                       <Search className="w-12 h-12" />
-                       <p className="text-[10px]  ">No Direct Records Found in Current Buffer</p>
-                    </div>
-                 ) : (
-                    <div className="space-y-4">
-                       {drillDownEntries.map((e: any) => (
-                         <div key={e.id} className="p-6 border border-border bg-background/50 rounded-[8px] flex justify-between items-center group hover:border-border transition-all">
-                            <div className="space-y-1">
-                               <div className="flex items-center gap-3">
-                                  <span className="text-[10px] text-muted-foreground">{new Date(e.transactionDate).toLocaleDateString()}</span>
-                                  <Badge className="bg-muted/50 text-muted-foreground border-none text-[7px] py-0">{e.expenseCategory?.name || 'GEN'}</Badge>
-                               </div>
-                               <p className="text-foreground font-medium text-xs  tracking-tight">{e.description}</p>
-                            </div>
-                            <div className={cn("text-xl font-finance tabular-nums", e.amount < 0 ? "text-rose-500" : "text-mercury-green")}>
-                               {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString()}
-                            </div>
-                         </div>
-                       ))}
-                    </div>
-                 )}
-              </div>
+                   {drillDownLoading ? (
+                      <div className="h-64 flex flex-col items-center justify-center space-y-6 opacity-40">
+                         <Loader2 className="w-8 h-8 text-vibrant-blue animate-spin" />
+                         <p className="text-[11px] font-bold uppercase tracking-widest">Parsing Ledger Streams...</p>
+                      </div>
+                   ) : drillDownEntries.length === 0 ? (
+                      <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-2xl flex-col space-y-5">
+                         <Search className="w-10 h-10 text-muted-foreground/20" />
+                         <p className="text-[12px] text-muted-foreground font-bold uppercase tracking-widest opacity-40">No records materialized in buffer</p>
+                      </div>
+                   ) : (
+                      <div className="grid grid-cols-1 gap-4">
+                         {drillDownEntries.map((e: any) => (
+                           <div key={e.id} className="p-6 border border-border bg-card/50 rounded-2xl flex justify-between items-center group hover:border-vibrant-blue/20 transition-all">
+                              <div className="space-y-1.5">
+                                 <div className="flex items-center gap-3">
+                                    <span className="text-[11px] text-muted-foreground font-mono">{new Date(e.transactionDate).toLocaleDateString()}</span>
+                                    <Badge variant="default" className="text-[9px] py-0 px-2 font-bold uppercase tracking-widest bg-white/[0.03] border-white/5">{e.expenseCategory?.name || 'GEN_MISC'}</Badge>
+                                 </div>
+                                 <p className="text-foreground font-medium text-[15px] tracking-tight">{e.description}</p>
+                              </div>
+                              <div className={cn("text-[20px] font-finance tabular-nums", e.amount < 0 ? "text-rose-500" : "text-mercury-green")}>
+                                 {e.amount < 0 ? '-' : '+'}${Math.abs(e.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                              </div>
+                           </div>
+                         ))}
+                      </div>
+                   )}
+                </div>
 
-              <div className="p-6 bg-background border-t border-border flex items-center justify-between">
-                 <div className="flex items-center gap-6 opacity-40">
-                    <History className="w-6 h-6" />
-                    <span className="text-[10px] ">Immutable Audit Data Verified</span>
-                 </div>
-                 <Button variant="secondary" onClick={() => window.location.href = '/transactions'}>Go to Master Ledger</Button>
-              </div>
-           </Card>
-        </div>
-      )}
+                <div className="p-10 bg-card border-t border-border flex items-center justify-between">
+                   <div className="flex items-center gap-6 opacity-30">
+                      <History className="w-6 h-6" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Audit Stability: Immutalized</span>
+                   </div>
+                   <Button variant="secondary" onClick={() => window.location.href = '/transactions'} className="rounded-full h-11 px-8 font-bold text-[13px]">Master Ledger Pool</Button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ADD UNIT MODAL */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300">
-           <Card className="w-full max-w-lg border border-border bg-card p-6 rounded-[8px] relative">
-              <button 
-                onClick={() => setIsAddModalOpen(false)} 
-                className="absolute top-6 right-10 text-muted-foreground hover:text-foreground"
-              >
-                 <X className="w-6 h-6" />
-              </button>
-              <h2 className="text-display font-weight-display text-foreground  mb-10">Resource Materialization</h2>
-              <form onSubmit={handleSubmit(onAddUnit)} className="space-y-8">
-                 <div>
-                    <label className="text-[9px] text-muted-foreground  block mb-3">Structural Index Mapping</label>
-                    <input {...register('unitNumber')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="e.g. N-101" />
-                 </div>
-                 <div className="grid grid-cols-2 gap-6">
-                    <div>
-                       <label className="text-[9px] text-muted-foreground  block mb-3">Hardware Type</label>
-                       <input {...register('type')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="Apartment" />
-                    </div>
-                    <div>
-                       <label className="text-[9px] text-muted-foreground  block mb-3">Market Rent ($)</label>
-                       <input {...register('marketRent')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]" placeholder="0.00" type="number" step="0.01" />
-                    </div>
-                 </div>
-                 <div>
-                    <label className="text-[9px] text-muted-foreground  block mb-3">Atomic Category</label>
-                    <select {...register('category')} className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px] appearance-none">
-                       <option value="FLAT">FLAT (RESIDENTIAL)</option>
-                       <option value="STORE">STORE (COMMERCIAL)</option>
-                       <option value="SHUTTER">SHUTTER (RETAIL)</option>
-                    </select>
-                 </div>
-                 <Button disabled={isSubmitting} className="w-full h-20 text-md ">
-                    {isSubmitting ? 'SYNCING...' : 'Initiate Deployment'}
-                 </Button>
-              </form>
-           </Card>
-        </div>
-      )}
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               className="w-full max-w-lg bg-card border border-border p-10 rounded-3xl relative shadow-2xl"
+             >
+                <button 
+                  onClick={() => setIsAddModalOpen(false)} 
+                  className="absolute top-10 right-10 w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-all group"
+                >
+                   <X className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
+                </button>
+                <div className="mb-10 space-y-2">
+                   <h2 className="text-[28px] font-display text-foreground leading-tight tracking-tight">Resource Provisioning</h2>
+                   <p className="text-[14px] text-muted-foreground tracking-tight">Initial structural asset allocation</p>
+                </div>
+                
+                <form onSubmit={handleSubmit(onAddUnit)} className="space-y-10">
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Structural ID</label>
+                      <Input 
+                        {...register('unitNumber')} 
+                        className="bg-background/50 border-border h-14 px-6 text-[16px] font-medium text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl placeholder:text-muted-foreground/20" 
+                        placeholder="e.g. N-101" 
+                      />
+                      {errors.unitNumber && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.unitNumber.message}</p>}
+                   </div>
+                   
+                   <div className="grid grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                         <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Hardware Type</label>
+                         <Input 
+                           {...register('type')} 
+                           className="bg-background/50 border-border h-14 px-6 text-[15px] font-medium text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl" 
+                           placeholder="Standard Unit" 
+                         />
+                         {errors.type && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.type.message}</p>}
+                      </div>
+                      <div className="space-y-4">
+                         <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Market Rent ($)</label>
+                         <Input 
+                           {...register('marketRent', { valueAsNumber: true })} 
+                           className="bg-background/50 border-border h-14 px-6 text-[15px] font-mono text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl font-finance" 
+                           placeholder="0.00" 
+                           type="number" 
+                           step="0.01" 
+                         />
+                         {errors.marketRent && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.marketRent.message}</p>}
+                      </div>
+                   </div>
+
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Atomic Category</label>
+                      <div className="bg-background/50 border border-border rounded-xl overflow-hidden focus-within:border-vibrant-blue transition-all">
+                        <select 
+                          {...register('category')} 
+                          className="w-full bg-transparent h-14 px-6 text-[14px] font-bold uppercase tracking-widest text-foreground outline-none appearance-none cursor-pointer"
+                        >
+                           <option value="FLAT" className="bg-card">FLAT (RESIDENTIAL)</option>
+                           <option value="STORE" className="bg-card">STORE (COMMERCIAL)</option>
+                           <option value="SHUTTER" className="bg-card">SHUTTER (RETAIL)</option>
+                        </select>
+                      </div>
+                      {errors.category && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.category.message}</p>}
+                   </div>
+
+                   <Button 
+                     disabled={isSubmitting} 
+                     className="w-full h-16 rounded-full text-[14px] font-bold uppercase tracking-[0.2em] bg-vibrant-blue hover:bg-vibrant-blue/90 text-white shadow-xl transition-all"
+                   >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" /> Materializing...</div>
+                      ) : (
+                        <div className="flex items-center gap-2">Initiate Deployment <ShieldCheck className="w-5 h-5" /></div>
+                      )}
+                   </Button>
+                </form>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* EDIT UNIT MODAL */}
-      {editingUnit && (
-        <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300">
-           <Card className="w-full max-w-md border border-border bg-card p-6 rounded-[8px] relative">
-              <button 
-                onClick={() => setEditingUnit(null)} 
-                className="absolute top-6 right-10 text-muted-foreground hover:text-foreground"
-              >
-                 <X className="w-6 h-6" />
-              </button>
-              <div className="mb-10">
-                 <h2 className="text-display font-weight-display text-foreground leading-none">Asset {editingUnit.unitNumber}</h2>
-                 <p className="text-muted-foreground text-[10px]  mt-2">Clinical Override Protocol</p>
-              </div>
-              
-              <div className="space-y-8">
-                 <div>
-                    <label className="text-[9px] text-muted-foreground  block mb-4">Integrity Status</label>
-                    <div className="grid grid-cols-1 gap-3">
-                       {[
-                         { id: 'OPERATIONAL', label: 'OPERATIONAL', color: 'text-mercury-green' },
-                         { id: 'UNDER_REPAIR', label: 'REPAIR_PHASE', color: 'text-amber-500' },
-                         { id: 'DECOMMISSIONED', label: 'VOID_RESOURCE', color: 'text-rose-500' }
-                       ].map(s => (
-                         <button 
-                           key={s.id} 
-                           onClick={() => onUpdateUnit(s.id)}
-                           className={cn(
-                             "w-full h-16 rounded-[8px] border border-border text-[10px]  flex items-center justify-between px-8 hover:bg-muted/50 transition-all",
-                             editingUnit.maintenanceStatus === s.id ? "border-brand bg-brand/5" : ""
-                           )}
-                         >
-                            <span className={cn(s.color)}>{s.label}</span>
-                            {editingUnit.maintenanceStatus === s.id && <ShieldCheck className="w-4 h-4 text-brand" />}
-                         </button>
-                       ))}
-                    </div>
-                 </div>
-                 
-                 <div className="pt-6 border-t border-border">
-                    <label className="text-[9px] text-muted-foreground  block mb-4">Market Analytical Override ($)</label>
-                    <input 
-                      type="number"
-                      defaultValue={editingUnit.marketRent || 0}
-                      onBlur={(e) => onUpdateUnit(undefined, Number(e.target.value))}
-                      className="w-full bg-background border border-border h-16 px-6 text-sm font-medium text-foreground outline-none focus:border-brand transition-all rounded-[8px]"
-                    />
-                 </div>
-              </div>
-           </Card>
-        </div>
-      )}
+      <AnimatePresence>
+        {editingUnit && (
+          <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               className="w-full max-w-md bg-card border border-border p-10 rounded-3xl relative shadow-2xl"
+             >
+                <button 
+                  onClick={() => setEditingUnit(null)} 
+                  className="absolute top-10 right-10 w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-all group"
+                >
+                   <X className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
+                </button>
+                <div className="mb-10 space-y-2">
+                   <h2 className="text-[24px] font-display text-foreground leading-tight tracking-tight">Asset {editingUnit.unitNumber}</h2>
+                   <p className="text-muted-foreground text-[12px] font-bold uppercase tracking-widest">Clinical Protocol Override</p>
+                </div>
+                
+                <div className="space-y-10">
+                   <div className="space-y-6">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Integrity State</label>
+                      <div className="grid grid-cols-1 gap-3">
+                         {[
+                           { id: 'OPERATIONAL', label: 'OPERATIONAL', color: 'text-mercury-green' },
+                           { id: 'UNDER_REPAIR', label: 'REPAIR_PROCESS', color: 'text-amber-500' },
+                           { id: 'DECOMMISSIONED', label: 'VOID_RESOURCE', color: 'text-rose-500' }
+                         ].map(s => (
+                           <button 
+                             key={s.id} 
+                             onClick={() => onUpdateUnit(s.id)}
+                             disabled={isSubmitting}
+                             className={cn(
+                               "w-full h-[60px] rounded-xl border border-border text-[11px] font-bold tracking-widest flex items-center justify-between px-8 hover:bg-white/[0.03] transition-all",
+                               editingUnit.maintenanceStatus === s.id ? "border-vibrant-blue bg-vibrant-blue/5" : ""
+                             )}
+                           >
+                              <span className={cn(s.color)}>{s.label}</span>
+                              {editingUnit.maintenanceStatus === s.id && <ShieldCheck className="w-4 h-4 text-vibrant-blue" />}
+                           </button>
+                         ))}
+                      </div>
+                   </div>
+                   
+                   <div className="pt-8 border-t border-white/[0.04] space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Market Analytical Override ($)</label>
+                      <Input 
+                        type="number"
+                        defaultValue={editingUnit.marketRent || 0}
+                        onBlur={(e) => onUpdateUnit(undefined, Number(e.target.value))}
+                        disabled={isSubmitting}
+                        className="bg-background/50 border-border h-14 px-6 text-[15px] font-finance text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl"
+                      />
+                      <p className="text-[9px] text-muted-foreground/40 italic pl-1">Auto-commits on loss of focus</p>
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* EDIT PORTFOLIO MODAL */}
+      <AnimatePresence>
+        {isEditPortfolioModalOpen && (
+          <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               className="w-full max-w-lg bg-card border border-border p-10 rounded-3xl relative shadow-2xl"
+             >
+                <button 
+                  onClick={() => setIsEditPortfolioModalOpen(false)} 
+                  className="absolute top-10 right-10 w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-all group"
+                >
+                   <X className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
+                </button>
+                <div className="mb-10 space-y-2">
+                   <h2 className="text-[28px] font-display text-foreground leading-tight tracking-tight">Domain Override</h2>
+                   <p className="text-[14px] text-muted-foreground tracking-tight">Asset registry property metadata modification</p>
+                </div>
+                
+                <form onSubmit={handleSubmitEdit(onEditProperty)} className="space-y-10">
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Asset Label</label>
+                      <Input 
+                        {...registerEdit('name')} 
+                        className="bg-background/50 border-border h-14 px-6 text-[16px] font-medium text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl" 
+                        placeholder="Property Name" 
+                      />
+                      {editErrors.name && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{editErrors.name.message}</p>}
+                   </div>
+                   
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Geospatial Address</label>
+                      <Input 
+                        {...registerEdit('address')} 
+                        className="bg-background/50 border-border h-14 px-6 text-[15px] font-medium text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl" 
+                        placeholder="Full Address" 
+                      />
+                      {editErrors.address && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{editErrors.address.message}</p>}
+                   </div>
+
+                   <Button 
+                     disabled={isSubmitting} 
+                     className="w-full h-16 rounded-full text-[14px] font-bold uppercase tracking-[0.2em] bg-vibrant-blue hover:bg-vibrant-blue/90 text-white shadow-xl transition-all"
+                   >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" /> Synchronizing...</div>
+                      ) : (
+                        <div className="flex items-center gap-2">Commit Vector Changes <Sparkles className="w-5 h-5" /></div>
+                      )}
+                   </Button>
+                </form>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ARCHIVE PORTFOLIO MODAL */}
+      <AnimatePresence>
+        {isArchiveModalOpen && (
+          <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               className="w-full max-w-lg bg-card border border-rose-500/20 p-10 rounded-3xl relative shadow-2xl"
+             >
+                <div className="mb-10 space-y-4 text-center">
+                   <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <AlertCircle className="w-10 h-10 text-rose-500" />
+                   </div>
+                   <h2 className="text-[28px] font-display text-foreground leading-tight tracking-tight">Decommission Asset?</h2>
+                   <p className="text-[14px] text-muted-foreground leading-relaxed px-4">
+                      You are about to permanently purge <span className="text-foreground font-bold">"{propertyName}"</span> from the active material registry. This action is irreversible.
+                   </p>
+                </div>
+
+                <div className="space-y-8">
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-rose-500/60 font-bold uppercase tracking-[0.2em] text-center block">Type <span className="text-rose-500 font-black">"{propertyName}"</span> to confirm</label>
+                      <Input 
+                        value={confirmArchiveText}
+                        onChange={(e) => setConfirmArchiveText(e.target.value)}
+                        className="bg-rose-500/5 border-rose-500/20 h-16 px-6 text-center text-[18px] font-display text-rose-500 outline-none focus:border-rose-500/40 transition-all rounded-2xl" 
+                        placeholder="SECURITY_CHALLENGE" 
+                      />
+                   </div>
+
+                   <div className="flex gap-4">
+                      <Button 
+                        variant="secondary"
+                        onClick={() => setIsArchiveModalOpen(false)}
+                        className="flex-1 h-14 rounded-full font-bold uppercase tracking-widest border-border hover:bg-white/5"
+                      >
+                         Abort
+                      </Button>
+                      <Button 
+                        disabled={isSubmitting || confirmArchiveText !== propertyName}
+                        onClick={onArchiveProperty}
+                        className="flex-1 h-14 rounded-full font-bold uppercase tracking-widest bg-rose-500 hover:bg-rose-600 text-white shadow-lg disabled:opacity-20"
+                      >
+                         {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Vaporize"}
+                      </Button>
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   )

@@ -178,7 +178,7 @@ export async function ingestBulkExpenses(data: any[]) {
 
       revalidatePath('/reports/master-ledger');
       revalidatePath('/expenses');
-      revalidatePath('/dashboard');
+      revalidatePath('/transactions');
       
       return { 
         success: true, 
@@ -267,7 +267,7 @@ export async function voidTransaction(transactionId: string) {
       );
 
       revalidatePath('/transactions');
-      revalidatePath('/dashboard');
+      revalidatePath('/transactions');
 
       return { success: true, message: "Forensic Decommissioning Successful: Entry status set to VOIDED." };
     } catch (e: any) {

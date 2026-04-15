@@ -70,7 +70,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">{format(new Date(t.transactionDate), 'PPP')}</p>
                     </div>
                     <div className="text-right">
-                       <p className={`text-lg font-bold tracking-tight font-finance ${t.account?.category === 'EXPENSE' ? 'text-red-600 dark:text-red-400' : 'text-primary'}`}>
+                       <p className={`text-lg font-bold tracking-tight font-finance ${t.account?.category === 'EXPENSE' ? 'text-destructive' : 'text-primary'}`}>
                          {t.account?.category === 'EXPENSE' ? '-' : '+'} ${Number(t.amount).toLocaleString()}
                        </p>
                        <span className="text-[8px] font-bold text-muted-foreground uppercase group-hover:text-foreground transition-colors">Audit Ref: {t.id.slice(0,8)}</span>

@@ -1,18 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Settings, CheckCircle2, AlertTriangle, Hammer, Hash, LayoutGrid, Building2, Store, MoveHorizontal } from 'lucide-react'
+import { Plus, Settings, CheckCircle2, AlertTriangle, Hammer, Hash, LayoutGrid, Building2, Store, MoveHorizontal, Loader2, ShieldCheck, X, Search } from 'lucide-react'
 import { createUnit, updateUnitStatus } from '@/actions/asset.actions'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MaintenanceStatus } from '@/src/schema/enums'
 import { toast } from '@/lib/toast'
+import { Card, Badge, Button, Input, MercuryTable, THead, TBody, TR, TD } from '@/components/ui-finova'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const unitSchema = z.object({
   unitNumber: z.string().min(1, "Required"),
   type: z.string().min(2, "e.g. Standard Apartment"),
-  category: z.string().min(1, "Required")
+  category: z.string().min(1, "Required"),
+  marketRent: z.number().min(0, "Rent must be positive")
 })
 
 type UnitForm = z.infer<typeof unitSchema>
@@ -24,10 +28,11 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filter, setFilter] = useState('ALL');
 
-  const { register, handleSubmit, reset } = useForm<UnitForm>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<UnitForm>({
     resolver: zodResolver(unitSchema),
     defaultValues: {
-      category: 'FLAT'
+      category: 'FLAT',
+      marketRent: 0
     }
   });
 
@@ -75,18 +80,19 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex justify-between items-center mb-10">
-        <div className="flex gap-4">
+    <div className="flex-1 flex flex-col space-y-8 animate-in fade-in duration-700">
+      <div className="flex justify-between items-center bg-card border border-border p-2 rounded-full">
+        <div className="flex gap-1">
            {['ALL', 'FLAT', 'STORE', 'SHUTTER', 'PARKING'].map((cat) => (
              <button 
                key={cat} 
                onClick={() => setFilter(cat)}
-               className={`text-[10px] transition-all   px-6 py-3 rounded-xl border-2 ${
+               className={cn(
+                 "text-[10px] font-bold uppercase tracking-widest px-6 py-2 rounded-full transition-all",
                  filter === cat 
-                   ? 'bg-card text-foreground border-foreground' 
-                   : 'bg-card text-muted-foreground border-border hover:border-border'
-               }`}
+                   ? 'bg-vibrant-blue text-white shadow-sm' 
+                   : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+               )}
              >
                 {cat}
              </button>
@@ -94,157 +100,224 @@ export default function UnitManagementClient({ initialUnits, propertyId }: { ini
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-[var(--primary)] text-foreground text-xs px-8 py-4 rounded-[8px] flex items-center hover:bg-[var(--primary-dark,#E64A19)] active:scale-95 transition-all "
+          className="bg-vibrant-blue text-white text-[12px] font-bold h-9 px-6 rounded-full flex items-center hover:bg-vibrant-blue/90 active:scale-95 transition-all shadow-lg"
         >
-          <Plus className="w-5 h-5 mr-4" /> Materialize New Asset
+          <Plus className="w-4 h-4 mr-2" /> Provision New Asset
         </button>
       </div>
 
-      <div className="bg-card border-2 border-foreground rounded-[8px] shadow-none overflow-hidden flex-1 overflow-y-auto">
-        <table className="min-w-full divide-y-2 divide-slate-900">
-          <thead className="bg-card text-muted-foreground text-[10px]   sticky top-0 z-10 border-b-2 border-foreground">
-            <tr>
-              <th className="px-8 py-6 text-left border-r border-border">Asset Label</th>
-              <th className="px-8 py-6 text-left border-r border-border">Category</th>
-              <th className="px-8 py-6 text-left border-r border-border">Integrity State</th>
-              <th className="px-8 py-6 text-left border-r border-border">Mapping</th>
-              <th className="px-8 py-6 text-right">Overrides</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 bg-card text-sm leading-none">
-            {filteredUnits.map((u, i) => (
-              <tr key={u.id} className={`${i % 2 === 0 ? 'bg-card' : 'bg-muted'} hover:bg-muted transition-colors group cursor-default`}>
-                <td className="px-8 py-6 whitespace-nowrap border-r border-border/30">
-                  <div className="flex items-center">
-                    <Hash className="w-4 h-4 mr-2 text-[var(--primary)] opacity-30" />
-                    <div className="text-xl text-foreground">{u.unitNumber}</div>
-                  </div>
-                </td>
-                <td className="px-8 py-6 whitespace-nowrap border-r border-border/30">
-                   <div className="flex items-center bg-card border border-border px-3 py-1.5 rounded-xl">
-                      {u.category === 'STORE' ? <Store className="w-3.5 h-3.5 mr-2 text-amber-500" /> : 
-                       u.category === 'SHUTTER' ? <MoveHorizontal className="w-3.5 h-3.5 mr-2 text-[var(--primary)]" /> :
-                       <Building2 className="w-3.5 h-3.5 mr-2 text-muted-foreground" />}
-                      <span className="text-[10px] text-muted-foreground ">{u.category}</span>
-                   </div>
-                </td>
-                <td className="px-8 py-6 whitespace-nowrap border-r border-border/30">
-                  <div className="flex items-center">
-                    {u.maintenanceStatus === 'OPERATIONAL' ? (
-                      <CheckCircle2 className="w-4 h-4 text-[var(--primary)] mr-2" />
-                    ) : u.maintenanceStatus === 'UNDER_REPAIR' ? (
-                      <Hammer className="w-4 h-4 text-amber-500 mr-2" />
-                    ) : (
-                      <AlertTriangle className="w-4 h-4 text-red-500 mr-2" />
-                    )}
-                    <span className={`text-[10px]  ${u.maintenanceStatus === 'OPERATIONAL' ? 'text-[var(--primary)]' : 'text-muted-foreground'}`}>
-                      {u.maintenanceStatus}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-8 py-6 whitespace-nowrap border-r border-border/30">
-                   <div className="flex items-center space-x-2">
-                     <span className={`text-sm font-bold ${u.isOccupied ? 'text-foreground' : 'text-muted-foreground'}`}>
+      <div className="bg-card border border-border rounded-xl overflow-hidden flex-1 shadow-sm">
+        <MercuryTable>
+          <THead>
+            <TR isHeader>
+              <TD isHeader className="pl-8">Asset Label</TD>
+              <TD isHeader>Category</TD>
+              <TD isHeader>Integrity State</TD>
+              <TD isHeader>Tenant Mapping</TD>
+              <TD isHeader className="pr-8 text-right">Protocol</TD>
+            </TR>
+          </THead>
+          <TBody>
+            {filteredUnits.length === 0 ? (
+              <TR>
+                <TD colSpan={5} className="h-32 text-center text-muted-foreground/30 uppercase text-[10px] tracking-[0.2em]">No hardware resources found in buffer</TD>
+              </TR>
+            ) : (
+              filteredUnits.map((u) => (
+                <TR key={u.id}>
+                  <TD className="pl-8 font-display">
+                    <div className="flex items-center gap-3">
+                      <Hash className="w-4 h-4 text-vibrant-blue/20" />
+                      <span className="text-[17px] font-medium text-foreground tracking-tight">{u.unitNumber}</span>
+                    </div>
+                  </TD>
+                  <TD>
+                     <div className="flex items-center gap-2">
+                        {u.category === 'STORE' ? <Store className="w-3.5 h-3.5 text-amber-500/50" /> : 
+                         u.category === 'SHUTTER' ? <MoveHorizontal className="w-3.5 h-3.5 text-vibrant-blue/50" /> :
+                         <Building2 className="w-3.5 h-3.5 text-muted-foreground/30" />}
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">{u.category}</span>
+                     </div>
+                  </TD>
+                  <TD>
+                    <div className="flex items-center gap-2">
+                      {u.maintenanceStatus === 'OPERATIONAL' ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-mercury-green/60" />
+                      ) : u.maintenanceStatus === 'UNDER_REPAIR' ? (
+                        <Hammer className="w-3.5 h-3.5 text-amber-500/60" />
+                      ) : (
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-500/60" />
+                      )}
+                      <span className={cn(
+                        "text-[10px] font-bold uppercase tracking-widest",
+                        u.maintenanceStatus === 'OPERATIONAL' ? 'text-mercury-green/80' : 'text-muted-foreground/50'
+                      )}>
+                        {u.maintenanceStatus?.replace('_', ' ')}
+                      </span>
+                    </div>
+                  </TD>
+                  <TD>
+                     <span className={cn(
+                       "text-[14px] font-medium tracking-tight",
+                       u.isOccupied ? 'text-foreground/80' : 'text-muted-foreground/20 italic'
+                     )}>
                         {u.activeTenant || 'Material Vacuum (Vacant)'}
                      </span>
-                   </div>
-                </td>
-                <td className="px-8 py-6 whitespace-nowrap text-right">
-                  <button 
-                    onClick={() => setEditingUnit(u)}
-                    className="p-3 text-muted-foreground hover:text-foreground bg-muted hover:bg-card border-2 border-transparent hover:border-foreground rounded-xl transition-all"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </TD>
+                  <TD className="pr-8 text-right">
+                    <button 
+                      onClick={() => setEditingUnit(u)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-white/[0.03] border border-white/5 text-muted-foreground hover:text-foreground hover:border-white/10 transition-all"
+                    >
+                      <Settings className="w-4 h-4" />
+                    </button>
+                  </TD>
+                </TR>
+              ))
+            )}
+          </TBody>
+        </MercuryTable>
       </div>
 
       {/* Add Unit Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 bg-background/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-           <div className="bg-card border-2 border-foreground rounded-[8px] w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-             <div className="p-6 bg-card text-foreground flex justify-between items-center">
-               <h2 className="text-xl  tracking-tight">Resource Materialization</h2>
-               <button onClick={() => setIsAddModalOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
-                 <Plus className="w-6 h-6 rotate-45" />
-               </button>
-             </div>
-             <form onSubmit={handleSubmit(onAddUnit)} className="p-6 space-y-8">
-                <div>
-                   <label className="text-[10px] text-muted-foreground  block mb-2 px-1">Structural Index Mapping</label>
-                   <input {...register('unitNumber')} className="w-full bg-muted border-2 border-border rounded-[8px] p-5 text-lg outline-none focus:border-foreground focus:bg-card transition-all placeholder:font-bold placeholder:text-foreground" placeholder="e.g. N-101" />
-                </div>
-                <div>
-                   <label className="text-[10px] text-muted-foreground  block mb-2 px-1">Hardware Classification</label>
-                   <input {...register('type')} className="w-full bg-muted border-2 border-border rounded-[8px] p-5 text-lg outline-none focus:border-foreground focus:bg-card transition-all placeholder:font-bold placeholder:text-foreground" placeholder="e.g. Penthouse Apartment" />
-                </div>
-                <div>
-                   <label className="text-[10px] text-muted-foreground  block mb-2 px-1">Atomic Category</label>
-                   <select {...register('category')} className="w-full bg-muted border-2 border-border rounded-[8px] p-5 text-lg outline-none focus:border-foreground focus:bg-card transition-all appearance-none cursor-pointer">
-                     <option value="FLAT">FLAT (RESIDENTIAL)</option>
-                     <option value="STORE">STORE (COMMERCIAL)</option>
-                     <option value="SHUTTER">SHUTTER (RETAIL)</option>
-                     <option value="PARKING">PARKING (SERVICE)</option>
-                   </select>
-                </div>
-                <button disabled={isSubmitting} className="w-full bg-card text-foreground py-6 rounded-[8px] shadow-border  tracking-[0.34em] text-xs hover:bg-card disabled:opacity-50 active:scale-[0.98] transition-all">
-                   {isSubmitting ? 'Syncing...' : 'Initiate Deployment'}
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               className="bg-card border border-border p-10 rounded-3xl w-full max-w-lg relative shadow-2xl"
+             >
+                <button 
+                  onClick={() => setIsAddModalOpen(false)} 
+                  className="absolute top-10 right-10 w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-all group"
+                >
+                  <X className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
                 </button>
-             </form>
-           </div>
-        </div>
-      )}
+                <div className="mb-10 space-y-2">
+                   <h2 className="text-[28px] font-display text-foreground leading-tight tracking-tight">Resource Provisioning</h2>
+                   <p className="text-[14px] text-muted-foreground tracking-tight">Initial structural asset allocation</p>
+                </div>
+                
+                <form onSubmit={handleSubmit(onAddUnit)} className="space-y-8">
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Structural ID</label>
+                      <Input 
+                        {...register('unitNumber')} 
+                        className="bg-background/50 border-border h-14 px-6 text-[16px] font-medium text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl placeholder:text-muted-foreground/20" 
+                        placeholder="e.g. N-101" 
+                      />
+                      {errors.unitNumber && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.unitNumber.message}</p>}
+                   </div>
+                   
+                   <div className="grid grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                         <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Hardware Type</label>
+                         <Input 
+                           {...register('type')} 
+                           className="bg-background/50 border-border h-14 px-6 text-[15px] font-medium text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl" 
+                           placeholder="Standard Unit" 
+                         />
+                         {errors.type && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.type.message}</p>}
+                      </div>
+                      <div className="space-y-4">
+                         <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Market Rent ($)</label>
+                         <Input 
+                           {...register('marketRent', { valueAsNumber: true })} 
+                           className="bg-background/50 border-border h-14 px-6 text-[15px] font-finance text-foreground outline-none focus:border-vibrant-blue transition-all rounded-xl" 
+                           placeholder="0.00" 
+                           type="number" 
+                         />
+                         {errors.marketRent && <p className="text-rose-500 text-[10px] uppercase font-bold tracking-widest pl-1">{errors.marketRent.message}</p>}
+                      </div>
+                   </div>
+
+                   <div className="space-y-4">
+                      <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] ml-1">Atomic Category</label>
+                      <div className="bg-background/50 border border-border rounded-xl overflow-hidden focus-within:border-vibrant-blue transition-all">
+                        <select 
+                          {...register('category')} 
+                          className="w-full bg-transparent h-14 px-6 text-[14px] font-bold uppercase tracking-widest text-foreground outline-none appearance-none cursor-pointer"
+                        >
+                           <option value="FLAT" className="bg-card">FLAT (RESIDENTIAL)</option>
+                           <option value="STORE" className="bg-card">STORE (COMMERCIAL)</option>
+                           <option value="SHUTTER" className="bg-card">SHUTTER (RETAIL)</option>
+                           <option value="PARKING" className="bg-card">PARKING (SERVICE)</option>
+                        </select>
+                      </div>
+                   </div>
+
+                   <Button 
+                     disabled={isSubmitting} 
+                     className="w-full h-16 rounded-full text-[14px] font-bold uppercase tracking-[0.2em] bg-vibrant-blue hover:bg-vibrant-blue/90 text-white shadow-xl transition-all"
+                   >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" /> Materializing...</div>
+                      ) : (
+                        <div className="flex items-center gap-2">Initiate Deployment <ShieldCheck className="w-5 h-5" /></div>
+                      )}
+                   </Button>
+                </form>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Edit/Status Modal */}
-      {editingUnit && (
-        <div className="fixed inset-0 bg-background/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-card border-2 border-foreground rounded-[8px] w-full max-w-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
-               <div className="p-6 bg-card text-foreground flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl">Asset {editingUnit.unitNumber}</h2>
-                    <p className="text-muted-foreground text-[10px] font-bold ">Protocol Overrides</p>
-                  </div>
-                  <button onClick={() => setEditingUnit(null)} className="text-muted-foreground hover:text-foreground transition-colors">
-                    <Plus className="w-6 h-6 rotate-45" />
-                  </button>
-               </div>
-               <div className="p-6 space-y-3">
-                  <p className="text-xs font-bold text-muted-foreground  mb-6">Integrity Override:</p>
-                  <button 
-                    onClick={() => onStatusChange(editingUnit.id, MaintenanceStatus.OPERATIONAL)}
-                    className="w-full flex items-center justify-between p-5 bg-muted border-2 border-border hover:border-green-500 rounded-[8px] transition-all"
-                  >
-                    <div className="flex items-center text-foreground  text-xs">
-                       <CheckCircle2 className="w-5 h-5 text-[var(--primary)] mr-4" /> OPERATIONAL
-                    </div>
-                  </button>
-                  <button 
-                    onClick={() => onStatusChange(editingUnit.id, MaintenanceStatus.UNDER_REPAIR)}
-                    className="w-full flex items-center justify-between p-5 bg-muted border-2 border-border hover:border-amber-500 rounded-[8px] transition-all"
-                  >
-                    <div className="flex items-center text-foreground  text-xs">
-                       <Hammer className="w-5 h-5 text-amber-500 mr-4" /> REPAIR PHASE
-                    </div>
-                  </button>
-                  <button 
-                    onClick={() => onStatusChange(editingUnit.id, MaintenanceStatus.DECOMMISSIONED)}
-                    className="w-full flex items-center justify-between p-5 bg-muted border-2 border-border hover:border-red-500 rounded-[8px] transition-all"
-                  >
-                    <div className="flex items-center text-foreground  text-xs text-red-600">
-                       <AlertTriangle className="w-5 h-5 text-red-500 mr-4" /> VOID RESOURCE
-                    </div>
-                  </button>
-               </div>
-               <div className="p-6 bg-muted border-t border-border text-center">
-                  <p className="text-[10px] text-muted-foreground font-bold leading-relaxed">CHRONO-LOGGED AUDIT TRAIL WILL BE UPDATED IMMEDIATELY.</p>
-               </div>
-            </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {editingUnit && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               className="bg-card border border-border p-10 rounded-3xl w-full max-w-md relative shadow-2xl"
+             >
+                <button 
+                  onClick={() => setEditingUnit(null)} 
+                  className="absolute top-10 right-10 w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-all group"
+                >
+                  <X className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
+                </button>
+                <div className="mb-10 space-y-2">
+                   <h2 className="text-[24px] font-display text-foreground leading-tight tracking-tight">Asset {editingUnit.unitNumber}</h2>
+                   <p className="text-muted-foreground text-[12px] font-bold uppercase tracking-widest">Protocol Overrides</p>
+                </div>
+                
+                <div className="space-y-3">
+                   <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-1">Integrity Override:</p>
+                   {[
+                     { id: MaintenanceStatus.OPERATIONAL, label: 'OPERATIONAL', icon: CheckCircle2, color: 'text-mercury-green' },
+                     { id: MaintenanceStatus.UNDER_REPAIR, label: 'REPAIR PHASE', icon: Hammer, color: 'text-amber-500' },
+                     { id: MaintenanceStatus.DECOMMISSIONED, label: 'VOID RESOURCE', icon: AlertTriangle, color: 'text-rose-500' }
+                   ].map((s) => (
+                     <button 
+                       key={s.id}
+                       onClick={() => onStatusChange(editingUnit.id, s.id)}
+                       disabled={isSubmitting}
+                       className={cn(
+                         "w-full flex items-center justify-between p-6 bg-background/50 border border-border rounded-xl transition-all hover:bg-white/[0.03]",
+                         editingUnit.maintenanceStatus === s.id ? "border-vibrant-blue bg-vibrant-blue/5" : ""
+                       )}
+                     >
+                       <div className="flex items-center text-[12px] font-bold tracking-widest uppercase">
+                          <s.icon className={cn("w-5 h-5 mr-4", s.color)} /> {s.label}
+                       </div>
+                       {editingUnit.maintenanceStatus === s.id && <ShieldCheck className="w-4 h-4 text-vibrant-blue" />}
+                     </button>
+                   ))}
+                </div>
+                <div className="mt-8 pt-8 border-t border-white/[0.04]">
+                   <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest text-center leading-relaxed opacity-30">Analytical integrity protocol will materialize immediately upon commit.</p>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
     </div>
   )
 }

@@ -94,7 +94,7 @@ export default function WaterfallAnalyticsPage() {
             </div>
             <div className="bg-muted/50 border border-border p-5 rounded-[8px]">
                <p className="text-[9px] text-foreground/40 mb-2">Cost Realization</p>
-               <h3 className="text-2xl text-rose-400">
+               <h3 className="text-2xl text-destructive">
                   -${data?.stats.totalExpense.toLocaleString() || '0.00'}
                </h3>
             </div>
@@ -110,16 +110,16 @@ export default function WaterfallAnalyticsPage() {
       {/* DYNAMIC WATERFALL CANVAS: ENSURING DARK MODE CONTRAST ADHERENCE */}
       <Card className="p-0 overflow-hidden h-[750px] relative border-none bg-card dark:bg-surface-900">
          <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
-            <Layers className="w-96 h-96 text-foreground dark:text-foreground" />
+            <Layers className="w-96 h-96 text-foreground" />
          </div>
 
          {!hasData ? (
            <div className="h-full flex flex-col items-center justify-center p-6 space-y-8">
-              <div className="w-20 h-20 rounded-full bg-surface-50 dark:bg-muted flex items-center justify-center">
-                 <AlertCircle className="w-10 h-10 text-muted-foreground dark:text-muted-foreground" />
+              <div className="w-20 h-20 rounded-full bg-surface-50 flex items-center justify-center">
+                 <AlertCircle className="w-10 h-10 text-muted-foreground" />
               </div>
               <div className="text-center">
-                 <h2 className="text-2xl  text-surface-900 dark:text-foreground">Null Revenue Detected</h2>
+                 <h2 className="text-2xl  text-surface-900">Null Revenue Detected</h2>
                  <p className="text-muted-foreground font-bold  text-[10px] mt-3 max-w-xs leading-relaxed">
                    The Waterfall Engine requires at least one 'REVENUE' class ledger with linked 'LedgerEntries'.
                  </p>
@@ -134,7 +134,7 @@ export default function WaterfallAnalyticsPage() {
                     <div key={node.id} className="group">
                        <div className="flex items-center justify-end space-x-3">
                           <span className="text-[10px]  text-muted-foreground truncate max-w-[100px]">{node.name}</span>
-                          <div className="w-2 h-10 bg-surface-100 dark:bg-muted rounded-full group-hover:bg-brand transition-all" />
+                          <div className="w-2 h-10 bg-surface-100 rounded-full group-hover:bg-brand transition-all" />
                        </div>
                     </div>
                  ))}
@@ -143,8 +143,8 @@ export default function WaterfallAnalyticsPage() {
               {/* FLOW SECTION (SANKY-ISH ENGINE) */}
               <div className="flex-1 px-12 relative flex items-center justify-center">
                  <svg className="w-full h-[400px] opacity-20 dark:opacity-40" viewBox="0 0 800 400">
-                   <path d="M 0 100 C 400 100, 400 150, 800 150" stroke="#10b981" strokeWidth="80" fill="none" className="animate-pulse" />
-                   <path d="M 0 300 C 400 300, 400 250, 800 250" stroke="#f43f5e" strokeWidth="60" fill="none" className="animate-pulse" />
+                   <path d="M 0 100 C 400 100, 400 150, 800 150" stroke="var(--mercury-green)" strokeWidth="80" fill="none" className="animate-pulse" />
+                   <path d="M 0 300 C 400 300, 400 250, 800 250" stroke="var(--destructive)" strokeWidth="60" fill="none" className="animate-pulse" />
                  </svg>
                  
                  {/* CORE NODES */}
@@ -153,8 +153,8 @@ export default function WaterfallAnalyticsPage() {
                         <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/20 px-8 py-4 rounded-[8px]">
                            <p className="text-[10px] text-[var(--primary)]  text-center">Gross Revenue</p>
                         </div>
-                        <div className="bg-rose-500/10 border border-rose-500/20 px-8 py-4 rounded-[8px]">
-                           <p className="text-[10px] text-rose-500  text-center">Total Costs</p>
+                        <div className="bg-destructive/10 border border-destructive/20 px-8 py-4 rounded-[8px]">
+                           <p className="text-[10px] text-destructive  text-center">Total Costs</p>
                         </div>
                     </div>
                     
@@ -168,11 +168,11 @@ export default function WaterfallAnalyticsPage() {
 
               {/* TERMINAL SINK DETAILS */}
               <div className="w-[180px] flex flex-col justify-center space-y-6">
-                 <div className="p-6 bg-surface-50 dark:bg-muted rounded-[8px] space-y-4">
+                 <div className="p-6 bg-surface-50 rounded-[8px] space-y-4">
                     <h6 className="text-[10px]  text-muted-foreground border-b border-surface-100 dark:border-surface-700 pb-2">Yield Metrics</h6>
                     <div className="space-y-3">
-                       <p className="text-xs text-surface-900 dark:text-foreground">Margin: 64%</p>
-                       <p className="text-xs text-surface-900 dark:text-foreground">NOI: +12%</p>
+                       <p className="text-xs text-surface-900">Margin: 64%</p>
+                       <p className="text-xs text-surface-900">NOI: +12%</p>
                     </div>
                  </div>
               </div>
@@ -187,7 +187,7 @@ export default function WaterfallAnalyticsPage() {
                <PieChart className="w-8 h-8 text-brand" />
             </div>
             <div>
-               <h5 className="text-xl  text-surface-900 dark:text-foreground">Distribution Logic Protocol</h5>
+               <h5 className="text-xl  text-surface-900">Distribution Logic Protocol</h5>
                <p className="text-sm font-medium text-muted-foreground mt-2 leading-relaxed">
                  Financial data is autonomously routed via class discriminators. The red cost streams are calibrated to ensure peak readability in dark mode without color vibration.
                </p>

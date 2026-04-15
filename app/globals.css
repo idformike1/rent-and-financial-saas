@@ -51,11 +51,11 @@
 
 /* ── DARK MODE: SOVEREIGN DEFAULT — NO LIGHT MODE ───────────────────────── */
 :root {
-  --background: oklch(0.145 0 0);
+  --background: #171721;
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: rgb(30, 30, 42);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: rgb(30, 30, 42);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
@@ -77,14 +77,16 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar: oklch(0.1743 0.0227 283.8);
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #5266EB;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #201F2B;
+  --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --vibrant-blue: #5D71F9;
+  --input-depth: #1c1c28;
 }
 
 @layer base {
@@ -127,8 +129,8 @@
 
   /* ── MERCURY V.4.0 UNIVERSAL CARD PROTOCOL ──────────────────────────────── */
   .mercury-card {
-    background-color: #1e1e2a !important;
-    border: 1px solid #2d2e39 !important;
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
     padding: 24px !important;

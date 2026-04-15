@@ -272,7 +272,7 @@ export default function InsightsClient(props: InsightsClientProps) {
   return (
     <div className="w-full">
       {/* ── CONTEXT RESTORATION (Page Identity) ── */}
-      <h1 className="text-[24px] font-normal text-[#F4F5F9] mb-6 flex items-center gap-3 tracking-tight font-arcadia">
+      <h1 className="text-[24px] font-normal text-foreground mb-6 flex items-center gap-3 tracking-tight font-arcadia">
         Insights
       </h1>
 
@@ -280,7 +280,7 @@ export default function InsightsClient(props: InsightsClientProps) {
       <div className="flex justify-between items-center w-full mb-2">
         {/* Segmented Control */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center h-8 bg-transparent border border-[#2D2E39] rounded-[8px] p-[2px] shadow-sm">
+          <div className="flex items-center h-8 bg-transparent border border-border rounded-[8px] p-[2px] shadow-sm">
             {tabs.map((tab, idx) => (
               <React.Fragment key={tab.id}>
                 <div
@@ -288,8 +288,8 @@ export default function InsightsClient(props: InsightsClientProps) {
                   className={cn(
                     "text-[15px] leading-[24px] h-full flex items-center px-4 rounded-[6px] cursor-pointer transition-all font-normal whitespace-nowrap",
                     activeTab === tab.id
-                      ? "bg-[#2D2E39] text-white shadow-sm"
-                      : "text-[#8A8B94] hover:text-[#F4F5F9]"
+                      ? "bg-muted text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {tab.label}
@@ -302,14 +302,14 @@ export default function InsightsClient(props: InsightsClientProps) {
             ))}
           </div>
           <div className="w-[1px] h-3 bg-white/10 mx-0.5"></div>
-          <button className="h-8 w-8 flex items-center justify-center rounded-[8px] hover:bg-white/5 text-[#8A8B94] transition-colors">
+          <button className="h-8 w-8 flex items-center justify-center rounded-[8px] hover:bg-white/5 text-muted-foreground transition-colors">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           </button>
         </div>
 
         <div className="flex items-center gap-2">
           <InsightsDatePicker date={dateRange} setDate={setDateRange} />
-          <button className="h-8 px-4 bg-white/[0.03] border border-[#2D2E39] rounded-[8px] text-[15px] leading-[24px] font-normal text-[#F4F5F9] hover:bg-white/5 hover:text-white transition flex items-center gap-2 shadow-sm">
+          <button className="h-8 px-4 bg-white/[0.03] border border-border rounded-[8px] text-[15px] leading-[24px] font-normal text-foreground hover:bg-white/5 hover:text-white transition flex items-center gap-2 shadow-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             <span>Compare to</span>
             <span className="text-[10px] ml-1 opacity-70">▼</span>
@@ -330,7 +330,7 @@ export default function InsightsClient(props: InsightsClientProps) {
               <div className="absolute bottom-[4px] left-[66.6%] w-[1px] h-[4px] bg-white opacity-20"></div>
               <div className="absolute bottom-[4px] left-[83.3%] w-[1px] h-[4px] bg-white opacity-20"></div>
               <div className="absolute bottom-[4px] left-0 w-[1.2px] h-[12px] bg-white"></div>
-              <span className="absolute bottom-[16px] left-0 text-[11px] font-normal text-[#8A8B94]">{month}</span>
+              <span className="absolute bottom-[16px] left-0 text-[11px] font-normal text-muted-foreground">{month}</span>
               {month === 'Jan' && <span className="absolute bottom-[36px] left-0 text-[16px] font-normal text-white/40 tracking-tight">2026</span>}
             </div>
           ))}
@@ -338,42 +338,42 @@ export default function InsightsClient(props: InsightsClientProps) {
             onPointerDown={handlePointerDown}
             style={{ left: `${scrubberState.left}%`, width: `${scrubberState.width}%` }}
             className={cn(
-              "absolute bottom-[4px] h-[48px] bg-[#60A5FA]/[0.08] border-[1.5px] border-[#60A5FA]/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none backdrop-blur-[1px] shadow-[0_0_15px_rgba(96,165,250,0.25)]",
-              isDragging ? "bg-[#60A5FA]/[0.15] border-[#60A5FA] shadow-[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-[#60A5FA]/[0.12] hover:border-[#60A5FA]/[0.8] hover:shadow-[0_0_20px_rgba(96,165,250,0.35)]"
+              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none backdrop-blur-[1px] shadow-blue-500/20",
+              isDragging ? "bg-blue-500/[0.15] border-blue-500 shadow-[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-blue-500/[0.12] hover:border-blue-500/[0.8] hover:shadow-[0_0_20px_rgba(96,165,250,0.35)]"
             )}
           >
             <span className="absolute top-2 left-2 text-white text-[16px] font-normal whitespace-nowrap pointer-events-none tracking-tight leading-none drop-shadow-sm">
               {dateRange?.from && dateRange?.to ? `${format(dateRange.from, 'LLL dd')} – ${format(dateRange.to, 'LLL dd')}` : 'Select Range'}
             </span>
             <div onPointerDown={(e) => { e.stopPropagation(); handleLeftDown(e); }} className="absolute top-0 left-0 bottom-0 w-[20px] flex items-center justify-start cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-[#5063F4] opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-full"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-full"></div>
             </div>
             <div onPointerDown={(e) => { e.stopPropagation(); handleRightDown(e); }} className="absolute top-0 right-0 bottom-0 w-[20px] flex items-center justify-end cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-[#5063F4] opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-full"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-full"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col mb-8 border-b border-[#2D2E39]/50 pb-8 transition-all duration-300">
+      <div className="flex flex-col mb-8 border-b border-border/50 pb-8 transition-all duration-300">
         <div className="flex flex-row items-end flex-wrap min-h-[96px] gap-y-4">
           {activeTab === 'overview' ? (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
                 <p className="text-[38px] text-white tracking-[-0.02em] leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(metrics.net, true)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
                 <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(metrics.income)}
                 </p>
               </div>
               <div className="flex flex-row flex-1 justify-between items-end md:pb-0.5 pr-12">
                 <div className="flex flex-col">
-                  <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
+                  <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
                   <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
                     {renderMetric(-metrics.expense)}
                   </p>
@@ -383,13 +383,13 @@ export default function InsightsClient(props: InsightsClientProps) {
           ) : activeTab === 'money-in' ? (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money in</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money in</p>
                 <p className="text-[38px] text-white tracking-[-0.02em] leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(metrics.income)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
                 <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(metrics.avgIncome)}
                 </p>
@@ -399,13 +399,13 @@ export default function InsightsClient(props: InsightsClientProps) {
           ) : (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money out</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money out</p>
                 <p className="text-[38px] text-white tracking-[-0.02em] leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(-metrics.expense)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
                 <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(-metrics.avgExpense)}
                 </p>
@@ -416,36 +416,36 @@ export default function InsightsClient(props: InsightsClientProps) {
 
           <div className="hidden lg:flex items-center gap-3">
             <div className="flex p-1 bg-white/5 border border-white/5 rounded-lg h-8 items-center relative group">
-              <button className="flex items-center gap-2 px-3 h-full rounded-[6px] text-[15px] leading-[24px] font-normal transition-colors text-[#F4F5F9] hover:bg-white/5">
+              <button className="flex items-center gap-2 px-3 h-full rounded-[6px] text-[15px] leading-[24px] font-normal transition-colors text-foreground hover:bg-white/5">
                 {aggregation.charAt(0).toUpperCase() + aggregation.slice(1)} <span className="text-[10px] opacity-70">▼</span>
               </button>
               {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-1 w-32 bg-[#1A1B23] border border-white/10 rounded-lg shadow-2xl invisible group-hover:visible z-50 overflow-hidden">
+              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-lg shadow-2xl invisible group-hover:visible z-50 overflow-hidden">
                 <div 
                   onClick={() => setAggregation('day')}
-                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5", aggregation === 'day' ? "text-white" : "text-[#8A8B94]")}
+                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5", aggregation === 'day' ? "text-white" : "text-muted-foreground")}
                 >
                   Day
                 </div>
                 <div 
                   onClick={() => setAggregation('month')}
-                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'month' ? "text-white" : "text-[#8A8B94]")}
+                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'month' ? "text-white" : "text-muted-foreground")}
                 >
                   Month
                 </div>
                 <div 
                   onClick={() => setAggregation('quarter')}
-                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'quarter' ? "text-white" : "text-[#8A8B94]")}
+                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'quarter' ? "text-white" : "text-muted-foreground")}
                 >
                   Quarter
                 </div>
               </div>
             </div>
             <div className="flex p-1 bg-white/5 border border-white/5 rounded-lg h-8 items-center">
-              <button onClick={() => setChartType('area')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'area' ? "bg-[#2D2E39] border border-white/10 text-white shadow-sm" : "text-[#8A8B94] hover:text-white")}>
+              <button onClick={() => setChartType('area')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'area' ? "bg-muted border border-white/10 text-white shadow-sm" : "text-muted-foreground hover:text-white")}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
               </button>
-              <button onClick={() => setChartType('bar')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'bar' ? "bg-[#2D2E39] border border-white/10 text-white shadow-sm" : "text-[#8A8B94] hover:text-white")}>
+              <button onClick={() => setChartType('bar')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'bar' ? "bg-muted border border-white/10 text-white shadow-sm" : "text-muted-foreground hover:text-white")}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
               </button>
             </div>
@@ -455,29 +455,29 @@ export default function InsightsClient(props: InsightsClientProps) {
 
       {/* ── THE CONTEXTUAL CHART AREA ── */}
       <div className="w-full h-[400px] relative overflow-hidden mb-10">
-        <div className="absolute inset-0 bg-gradient-radial from-[#6C6C8F]/10 to-transparent opacity-50 blur-2xl"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-primary/10 to-transparent opacity-50 blur-2xl"></div>
         <LedgerChart data={filteredData} type={chartType} mode={activeTab} />
       </div>
 
       {/* ── NARRATIVE TEXT BLOCKS ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-2 mb-16">
         <div className="bg-transparent flex flex-col justify-start">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-3 flex items-center gap-2">
-            <span className="text-[#9D9DA8]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 9 8 12 2 12"></polyline></svg></span> Runway and cash position
+          <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
+            <span className="text-muted-foreground"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 9 8 12 2 12"></polyline></svg></span> Runway and cash position
           </p>
-          <div className="text-[15px] leading-[24px] font-normal text-[#C3C3CC] h-[4.5em] overflow-hidden">{semanticNodes.runway}</div>
+          <div className="text-[15px] leading-[24px] font-normal text-foreground/80 h-[4.5em] overflow-hidden">{semanticNodes.runway}</div>
         </div>
         <div className="bg-transparent flex flex-col justify-start">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-3 flex items-center gap-2">
-            <span className="text-[#E5697F]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"></path><polyline points="15,9 18,9 18,11"></polyline><path d="M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2v0"></path></svg></span> Money out trends
+          <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
+            <span className="text-destructive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"></path><polyline points="15,9 18,9 18,11"></polyline><path d="M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2v0"></path></svg></span> Money out trends
           </p>
-          <div className="text-[15px] leading-[24px] font-normal text-[#C3C3CC] h-[4.5em] overflow-hidden">{semanticNodes.outflow}</div>
+          <div className="text-[15px] leading-[24px] font-normal text-foreground/80 h-[4.5em] overflow-hidden">{semanticNodes.outflow}</div>
         </div>
         <div className="bg-transparent flex flex-col justify-start">
-          <p className="text-[15px] leading-[24px] font-normal text-[#F4F5F9] mb-3 flex items-center gap-2">
-             <span className="text-[#37CC73]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span> Money in trends
+          <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
+             <span className="text-mercury-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span> Money in trends
           </p>
-          <div className="text-[15px] leading-[24px] font-normal text-[#C3C3CC] h-[4.5em] overflow-hidden">{semanticNodes.income}</div>
+          <div className="text-[15px] leading-[24px] font-normal text-foreground/80 h-[4.5em] overflow-hidden">{semanticNodes.income}</div>
         </div>
       </div>
 

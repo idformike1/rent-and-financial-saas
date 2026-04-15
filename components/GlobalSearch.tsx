@@ -78,10 +78,10 @@ export default function GlobalSearch() {
     <div className="relative flex-1 max-w-[640px] mx-8" ref={dropdownRef}>
       {/* Search Input Bar */}
       <div className={cn(
-        "flex items-center gap-4 h-[38px] px-4 rounded-[8px] bg-[#1C1F26] border border-[#2A2D35] transition-all duration-200",
+        "flex items-center gap-4 h-[38px] px-4 rounded-[8px] bg-muted border border-border transition-all duration-200",
         isOpen
-          ? "bg-[#181B21] border-[#E8E9EB]/20 ring-4 ring-[#E8E9EB]/5"
-          : "hover:border-[#E8E9EB]/10"
+          ? "bg-background border-foreground/20 ring-4 ring-ring/5"
+          : "hover:border-border"
       )}>
         {isSearching
           ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
@@ -128,10 +128,10 @@ export default function GlobalSearch() {
                       <Link
                         key={`${r.type}-${r.id}`}
                         href={r.href}
-                        className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-[#1C1F26] transition-none group border border-transparent"
+                        className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-muted transition-none group border border-transparent"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-10 h-10 rounded-[8px] flex items-center justify-center border transition-none bg-[#1C1F26] text-muted-foreground border-[#2A2D35]", getTypeStyle(r.type))}>
+                          <div className={cn("w-10 h-10 rounded-[8px] flex items-center justify-center border transition-none bg-muted text-muted-foreground border-border", getTypeStyle(r.type))}>
                             {getIcon(r.type)}
                           </div>
                           <div>
@@ -157,7 +157,7 @@ export default function GlobalSearch() {
 
               {/* Suggested Actions Section */}
               <div className="space-y-3">
-                <p className="text-[11px] font-medium text-muted-foreground pl-3 border-l border-[#2A2D35]">
+                <p className="text-[11px] font-medium text-muted-foreground pl-3 border-l border-border">
                   Suggested actions
                 </p>
                 <div className="grid grid-cols-1 gap-0.5">
@@ -165,10 +165,10 @@ export default function GlobalSearch() {
                     <Link
                       key={s.title}
                       href={s.href}
-                      className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-[#1C1F26] transition-none border border-transparent group"
+                      className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-muted transition-none border border-transparent group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-[8px] bg-[#1C1F26] flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-none border border-[#2A2D35]">
+                        <div className="w-10 h-10 rounded-[8px] bg-muted flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-none border border-border">
                           <s.icon className="w-4 h-4" />
                         </div>
                         <h4 className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-none">

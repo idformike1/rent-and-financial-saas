@@ -27,7 +27,7 @@ export default async function ExpenseLoggingPage() {
               <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to Wealth Ledger
             </Link>
-            <h1 className="text-display font-weight-display text-foreground dark:text-foreground leading-none">Treasury Entry Hub</h1>
+            <h1 className="text-display font-weight-display text-foreground leading-none">Treasury Entry Hub</h1>
             <p className="text-[10px] text-muted-foreground   mt-3">Fiscal Materialization v3.1</p>
           </div>
         </div>
@@ -45,13 +45,13 @@ export default async function ExpenseLoggingPage() {
       </div>
 
       {/* Footer panel — Glassmorphic Integrity Anchor */}
-      <div className="bg-card/40 dark:bg-card border border-border border-border rounded-[8px] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="bg-card/40 border border-border border-border rounded-[8px] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
         <div className="flex items-center gap-8">
-          <div className="w-16 h-16 rounded-[1.75rem] bg-muted dark:bg-card flex items-center justify-center shrink-0">
+          <div className="w-16 h-16 rounded-[1.75rem] bg-card flex items-center justify-center shrink-0">
              <History className="w-8 h-8 text-muted-foreground" />
           </div>
           <div>
-            <p className="text-2xl text-foreground dark:text-foreground leading-none">System Integrity Anchored</p>
+            <p className="text-2xl text-foreground leading-none">System Integrity Anchored</p>
             <div className="flex items-center gap-3 mt-3">
                <Zap className="w-3 h-3 text-brand" />
                <p className="text-[10px] text-muted-foreground ">Double-Entry Ledger Verified</p>
@@ -61,7 +61,7 @@ export default async function ExpenseLoggingPage() {
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
           <Link
             href="/expenses"
-            className="h-14 px-8 bg-card dark:bg-card border border-border border-border text-[10px] rounded-[8px] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
+            className="h-14 px-8 bg-card border border-border border-border text-[10px] rounded-[8px] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
           >
             <ArrowLeft className="w-4 h-4 mr-3 text-muted-foreground" />
             Wealth Registry

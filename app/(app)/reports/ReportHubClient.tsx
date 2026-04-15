@@ -120,7 +120,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {selectedReport !== 'RENT_ROLL' && (
                 <div className="space-y-2">
                     <label className="text-[10px] text-muted-foreground  block">Audit Interval</label>
-                    <select {...register('dateRange')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <select {...register('dateRange')} className="w-full bg-muted border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="YTD">CURRENT FISCAL YTD</option>
                         <option value="LAST_YEAR">PRECEDING FISCAL YEAR</option>
                         <option value="ALL_TIME">HISTORICAL ARCHIVE</option>
@@ -131,7 +131,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {selectedReport !== 'TAX_PREPARATION' && (
                 <div className="space-y-2">
                     <label className="text-[10px] text-muted-foreground  block">Governance Scope</label>
-                    <select {...register('scope')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <select {...register('scope')} className="w-full bg-muted border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="GLOBAL">PORTFOLIO GLOBAL</option>
                         <option value="PROPERTY">BUSINESS (PROPERTY)</option>
                         <option value="HOME">RESIDENTIAL (HOME)</option>
@@ -143,7 +143,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
             {(selectedScope === 'PROPERTY' || selectedReport === 'TAX_PREPARATION' || selectedReport === 'RENT_ROLL') && (
                 <div className="space-y-2">
                     <label className="text-[10px] text-muted-foreground  block">Asset Specific Identifier</label>
-                    <select {...register('propertyId')} className="w-full bg-muted dark:bg-card border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
+                    <select {...register('propertyId')} className="w-full bg-muted border border-border border-border rounded-[8px] px-4 py-4 text-xs  outline-none focus:ring-2 focus:ring-brand/40 appearance-none">
                         <option value="">SELECT PROPERTY</option>
                         {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
@@ -209,17 +209,17 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
             {data.type === 'PL' && (
                 <div className="space-y-12">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div className="bg-muted dark:bg-card border border-border border-border p-6 rounded-[8px]">
+                        <div className="bg-muted border border-border border-border p-6 rounded-[8px]">
                              <p className="text-[9px] text-muted-foreground  mb-2 flex items-center"><TrendingUp className="w-3 h-3 mr-1" /> Gross Potential (GPR)</p>
-                             <p className="text-display font-weight-display text-foreground dark:text-foreground">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
+                             <p className="text-display font-weight-display text-foreground">$ {data.payload.revenue.grossPotentialRent.toLocaleString()}</p>
                         </div>
                         <div className="bg-[var(--primary-muted)] dark:bg-[var(--primary-muted)] border border-[var(--primary)]/20 dark:border-[var(--primary)]/20 p-6 rounded-[8px]">
-                             <p className="text-[9px] text-emerald-700  mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
-                             <p className="text-display font-weight-display text-emerald-900 dark:text-[var(--primary)]">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
+                             <p className="text-[9px] text-mercury-green  mb-2 flex items-center"><CheckCircle className="w-3 h-3 mr-1" /> Effective Revenue (EGR)</p>
+                             <p className="text-display font-weight-display text-foreground">$ {data.payload.revenue.effectiveGrossRevenue.toLocaleString()}</p>
                         </div>
-                        <div className="bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-800 p-6 rounded-[8px]">
-                             <p className="text-[9px] text-rose-700  mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
-                             <p className="text-display font-weight-display text-rose-900 dark:text-rose-400">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
+                        <div className="bg-destructive/10 border border-destructive/20 p-6 rounded-[8px]">
+                             <p className="text-[9px] text-destructive  mb-2 flex items-center"><Activity className="w-3 h-3 mr-1" /> Operating Expense (OpEx)</p>
+                             <p className="text-display font-weight-display text-destructive">$ {data.payload.expenses.operating.total.toLocaleString()}</p>
                         </div>
                         <div className="bg-card p-6 rounded-[8px] ">
                              <p className="text-[9px] text-muted-foreground  mb-2 flex items-center"><Info className="w-3 h-3 mr-1" /> Net Operating Income</p>
@@ -246,7 +246,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                     {Object.entries(data.payload.expenses.operating.categories).map(([name, total]) => (
                                         <tr key={name} onClick={() => onDrillDown(name)} className="hover:bg-muted cursor-pointer group transition-colors">
                                             <td className={cellClass}>{name}</td>
-                                            <td className={`${cellClass} text-right text-red-600 flex items-center justify-end`}>
+                                            <td className={`${cellClass} text-right text-destructive flex items-center justify-end`}>
                                                 -$ {(total as number).toLocaleString()}
                                                 <ArrowRight className="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0" />
                                             </td>
@@ -264,7 +264,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                               </div>
                               <div className="p-6 border-4 border-foreground rounded-[8px] flex justify-between items-center">
                                   <span className="text-[10px] ">Vacancy Impact Score</span>
-                                  <span className="text-xl text-red-600">{( (data.payload.revenue.vacancyLoss / data.payload.revenue.grossPotentialRent) * 100 || 0).toFixed(2)}%</span>
+                                  <span className="text-xl text-destructive">{( (data.payload.revenue.vacancyLoss / data.payload.revenue.grossPotentialRent) * 100 || 0).toFixed(2)}%</span>
                               </div>
                            </div>
                         </div>
@@ -288,7 +288,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                             {data.payload.map((l: any, i: number) => {
                                 const isUnpaid = l.rentAmount > 2000; // Mock unpaid check
                                 return (
-                                    <tr key={i} className={`hover:bg-muted transition-colors ${isUnpaid ? 'bg-red-50' : ''}`}>
+                                    <tr key={i} className={`hover:bg-muted transition-colors ${isUnpaid ? 'bg-destructive/10' : ''}`}>
                                         <td className={cellClass}>{l.tenantName}</td>
                                         <td className={cellClass}>{l.unitNumber}</td>
                                         <td className={cellClass}>$ {l.rentAmount.toLocaleString()}</td>
@@ -296,7 +296,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                         <td className={cellClass}>
                                             <div className="flex gap-2">
                                                 {isUnpaid ? (
-                                                    <span className="bg-red-600 text-foreground text-[8px] px-2 py-1 rounded shadow-none animate-pulse">VAL_DELINQUENT</span>
+                                                    <span className="bg-destructive text-foreground text-[8px] px-2 py-1 rounded shadow-none animate-pulse">VAL_DELINQUENT</span>
                                                 ) : (
                                                     <span className="bg-[var(--primary-muted)] text-[var(--primary)] text-[8px] px-2 py-1 rounded">GOV_STABLE</span>
                                                 )}
@@ -336,7 +336,7 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                             {data.payload.map((e: any) => (
                                 <tr key={e.category} className="hover:bg-muted transition-colors">
                                     <td className={cellClass}>{e.category}</td>
-                                    <td className={`${cellClass} text-right text-red-600`}>-$ {e.amount.toLocaleString()}</td>
+                                    <td className={`${cellClass} text-right text-destructive`}>-$ {e.amount.toLocaleString()}</td>
                                 </tr>
                             ))}
                         </tbody>

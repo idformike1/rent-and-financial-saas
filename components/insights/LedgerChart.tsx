@@ -110,7 +110,7 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
 
     return (
       <div
-        className="bg-[#0a0a0b]/95 border border-white/[0.1] shadow-[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[8px] flex flex-col gap-3 z-50 min-w-[220px] backdrop-blur-3xl"
+        className="bg-popover/95 border border-white/[0.1] shadow-[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[8px] flex flex-col gap-3 z-50 min-w-[220px] backdrop-blur-3xl"
       >
         <div className="flex flex-col gap-2">
           {showIn && (
@@ -192,12 +192,12 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
         >
           <defs>
             <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4F6EF7" stopOpacity={0.22} />
-              <stop offset="100%" stopColor="#4F6EF7" stopOpacity={0.04} />
+              <stop offset="0%" stopColor="var(--sidebar-primary)" stopOpacity={0.22} />
+              <stop offset="100%" stopColor="var(--sidebar-primary)" stopOpacity={0.04} />
             </linearGradient>
             <linearGradient id="glowOut" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FF788C" stopOpacity={0.04} />
-              <stop offset="100%" stopColor="#FF788C" stopOpacity={0.22} />
+              <stop offset="0%" stopColor="var(--destructive)" stopOpacity={0.04} />
+              <stop offset="100%" stopColor="var(--destructive)" stopOpacity={0.22} />
             </linearGradient>
           </defs>
 
@@ -278,18 +278,18 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
             <Line
               type="monotone"
               dataKey="netCashflow"
-              stroke="#10B981"
+              stroke="var(--mercury-green)"
               strokeWidth={2}
               dot={{
                 r: 4,
-                fill: '#059669',
+                fill: 'var(--mercury-green)',
                 stroke: '#FFFFFF',
                 strokeWidth: 2,
                 fillOpacity: 1
               }}
               activeDot={{
                 r: 5,
-                fill: '#10B981',
+                fill: 'var(--mercury-green)',
                 stroke: '#FFFFFF',
                 strokeWidth: 2
               }}

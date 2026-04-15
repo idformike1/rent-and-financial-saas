@@ -87,7 +87,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                       </Badge>
                     </TD>
                     <TD className="text-right">
-                       <span className="text-[#37CC73] font-bold">95%</span>
+                       <span className="text-mercury-green font-bold">95%</span>
                     </TD>
                   </TR>
                 ))}

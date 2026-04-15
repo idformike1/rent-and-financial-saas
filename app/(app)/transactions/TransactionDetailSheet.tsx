@@ -74,7 +74,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
             <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                  <ShieldCheck size={16} className={cn(isVoided ? "text-red-400" : "text-white/40")} />
+                  <ShieldCheck size={16} className={cn(isVoided ? "text-destructive" : "text-white/40")} />
                 </div>
                 <div>
                   <SheetTitle className="text-[14px] font-medium text-white">
@@ -99,7 +99,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                 <div className="flex items-baseline gap-2">
                   <span className={cn(
                     "text-[42px] font-medium tracking-tight font-finance",
-                    isVoided ? "text-white/40" : isNegative ? "text-white" : "text-[#6CC08F]"
+                    isVoided ? "text-white/40" : isNegative ? "text-white" : "text-mercury-green"
                   )}>
                     {isNegative ? '−' : ''}${absAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
@@ -194,7 +194,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                     variant="ghost" 
                     onClick={handleVoid}
                     disabled={isPending}
-                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-lg text-white/40 hover:text-red-400 transition-colors"
+                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-lg text-white/40 hover:text-destructive transition-colors"
                    >
                      {isPending ? "Voiding..." : "Void Activity"}
                    </Button>

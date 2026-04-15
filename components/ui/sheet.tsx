@@ -46,7 +46,7 @@ const SheetContent = React.forwardRef<
     <SheetPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-[101] flex flex-col bg-[#161821] transition-opacity duration-300",
+        "fixed z-[101] flex flex-col bg-card transition-opacity duration-300",
         side === "right" && "inset-y-0 right-0 h-full w-full sm:max-w-md border-l border-white/10",
         className
       )}

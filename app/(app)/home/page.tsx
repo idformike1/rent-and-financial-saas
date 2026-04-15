@@ -33,7 +33,7 @@ export default async function HomePage() {
             </Button>
           </Link>
           <Link href="/treasury">
-            <Button size="sm" className="bg-[#5266EB] hover:bg-[#5266EB]/90 h-8 px-6 rounded-full text-[15px] font-[400] border-none">
+            <Button size="sm" className="bg-sidebar-primary hover:bg-sidebar-primary/90 h-8 px-6 rounded-full text-[15px] font-[400] border-none">
               <Plus className="w-[14px] h-[14px] mr-2 shrink-0" /> Move money
             </Button>
           </Link>

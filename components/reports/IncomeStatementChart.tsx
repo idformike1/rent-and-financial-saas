@@ -20,8 +20,8 @@ export default function IncomeStatementChart({ data }: { data: ChartData[] }) {
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
         <h4 className="text-[13px] font-bold text-foreground uppercase">MoM Performance Matrix (Revenue vs OpEx)</h4>
         <div className="flex gap-4">
-             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-emerald-500 rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase">Growth Revenue</span></div>
-             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-rose-500 rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase">Operational Loss</span></div>
+             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-mercury-green rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase">Growth Revenue</span></div>
+             <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-destructive rounded-full" /> <span className="text-[9px] font-bold text-muted-foreground uppercase">Operational Loss</span></div>
         </div>
       </div>
       

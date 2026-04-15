@@ -9,10 +9,10 @@ const GRID_CLASS = "grid grid-cols-[32px_80px_minmax(250px,2fr)_120px_200px_180p
 
 export default function TransactionsLoading() {
   return (
-    <div className="space-y-0 bg-[#161821] min-h-screen font-sans animate-pulse">
+    <div className="space-y-0 bg-background min-h-screen font-sans animate-pulse">
       
       {/* ── 1. HEADER SKELETON ───────────────────────────────────────────── */}
-      <div className="pt-2 pb-6 space-y-8 bg-[#161821]">
+      <div className="pt-2 pb-6 space-y-8 bg-background">
         <div className="flex items-center justify-between">
             <div className="h-9 w-64 bg-white/[0.03] rounded-md" />
             <div className="flex items-center gap-3">
@@ -31,7 +31,7 @@ export default function TransactionsLoading() {
       </div>
 
       {/* ── 2. ANALYTICAL BLOCK SKELETON ─────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] bg-[#161821]">
+      <div className="grid grid-cols-3 gap-0 border-b border-white/[0.05] bg-background">
          {[1, 2, 3].map((i) => (
            <div key={i} className={cn("py-10 space-y-6", i < 3 ? "border-r border-white/[0.05]" : "")}>
               <div className="space-y-2 px-0">
@@ -43,7 +43,7 @@ export default function TransactionsLoading() {
       </div>
 
       {/* ── 3. TOOLBAR SKELETON ──────────────────────────────────────────── */}
-      <div className="py-5 flex items-center justify-between bg-[#161821] border-b border-white/[0.05]">
+      <div className="py-5 flex items-center justify-between bg-background border-b border-white/[0.05]">
           <div className="flex items-center gap-3">
              <div className="h-8 w-32 bg-white/[0.03] rounded-full" />
              <div className="h-8 w-24 bg-white/[0.03] rounded-full" />
@@ -60,7 +60,7 @@ export default function TransactionsLoading() {
       {/* ── 4. DATA STRATUM SKELETON ─────────────────────────────────────── */}
       <div className="space-y-0">
          {/* THEAD */}
-         <div className={cn(GRID_CLASS, "py-3 border-b border-white/[0.05] bg-[#161821]")}>
+         <div className={cn(GRID_CLASS, "py-3 border-b border-white/[0.05] bg-background")}>
             <div className="flex justify-center">
               <div className="w-3.5 h-3.5 bg-white/[0.05] rounded-[3px]" />
             </div>

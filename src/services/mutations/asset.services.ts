@@ -42,6 +42,34 @@ export async function createPropertyService(
   });
 }
 
+export async function updatePropertyService(
+  propertyId: string,
+  payload: { name?: string, address?: string },
+  context: { operatorId: string, organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    const property = await tx.property.update({
+      where: { id: propertyId, organizationId: context.organizationId },
+      data: {
+        name: payload.name,
+        address: payload.address
+      }
+    });
+
+    await recordAuditLog({
+      action: 'UPDATE',
+      entityType: 'PROPERTY',
+      entityId: propertyId,
+      metadata: payload,
+      tx: tx as any
+    });
+
+    return property;
+  });
+}
+
 export async function deletePropertyService(
   propertyId: string,
   context: { operatorId: string, organizationId: string }

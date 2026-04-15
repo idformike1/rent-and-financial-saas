@@ -49,10 +49,10 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
       .sort((a, b) => b.amount - a.amount);
   }, [entries, activeSubTab, type, isIncome]);
 
-  const barColor = isIncome ? '#5C61E6' : '#E5697F'; // Indigo vs Pink/Red
+  const barColor = isIncome ? 'var(--sidebar-primary)' : 'var(--destructive)'; // Indigo vs Pink/Red
 
   return (
-    <div className="bg-[#12131A] border border-white/[0.05] rounded-[12px] p-6 flex flex-col gap-6 shadow-xl overflow-hidden relative">
+    <div className="bg-card border border-white/[0.05] rounded-[12px] p-6 flex flex-col gap-6 shadow-xl overflow-hidden relative">
       {/* Glossy Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
 
@@ -72,8 +72,8 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
             className={cn(
               "flex-1 text-center py-1.5 rounded-[6px] text-[13px] font-normal cursor-pointer transition-all duration-200",
               activeSubTab === tab 
-                ? "bg-[#2D2E39] text-[#F4F5F9] shadow-md border border-white/5" 
-                : "text-[#8A8B94] hover:text-[#F4F5F9]"
+                ? "bg-muted text-foreground shadow-md border border-white/5" 
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             {tab}
@@ -86,18 +86,18 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-white/10">
-              <th className="text-left text-[12px] uppercase tracking-[0.08em] text-[#8A8B94] font-normal pb-3 w-[40%]">
+              <th className="text-left text-[12px] uppercase tracking-[0.08em] text-muted-foreground font-normal pb-3 w-[40%]">
                 {activeSubTab === 'GL Code' ? 'GL Code' : (isIncome ? 'Source' : 'Recipient')}
               </th>
-              <th className="text-left text-[12px] uppercase tracking-[0.08em] text-[#8A8B94] font-normal pb-3 w-[35%]">% of total</th>
-              <th className="text-right text-[12px] uppercase tracking-[0.08em] text-[#8A8B94] font-normal pb-3 w-[25%]">Amount</th>
+              <th className="text-left text-[12px] uppercase tracking-[0.08em] text-muted-foreground font-normal pb-3 w-[35%]">% of total</th>
+              <th className="text-right text-[12px] uppercase tracking-[0.08em] text-muted-foreground font-normal pb-3 w-[25%]">Amount</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {tableData.length > 0 ? (
               tableData.map((row) => (
                 <tr key={row.name} className="h-[48px] hover:bg-white/[0.02] transition-colors group">
-                  <td className="text-[14px] leading-[20px] text-[#F4F5F9] font-normal truncate max-w-[150px]">{row.name}</td>
+                  <td className="text-[14px] leading-[20px] text-foreground font-normal truncate max-w-[150px]">{row.name}</td>
                   <td>
                     <div className="flex items-center gap-3 pr-4">
                       <div className="h-[4px] flex-1 bg-white/10 rounded-full overflow-hidden">
@@ -106,17 +106,17 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
                           style={{ width: `${row.percent}%`, backgroundColor: barColor }}
                         />
                       </div>
-                      <span className="text-[12px] text-[#8A8B94] font-mono min-w-[38px]">{row.percent}%</span>
+                      <span className="text-[12px] text-muted-foreground font-mono min-w-[38px]">{row.percent}%</span>
                     </div>
                   </td>
-                  <td className="text-right text-[14px] text-[#F4F5F9] font-mono">
+                  <td className="text-right text-[14px] text-foreground font-mono">
                     ${row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={3} className="py-8 text-center text-[#8A8B94] text-[14px]">No data for this selection</td>
+                <td colSpan={3} className="py-8 text-center text-muted-foreground text-[14px]">No data for this selection</td>
               </tr>
             )}
           </tbody>

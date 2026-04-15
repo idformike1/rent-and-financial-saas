@@ -40,9 +40,9 @@ const navigationSections = [
   {
     label: 'Command',
     items: [
+      { name: 'Asset Command',     href: '/assets',      icon: Icons.Accounts },
       { name: 'Home',              href: '/home',        icon: Icons.Home },
       { name: 'Transactions',      href: '/transactions',icon: Icons.Transactions },
-      { name: 'Dashboard',        href: '/dashboard',   icon: Icons.Home },
       { name: 'Properties',       href: '/properties',  icon: Icons.Accounts },
       { name: 'Tenants',          href: '/tenants',     icon: Icons.Accounts },
       { name: 'Onboarding',       href: '/onboarding',  icon: Icons.Transactions },
@@ -100,7 +100,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────────── */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-[232px] bg-sidebar border-r border-[#1C1C26] flex flex-col transform transition-transform duration-300 lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-[232px] bg-sidebar border-r border-border flex flex-col transform transition-transform duration-300 lg:translate-x-0",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
 
@@ -184,7 +184,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 ml-[232px] h-screen overflow-hidden flex flex-col bg-background">
 
         {/* ── TOP BAR / HEADER (CENTERED SEARCH SYNC) ────────────────────────── */}
-        <header className="sticky top-0 z-40 w-full h-[56px] flex items-center bg-background border-b border-[#1C1C26] shrink-0">
+        <header className="sticky top-0 z-40 w-full h-[56px] flex items-center bg-background border-b border-border shrink-0">
           <div className="w-full max-w-[1440px] mx-auto px-8 flex items-center">
             <div className="flex-1 flex items-center justify-center">
                <div className="w-full max-w-[512px] relative group">
@@ -192,7 +192,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   <input 
                     type="text" 
                     placeholder="Search for anything" 
-                    className="w-full h-8 bg-[#16161D] border border-[#2D2E39] rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
+                    className="w-full h-8 bg-card border border-border rounded-full pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
                      <kbd className="text-[10px] font-sans">⌘</kbd>
@@ -225,7 +225,7 @@ function Badge({ children, className, variant = 'default' }: { children: React.R
     default: "border-border text-muted-foreground bg-secondary",
     success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
-    danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",
+    danger:  "border-destructive/20 text-destructive bg-destructive/10",
   };
 
   return (

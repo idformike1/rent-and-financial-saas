@@ -64,7 +64,7 @@ const TRANSLATION_MAP: TranslationNode[] = [
     axiom_model: "LedgerEntry (categoryId → FinancialLedger.class: 'EXPENSE')",
     axiom_fields: ['LedgerEntry.payee', 'LedgerEntry.receiptUrl', 'FinancialLedger.class: "EXPENSE"'],
     server_actions: ['actions/category.actions.ts::createAccountNode', 'actions/payment.actions.ts::recordBillPayment'],
-    color_css: 'bg-rose-500',
+    color_css: 'bg-destructive',
     icon: Building2,
     category: 'EXPENSE'
   },
@@ -85,7 +85,7 @@ export default function FinanceTranslationHub() {
   const [selected, setSelected] = useState<TranslationNode>(TRANSLATION_MAP[0])
 
   return (
-    <div className="min-h-screen bg-muted dark:bg-background p-6 lg:p-6 space-y-6 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-muted p-6 lg:p-6 space-y-6 animate-in fade-in duration-700">
       
       {/* HEADER SECTION: FINOVA RECONSTRUCTION */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border border-border pb-12 gap-6 relative overflow-hidden group">
@@ -94,7 +94,7 @@ export default function FinanceTranslationHub() {
              <Layers className="w-8 h-8 text-brand" />
           </div>
           <div>
-            <h1 className="text-display font-weight-display text-foreground dark:text-foreground leading-none">
+            <h1 className="text-display font-weight-display text-foreground leading-none">
               Finance <br/><span className="text-brand">Translation Hub</span>
             </h1>
             <div className="flex items-center space-x-4 mt-2">
@@ -114,8 +114,8 @@ export default function FinanceTranslationHub() {
         
         {/* HIERARCHY VISUALIZER (LEFT) */}
         <div className="lg:col-span-7 space-y-8 animate-in slide-in-from-left-8 duration-700">
-          <Card className="rounded-[8px] p-6 border-none bg-card dark:bg-card">
-            <h2 className="text-xl  mb-10 flex items-center text-foreground dark:text-foreground border-b border-border border-border pb-6">
+          <Card className="rounded-[8px] p-6 border-none bg-card">
+            <h2 className="text-xl  mb-10 flex items-center text-foreground border-b border-border border-border pb-6">
                Hierarchical Translation Map
                <GitBranch className="w-5 h-5 ml-4 text-brand animate-pulse" />
             </h2>
@@ -131,7 +131,7 @@ export default function FinanceTranslationHub() {
                     className={`flex items-center text-left p-5 rounded-[8px] transition-all relative z-10 ${
                       isActive 
                         ? 'bg-card dark:bg-brand text-foreground -translate-y-1' 
-                        : 'bg-muted dark:bg-muted hover:bg-card dark:hover:bg-surface-800 text-muted-foreground hover:text-foreground'
+                        : 'bg-muted hover:bg-card dark:hover:bg-surface-800 text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center mr-6 transition-all ${
@@ -143,7 +143,7 @@ export default function FinanceTranslationHub() {
                       <span className={`text-[9px]   mb-1 block ${isActive ? 'text-foreground/60' : 'text-muted-foreground'}`}>
                         {node.category} COMPONENT
                       </span>
-                      <h3 className={`text-lg  ${isActive ? 'text-foreground' : 'text-foreground dark:text-foreground'}`}>
+                      <h3 className={`text-lg  ${isActive ? 'text-foreground' : 'text-foreground'}`}>
                         {node.label}
                       </h3>
                     </div>
@@ -173,9 +173,9 @@ export default function FinanceTranslationHub() {
         <div className="lg:col-span-5 animate-in slide-in-from-right-8 duration-700 delay-100">
            <div className="sticky top-28 space-y-8">
               
-              <Card className="rounded-[8px] p-6 border-none bg-card dark:bg-card border-l-8 border-brand">
+              <Card className="rounded-[8px] p-6 border-none bg-card border-l-8 border-brand">
                 <h4 className="text-[9px]   text-muted-foreground mb-6">GAAP Logical Proxy</h4>
-                <p className="text-xl text-foreground dark:text-foreground leading-relaxed">
+                <p className="text-xl text-foreground leading-relaxed">
                   "{selected.gaap_definition}"
                 </p>
               </Card>
@@ -228,13 +228,13 @@ export default function FinanceTranslationHub() {
                  </div>
               </Card>
 
-              <Card className="rounded-[8px] p-6 flex items-center justify-between transition-all cursor-pointer group bg-card dark:bg-card border-none">
+              <Card className="rounded-[8px] p-6 flex items-center justify-between transition-all cursor-pointer group bg-card border-none">
                  <div className="flex items-center space-x-6">
-                    <div className="w-12 h-12 rounded-xl bg-muted dark:bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
                        <Activity className="w-6 h-6 text-brand" />
                     </div>
                     <div>
-                       <h6 className="text-lg text-foreground dark:text-foreground">Trace In Log</h6>
+                       <h6 className="text-lg text-foreground">Trace In Log</h6>
                        <p className="text-[9px]  text-muted-foreground">Global Monitor</p>
                     </div>
                  </div>

@@ -29,7 +29,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
         <div className="space-y-4">
           <button 
             onClick={() => setDrawerOpen(true)}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,#E64A19)] text-foreground flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
+            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--destructive))] text-foreground flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl transition-colors"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Receive Payment

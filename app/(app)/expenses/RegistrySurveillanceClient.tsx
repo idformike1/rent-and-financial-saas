@@ -98,10 +98,10 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       </Card>
 
       {/* THE REGISTRY TABLE */}
-      <Card className="p-0 overflow-hidden border border-[#2A2D35] shadow-none">
+      <Card className="p-0 overflow-hidden border border-border shadow-none">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-[#1C1F26]/30 text-[12px] text-muted-foreground font-medium border-b border-[#2A2D35] h-[35px]">
+            <thead className="bg-muted/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">
               <tr>
                 <th className="px-3">Execution date</th>
                 <th className="px-3">Payee / Entity</th>
@@ -111,9 +111,9 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                 <th className="px-3 text-right">Value</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2D35]">
+            <tbody className="divide-y divide-border">
               {filtered.map((entry: any) => (
-                <tr key={entry.id} className="hover:bg-[#1C1F26] transition-none h-[38px] group">
+                <tr key={entry.id} className="hover:bg-muted transition-none h-[38px] group">
                   <td className="px-3">
                     <span className="text-[12px] text-muted-foreground font-finance tabular-nums">
                       {new Date(entry.transactionDate || entry.date).toISOString().split('T')[0]}

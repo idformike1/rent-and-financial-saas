@@ -43,7 +43,7 @@ export default async function DelinquencyReport() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground ">Delinquency Report</h1>
           <p className="text-muted-foreground mt-1 text-sm">Ranking of outstanding balances and aging metrics.</p>
         </div>
-        <div className="bg-[#1e1e2a] text-[#ff3333] font-sans font-[400] px-4 py-2 border border-[#2d2e39] rounded-[12px] text-[12px] flex items-center">
+        <div className="bg-card text-destructive font-sans font-[400] px-4 py-2 border border-border rounded-[12px] text-[12px] flex items-center">
           <AlertTriangle className="w-3.5 h-3.5 mr-2" />
           Severe Delinquencies ({reportData.filter((d: any) => d.isSevere).length})
         </div>
@@ -67,7 +67,7 @@ export default async function DelinquencyReport() {
                 </tr>
               ) : (
                 reportData.map((tenant: any) => (
-                  <tr key={tenant.id} className={tenant.isSevere ? 'bg-red-50/50 dark:bg-red-500/5' : 'hover:bg-muted transition-colors'}>
+                  <tr key={tenant.id} className={tenant.isSevere ? 'bg-destructive/10' : 'hover:bg-muted transition-colors'}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-foreground">
                       <Link href={`/tenants/${tenant.id}`} className="hover:text-brand transition-colors">
                         {tenant.name}
@@ -82,11 +82,11 @@ export default async function DelinquencyReport() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       {tenant.isSevere ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 dark:bg-red-500/10 text-red-800 dark:text-red-400  tracking-wide">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-destructive/10 text-destructive  tracking-wide">
                           Severe (30+ Days)
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-100 dark:bg-yellow-500/10 text-yellow-800 dark:text-yellow-400  tracking-wide">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-500  tracking-wide">
                           Warning
                         </span>
                       )}

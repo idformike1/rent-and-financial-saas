@@ -99,7 +99,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                     className={cn(
                       "p-1.5 rounded-[6px] border transition-none",
                       user.canEdit 
-                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                        ? "border-mercury-green/20 bg-mercury-green/10 text-mercury-green" 
                         : "border-border bg-muted/50 text-muted-foreground"
                     )}
                   >
@@ -113,8 +113,8 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                     className={cn(
                       "inline-flex items-center gap-2 px-2 py-0.5 rounded-[4px] border text-[10px] font-bold uppercase transition-none disabled:opacity-10",
                       user.isActive 
-                        ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                        : 'border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400'
+                        ? 'border-mercury-green/20 bg-mercury-green/10 text-mercury-green' 
+                        : 'border-destructive/20 bg-destructive/10 text-destructive'
                     )}
                   >
                     {user.isActive ? 'ACTIVE' : 'LOCKED'}
@@ -124,7 +124,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                   <button 
                     disabled={user.id === currentUserId}
                     onClick={() => setDeleteModal({ open: true, user })}
-                    className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-[6px] transition-none disabled:opacity-10"
+                    className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[6px] transition-none disabled:opacity-10"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -150,8 +150,8 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
               </button>
             </div>
             
-            <div className="bg-red-500/10 border border-red-500/20 p-4 mb-8 rounded-[8px] flex items-start gap-4">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+            <div className="bg-destructive/10 border border-destructive/20 p-4 mb-8 rounded-[8px] flex items-start gap-4">
+              <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p className="text-xs font-bold text-foreground">Vaporizing identity: {deleteModal.user.email}</p>
                 <p className="text-[11px] text-muted-foreground uppercase tracking-tight leading-relaxed font-bold">This action is irreversible. All access tokens will be invalidated immediately.</p>
@@ -176,7 +176,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 variant="primary"
                 disabled={confirmEmail !== 'CONFIRM'}
                 onClick={handleDelete}
-                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 rounded-[8px]"
+                className="w-full bg-destructive hover:bg-destructive/90 text-white h-12 rounded-[8px]"
               >
                 EXECUTE PURGE
               </Button>

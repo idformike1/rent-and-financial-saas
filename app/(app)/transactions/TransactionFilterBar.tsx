@@ -77,7 +77,7 @@ export default function TransactionFilterBar({
               <ChevronDown size={12} className="opacity-30" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-56 bg-[#161821]/95 border-white/10 p-1 backdrop-blur-xl" align="start">
+          <PopoverContent className="w-56 bg-popover/95 border-white/10 p-1 backdrop-blur-xl" align="start">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -116,7 +116,7 @@ export default function TransactionFilterBar({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-[680px] p-0 bg-[#161821]/90 backdrop-blur-md border border-white/10 shadow-2xl rounded-xl overflow-hidden" 
+            className="w-[680px] p-0 bg-popover/90 backdrop-blur-md border border-white/10 shadow-2xl rounded-xl overflow-hidden" 
             align="start" 
             side="bottom"
             sideOffset={12}
@@ -283,7 +283,7 @@ export default function TransactionFilterBar({
               <ChevronDown size={12} className="opacity-30" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-64 bg-[#161821]/95 border-white/10 p-4 text-white shadow-2xl backdrop-blur-xl" align="start">
+          <PopoverContent className="w-64 bg-popover/95 border-white/10 p-4 text-white shadow-2xl backdrop-blur-xl" align="start">
             <div className="space-y-4">
                <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Amount Scope</span>
@@ -349,7 +349,7 @@ export default function TransactionFilterBar({
                   <ChevronDown size={12} className="opacity-30" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-48 bg-[#161821]/95 border-white/10 p-1 backdrop-blur-xl shadow-2xl" align="end">
+              <PopoverContent className="w-48 bg-popover/95 border-white/10 p-1 backdrop-blur-xl shadow-2xl" align="end">
                 <button 
                   onClick={() => onExport('csv')}
                   className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all"

@@ -60,8 +60,8 @@ export default function HomeVisuals() {
               <AreaChart data={treasuryData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stopColor="#8DA4F5" stopOpacity={0.28} />
-                       <stop offset="100%" stopColor="#8DA4F5" stopOpacity={0.08} />
+                       <stop offset="0%" stopColor="var(--sidebar-primary)" stopOpacity={0.28} />
+                       <stop offset="100%" stopColor="var(--sidebar-primary)" stopOpacity={0.08} />
                     </linearGradient>
                   </defs>
                  <XAxis 
@@ -82,7 +82,7 @@ export default function HomeVisuals() {
                   <Area 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#8DA4F5" 
+                    stroke="var(--sidebar-primary)" 
                     strokeWidth={1.5}
                     fill="url(#chartGradient)" 
                     animationDuration={1500}

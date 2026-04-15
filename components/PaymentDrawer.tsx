@@ -135,7 +135,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                   placeholder="0.00"
                 />
               </div>
-              {errors.amountPaid && <p className="text-rose-500 text-[10px] uppercase font-bold">{errors.amountPaid.message}</p>}
+              {errors.amountPaid && <p className="text-destructive text-[10px] uppercase font-bold">{errors.amountPaid.message}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -170,7 +170,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 placeholder="Reference for audit trail..."
                 className="w-full bg-muted/30 border border-border rounded-[8px] p-3 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none resize-none placeholder:text-muted-foreground/50 font-bold"
               />
-              {errors.referenceText && <p className="text-rose-500 text-[10px] uppercase font-bold">{errors.referenceText.message}</p>}
+              {errors.referenceText && <p className="text-destructive text-[10px] uppercase font-bold">{errors.referenceText.message}</p>}
             </div>
 
             {/* Waterfall Preview Area */}
@@ -191,7 +191,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                       <div className="text-right">
                         <p className={cn(
                           "text-sm font-finance tracking-tight",
-                          charge.applied > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground/30'
+                          charge.applied > 0 ? 'text-mercury-green' : 'text-muted-foreground/30'
                         )}>
                           {charge.applied > 0 ? `+ $${charge.applied.toFixed(2)}` : '$0.00'}
                         </p>
@@ -201,13 +201,13 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 )}
 
                 {overpayment > 0 && (
-                  <div className="flex justify-between items-center py-4 bg-emerald-500/5 px-3 rounded-[6px] mt-2 border border-emerald-500/10">
+                  <div className="flex justify-between items-center py-4 bg-mercury-green/5 px-3 rounded-[6px] mt-2 border border-mercury-green/10">
                     <div>
-                      <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">Automatic Credit</p>
-                      <p className="text-[9px] text-emerald-600/60 dark:text-emerald-400/60 uppercase">Unapplied surplus materialized</p>
+                      <p className="text-[11px] font-bold text-mercury-green uppercase">Automatic Credit</p>
+                      <p className="text-[9px] text-mercury-green/60 dark:text-mercury-green/60 uppercase">Unapplied surplus materialized</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-finance text-emerald-600 dark:text-emerald-400 tracking-tight">+ ${overpayment.toFixed(2)}</p>
+                      <p className="text-base font-finance text-mercury-green tracking-tight">+ ${overpayment.toFixed(2)}</p>
                     </div>
                   </div>
                 )}

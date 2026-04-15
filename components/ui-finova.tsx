@@ -22,7 +22,7 @@ export function Card({
 }: CardProps) {
   const variants = {
     default: "mercury-card",
-    muted:   "mercury-card border-[#262631] bg-[#1c1c26]",
+    muted:   "mercury-card border-border bg-muted",
     outline: "mercury-card bg-transparent",
     glass:   "mercury-card bg-white/[0.04] backdrop-blur-md",
   };
@@ -122,7 +122,7 @@ export function Badge({
     default: "border-border text-muted-foreground bg-secondary",
     success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
-    danger:  "border-rose-500/20 text-rose-600 dark:text-rose-400 bg-rose-500/10",
+    danger:  "border-destructive/20 text-destructive bg-destructive/10",
     brand:   "border-primary/20 text-primary bg-primary/10",
   };
 
@@ -193,7 +193,7 @@ export function TD({
   if (isHeader) {
     return (
       <th className={cn(
-        "px-[10px] text-left text-[12px] font-[400] text-[#9D9DA8] tracking-normal leading-none",
+        "px-[10px] text-left text-[12px] font-[400] text-muted-foreground tracking-normal leading-none",
         className
       )}>
         {children}

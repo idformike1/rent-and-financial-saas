@@ -50,7 +50,7 @@ export default async function TenantsPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/onboarding">
-            <Button size="sm" className="bg-[#5266EB] hover:bg-[#5266EB]/90 h-8 px-4 rounded-full text-[13px] border-none">
+            <Button size="sm" className="bg-sidebar-primary hover:bg-sidebar-primary/90 h-8 px-4 rounded-full text-[13px] border-none">
               <Plus className="w-[14px] h-[14px] mr-2" /> New Provisioning
             </Button>
           </Link>

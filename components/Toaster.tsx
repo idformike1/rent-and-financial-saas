@@ -29,7 +29,7 @@ export default function Toaster() {
             flex items-center gap-4 p-5 rounded-[8px] border border-border
             animate-in slide-in-from-right-full duration-500
             ${t.type === 'success' ? 'bg-[var(--primary)] text-foreground' : ''}
-            ${t.type === 'error' ? 'bg-rose-600 text-foreground' : ''}
+            ${t.type === 'error' ? 'bg-destructive text-foreground' : ''}
             ${t.type === 'info' ? 'glass-panel text-foreground' : ''}
           `}
         >

@@ -4,6 +4,7 @@ import { runSecureServerAction } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
 import { 
   createPropertyService, 
+  updatePropertyService,
   deletePropertyService,
   createUnitService,
   updateUnitService
@@ -40,6 +41,28 @@ export async function createProperty(data: { name: string, address: string }) {
   });
 }
 
+export async function updateProperty(propertyId: string, data: { name?: string, address?: string }) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const property = await updatePropertyService(
+        propertyId,
+        data,
+        {
+          operatorId: session.userId || "OP_SYSTEM_ADMIN",
+          organizationId: session.organizationId
+        }
+      );
+
+      revalidatePath(`/properties/${propertyId}`);
+      revalidatePath('/properties');
+      return { success: true, data: property };
+    } catch (e: any) {
+      console.error('[ASSET_PROPERTY_UPDATE_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}
+
 export async function deleteProperty(propertyId: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
@@ -52,6 +75,7 @@ export async function deleteProperty(propertyId: string) {
       );
 
       revalidatePath('/properties');
+      revalidatePath(`/properties/${propertyId}`);
       return { success: true };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_DELETE_FATAL]', e);

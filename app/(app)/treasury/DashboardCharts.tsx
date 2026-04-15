@@ -24,7 +24,7 @@ interface DashboardChartsProps {
 // Mercury chart palette — intentional semantic colors for data visualization.
 // These are kept as explicit hex values because they represent DATA series
 // colours (not UI chrome) and must remain consistent across both themes.
-const CHART_SERIES = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
+const CHART_SERIES = ['var(--sidebar-primary)', 'var(--mercury-green)', 'var(--chart-3)', 'var(--destructive)', 'var(--sidebar-primary)'];
 
 export default function DashboardCharts({ trendData, recoveryData }: DashboardChartsProps) {
   return (
@@ -43,7 +43,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
               <p className="text-[11px] font-bold text-muted-foreground  mt-2">Gross realization over 6 months</p>
            </div>
            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#4f46e5' }} />
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--sidebar-primary)' }} />
               <span className="text-[10px] font-bold text-muted-foreground ">Gross Revenue</span>
            </div>
         </div>
@@ -53,8 +53,8 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
             <AreaChart data={trendData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
               <defs>
                 <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/>
-                  <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="var(--sidebar-primary)" stopOpacity={0.12}/>
+                  <stop offset="95%" stopColor="var(--sidebar-primary)" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={1} />
@@ -86,11 +86,11 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
               <Area 
                 type="monotone" 
                 dataKey="income" 
-                stroke="#4f46e5" 
+                stroke="var(--sidebar-primary)" 
                 strokeWidth={2.5} 
                 fillOpacity={1} 
                 fill="url(#colorIncome)" 
-                activeDot={{ r: 6, fill: '#4f46e5', stroke: 'var(--card)', strokeWidth: 2 }} 
+                activeDot={{ r: 6, fill: 'var(--sidebar-primary)', stroke: 'var(--card)', strokeWidth: 2 }} 
               />
             </AreaChart>
           </ResponsiveContainer>

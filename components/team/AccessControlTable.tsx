@@ -98,7 +98,7 @@ export default function AccessControlTable({
                   className={cn(
                     "p-1.5 rounded-[6px] border transition-none",
                     member.canEdit 
-                      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                      ? "border-mercury-green/20 bg-mercury-green/10 text-mercury-green" 
                       : "border-border bg-muted/50 text-muted-foreground"
                   )}
                 >
@@ -116,8 +116,8 @@ export default function AccessControlTable({
                   className={cn(
                     "inline-flex items-center gap-2 px-2 py-0.5 rounded-[4px] border text-[10px] font-bold uppercase transition-none disabled:opacity-10",
                     member.isActive 
-                      ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                      : 'border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400'
+                      ? 'border-mercury-green/20 bg-mercury-green/10 text-mercury-green' 
+                      : 'border-destructive/20 bg-destructive/10 text-destructive'
                   )}
                 >
                   {member.isActive ? 'ACTIVE' : 'LOCKED'}
@@ -133,7 +133,7 @@ export default function AccessControlTable({
                     }
                   }}
                   disabled={member.id === currentUserId}
-                  className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-[6px] transition-none disabled:opacity-10"
+                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[6px] transition-none disabled:opacity-10"
                 >
                   <UserMinus size={16} />
                 </button>

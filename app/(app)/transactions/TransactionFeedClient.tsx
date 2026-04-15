@@ -317,8 +317,8 @@ export default function TransactionFeedClient({ initialData, properties, tenants
   return (
     <div className="min-h-screen font-sans selection:bg-white/10 space-y-[10px] relative">
       {/* Frozen Command Shell */}
-      <div className="sticky top-0 z-50 bg-[#161821] -mx-8 px-8 pt-0 pb-[10px] space-y-[10px]">
-        <h1 className="text-display font-display text-[#F4F5F9] tracking-tight">
+      <div className="sticky top-0 z-50 bg-background -mx-8 px-8 pt-0 pb-[10px] space-y-[10px]">
+        <h1 className="text-display font-display text-foreground tracking-tight">
           Transactions
         </h1>
         <TransactionFilterBar
@@ -363,33 +363,33 @@ export default function TransactionFeedClient({ initialData, properties, tenants
       <div className="grid grid-cols-3 gap-0 border-y border-white/[0.05]">
         <div className="py-6 border-r border-white/[0.05] space-y-2 flex flex-col justify-center px-8">
           <div className="space-y-1">
-            <p className="text-[12px] text-[#9D9DA8] font-[400] uppercase tracking-widest">Net change</p>
+            <p className="text-[12px] text-muted-foreground font-[400] uppercase tracking-widest">Net change</p>
             <p className="text-[24px] text-white font-[400]">
               {summary.netChange < 0 ? '−' : ''}${Math.abs(summary.netChange).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
           <div className="flex items-center gap-10 pt-2">
             <div className="space-y-1">
-              <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">In</p>
-              <p className="text-[16px] text-[#6CC08F] font-[400] tracking-tight">+${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+              <p className="text-[11px] text-muted-foreground font-[400] uppercase tracking-wider">In</p>
+              <p className="text-[16px] text-mercury-green font-[400] tracking-tight">+${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-[11px] text-[#9D9DA8] font-[400] uppercase tracking-wider">Out</p>
+              <p className="text-[11px] text-muted-foreground font-[400] uppercase tracking-wider">Out</p>
               <p className="text-[16px] text-white/40 font-[400] tracking-tight">−${summary.moneyOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
             </div>
           </div>
         </div>
 
         <div className="py-6 border-r border-white/[0.05] flex flex-col justify-between px-8">
-          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest font-medium">Top Counterparties</p>
+          <p className="text-[12px] text-muted-foreground uppercase tracking-widest font-medium">Top Counterparties</p>
           <div className="flex-1 mt-4 space-y-0">
             {topEntities.map((entity, i) => (
               <div key={entity.name} className={cn(
                 "grid grid-cols-[1fr_auto] items-center py-2 h-8",
                 i !== topEntities.length - 1 && "border-b border-white/5"
               )}>
-                <span className="text-slate-200 text-sm font-medium truncate pr-4">{entity.name}</span>
-                <span className="text-slate-400 font-mono text-xs">${entity.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                <span className="text-foreground text-sm font-medium truncate pr-4">{entity.name}</span>
+                <span className="text-muted-foreground font-mono text-xs">${entity.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
               </div>
             ))}
             {topEntities.length === 0 && (
@@ -399,21 +399,21 @@ export default function TransactionFeedClient({ initialData, properties, tenants
         </div>
 
         <div className="py-6 flex flex-col justify-between px-8">
-          <p className="text-[12px] text-[#9D9DA8] uppercase tracking-widest font-medium">Account Exposure</p>
+          <p className="text-[12px] text-muted-foreground uppercase tracking-widest font-medium">Account Exposure</p>
           <div className="space-y-4 mt-4 h-full flex flex-col justify-center">
             {accountActivity.slice(0, 3).map(account => (
               <div key={account.name} className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] text-slate-300 font-medium truncate pr-2 uppercase tracking-wide">{account.name}</span>
-                  <span className="text-[11px] text-slate-500 font-mono">
+                  <span className="text-[11px] text-foreground/70 font-medium truncate pr-2 uppercase tracking-wide">{account.name}</span>
+                  <span className="text-[11px] text-muted-foreground font-mono">
                     ${account.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
                 </div>
-                <div className="h-1.5 rounded-full w-full bg-slate-800 overflow-hidden">
+                <div className="h-1.5 rounded-full w-full bg-muted overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${(account.volume / (totalActivityVolume || 1)) * 100}%` }}
-                    className="h-full bg-slate-300"
+                    className="h-full bg-primary"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       {/* Data Strata */}
       <div className="space-y-0 relative">
-        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-[#9D9DA8] uppercase tracking-[0.1em] border-b border-white/[0.05] sticky top-[108px] z-40 bg-[#161821]")}>
+        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-muted-foreground uppercase tracking-[0.1em] border-b border-white/[0.05] sticky top-[108px] z-40 bg-background")}>
           <div>Date</div>
           <div>Entity & Description</div>
           <div className="text-right">Amount</div>
@@ -452,19 +452,19 @@ export default function TransactionFeedClient({ initialData, properties, tenants
                   tx.status === 'VOIDED' && "opacity-40 grayscale"
                 )}
               >
-                <div className="text-[14px] text-[#C3C3CC]">{format(new Date(tx.transactionDate), 'MMM d')}</div>
+                <div className="text-[14px] text-muted-foreground">{format(new Date(tx.transactionDate), 'MMM d')}</div>
                 <div className="flex items-center gap-4">
                    <div className="w-7 h-7 rounded-full bg-white/[0.05] flex items-center justify-center text-[10px] text-white/40 shrink-0">
                      {(tx.payee || tx.description || 'U').substring(0, 1).toUpperCase()}
                    </div>
-                   <span className="text-[15px] text-[#DDDDE5] leading-relaxed">{tx.description || tx.payee}</span>
+                   <span className="text-[15px] text-foreground/80 leading-relaxed">{tx.description || tx.payee}</span>
                 </div>
-                <div className={cn("text-[15px] text-right font-finance", isNeg ? "text-white" : "text-[#6CC08F]")}>
+                <div className={cn("text-[15px] text-right font-finance", isNeg ? "text-white" : "text-mercury-green")}>
                   {isNeg ? '−' : ''}${whole}<span className="text-[11px] opacity-40 ml-0.5">{cents}</span>
                 </div>
-                <div className="text-[14px] text-[#F4F5F9]">{tx.account.name}</div>
-                <div className="text-[14px] text-[#F4F5F9]">{tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash'}</div>
-                <div className="text-[14px] text-[#9D9DA8] flex items-center gap-2">
+                <div className="text-[14px] text-foreground">{tx.account.name}</div>
+                <div className="text-[14px] text-foreground">{tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash'}</div>
+                <div className="text-[14px] text-muted-foreground flex items-center gap-2">
                   {tx.expenseCategory?.name || 'Inflow'}
                   {tx.status === 'VOIDED' && (
                     <span className="text-[10px] font-mono border border-white/20 px-1 rounded-sm text-white/40 uppercase tracking-tighter">
@@ -486,7 +486,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       <div className="py-12 border-t border-white/[0.05] flex justify-between items-center px-4">
         <p className="text-[12px] text-white/20 uppercase tracking-widest font-medium">Volumetric Report: {filteredData.length} entries</p>
-        <button className="h-9 px-8 rounded-full border border-white/10 text-[12px] text-[#9D9DA8] hover:text-white transition-all">Load Forensic History</button>
+        <button className="h-9 px-8 rounded-full border border-white/10 text-[12px] text-muted-foreground hover:text-white transition-all">Load Forensic History</button>
       </div>
     </div>
   )

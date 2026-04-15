@@ -7,7 +7,7 @@ export const Capsule = ({ children }: { children: React.ReactNode }) => (
 export const generateRunwayNarrative = (burnRate: number, totalAssets: number) => {
   const runway = burnRate > 0 ? (totalAssets / burnRate).toFixed(1) : "Infinite";
   return (
-    <span className="text-[#F4F5F9]">
+    <span className="text-foreground">
       Net cash flow is <Capsule>{totalAssets < 0 ? '−' : ''}${Math.abs(totalAssets).toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> YTD. Your Mercury balances total <Capsule>${Math.abs(totalAssets).toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> with a monthly burn rate of <Capsule>−${Math.abs(burnRate).toLocaleString('en-US', { minimumFractionDigits: 0 })}/mo</Capsule>. Runway ceiling: {runway} fully completed months.
     </span>
   );
@@ -35,7 +35,7 @@ export const generateIncomeNarrative = (totalIncome: number, entries: any[]) => 
   const percent = totalIncome > 0 ? ((topAmount / totalIncome) * 100).toFixed(1) : 0;
 
   return (
-    <span className="text-[#F4F5F9]">
+    <span className="text-foreground">
       Money in reached <Capsule>${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> with <Capsule>{topSource}</Capsule> contributing <Capsule>{percent}%</Capsule> of total inflows.
     </span>
   );
@@ -46,7 +46,7 @@ export const generateOutflowNarrative = (totalExpense: number, entries: any[]) =
   const count = expenseEntries.length;
 
   return (
-    <span className="text-[#F4F5F9]">
+    <span className="text-foreground">
       Spending was <Capsule>−${Math.abs(totalExpense).toLocaleString('en-US', { minimumFractionDigits: 0 })}</Capsule> across <Capsule>{count} transactions</Capsule>. This is an increase of <Capsule>0%</Capsule> from the prior period.
     </span>
   );
