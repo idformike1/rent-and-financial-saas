@@ -1,0 +1,110 @@
+'use client';
+
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { useCallback } from 'react';
+
+interface UnitGridProps {
+  units: any[];
+}
+
+const formatCurrency = (val: any) => {
+  const num = Number(val) || 0;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+};
+
+export default function UnitGrid({ units }: UnitGridProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const handleRowClick = useCallback((unitId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('unitId', unitId);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [pathname, searchParams, router]);
+
+  return (
+    <div className="w-full bg-[#171721] border border-[#1F2937] overflow-hidden shadow-2xl">
+      <table className="w-full border-collapse text-[13px]">
+        <colgroup>
+          <col className="w-[20%]" />
+          <col className="w-[30%]" />
+          <col className="w-[20%]" />
+          <col className="w-[20%]" />
+          <col className="w-[10%]" />
+        </colgroup>
+        <thead>
+          <tr className="bg-[#1A1A24] border-b border-[#1F2937]">
+            <th className="text-left px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Unit Identifier</th>
+            <th className="text-left px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Taxonomy</th>
+            <th className="text-left px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Clinical State</th>
+            <th className="text-right px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Market Value</th>
+            <th className="px-6 py-4"></th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#1F2937]">
+          {units.map((unit) => {
+            const isSelected = searchParams.get('unitId') === unit.id;
+            
+            // Re-calc clinical status since the data passed here is raw Prisma unit
+            let status = '[ SURVEILLANCE ]';
+            let statusColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+            if (unit.maintenanceStatus === 'OPERATIONAL' && unit.leases?.length > 0) {
+              status = '[ OPTIMIZED ]';
+              statusColor = 'text-mercury-green bg-mercury-green/10 border-mercury-green/20';
+            } else if (unit.maintenanceStatus === 'DECOMMISSIONED') {
+              status = '[ CRITICAL ]';
+              statusColor = 'text-destructive bg-destructive/10 border-destructive/20';
+            }
+
+            return (
+              <tr 
+                key={unit.id}
+                onClick={() => handleRowClick(unit.id)}
+                className={cn(
+                  "group cursor-pointer transition-colors",
+                  isSelected ? "bg-[#1E1E2A]" : "bg-transparent hover:bg-[#1E1E2A]"
+                )}
+              >
+                <td className="px-6 py-4">
+                  <span className="font-mono text-[#F9FAFB] tracking-tight">{unit.unitNumber}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-[#9CA3AF] uppercase tracking-wider">{unit.category} / {unit.type}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={cn("px-2 py-1 border text-[10px] font-bold tracking-widest", statusColor)}>
+                    {status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className="font-mono tracking-tight text-[#E5E7EB] tabular-nums">
+                    {formatCurrency(unit.marketRent)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <span className="font-mono text-[10px] uppercase font-bold text-[#5D71F9] opacity-0 group-hover:opacity-100 transition-opacity">
+                    [ MANAGE ]
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
+          {units.length === 0 && (
+            <tr>
+              <td colSpan={5} className="px-6 py-12 text-center text-[#9CA3AF] uppercase tracking-widest text-[11px]">
+                No operational units detected in this domain.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}

@@ -243,3 +243,24 @@ export async function processMoveOut(tenantId: string, leaseId: string, unitId: 
     }
   });
 }
+
+/**
+ * FETCH ACTIVE TENANTS FOR ASSIGNMENT (GATEKEEPER)
+ */
+export async function getActiveTenants() {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const { getSovereignClient } = await import('@/src/lib/db');
+      const db = getSovereignClient(session.userId || "OP_SYSTEM_ADMIN");
+      const tenants = await db.tenant.findMany({
+        where: { organizationId: session.organizationId, isDeleted: false },
+        select: { id: true, name: true, nationalId: true },
+        orderBy: { name: 'asc' }
+      });
+      return { success: true, data: tenants };
+    } catch (e: any) {
+      console.error('[GET_TENANTS_FATAL]', e);
+      return { success: false, data: [] };
+    }
+  });
+}

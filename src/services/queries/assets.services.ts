@@ -130,3 +130,106 @@ export async function getPortfolioSummaryService(context: { operatorId: string, 
     properties: mappedProperties
   };
 }
+
+/**
+ * SIDEBAR HYDRATION
+ */
+export async function getSidebarPropertiesService(context: { operatorId: string, organizationId: string }) {
+  const db = getSovereignClient(context.operatorId);
+  return db.property.findMany({
+    where: { organizationId: context.organizationId },
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' }
+  });
+}
+
+/**
+ * SOVEREIGN VIEWPORT HYDRATION
+ */
+export async function getPropertySovereignViewService(propertyId: string, context: { operatorId: string, organizationId: string }) {
+  const db = getSovereignClient(context.operatorId);
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+  const property = await db.property.findUnique({
+    where: { id: propertyId, organizationId: context.organizationId },
+    include: {
+      units: {
+        where: { maintenanceStatus: { not: 'DECOMMISSIONED' } },
+        include: {
+          leases: {
+            where: { isActive: true },
+            include: { tenant: { select: { name: true } } }
+          }
+        },
+        orderBy: { unitNumber: 'asc' }
+      },
+      ledgerEntries: {
+        where: {
+          organizationId: context.organizationId,
+          account: { category: AccountCategory.INCOME },
+          status: EntryStatus.ACTIVE,
+          transactionDate: { gte: startOfMonth, lte: endOfMonth }
+        },
+        select: { amount: true }
+      }
+    }
+  });
+
+  if (!property) throw new Error("Property not found or access denied.");
+
+  const activeLeases = property.units.filter((u: any) => u.leases.length > 0).length;
+  const totalUnits = property.units.length;
+  const collectedIncome = property.ledgerEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
+  // Estimate portfolio value (Base rent sum from active leases)
+  const portfolioValue = property.units.reduce((sum: number, u: any) => {
+    return sum + (u.leases[0] ? Number(u.leases[0].rentAmount) : 0);
+  }, 0);
+
+  return {
+    ...property,
+    telemetry: {
+      totalUnits,
+      activeLeases,
+      yield: totalUnits > 0 ? (activeLeases / totalUnits) * 100 : 0,
+      collectedIncome,
+      portfolioValue
+    }
+  };
+}
+
+/**
+ * UNIT FORENSIC LEDGER SYNC
+ */
+export async function getUnitLedgerFeedService(unitId: string, context: { operatorId: string, organizationId: string }) {
+  const db = getSovereignClient(context.operatorId);
+  
+  // Resolve all historic and active tenant occupancies for this specific unit
+  const unit = await db.unit.findUnique({
+    where: { id: unitId, organizationId: context.organizationId },
+    include: { leases: { select: { tenantId: true } } }
+  });
+
+  if (!unit || !unit.leases.length) return [];
+
+  const tenantIds = unit.leases.map((l: any) => l.tenantId);
+
+  // Materialize the absolute ledger across all tenant timelines linked to this unit
+  return await db.ledgerEntry.findMany({
+    where: {
+      tenantId: { in: tenantIds },
+      organizationId: context.organizationId
+    },
+    orderBy: { transactionDate: 'desc' },
+    select: {
+      id: true,
+      transactionDate: true,
+      description: true,
+      amount: true,
+      paymentMode: true,
+      status: true,
+      account: { select: { category: true } }
+    }
+  });
+}

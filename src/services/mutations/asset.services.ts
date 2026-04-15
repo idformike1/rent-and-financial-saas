@@ -142,7 +142,10 @@ export async function updateUnitService(
   payload: { 
     maintenanceStatus?: MaintenanceStatus, 
     marketRent?: number, 
-    propertyId?: string 
+    propertyId?: string,
+    unitNumber?: string,
+    type?: string,
+    category?: string
   },
   context: { operatorId: string, organizationId: string }
 ) {
@@ -153,7 +156,10 @@ export async function updateUnitService(
       where: { id: unitId, organizationId: context.organizationId },
       data: {
         maintenanceStatus: payload.maintenanceStatus,
-        marketRent: payload.marketRent
+        marketRent: payload.marketRent,
+        unitNumber: payload.unitNumber,
+        category: payload.category,
+        type: payload.type
       }
     });
 

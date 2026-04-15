@@ -106,7 +106,7 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
   });
 }
 
-export async function updateUnit(unitId: string, data: { maintenanceStatus?: MaintenanceStatus, marketRent?: number, propertyId?: string }) {
+export async function updateUnit(unitId: string, data: { maintenanceStatus?: MaintenanceStatus, marketRent?: number, propertyId?: string, unitNumber?: string, type?: string, category?: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
       const unit = await updateUnitService(
@@ -146,6 +146,23 @@ export async function getAvailableUnits() {
     });
   } catch (e) {
     console.error('[ASSET_INVENTORY_SCAN_FATAL]', e);
+    return [];
+  }
+}
+
+export async function getUnitLedgerFeed(unitId: string) {
+  try {
+    return await runSecureServerAction('MANAGER', async (session) => {
+      // Lazy import to prevent circular dependencies if any
+      const { getUnitLedgerFeedService } = await import('@/src/services/queries/assets.services');
+      const feed = await getUnitLedgerFeedService(unitId, {
+        operatorId: session.userId || "OP_SYSTEM_ADMIN",
+        organizationId: session.organizationId
+      });
+      return JSON.parse(JSON.stringify(feed || []));
+    });
+  } catch (e) {
+    console.error('[ASSET_LEDGER_FEED_FATAL]', e);
     return [];
   }
 }
