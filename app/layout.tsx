@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { Plus_Jakarta_Sans, IBM_Plex_Mono, Geist } from 'next/font/google'
 import './globals.css'
 import SessionProvider from '@/components/providers/SessionProvider'
 import Toaster from '@/components/Toaster'
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 // ── PROJECT ARCADIA: DIRECT CDN FONT INJECTION (globals.css) ───────────────
 // No static Next.js loaders used for proprietary variable fonts.
@@ -30,7 +34,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${ibmPlexMono.variable} font-sans`}
+      className={cn(ibmPlexMono.variable, "font-sans", geist.variable, "dark")}
     >
       <body 
         className="antialiased min-h-screen overflow-hidden bg-background text-foreground transition-colors duration-300"
