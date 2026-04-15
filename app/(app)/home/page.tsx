@@ -27,7 +27,7 @@ export default async function HomePage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <Link href="/expenses">
+          <Link href="/treasury/payables">
             <Button variant="secondary" size="sm" className="h-8 rounded-full text-[15px] font-[400] border-white/5 bg-white/5 hover:bg-white/10 px-6">
               View activity
             </Button>

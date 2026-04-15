@@ -187,8 +187,23 @@ export async function getPropertySovereignViewService(propertyId: string, contex
     return sum + (u.leases[0] ? Number(u.leases[0].rentAmount) : 0);
   }, 0);
 
+  // Strictly pick only the required fields to prevent Prisma metadata leakage
   return {
-    ...property,
+    id: property.id,
+    name: property.name,
+    address: property.address,
+    units: property.units.map((u: any) => ({
+      id: u.id,
+      unitNumber: u.unitNumber,
+      type: u.type,
+      maintenanceStatus: u.maintenanceStatus,
+      leases: u.leases.map((l: any) => ({
+        id: l.id,
+        rentAmount: Number(l.rentAmount),
+        depositAmount: Number(l.depositAmount),
+        tenant: l.tenant ? { name: l.tenant.name } : null
+      }))
+    })),
     telemetry: {
       totalUnits,
       activeLeases,

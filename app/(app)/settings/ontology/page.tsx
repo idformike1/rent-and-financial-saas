@@ -271,7 +271,7 @@ function JumpToSource({ node }: { node: any }) {
 
   switch (node.type) {
     case 'BUILDING':
-      href = `/properties/${node.id}`;
+      href = `/assets/${node.id}`;
       label = 'Property';
       break;
     case 'TENANT':
@@ -279,11 +279,11 @@ function JumpToSource({ node }: { node: any }) {
       label = 'Tenant';
       break;
     case 'EXPENSE':
-      href = `/expenses?id=${node.id}`;
+      href = `/treasury/payables?id=${node.id}`;
       label = 'Expense';
       break;
     case 'INCOME':
-      href = `/treasury?id=${node.id}`;
+      href = `/treasury/feed?id=${node.id}`;
       label = 'Income';
       break;
     default:

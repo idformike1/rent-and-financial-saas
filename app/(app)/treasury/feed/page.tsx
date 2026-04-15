@@ -45,11 +45,20 @@ export default async function TransactionsPage({
      getLedgerFilterMetadata()
   ]);
 
-  // SERIALIZATION: Prisma.Decimal is not allowed in Client Components. 
+  // Strictly pick only the required fields to prevent Prisma metadata from crashing RSC transport
   const serializedLedger = (ledgerData || []).map((tx: any) => ({
-    ...tx,
+    id: tx.id,
+    description: tx.description,
     amount: tx.amount ? Number(tx.amount) : 0,
-    transactionDate: tx.transactionDate instanceof Date ? tx.transactionDate.toISOString() : tx.transactionDate
+    transactionDate: tx.transactionDate instanceof Date ? tx.transactionDate.toISOString() : tx.transactionDate,
+    account: { name: tx.account?.name, category: tx.account?.category },
+    expenseCategory: { name: tx.expenseCategory?.name },
+    payee: tx.payee,
+    paymentMode: tx.paymentMode,
+    referenceText: tx.referenceText,
+    propertyId: tx.propertyId,
+    tenantId: tx.tenantId,
+    status: tx.status
   }));
 
   return (

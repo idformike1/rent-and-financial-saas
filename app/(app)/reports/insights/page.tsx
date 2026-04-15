@@ -27,9 +27,18 @@ export default async function InsightsPage() {
   });
 
   // Serialize Decimal -> Number to prevent Client Component hydration errors
+  // Strictly pick only the required primitives to prevent RSC serialization crashes
   const sanitizedEntries = ledgerEntries.map((e: any) => ({
-    ...e,
-    amount: Number(e.amount)
+    id: e.id,
+    amount: Number(e.amount),
+    transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : e.transactionDate,
+    description: e.description,
+    account: {
+      category: e.account?.category
+    },
+    expenseCategory: {
+      name: e.expenseCategory?.name
+    }
   }));
 
   let totalIncome = 0;

@@ -5,10 +5,15 @@ import { cn } from '@/lib/utils';
 import UnitGrid from './UnitGrid';
 import UnitSideSheet from './UnitSideSheet';
 import { AssetProperty } from '@/src/services/queries/assets.services';
-import { Building2, Users, Activity, TrendingUp, Wallet } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Button, Badge } from '@/components/ui-finova';
+import PropertyMetricsHud from '@/components/assets/PropertyMetricsHud';
+import PropertyWaterfall from '@/components/charts/PropertyWaterfall';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface PropertySovereignClientProps {
-  propertyData: any; // We'll map this into the existing AssetProperty format for the ledger table
+  propertyData: any;
+  pulseData: any;
 }
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -18,140 +23,132 @@ const formatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 });
 
-export default function PropertySovereignClient({ propertyData }: PropertySovereignClientProps) {
-  const [metricToggle, setMetricToggle] = useState<'PORTFOLIO_VALUE' | 'REALIZED_REVENUE'>('PORTFOLIO_VALUE');
-
-  // Map the single property fetch into the format expected by our existing AssetLedgerTable
-  const mappedProperty: AssetProperty = {
-    id: propertyData.id,
-    name: propertyData.name,
-    address: propertyData.address,
-    totalUnits: propertyData.telemetry.totalUnits,
-    activeLeases: propertyData.telemetry.activeLeases,
-    collectedIncome: propertyData.telemetry.collectedIncome,
-    occupancyRate: propertyData.telemetry.yield,
-    units: propertyData.units.map((u: any) => {
-      const activeLease = u.leases[0];
-      const unitTenantId = activeLease?.tenant?.id;
-      const unitEntries = unitTenantId 
-        ? propertyData.ledgerEntries.filter((e: any) => e.tenantId === unitTenantId)
-        : [];
-      
-      const unitIncome = unitEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
-      
-      let status = '[ SURVEILLANCE ]';
-      if (u.maintenanceStatus === 'OPERATIONAL' && u.leases.length > 0) {
-        status = '[ OPTIMIZED ]';
-      } else if (u.maintenanceStatus === 'DECOMMISSIONED') {
-        status = '[ CRITICAL ]';
-      }
-
-      return {
-        id: u.id,
-        unitNumber: u.unitNumber,
-        type: u.type,
-        tenantName: u.leases[0]?.tenant?.name || 'VACANT',
-        status,
-        collectedIncome: unitIncome
-      }
-    })
-  };
-
-  const primaryMetricValue = metricToggle === 'PORTFOLIO_VALUE' 
-    ? propertyData.telemetry.portfolioValue 
-    : propertyData.telemetry.collectedIncome;
+export default function PropertySovereignClient({ propertyData, pulseData }: PropertySovereignClientProps) {
+  const [drillDownType, setDrillDownType] = useState<string | null>(null);
+  const [isAddUnitModalOpen, setIsAddUnitModalOpen] = useState(false);
+  const [isEditAssetModalOpen, setIsEditAssetModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
 
   return (
-    <div className="animate-in fade-in duration-700">
+    <div className="animate-in fade-in duration-700 pb-20">
       
       {/* ── HEADER STRATUM ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-10 border-b border-[#1F2937] pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-10 border-b border-[#1F2937] pb-8">
         <div className="space-y-2">
-          <h1 className="text-[28px] leading-[36px] font-[400] text-white tracking-tight font-sans">
-            Domain: {propertyData.name}
+          <div className="flex items-center gap-2">
+            <Badge variant="success" className="font-bold text-[10px] uppercase tracking-widest px-2 py-0.5">Asset Pillar</Badge>
+            <span className="font-mono text-[10px] text-white/20 uppercase tracking-widest">Registry ID: {propertyData.id.slice(0, 8)}</span>
+          </div>
+          <h1 className="text-[32px] leading-[40px] font-[400] text-white tracking-tight font-sans mt-2">
+            {propertyData.name}
           </h1>
-          <p className="text-[13px] font-bold text-white/40 uppercase tracking-[0.2em] font-sans">
+          <p className="text-[14px] font-medium text-white/40 font-sans">
             {propertyData.address}
           </p>
         </div>
         
-        <div className="flex bg-card/40 border border-[#1F2937] p-1">
-           <button 
-             onClick={() => setMetricToggle('PORTFOLIO_VALUE')}
-             className={cn(
-               "px-4 py-2 text-[11px] font-bold tracking-widest uppercase transition-all",
-               metricToggle === 'PORTFOLIO_VALUE' ? "bg-white/10 text-white" : "text-white/40 hover:text-white/80"
-             )}
-           >
-             [ PORTFOLIO VALUE ]
-           </button>
-           <button 
-             onClick={() => setMetricToggle('REALIZED_REVENUE')}
-             className={cn(
-               "px-4 py-2 text-[11px] font-bold tracking-widest uppercase transition-all",
-               metricToggle === 'REALIZED_REVENUE' ? "bg-white/10 text-white" : "text-white/40 hover:text-white/80"
-             )}
-           >
-             [ REALIZED REVENUE ]
-           </button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="secondary" 
+            onClick={() => setIsEditAssetModalOpen(true)}
+            className="h-10 px-4 rounded-full text-[12px] font-bold border-[#1F2937]"
+          >
+            <Edit2 className="w-3.5 h-3.5 mr-2" />
+            Edit Asset
+          </Button>
+          <Button 
+            variant="danger" 
+            className="h-10 px-4 rounded-full text-[12px] font-bold opacity-50 hover:opacity-100"
+            onClick={() => setIsArchiveModalOpen(true)}
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-2" />
+            Archive
+          </Button>
+          <Button 
+            onClick={() => setIsAddUnitModalOpen(true)}
+            className="h-10 px-6 rounded-full text-[12px] font-bold bg-brand hover:bg-brand/90 text-white shadow-lg"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Provision Unit
+          </Button>
         </div>
       </div>
 
-      {/* ── PROPERTY HUD ────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Building2 size={16} className="opacity-60" />
-            <span className="text-[11px] font-medium uppercase tracking-wider">Total Capacity</span>
-          </div>
-          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1">
-            {propertyData.telemetry.totalUnits.toString().padStart(3, '0')}
-          </span>
+      {/* ── FISCAL TELEMETRY HUD ───────────────────────────────────────────── */}
+      {pulseData && (
+        <div className="mb-12">
+          <PropertyMetricsHud 
+            metrics={pulseData.hud} 
+            onDrillDown={(type) => setDrillDownType(type)} 
+          />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* ── FISCAL WATERFALL ─────────────────────────────────────────────── */}
+        <div className="lg:col-span-1">
+          {pulseData && <PropertyWaterfall data={pulseData.waterfall} />}
         </div>
 
-        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Users size={16} className="opacity-60" />
-            <span className="text-[11px] font-medium uppercase tracking-wider">Active Leases</span>
+        {/* ── ASSET MATRIX ─────────────────────────────────────────────────── */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-[12px] text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-3">
+               <Building2 className="w-4 h-4" /> Asset Compliance Matrix
+            </h3>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-mercury-green" />
+                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Active</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Vacant</span>
+              </div>
+            </div>
           </div>
-          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1">
-            {propertyData.telemetry.activeLeases.toString().padStart(3, '0')}
-          </span>
+          <UnitGrid units={propertyData.units} />
         </div>
-
-        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Activity size={16} className="opacity-60" />
-            <span className="text-[11px] font-medium uppercase tracking-wider">System Yield</span>
-          </div>
-          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1">
-            {propertyData.telemetry.yield.toFixed(1)}%
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
-          <div className="flex items-center gap-2 text-gray-500">
-            {metricToggle === 'PORTFOLIO_VALUE' ? (
-              <Wallet size={16} className="opacity-60 text-emerald-400" />
-            ) : (
-              <TrendingUp size={16} className="opacity-60 text-brand" />
-            )}
-            <span className="text-[11px] font-medium uppercase tracking-wider">
-               {metricToggle.replace('_', ' ')}
-            </span>
-          </div>
-          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1 transition-all">
-            {formatter.format(primaryMetricValue)}
-          </span>
-        </div>
-      </div>
-
-      {/* ── ISOLATED UNIT GRID ────────────────────────────────────────────── */}
-      <div className="mt-12">
-         <UnitGrid units={propertyData.units} />
       </div>
 
       <UnitSideSheet propertyData={propertyData} />
+
+      {/* ── DRILL-DOWN OVERLAY ────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {drillDownType && (
+           <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex justify-end animate-in fade-in duration-300">
+             <motion.div 
+               initial={{ x: '100%' }}
+               animate={{ x: 0 }}
+               exit={{ x: '100%' }}
+               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+               className="w-full max-w-4xl h-full border-l border-[#1F2937] bg-[#0A0A0F] flex flex-col overflow-hidden"
+             >
+                <div className="p-10 border-b border-[#1F2937] flex justify-between items-center bg-card/20">
+                   <div className="space-y-1">
+                      <h2 className="text-[28px] font-display text-white leading-tight tracking-tight">Ledger Surveillance</h2>
+                      <p className="text-[12px] text-brand font-bold uppercase tracking-[0.2em]">{propertyData.name} // Drill-Down: {drillDownType}</p>
+                   </div>
+                   <button 
+                     onClick={() => setDrillDownType(null)}
+                     className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                   >
+                      <X className="w-5 h-5 text-white/40" />
+                   </button>
+                </div>
+                
+                <div className="flex-1 flex items-center justify-center p-10 border border-dashed border-[#1F2937]/50 m-10 rounded-3xl">
+                   <div className="text-center space-y-4">
+                      <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
+                         <Building2 className="w-8 h-8 text-white/20" />
+                      </div>
+                      <p className="text-white/20 font-mono text-[11px] uppercase tracking-widest">Drill-down buffer materializing...</p>
+                   </div>
+                </div>
+             </motion.div>
+           </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

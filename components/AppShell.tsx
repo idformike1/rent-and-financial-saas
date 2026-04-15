@@ -36,49 +36,45 @@ const Icons = {
   )
 }
 
-// ─── FULL 3-DOMAIN NAVIGATION REGISTRY ───────────────────────────────────────
+// ─── FULL 5-PILLAR DOMAIN NAVIGATION REGISTRY ──────────────────────────────
 const navigationSections = [
   {
     label: 'Treasury',
     items: [
+      { name: 'Financial Feed',   href: '/treasury/feed',        icon: Icons.Transactions },
+      { name: 'Payables',         href: '/treasury/payables',    icon: Icons.Payments },
+      { name: 'Receivables',      href: '/treasury/receivables', icon: AlertCircle },
       { name: 'Operating Account', href: '/treasury/operating',   icon: Briefcase },
       { name: 'Security Deposits', href: '/treasury/deposits',    icon: ShieldCheck },
-      { name: 'Receivables',       href: '/treasury/receivables', icon: AlertCircle },
     ]
   },
   {
-    label: 'Command',
+    label: 'Assets',
     items: [
       { name: 'Asset Command',     href: '/assets',      icon: Icons.Accounts },
-      { name: 'Home',              href: '/home',        icon: Icons.Home },
-      { name: 'Transactions',      href: '/transactions',icon: Icons.Transactions },
-      { name: 'Properties',       href: '/properties',  icon: Icons.Accounts },
-      { name: 'Tenants',          href: '/tenants',     icon: Icons.Accounts },
-      { name: 'Onboarding',       href: '/onboarding',  icon: Icons.Transactions },
-      { name: 'Expense Registry', href: '/expenses',    icon: Icons.Transactions },
+      { name: 'Tenant Registry',   href: '/tenants',     icon: Users },
+      { name: 'Onboarding Flow',   href: '/onboarding',  icon: Zap },
     ]
   },
   {
-    label: 'Intelligence hub',
+    label: 'Telemetry',
     items: [
-      { name: 'Insights',      href: '/insights',                      icon: Icons.Home },
-      { name: 'Analytic Hub',  href: '/reports',                       icon: Icons.Home },
-      { name: 'Waterfall Core',href: '/reports/ledger-waterfall',      icon: Icons.Payments },
-      { name: 'Forex Engine',  href: '/reports/financial-connections', icon: Icons.Accounts },
-      { name: 'Aging Matrix',  href: '/receivables/aging',             icon: Icons.Transactions },
+      { name: 'Performance Insights', href: '/reports/insights', icon: Activity },
+      { name: 'Analytic Hub',         href: '/reports',          icon: LayoutDashboard },
+      { name: 'Waterfall Core',       href: '/reports/ledger-waterfall', icon: Icons.Payments },
     ]
   },
   {
-    label: 'Governance control',
+    label: 'Governance',
     items: [
-      { name: 'Taxonomy Logic', href: '/settings/categories', icon: Icons.Accounts },
-      { name: 'System Ontology',href: '/settings/ontology',   icon: Icons.Home },
-      { name: 'Audit Protocol', href: '/settings/audit',      icon: Icons.Accounts },
-      { name: 'Data Ingestion', href: '/settings/ingestion',  icon: Icons.Payments },
-      { name: 'Team Command',   href: '/settings/team',       icon: Icons.Accounts },
+      { name: 'Audit Protocol', href: '/settings/audit',      icon: ShieldCheck },
+      { name: 'Taxonomy Logic', href: '/settings/categories', icon: Database },
+      { name: 'Team Command',   href: '/settings/team',       icon: Users },
+      { name: 'System Settings', href: '/settings',           icon: Settings },
     ]
   }
 ]
+
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession()

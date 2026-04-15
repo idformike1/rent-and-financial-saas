@@ -30,7 +30,7 @@ export default async function AssetsDeepRoutingLayout({ children }: { children: 
               Active Domains
             </h3>
             <Link 
-              href="/properties?modal=add" 
+              href="/assets?modal=add" 
               className="flex items-center gap-2 text-[13px] font-medium text-[#F9FAFB] opacity-80 hover:opacity-100 hover:text-[#5D71F9] transition-colors py-1.5"
             >
               <Plus size={16} />

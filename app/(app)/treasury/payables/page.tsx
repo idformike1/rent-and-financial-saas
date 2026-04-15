@@ -51,10 +51,24 @@ export default async function ExpenseRegistryPage() {
   });
 
   const entries = entriesRaw.map((e: any) => ({
-    ...e,
+    id: e.id,
     amount: Number(e.amount),
     transactionDate: e.transactionDate?.toISOString() || null,
-    date: e.date?.toISOString() || null
+    date: e.date?.toISOString() || null,
+    description: e.description,
+    paymentMode: e.paymentMode,
+    referenceText: e.referenceText,
+    expenseCategory: e.expenseCategory ? {
+      id: e.expenseCategory.id,
+      name: e.expenseCategory.name,
+      parent: e.expenseCategory.parent ? { id: e.expenseCategory.parent.id, name: e.expenseCategory.parent.name } : null
+    } : null,
+    account: e.account ? {
+      id: e.account.id,
+      name: e.account.name,
+      category: e.account.category
+    } : null,
+    property: e.property ? { id: e.property.id, name: e.property.name } : null
   }));
 
   return (
@@ -70,7 +84,7 @@ export default async function ExpenseRegistryPage() {
         </div>
         
         <div className="flex gap-4">
-          <Link href="/treasury/expenses">
+          <Link href="/treasury/payables/log">
             <Button className="h-10 px-6 bg-primary text-primary-foreground font-bold  tracking-widest text-[10px] flex items-center gap-2 rounded-[8px]">
               <Plus className="w-4 h-4" /> Authorize Entry
             </Button>

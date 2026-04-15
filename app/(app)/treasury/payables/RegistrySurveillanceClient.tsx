@@ -137,7 +137,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                   <td className="px-3">
                     {entry.propertyId ? (
                       <Link 
-                        href={`/properties/${entry.propertyId}`}
+                        href={`/assets/${entry.propertyId}`}
                         className="flex items-center gap-2 text-primary hover:underline transition-all"
                       >
                          <Building2 className="w-3.5 h-3.5 opacity-60" />

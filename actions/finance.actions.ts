@@ -117,7 +117,7 @@ export async function logExpense(formData: FormData) {
         }
       );
 
-      revalidatePath('/expenses');
+      revalidatePath('/treasury/payables');
       revalidatePath('/reports/master-ledger');
       
       return { success: true, data: result };
@@ -177,8 +177,8 @@ export async function ingestBulkExpenses(data: any[]) {
       });
 
       revalidatePath('/reports/master-ledger');
-      revalidatePath('/expenses');
-      revalidatePath('/transactions');
+      revalidatePath('/treasury/payables');
+      revalidatePath('/treasury/feed');
       
       return { 
         success: true, 
@@ -266,8 +266,7 @@ export async function voidTransaction(transactionId: string) {
         }
       );
 
-      revalidatePath('/transactions');
-      revalidatePath('/transactions');
+      revalidatePath('/treasury/feed');
 
       return { success: true, message: "Forensic Decommissioning Successful: Entry status set to VOIDED." };
     } catch (e: any) {

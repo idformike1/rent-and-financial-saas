@@ -58,13 +58,12 @@ export default function CommandMenu() {
 
           <Command.Group heading="Navigation" className="px-2 py-3 text-[11px] uppercase tracking-widest text-muted-foreground/50 font-bold">
             <CommandItem
-              onSelect={() => navigate('/transactions')}
+              onSelect={() => navigate('/treasury/feed')}
               icon={<History className="w-4 h-4" />}
             >
               Master Ledger
             </CommandItem>
-            <CommandItem
-              onSelect={() => navigate('/insights')}
+              onSelect={() => navigate('/reports/insights')}
               icon={<BarChart3 className="w-4 h-4" />}
             >
               Engineering Insights

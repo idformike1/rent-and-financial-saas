@@ -21,7 +21,7 @@ export default async function ExpenseLoggingPage() {
           </div>
           <div>
             <Link
-              href="/expenses"
+              href="/treasury/payables"
               className="inline-flex items-center text-[9px]  text-muted-foreground hover:text-brand transition-colors mb-3 group"
             >
               <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -60,7 +60,7 @@ export default async function ExpenseLoggingPage() {
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
           <Link
-            href="/expenses"
+            href="/treasury/payables"
             className="h-14 px-8 bg-card border border-border border-border text-[10px] rounded-[8px] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
           >
             <ArrowLeft className="w-4 h-4 mr-3 text-muted-foreground" />
