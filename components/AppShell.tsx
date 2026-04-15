@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation'
 import {
   Menu, ChevronDown,
   Users, LayoutDashboard, Database, Layers, Zap, Clock,
-  ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut, Orbit
+  ShieldCheck, Settings, Activity, Search, ArrowUpRight, LogOut, Orbit,
+  Briefcase, AlertCircle
 } from 'lucide-react'
 import GlobalSearch from './GlobalSearch'
 import { cn } from '@/lib/utils'
@@ -38,6 +39,14 @@ const Icons = {
 // ─── FULL 3-DOMAIN NAVIGATION REGISTRY ───────────────────────────────────────
 const navigationSections = [
   {
+    label: 'Treasury',
+    items: [
+      { name: 'Operating Account', href: '/treasury/operating',   icon: Briefcase },
+      { name: 'Security Deposits', href: '/treasury/deposits',    icon: ShieldCheck },
+      { name: 'Receivables',       href: '/treasury/receivables', icon: AlertCircle },
+    ]
+  },
+  {
     label: 'Command',
     items: [
       { name: 'Asset Command',     href: '/assets',      icon: Icons.Accounts },
@@ -47,7 +56,6 @@ const navigationSections = [
       { name: 'Tenants',          href: '/tenants',     icon: Icons.Accounts },
       { name: 'Onboarding',       href: '/onboarding',  icon: Icons.Transactions },
       { name: 'Expense Registry', href: '/expenses',    icon: Icons.Transactions },
-      { name: 'Treasury',         href: '/treasury',    icon: Icons.Payments },
     ]
   },
   {
@@ -78,7 +86,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const userName = session?.user?.name || 'Sovereign Auditor'
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [openSections, setOpenSections] = useState<string[]>(['Command', 'Intelligence hub', 'Governance control'])
+  const [openSections, setOpenSections] = useState<string[]>(['Treasury', 'Command', 'Intelligence hub', 'Governance control'])
   const pathname = usePathname()
 
   const toggleSection = (label: string) => {
@@ -139,9 +147,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-none transition-all duration-150 my-0.5 group",
+                          "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-md transition-all duration-150 my-0.5 group",
                           isActive
-                            ? "text-foreground bg-sidebar-accent border-l-2 border-primary"
+                            ? "text-foreground bg-sidebar-accent border-l-2 border-primary rounded-l-none"
                             : "text-muted-foreground/40 hover:text-foreground hover:bg-sidebar-accent/50"
                         )}
                       >

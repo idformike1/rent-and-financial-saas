@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import UnitGrid from './UnitGrid';
 import UnitSideSheet from './UnitSideSheet';
 import { AssetProperty } from '@/src/services/queries/assets.services';
+import { Building2, Users, Activity, TrendingUp, Wallet } from 'lucide-react';
 
 interface PropertySovereignClientProps {
   propertyData: any; // We'll map this into the existing AssetProperty format for the ledger table
@@ -97,39 +98,49 @@ export default function PropertySovereignClient({ propertyData }: PropertySovere
       </div>
 
       {/* ── PROPERTY HUD ────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-4 border-b border-[#1F2937] pb-6 mb-8 bg-transparent">
-        <div className="flex flex-col gap-2 px-4 border-r border-[#1F2937]">
-          <span className="text-[13px] font-bold text-[#9CA3AF] uppercase tracking-wider">
-            Total Capacity
-          </span>
-          <span className="font-mono text-[18px] text-[#F9FAFB] tabular-nums">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-gray-500">
+            <Building2 size={16} className="opacity-60" />
+            <span className="text-[11px] font-medium uppercase tracking-wider">Total Capacity</span>
+          </div>
+          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1">
             {propertyData.telemetry.totalUnits.toString().padStart(3, '0')}
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 px-4 border-r border-[#1F2937]">
-          <span className="text-[13px] font-bold text-[#9CA3AF] uppercase tracking-wider">
-            Active Leases
-          </span>
-          <span className="font-mono text-[18px] text-[#F9FAFB] tabular-nums">
+        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-gray-500">
+            <Users size={16} className="opacity-60" />
+            <span className="text-[11px] font-medium uppercase tracking-wider">Active Leases</span>
+          </div>
+          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1">
             {propertyData.telemetry.activeLeases.toString().padStart(3, '0')}
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 px-4 border-r border-[#1F2937]">
-          <span className="text-[13px] font-bold text-[#9CA3AF] uppercase tracking-wider">
-            System Yield
-          </span>
-          <span className="font-mono text-[18px] text-[#F9FAFB] tabular-nums">
+        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-gray-500">
+            <Activity size={16} className="opacity-60" />
+            <span className="text-[11px] font-medium uppercase tracking-wider">System Yield</span>
+          </div>
+          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1">
             {propertyData.telemetry.yield.toFixed(1)}%
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 px-4">
-          <span className="text-[13px] font-bold text-[#9CA3AF] uppercase tracking-wider">
-             {metricToggle.replace('_', ' ')}
-          </span>
-          <span className="font-mono text-[18px] text-[#F9FAFB] tabular-nums transition-all">
+        <div className="flex flex-col gap-2 p-6 bg-card/40 border border-[#1F2937] rounded-md shadow-[var(--shadow-mercury-float)] transition-all hover:bg-card/60">
+          <div className="flex items-center gap-2 text-gray-500">
+            {metricToggle === 'PORTFOLIO_VALUE' ? (
+              <Wallet size={16} className="opacity-60 text-emerald-400" />
+            ) : (
+              <TrendingUp size={16} className="opacity-60 text-brand" />
+            )}
+            <span className="text-[11px] font-medium uppercase tracking-wider">
+               {metricToggle.replace('_', ' ')}
+            </span>
+          </div>
+          <span className="font-mono text-[20px] text-[#F9FAFB] tabular-nums mt-1 transition-all">
             {formatter.format(primaryMetricValue)}
           </span>
         </div>

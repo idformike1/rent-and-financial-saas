@@ -4,6 +4,8 @@ import { getSidebarPropertiesService } from '@/src/services/queries/assets.servi
 import Link from 'next/link'
 import { ReactNode } from 'react'
 
+import { Plus } from 'lucide-react'
+
 export default async function AssetsDeepRoutingLayout({ children }: { children: ReactNode }) {
   const session = await getCurrentSession();
   if (!session) redirect('/login');
@@ -29,19 +31,20 @@ export default async function AssetsDeepRoutingLayout({ children }: { children: 
             </h3>
             <Link 
               href="/properties?modal=add" 
-              className="text-[11px] font-mono font-bold text-[#F9FAFB] opacity-80 hover:opacity-100 hover:text-[#5D71F9] transition-colors"
+              className="flex items-center gap-2 text-[13px] font-medium text-[#F9FAFB] opacity-80 hover:opacity-100 hover:text-[#5D71F9] transition-colors py-1.5"
             >
-              [ + NEW ASSET ]
+              <Plus size={16} />
+              Add new asset
             </Link>
           </div>
         </div>
         
-        <nav className="flex-1 overflow-y-auto space-y-0.5">
+        <nav className="flex-1 overflow-y-auto px-4 space-y-0.5">
           {properties.map((p) => (
             <Link 
               key={p.id} 
               href={`/assets/${p.id}`}
-              className="block px-6 py-2.5 text-[12px] font-[380] text-[#E5E7EB] tracking-tight opacity-70 hover:opacity-100 hover:bg-white/[0.03] transition-colors"
+              className="block px-4 py-2.5 text-[12px] font-[380] text-[#E5E7EB] tracking-tight opacity-70 hover:opacity-100 hover:bg-white/[0.04] rounded-md transition-colors"
             >
               {p.name}
             </Link>

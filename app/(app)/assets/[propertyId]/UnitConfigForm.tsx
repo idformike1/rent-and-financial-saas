@@ -5,7 +5,9 @@ import { updateUnit } from '@/actions/asset.actions';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
 
-const inputClass = "w-full bg-transparent border-b border-[#1F2937] rounded-none py-2 px-0 text-[13px] text-[#E5E7EB] outline-none focus:border-[#5D71F9] font-mono transition-colors";
+import { Check, Trash2 } from 'lucide-react';
+
+const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-md h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all";
 const labelClass = "text-[10px] text-[#9CA3AF] uppercase tracking-widest font-bold mb-1 block";
 
 const updateUnitAction = async (prevState: any, formData: FormData) => {
@@ -87,13 +89,14 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
         />
       </div>
 
-      <div className="pt-8 flex flex-col gap-4 border-t border-[#1F2937]">
+      <div className="pt-8 flex gap-4 border-t border-[#1F2937]">
         <button 
           type="submit" 
           disabled={isPending}
-          className="w-full bg-[#E5E7EB] text-[#12121A] h-12 text-[11px] font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-lg h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 shadow-sm"
         >
-          {isPending ? '[ EXECUTING... ]' : '[ COMMIT CONFIGURATION ]'}
+          <Check size={14} />
+          {isPending ? 'Executing...' : 'Commit Configuration'}
         </button>
 
         <button 
@@ -101,9 +104,10 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
           name="decommission" 
           value="true"
           disabled={isPending}
-          className="w-full border border-destructive/20 text-destructive bg-destructive/5 h-12 text-[11px] font-bold uppercase tracking-widest hover:bg-destructive/10 transition-colors disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-lg h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
         >
-          {isPending ? '[ EXECUTING... ]' : '[ DECOMMISSION ASSET ]'}
+          <Trash2 size={14} />
+          {isPending ? 'Executing...' : 'Decommission Asset'}
         </button>
       </div>
     </form>

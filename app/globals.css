@@ -47,6 +47,9 @@
   --height-button: 32px;
   --height-header: 56px;
   --width-sidebar: 232px;
+
+  /* Custom Mercury Float Shadow */
+  --shadow-mercury-float: 0 4px 14px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.08);
 }
 
 /* ── DARK MODE: SOVEREIGN DEFAULT — NO LIGHT MODE ───────────────────────── */
