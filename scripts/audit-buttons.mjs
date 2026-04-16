@@ -100,7 +100,7 @@ function analyzeFile(filePath, content) {
     const trimmed = line.trim();
 
     // ── V1: Native <button> ───────────────────────────────────────────
-    if (!isButtonDef && /<button[\s>\/]/i.test(trimmed)) {
+    if (!isButtonDef && /<button[\s>\/]/.test(trimmed)) {
       findings.push({
         file: relativePath,
         line: lineNum,

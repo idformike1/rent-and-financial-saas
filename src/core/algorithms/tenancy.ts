@@ -105,12 +105,13 @@ export const generateTenancyStripChart = (
   
   for (let i = lookbackMonths - 1; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const start = new Date(d.getFullYear(), d.getMonth(), 1);
-    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    const start = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
+    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    const monthCharge = charges.find(c => 
-      c.type === 'RENT' && c.dueDate >= start && c.dueDate <= end
-    );
+    const monthCharge = charges.find(c => {
+      const dueDate = new Date(c.dueDate);
+      return c.type === 'RENT' && dueDate >= start && dueDate <= end;
+    });
 
     let status: StripStatus = 'EMPTY';
     if (monthCharge) {

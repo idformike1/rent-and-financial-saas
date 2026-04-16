@@ -2,19 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Building2, 
-  Users, 
-  TrendingDown, 
-  Orbit, 
-  Dna,
-  Zap,
-  HardDrive,
-  Cpu,
-  Link2,
-  ChevronRight,
-  Layers,
-} from 'lucide-react'
+
 import Link from 'next/link'
 import { fetchDetailedOntology } from '@/actions/system.actions'
 import { Badge } from '@/components/ui-finova'
@@ -114,14 +102,14 @@ export default function OntologyMapPage() {
       {/* FOOTER TERMINAL */}
       <div className="fixed bottom-10 left-10 right-10 flex justify-between items-center text-[9px] text-[var(--muted)]   border-t border-[var(--border)] pt-10 pointer-events-none bg-[var(--background)]/80 z-30">
          <div className="flex items-center space-x-10">
-            <div className="flex items-center space-x-3">
-               <HardDrive className="w-3.5 h-3.5 text-[var(--primary)]/50" />
-               <span className="text-[8px]">LAYER: <span className="text-[var(--foreground)]">PERSISTENCE_GRAPH</span></span>
-            </div>
-            <div className="flex items-center space-x-3">
-               <Cpu className="w-3.5 h-3.5 text-[var(--primary)]/50" />
-               <span className="text-[8px]">PROTOCOL: <span className="text-[var(--foreground)]">RECURSIVE_EXPANSION</span></span>
-            </div>
+             <div className="flex items-center space-x-3">
+                <span className="text-[var(--primary)]/50 font-bold">💾</span>
+                <span className="text-[8px]">LAYER: <span className="text-[var(--foreground)]">PERSISTENCE_GRAPH</span></span>
+             </div>
+             <div className="flex items-center space-x-3">
+                <span className="text-[var(--primary)]/50 font-bold">➲</span>
+                <span className="text-[8px]">PROTOCOL: <span className="text-[var(--foreground)]">RECURSIVE_EXPANSION</span></span>
+             </div>
          </div>
          <div className="flex items-center space-x-6 text-[8px]">
             <span>AXIOM_RECON_OS © 2026</span>
@@ -182,15 +170,15 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
            {/* TYPE & STATUS */}
            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                 <NodeIcon type={node.type} className={`w-3.5 h-3.5 opacity-60`} />
-                 <span className="text-[8px]  opacity-40 ">{node.type}</span>
+                  <NodeIcon type={node.type} className={`text-[10px] opacity-60`} />
+                  <span className="text-[8px]  opacity-40 ">{node.type}</span>
               </div>
               {hasChildren && (
                  <motion.div 
                   animate={{ rotate: isOpen ? 90 : 0 }}
                   className="w-4 h-4 rounded-[6px] bg-[var(--card-raised)] flex items-center justify-center border border-[var(--border)]"
                  >
-                    <ChevronRight className="w-2.5 h-2.5 text-[var(--muted)]" />
+                     <span className="text-[8px] text-[var(--muted)]">{isOpen ? '▼' : '▶'}</span>
                  </motion.div>
               )}
            </div>
@@ -287,7 +275,7 @@ function JumpToSource({ node }: { node: any }) {
       label = 'Income';
       break;
     default:
-      return <Link2 className="w-2.5 h-2.5 text-foreground" />;
+      return <span className="text-[10px] text-foreground">➲</span>;
   }
 
   return (
@@ -296,16 +284,16 @@ function JumpToSource({ node }: { node: any }) {
       title={`Jump to ${label} Source`}
       className="p-1 hover:bg-[var(--primary)]/10 transition-all group/link rounded"
     >
-      <Link2 className="w-3 h-3 text-[var(--muted)] group-hover/link:text-[var(--primary)] transition-colors" />
+      <span className="text-[10px] text-[var(--muted)] group-hover/link:text-[var(--primary)] transition-colors">➲</span>
     </Link>
   );
 }
 
 function NodeIcon({ type, className }: { type: string, className?: string }) {
-  if (type === 'ORGANIZATION') return <Orbit className={className} />
-  if (type === 'BUILDING') return <Building2 className={className} />
-  if (type === 'TENANT') return <Users className={className} />
-  if (type === 'EXPENSE') return <TrendingDown className={className} />
-  if (type === 'CATEGORY') return <Layers className={className} />
-  return <Dna className={className} />
+  if (type === 'ORGANIZATION') return <span className={className}>◯</span>
+  if (type === 'BUILDING') return <span className={className}>🏛️</span>
+  if (type === 'TENANT') return <span className={className}>[U]</span>
+  if (type === 'EXPENSE') return <span className={className}>📉</span>
+  if (type === 'CATEGORY') return <span className={className}>[L]</span>
+  return <span className={className}>🧬</span>
 }

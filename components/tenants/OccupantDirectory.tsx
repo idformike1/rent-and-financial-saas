@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, ArrowRight, Building, User } from 'lucide-react'
-import { Card, Badge, Input } from '@/components/ui-finova'
+import { Card, Badge, Input, Button } from '@/components/ui-finova'
 
 interface Tenant {
   id: string
@@ -89,9 +89,9 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                       </td>
                       <td className="px-4 py-3 text-right">
                         <Link href={`/tenants/${tenant.id}`} onClick={(e) => e.stopPropagation()}>
-                           <button className="h-9 w-9 rounded-[8px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-none">
+                           <Button type="button" variant="secondary" disabled={false} className="h-9 w-9 p-0 rounded-[8px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-none">
                               <ArrowRight className="w-4 h-4" />
-                           </button>
+                           </Button>
                         </Link>
                       </td>
                     </tr>

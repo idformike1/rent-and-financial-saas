@@ -7,9 +7,8 @@ import {
   toggleUserEditPermission, 
   deleteUserForever 
 } from "@/actions/team.actions"
-import { Shield, UserMinus, ShieldAlert, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { Button, Badge } from '@/components/ui-finova'
 import { toast } from 'react-hot-toast'
-import { Badge } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
 
 interface Member {
@@ -90,42 +89,49 @@ export default function AccessControlTable({
               </td>
 
               <td className="px-4 py-3 text-center">
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={false}
                   onClick={(e) => {
                     e.stopPropagation()
                     handleAction(() => toggleUserEditPermission(member.id, !member.canEdit), member.canEdit ? "Muzzled" : "Unmuzzled")
                   }}
                   className={cn(
-                    "p-1.5 rounded-[6px] border transition-none",
+                    "p-1.5 rounded-[6px] border transition-none h-auto min-w-[32px]",
                     member.canEdit 
                       ? "border-mercury-green/20 bg-mercury-green/10 text-mercury-green" 
                       : "border-border bg-muted/50 text-muted-foreground"
                   )}
                 >
-                  {member.canEdit ? <Shield size={14} /> : <ShieldAlert size={14} />}
-                </button>
+                  {member.canEdit ? "✓" : "⚠️"}
+                </Button>
               </td>
 
               <td className="px-4 py-3 text-center">
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation()
                     handleAction(() => toggleUserActivation(member.id, !member.isActive), member.isActive ? "Suspended" : "Restored")
                   }}
                   disabled={member.id === currentUserId}
                   className={cn(
-                    "inline-flex items-center gap-2 px-2 py-0.5 rounded-[4px] border text-[10px] font-bold uppercase transition-none disabled:opacity-10",
+                    "inline-flex items-center gap-2 px-2 py-0.5 rounded-[4px] border text-[10px] font-bold uppercase transition-none disabled:opacity-30 h-auto",
                     member.isActive 
                       ? 'border-mercury-green/20 bg-mercury-green/10 text-mercury-green' 
                       : 'border-destructive/20 bg-destructive/10 text-destructive'
                   )}
                 >
                   {member.isActive ? 'ACTIVE' : 'LOCKED'}
-                </button>
+                </Button>
               </td>
 
               <td className="px-4 py-3 text-right">
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation()
                     if (confirm("Purge identity forever?")) {
@@ -133,18 +139,18 @@ export default function AccessControlTable({
                     }
                   }}
                   disabled={member.id === currentUserId}
-                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[6px] transition-none disabled:opacity-10"
+                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[6px] transition-none disabled:opacity-10 h-auto"
                 >
-                  <UserMinus size={16} />
-                </button>
+                  [⌫]
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       {isPending && (
-        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
-          <Loader2 className="w-5 h-5 text-primary animate-spin" />
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 font-bold text-primary animate-pulse">
+          ...
         </div>
       )}
     </div>

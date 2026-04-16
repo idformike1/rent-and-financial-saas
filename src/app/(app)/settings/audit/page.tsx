@@ -55,16 +55,16 @@ export default async function AuditLogPage() {
             <div className="w-12 h-12 bg-rose-500/10 rounded-[8px] flex items-center justify-center border border-rose-500/20">
               <ShieldAlert className="w-6 h-6 text-rose-400" />
             </div>
-            <Badge variant="brand" className="px-5 py-2 rounded-[8px]  text-[9px] bg-[var(--primary-muted)] border-2 border-[var(--primary)]/20">
-              Immutable Forensic Archive
+            <Badge variant="brand" className="px-5 py-2 rounded-[8px] text-[9px] bg-[#5D71F9]/10 text-[#5D71F9] border-[#5D71F9]/20">
+              System Security Log
             </Badge>
           </div>
-          <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">
-            Surveillance <span className="text-[var(--primary)]">Grid</span>
+          <h1 className="text-display font-weight-display text-white leading-none">
+            Audit Protocol
           </h1>
-          <p className="text-[10px] text-[var(--muted)]   flex items-center gap-2">
+          <p className="text-[10px] text-[#9CA3AF] flex items-center gap-2">
             <Fingerprint className="w-3 h-3" />
-            High-Value Asset Protection Protocol
+            System Activity Log
           </p>
         </div>
         <div className="glass-panel rounded-[8px] px-6 py-3 border border-[var(--border)] flex items-center gap-2">

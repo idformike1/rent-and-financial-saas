@@ -107,9 +107,9 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             <h2 className="text-[13px] font-bold text-foreground uppercase">Liquidate Liabilities</h2>
             <p className="text-[11px] font-bold text-muted-foreground uppercase mt-1">Enterprise Ledger Entry</p>
           </div>
-          <button onClick={onClose} className="p-1.5 text-muted-foreground hover:text-foreground transition-none">
+          <Button type="button" variant="ghost" disabled={false} onClick={onClose} className="p-1.5 h-8 w-8 text-muted-foreground hover:text-foreground transition-none bg-transparent border-none">
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Content Scroll Area */}

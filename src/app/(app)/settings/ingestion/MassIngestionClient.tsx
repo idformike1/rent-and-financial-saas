@@ -1,11 +1,13 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { Upload, FileSpreadsheet, CheckCircle2, AlertOctagon, Zap, ShieldCheck, Database, Trash2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { axiomParseCSV } from '@/lib/csv-parser'
 import { ingestBulkExpenses } from '@/actions/finance.actions'
-import { Badge } from '@/components/ui-finova'
+import { 
+  Badge,
+  Button
+} from '@/components/ui-finova'
 
 export default function MassIngestionClient() {
   const [file, setFile] = useState<File | null>(null);
@@ -82,7 +84,7 @@ export default function MassIngestionClient() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-[var(--primary-muted)] rounded-[8px] flex items-center justify-center border border-[var(--primary)]/20">
-              <Database className="w-6 h-6 text-[var(--primary)] animate-pulse" />
+               <span className="text-[var(--primary)] font-bold text-xl">💾</span>
             </div>
             <Badge variant="brand" className="px-5 py-2 rounded-[8px]  text-[9px] bg-[var(--primary-muted)] border-2 border-[var(--primary)]/20">
               Legacy CSV Ingress Pathway
@@ -92,7 +94,7 @@ export default function MassIngestionClient() {
             Mass Ingestion <span className="text-[var(--primary)]">Engine</span>
           </h1>
           <p className="text-[10px] text-[var(--muted)]   flex items-center gap-2">
-            <ShieldCheck className="w-3 h-3" /> Data Protocol v.3.5.1 Active
+            ✓ Data Protocol v.3.5.1 Active
           </p>
         </div>
       </header>
@@ -113,7 +115,7 @@ export default function MassIngestionClient() {
           {file ? (
             <div className="space-y-6 animate-in zoom-in-90 duration-500">
               <div className="w-20 h-20 bg-[var(--primary)] rounded-[6px] flex items-center justify-center mx-auto ">
-                <CheckCircle2 className="w-10 h-10 text-foreground" />
+                <span className="text-foreground text-3xl">✓</span>
               </div>
               <div>
                 <h3 className="text-2xl text-[var(--foreground)] ">{file.name}</h3>
@@ -121,17 +123,20 @@ export default function MassIngestionClient() {
                   {data.length} records parsed from legacy stream
                 </p>
               </div>
-              <button
+              <Button
+                type="button"
+                variant="danger"
+                disabled={false}
                 onClick={(e) => { e.stopPropagation(); setFile(null); setData([]); }}
-                className="bg-rose-500/10 border border-rose-500/30 text-rose-400 px-6 py-3 rounded-[8px] hover:bg-rose-500/20 transition-all  text-[10px] flex items-center mx-auto gap-2"
+                className="px-6 py-3 rounded-[8px] text-[10px] flex items-center mx-auto gap-2"
               >
-                <Trash2 className="w-4 h-4" /> Purge Staging Buffer
-              </button>
+                ⌫ Purge Staging Buffer
+              </Button>
             </div>
           ) : (
             <>
               <div className="w-24 h-24 bg-[var(--primary-muted)] rounded-[8px] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[var(--primary)]/20">
-                <Upload className="w-12 h-12 text-[var(--primary)]" />
+                <span className="text-[var(--primary)] text-4xl">⇪</span>
               </div>
               <h3 className="text-display font-weight-display text-[var(--foreground)]  mb-4">Materialize Data Stream</h3>
               <p className="text-[var(--muted)] font-medium max-w-sm  text-xs leading-loose">
@@ -156,7 +161,7 @@ export default function MassIngestionClient() {
         <div className="glass-panel rounded-[8px] border border-[var(--border)] overflow-hidden flex flex-col">
           <div className="bg-[var(--card)] px-8 py-5 border-b border-[var(--border)] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Zap className="w-5 h-5 text-[var(--primary)]" />
+              <span className="text-[var(--primary)] font-bold">⚡</span>
               <h4 className="text-sm  text-[var(--foreground)]">Staging Buffer</h4>
             </div>
             {data.length > 0 && (
@@ -195,7 +200,7 @@ export default function MassIngestionClient() {
             ) : (
               <div className="flex flex-col items-center justify-center p-6 h-full flex-1 opacity-60">
                 <div className="w-20 h-20 rounded-[6px] border border-dashed border-[var(--primary)]/30 flex items-center justify-center mb-4">
-                  <FileSpreadsheet className="w-8 h-8 text-[var(--muted)]" />
+                  <span className="text-2xl">📄</span>
                 </div>
                 <p className="text-[10px]  text-[var(--muted)]">No legacy trace found in staging area.</p>
               </div>
@@ -205,7 +210,7 @@ export default function MassIngestionClient() {
               {errorStatus && (
                 <div className="bg-rose-500/10 border border-rose-500/30 p-5 rounded-[8px] flex items-start gap-4 animate-in slide-in-from-top-2 duration-300">
                   <div className="w-10 h-10 bg-rose-500/20 rounded-[6px] flex items-center justify-center shrink-0">
-                    <AlertOctagon className="w-5 h-5 text-rose-400" />
+                    <span className="text-xl">⚠️</span>
                   </div>
                   <div className="mt-0.5">
                     <p className="text-rose-400  text-[10px] mb-1.5 leading-none">INGESTION FAILED</p>
@@ -214,26 +219,16 @@ export default function MassIngestionClient() {
                 </div>
               )}
 
-              <button
+              <Button
+                type="button"
+                variant="primary"
                 onClick={handleRegistryCommit}
                 disabled={data.length === 0 || isProcessing || errorStatus !== null}
-                className={`w-full py-5 rounded-[8px]  text-[11px] flex items-center justify-center gap-3 transition-all ${
-                  data.length > 0 && !isProcessing && !errorStatus
-                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)]  hover: hover:translate-y-[1px]'
-                    : 'bg-[var(--muted)]/10 text-[var(--muted)] cursor-not-allowed border border-border disabled:opacity-50'
-                }`}
+                isLoading={isProcessing}
+                className="w-full py-5 rounded-[8px] text-[11px]"
               >
-                {isProcessing ? (
-                   <div className="flex items-center gap-3">
-                     <span className="w-3 h-3 bg-[var(--foreground)] rounded-[6px] animate-ping" />
-                     SYNCHRONIZING CHAIN...
-                   </div>
-                ) : (
-                  <>
-                    <Zap className="w-5 h-5" /> Commit {data.length} Records to Registry
-                  </>
-                )}
-              </button>
+                {isProcessing ? "SYNCHRONIZING CHAIN..." : `[Ξ] Commit ${data.length} Records to Registry`}
+              </Button>
             </div>
           </div>
         </div>

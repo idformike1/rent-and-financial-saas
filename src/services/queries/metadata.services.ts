@@ -10,7 +10,7 @@ import { getSovereignClient } from "@/src/lib/db";
 export async function getLedgerFilterMetadataService(context: { operatorId: string, organizationId: string }) {
   const db = getSovereignClient(context.operatorId);
 
-  const [properties, tenants] = await Promise.all([
+  const [properties, tenants, accounts, categories] = await Promise.all([
     db.property.findMany({
       where: { organizationId: context.organizationId },
       select: { id: true, name: true },
@@ -20,8 +20,18 @@ export async function getLedgerFilterMetadataService(context: { operatorId: stri
       where: { organizationId: context.organizationId, isDeleted: false },
       select: { id: true, name: true },
       orderBy: { name: 'asc' }
+    }),
+    db.account.findMany({
+      where: { organizationId: context.organizationId },
+      select: { id: true, name: true, category: true },
+      orderBy: { name: 'asc' }
+    }),
+    db.expenseCategory.findMany({
+      where: { organizationId: context.organizationId },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' }
     })
   ]);
 
-  return { properties, tenants };
+  return { properties, tenants, accounts, categories };
 }

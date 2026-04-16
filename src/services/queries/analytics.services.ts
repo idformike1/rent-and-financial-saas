@@ -436,6 +436,8 @@ export async function getMasterLedgerService(
     category?: string;
     propertyId?: string;
     tenantId?: string;
+    accountId?: string;
+    categoryId?: string;
     minAmount?: number;
     maxAmount?: number;
     skip?: number;
@@ -443,7 +445,7 @@ export async function getMasterLedgerService(
   }
 ) {
   const db = getSovereignClient(context.operatorId);
-  const { query, startDate, endDate, category, propertyId, tenantId, minAmount, maxAmount, skip = 0, take = 100 } = filters || {};
+  const { query, startDate, endDate, category, propertyId, tenantId, accountId, categoryId, minAmount, maxAmount, skip = 0, take = 100 } = filters || {};
 
   const where: Prisma.LedgerEntryWhereInput = {
     organizationId: context.organizationId,
@@ -479,6 +481,14 @@ export async function getMasterLedgerService(
 
   if (tenantId && tenantId !== 'ALL') {
     where.tenantId = tenantId;
+  }
+  
+  if (accountId && accountId !== 'ALL') {
+    where.accountId = accountId;
+  }
+
+  if (categoryId && categoryId !== 'ALL') {
+    where.expenseCategoryId = categoryId;
   }
   
   if (minAmount !== undefined || maxAmount !== undefined) {

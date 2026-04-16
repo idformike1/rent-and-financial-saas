@@ -25,8 +25,8 @@ export default async function CategoriesManagementPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
       <ExecutiveLedgerHub 
-        initialLedgers={allLedgers} 
-        initialNodes={allNodes} 
+        initialLedgers={JSON.parse(JSON.stringify(allLedgers))} 
+        initialNodes={JSON.parse(JSON.stringify(allNodes))} 
       />
 
       <Card className="glass-panel border border-[var(--border)] rounded-[8px] p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden group">

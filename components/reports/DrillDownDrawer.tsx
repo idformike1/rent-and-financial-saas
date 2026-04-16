@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Loader2, ArrowRight } from 'lucide-react'
 import { getMasterLedger } from '@/actions/analytics.actions'
 import { format } from 'date-fns'
+import { Button } from '@/components/ui-finova'
 
 interface DrillDownDrawerProps {
   categoryName: string;
@@ -43,9 +44,9 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
             <h2 className="text-lg font-bold text-foreground uppercase">Line-Item Trace: {categoryName}</h2>
             <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Deep Forensic Audit Log</p>
           </div>
-          <button onClick={onClose} className="p-2 border border-border rounded-[8px] hover:bg-muted transition-all text-muted-foreground hover:text-foreground">
+          <Button type="button" variant="ghost" disabled={false} onClick={onClose} className="p-2 border border-border rounded-[8px] hover:bg-muted transition-all text-muted-foreground hover:text-foreground bg-transparent">
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -82,9 +83,9 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
         </div>
         
         <div className="p-6 border-t border-border bg-card flex justify-end">
-           <button onClick={onClose} className="px-6 py-3 bg-primary text-primary-foreground text-[10px] font-bold uppercase rounded-[8px] hover:bg-primary/90 transition-colors">
+           <Button type="button" variant="primary" disabled={false} onClick={onClose} className="px-6 py-3 h-10 bg-primary text-primary-foreground text-[10px] font-bold uppercase rounded-[8px] hover:bg-primary/90 transition-colors">
              Close Audit View
-           </button>
+           </Button>
         </div>
       </div>
     </>

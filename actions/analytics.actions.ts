@@ -200,6 +200,8 @@ export async function getMasterLedger(filters?: {
   category?: string;
   propertyId?: string;
   tenantId?: string;
+  accountId?: string;
+  categoryId?: string;
   minAmount?: number;
   maxAmount?: number;
   skip?: number;
@@ -237,7 +239,7 @@ export async function getLedgerFilterMetadata() {
       });
     } catch (e: any) {
       console.error('[ANALYTICS_METADATA_FATAL]', e);
-      return { properties: [], tenants: [] };
+      return { properties: [], tenants: [], accounts: [], categories: [] };
     }
   });
 }

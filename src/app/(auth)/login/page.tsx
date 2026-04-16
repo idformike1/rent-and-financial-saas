@@ -43,14 +43,11 @@ export default function LoginPage() {
       <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[12px] animate-in zoom-in-95 duration-700 bg-card">
         <div className="space-y-10">
           <div className="text-center space-y-4">
-             <div className="w-12 h-12 bg-card border border-border rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
-                <svg width="24" height="24" viewBox="0 0 512 512" className="text-foreground fill-current">
-                   <path d="M504.1 256C504.1 119 393 7.9 256 7.9S7.9 119 7.9 256 119 504.1 256 504.1 504.1 393 504.1 256z" opacity=".4"/>
-                   <path d="M256 504.1c137 0 248.1-111.1 248.1-248.1S393 7.9 256 7.9 7.9 119 7.9 256 119 504.1 256 504.1z"/>
-                </svg>
+             <div className="w-12 h-12 bg-foreground rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
+                <span className="text-background font-bold text-xl">M</span>
              </div>
              <div>
-                <h1 className="text-[20px] font-medium tracking-tight text-foreground leading-none">Mercury</h1>
+                <h1 className="text-[20px] font-medium tracking-tight text-foreground leading-none">Mercury Alpha</h1>
                 <p className="text-[13px] font-medium text-muted-foreground mt-3 leading-relaxed">System login required for terminal access.</p>
              </div>
           </div>
@@ -60,7 +57,7 @@ export default function LoginPage() {
               <div className="space-y-3">
                 <label className="text-[11px] font-medium text-muted-foreground ml-1">Email address</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 group-focus-within:text-foreground transition-colors" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">[E]</span>
                   <Input 
                     type="email" 
                     value={email}
@@ -75,7 +72,7 @@ export default function LoginPage() {
               <div className="space-y-3">
                 <label className="text-[11px] font-medium text-muted-foreground ml-1">Password</label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 group-focus-within:text-foreground transition-colors" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">[P]</span>
                   <Input 
                     type="password"
                     value={password}
@@ -97,23 +94,16 @@ export default function LoginPage() {
             <Button 
               type="submit"
               disabled={isLoading}
+              isLoading={isLoading}
               variant="primary"
               className="w-full h-[38px] rounded-[6px] text-[13px] font-medium border-none mt-2"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-3 animate-spin" /> Authenticating...
-                </>
-              ) : (
-                <>
-                  Sign In <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
+              {isLoading ? "Authenticating..." : "Sign In →"}
             </Button>
           </form>
 
           <div className="pt-10 border-t border-border flex justify-between items-center text-[10px] font-bold text-muted-foreground ">
-            <span className="flex items-center gap-2 font-medium"><ShieldCheck className="w-4 h-4 text-mercury-green" /> V.3.2 Secure Pipeline</span>
+            <span className="flex items-center gap-2 font-medium">(✓) V.3.2 Secure Pipeline</span>
             <span>Ref: 0xMERCURY</span>
           </div>
         </div>

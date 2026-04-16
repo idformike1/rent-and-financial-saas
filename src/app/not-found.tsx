@@ -40,7 +40,7 @@ export default function NotFound() {
         </Link>
 
         <p className="text-[9px] font-bold text-muted-foreground ">
-          Axiom 2026 // Sovereign Navigation Protocol
+          Mercury Alpha // System Navigation Protocol
         </p>
       </div>
     </div>

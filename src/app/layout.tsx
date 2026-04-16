@@ -3,7 +3,7 @@ import { IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import SessionProvider from '@/components/providers/SessionProvider';
 import Toaster from '@/components/Toaster';
-import SovereignShell from '@/components/SovereignShell';
+import AppShell from '@/components/AppShell';
 
 const ibmPlexMono = IBM_Plex_Mono({
   weight: ['400', '500', '600', '700'],
@@ -13,8 +13,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AXIOM 2026',
-  description: 'Enterprise Sovereign Financial Engine.',
+  title: 'MERCURY ALPHA',
+  description: 'Enterprise Mercury Financial Engine.',
 };
 
 export default function RootLayout({
@@ -27,9 +27,9 @@ export default function RootLayout({
       <body className="antialiased min-h-screen bg-[#0A0A0A] text-zinc-100 flex overflow-hidden">
         <SessionProvider>
           <Toaster />
-          <SovereignShell>
+          <AppShell>
             {children}
-          </SovereignShell>
+          </AppShell>
         </SessionProvider>
       </body>
     </html>

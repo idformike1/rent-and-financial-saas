@@ -1,7 +1,7 @@
 'use client'
 
 import { Card } from '@/components/ui-finova'
-import { History } from 'lucide-react'
+
 
 interface WaterfallData {
   revenue: number
@@ -18,13 +18,11 @@ export default function PropertyWaterfall({ data }: PropertyWaterfallProps) {
   return (
     <div className="space-y-6">
       <h3 className="text-[12px] text-muted-foreground font-bold uppercase tracking-widest mb-4 flex items-center gap-3">
-        <History className="w-4 h-4" /> Fiscal Materialization
+        <span className="text-muted-foreground font-bold">[H]</span> Fiscal Materialization
       </h3>
       <Card className="bg-card border-border p-10 h-[480px] flex flex-col justify-between relative overflow-hidden group rounded-[6px]">
         <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none group-hover:opacity-10 transition-opacity">
-          <svg width="100%" height="100%" viewBox="0 0 200 200" className="rotate-90">
-            <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="0.5" fill="none" className="text-vibrant-blue" />
-          </svg>
+          <div className="w-96 h-96 rounded-full border border-vibrant-blue/20" />
         </div>
         
         <div className="space-y-12 relative z-10 w-full">

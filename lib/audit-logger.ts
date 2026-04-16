@@ -25,6 +25,25 @@ export async function recordAuditLog({ action, entityType, entityId, metadata, t
     finalOrgId = session.user.organizationId;
   }
 
+  // CRITICAL: Verify that the user still exists in the DB to prevent P2003 (FK Violation)
+  const userExists = await prisma.user.count({ where: { id: finalUserId } });
+  
+  if (userExists === 0) {
+    // If user is missing from DB (likely due to a seed wipe), we skip the user linkage
+    // or we could throw. In this workstation standard, we preserve the action.
+    console.warn(`[AUDIT_LOG_RECOVER] User ${finalUserId} missing from DB. Recording as System event.`);
+    return await client.auditLog.create({
+      data: {
+        action,
+        entityType,
+        entityId,
+        metadata: metadata ? { ...metadata, orphanedUserId: finalUserId } : { orphanedUserId: finalUserId },
+        userId: undefined, // Break FK link
+        organizationId: finalOrgId
+      }
+    });
+  }
+
   return await client.auditLog.create({
     data: {
       action,

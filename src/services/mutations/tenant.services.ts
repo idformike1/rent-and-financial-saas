@@ -40,9 +40,7 @@ export async function getTenantForensicDossierService(
   const ledgerEntries = await db.ledgerEntry.findMany({
     where: { 
       tenantId: tenantId,
-      organizationId: context.organizationId,
-      account: { category: 'INCOME' },
-      amount: { lt: 0 }
+      organizationId: context.organizationId
     },
     orderBy: { transactionDate: 'desc' }
   });

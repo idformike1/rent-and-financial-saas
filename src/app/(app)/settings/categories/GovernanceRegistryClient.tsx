@@ -2,27 +2,15 @@
 
 import { useState, useRef, useMemo } from 'react'
 import { 
-  FolderTree, 
-  Trash2, 
-  Edit2, 
-  Check, 
-  X, 
-  Plus, 
-  ChevronDown, 
-  ChevronRight, 
-  Layers,
-  ShieldCheck,
-  Zap,
-  Activity,
-  ArrowRight,
-  Settings2,
-  Lock,
-  Sparkles,
-  Command,
-  Database,
   Building2,
+  Briefcase,
+  Database,
   FileSpreadsheet,
-  Briefcase
+  Activity,
+  Layers,
+  Command,
+  Zap,
+  RotateCcw
 } from 'lucide-react'
 import { 
   deleteAccountNode, 
@@ -140,13 +128,13 @@ export default function GovernanceRegistryClient({
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <div className="flex items-center gap-6 mb-4">
             <div className="w-16 h-16 rounded-[1.75rem] bg-brand/10 flex items-center justify-center">
-              <Command className="w-8 h-8 text-brand" />
+               <span className="text-brand text-2xl font-bold">[G]</span>
             </div>
             <div>
-              <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">Governance Hub</h1>
+              <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none text-white">Taxonomy Control</h1>
               <div className="flex items-center gap-3 mt-3">
-                 <Badge variant="brand" className="px-3 py-1 text-[8px]">Precision Protocol 2026</Badge>
-                 <Badge variant="success" className="px-3 py-1 text-[8px]">Signal Locked</Badge>
+                 <Badge variant="brand" className="px-3 py-1 text-[8px] bg-[#5D71F9]/10 text-[#5D71F9] border-[#5D71F9]/20">Mercury Standard</Badge>
+                 <Badge variant="success" className="px-3 py-1 text-[8px] bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20">Registry Synchronized</Badge>
               </div>
             </div>
           </div>
@@ -154,26 +142,28 @@ export default function GovernanceRegistryClient({
 
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4">
           <Button 
-            variant="secondary" 
+            type="button"
+            variant="secondary"
+            disabled={false}
             className={cn("rounded-[8px] h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-foreground" : "bg-[var(--card)] text-[var(--foreground)]")} 
             onClick={() => {
               setIsLedgerEditorVisible(!isLedgerEditorVisible);
               setIsCommandCenterVisible(false);
             }}
           >
-            {isLedgerEditorVisible ? <X className="w-4 h-4 mr-3" /> : <Settings2 className="w-4 h-4 mr-3 group-hover:rotate-90 transition-transform" />}
-            Materialize Ledger
+            {isLedgerEditorVisible ? "[X]" : "[⚗] Materialize Ledger"}
           </Button>
           <Button 
-            variant="primary" 
+            type="button"
+            variant="primary"
+            disabled={false}
             className="rounded-[8px] h-14 px-8  bg-[var(--primary)] text-foreground" 
             onClick={() => {
               setIsCommandCenterVisible(!isCommandCenterVisible);
               setIsLedgerEditorVisible(false);
             }}
           >
-             {isCommandCenterVisible ? <X className="w-4 h-4 mr-3" /> : <Plus className="w-4 h-4 mr-3" />}
-             New Account Node
+             {isCommandCenterVisible ? "[X]" : "[+] New Account Node"}
           </Button>
         </motion.div>
       </div>
@@ -185,13 +175,13 @@ export default function GovernanceRegistryClient({
                <div className="flex justify-between items-center mb-10 border-b border-[var(--border)] pb-8">
                   <div>
                     <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
-                       <Zap className="w-8 h-8 mr-4 text-brand" /> Provision Financial Partition
+                       <span className="text-brand mr-4 text-3xl">⚡</span> Provision Financial Partition
                     </h3>
                     <p className="text-[10px] text-muted-foreground   mt-3">Level 0: Master Ledger Inode</p>
                   </div>
-                  <button onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-3 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
-                    <X className="w-6 h-6 text-muted-foreground group-hover:text-rose-500 transition-colors"/>
-                  </button>
+                  <Button type="button" variant="ghost" disabled={false} onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-2 h-10 w-10 min-w-0 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10 border-none">
+                    <span className="text-muted-foreground group-hover:text-rose-500 font-bold">[X]</span>
+                  </Button>
                </div>
                <form onSubmit={handleCreateLedger} className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="space-y-4">
@@ -217,7 +207,7 @@ export default function GovernanceRegistryClient({
                     </select>
                   </div>
                   <div className="flex items-end">
-                    <Button type="submit" variant="primary" className="h-16 w-full rounded-[8px] ">Initialize Nexus</Button>
+                    <Button type="submit" variant="primary" disabled={false} className="h-16 w-full rounded-[8px] ">Initialize Nexus</Button>
                   </div>
                </form>
             </Card>
@@ -230,13 +220,13 @@ export default function GovernanceRegistryClient({
                <div className="flex justify-between items-center mb-10 border-b border-[var(--border)] pb-8">
                   <div>
                     <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
-                       <Layers className="w-8 h-8 mr-4 text-brand" /> Provision Account Node
+                       <span className="text-brand mr-4 text-2xl">[Ξ]</span> Provision Account Node
                     </h3>
                     <p className="text-[10px] text-muted-foreground   mt-3">Recursive Logic Definition</p>
                   </div>
-                  <button onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-3 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10">
-                    <X className="w-6 h-6 text-muted-foreground group-hover:text-rose-500 transition-colors"/>
-                  </button>
+                  <Button type="button" variant="ghost" disabled={false} onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-2 h-10 w-10 min-w-0 rounded-[8px] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10 border-none">
+                    <span className="text-muted-foreground group-hover:text-rose-500 font-bold">[X]</span>
+                  </Button>
                </div>
                <form ref={formRef} action={handleMaterializeNode} className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-end">
                   <div className="space-y-4 lg:col-span-2">
@@ -256,7 +246,7 @@ export default function GovernanceRegistryClient({
                           {validParentNodes.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
                       </select>
                   </div>
-                  <Button type="submit" variant="primary" className="h-16 rounded-[8px] ">Commit Trace</Button>
+                  <Button type="submit" variant="primary" disabled={false} className="h-16 rounded-[8px] ">Commit Trace</Button>
                </form>
             </Card>
           </motion.div>
@@ -275,7 +265,7 @@ export default function GovernanceRegistryClient({
             >
               <div className="flex flex-col items-center text-center mb-10">
                  <div className="w-20 h-20 rounded-[1.75rem] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
-                    <Icon className="w-10 h-10 text-brand fill-brand/10" />
+                    <span className="text-3xl text-brand font-bold">[L]</span>
                  </div>
                  <h2 className="text-2xl text-[var(--foreground)] leading-none">{ledger.name}</h2>
                  <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'brand'} className="mt-4 px-4 py-1.5 text-[8px] ">{ledger.class}</Badge>
@@ -284,7 +274,7 @@ export default function GovernanceRegistryClient({
               <div className="flex-1 space-y-4">
                 {scopeRoots.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center border border-dashed border-[var(--primary)]/20 rounded-[8px] p-6">
-                     <Sparkles className="w-10 h-10 text-foreground mb-4" />
+                     <span className="text-3xl text-foreground mb-4">✧</span>
                      <p className="text-[10px] text-muted-foreground  text-center leading-relaxed">Available Logic Domain</p>
                   </div>
                 ) : (
@@ -309,12 +299,12 @@ export default function GovernanceRegistryClient({
 
               {/* PREDICTIVE MINIMALISM: HOVER REVEAL */}
               <div className="mt-10 pt-8 border-t border-[var(--border)] flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                 <button onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 rounded-[6px] bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[10px] ">
-                    <Trash2 className="w-4 h-4" /> Vaporize Registry
-                 </button>
+                 <Button type="button" variant="ghost" disabled={false} onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 h-10 rounded-[6px] bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[10px] border-none">
+                    ⌫ Vaporize Registry
+                 </Button>
                  <div className="flex justify-between items-center px-2">
                     <span className="text-[8px] text-muted-foreground ">Hash::{ledger.id!.slice(0,8)}</span>
-                    <Lock className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground ">[S]</span>
                  </div>
               </div>
             </Card>
@@ -363,13 +353,11 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
         isEditing ? "bg-[var(--primary)]/5 ring-1 ring-[var(--primary)]/20" : "hover:bg-muted"
       )}>
         <div className="flex items-center flex-1 min-w-0">
-          <button onClick={() => toggleNode(node.id)} className={cn(
-            "mr-3 transition-all duration-300",
-            hasDependencies ? "text-brand" : "text-foreground dark:text-foreground",
-            isExpanded && "rotate-90"
-          )} disabled={!hasDependencies}>
-            <ChevronRight className="w-4 h-4" />
-          </button>
+            <span className={cn(
+               "mr-3 h-6 w-6 flex items-center justify-center transition-all duration-300",
+               hasDependencies ? "text-brand" : "text-muted-foreground/30",
+               isExpanded && "rotate-90"
+            )}>▶</span>
           
           {isEditing ? (
             <input 
@@ -387,13 +375,13 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
         <div className="flex items-center gap-2 opacity-0 group-hover/node:opacity-100 transition-opacity duration-300">
            {isEditing ? (
              <>
-               <button onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 rounded-[6px] hover:scale-110 active:scale-95 transition-all"><Check className="w-4 h-4" /></button>
-               <button onClick={cancelEdit} className="bg-muted text-[var(--muted)] p-2 rounded-[6px] hover:scale-110 active:scale-95 transition-all"><X className="w-4 h-4" /></button>
+               <Button type="button" variant="primary" disabled={false} onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 h-8 w-8 min-w-0 rounded-[6px] hover:scale-110 active:scale-95 transition-all">✓</Button>
+               <Button type="button" variant="secondary" disabled={false} onClick={cancelEdit} className="bg-muted text-[var(--muted)] p-2 h-8 w-8 min-w-0 rounded-[6px] hover:scale-110 active:scale-95 transition-all border-none">[X]</Button>
              </>
            ) : (
              <>
-               <button onClick={startEdit} className="w-8 h-8 rounded-[6px] bg-muted flex items-center justify-center text-[var(--muted)] hover:text-[var(--primary)] transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
-               <button onClick={handleDelete} className="w-8 h-8 rounded-[6px] bg-muted flex items-center justify-center text-[var(--muted)] hover:text-rose-400 transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+               <Button type="button" variant="ghost" disabled={false} onClick={startEdit} className="w-8 h-8 p-0 min-w-0 rounded-[6px] bg-muted border-none flex items-center justify-center text-[var(--muted)] hover:text-[var(--primary)] transition-all bg-transparent">✎</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={handleDelete} className="w-8 h-8 p-0 min-w-0 rounded-[6px] bg-muted border-none flex items-center justify-center text-[var(--muted)] hover:text-rose-400 transition-all bg-transparent">⌫</Button>
              </>
            )}
         </div>

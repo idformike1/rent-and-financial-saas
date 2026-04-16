@@ -2,11 +2,10 @@
 
 import * as React from "react"
 import { format, startOfMonth, endOfMonth, subMonths, subDays, startOfYear } from "date-fns"
-import { CalendarIcon, ChevronDown } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui-finova"
 import { Calendar } from "@/components/ui/calendar"
 import { Field, FieldLabel } from "@/components/ui/field"
 import {
@@ -67,13 +66,15 @@ export default function InsightsDatePicker({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            type="button"
             variant="ghost"
+            disabled={false}
             className={cn(
-               "h-8 gap-2 text-sm font-normal px-2 text-white/60 hover:text-white transition-all",
+               "h-8 gap-2 text-sm font-normal px-2 text-white/60 hover:text-white transition-all bg-transparent border-none",
                !date && "text-white/20"
             )}
           >
-            <CalendarIcon size={14} className="opacity-70" />
+            🗓️ 
             <span className="whitespace-nowrap">
               {date?.from ? (
                 date.to ? (
@@ -87,7 +88,7 @@ export default function InsightsDatePicker({
                 "Pick a date"
               )}
             </span>
-            <ChevronDown size={12} className="opacity-30" />
+            <span className="opacity-30">▼</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent 

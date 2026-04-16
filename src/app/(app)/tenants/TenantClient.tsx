@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { SovereignTable } from "@/src/components/ui/SovereignTable";
 import { SovereignSheet } from "@/src/components/ui/SovereignSheet";
+import { Button } from "@/components/ui-finova";
 
 interface Tenant {
   id: string;
@@ -100,12 +101,12 @@ export default function TenantClient({ initialData }: TenantClientProps) {
 
             {/* ACTION DECK */}
             <section className="pt-8 border-t border-zinc-800/50 flex gap-4">
-              <button className="flex-1 h-10 bg-zinc-800/50 text-zinc-100 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-zinc-700/50 transition-colors">
+              <Button type="button" variant="secondary" disabled={false} className="flex-1 h-10 bg-zinc-800/50 text-zinc-100 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-zinc-700/50 transition-colors border-none">
                 Edit Profile
-              </button>
-              <button className="flex-1 h-10 bg-red-950/20 border border-red-900/30 text-red-500 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-red-900/30 transition-colors">
+              </Button>
+              <Button type="button" variant="ghost" disabled={false} className="flex-1 h-10 bg-red-950/20 border border-red-900/30 text-red-500 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-red-900/30 transition-colors">
                 Terminate Lease
-              </button>
+              </Button>
             </section>
           </div>
         </SovereignSheet>
