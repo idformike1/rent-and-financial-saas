@@ -144,7 +144,7 @@ export default function GlobalSearch() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-none">
-                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full border", getTypeStyle(r.type))}>
+                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-[6px] border", getTypeStyle(r.type))}>
                             {r.type}
                           </span>
                           <ArrowRight className="w-4 h-4 text-foreground/40" />
@@ -190,11 +190,11 @@ export default function GlobalSearch() {
               </span>
               <span className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-4">
                 <span className="flex items-center gap-1.5 opacity-60">
-                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold shadow-sm">ESC</kbd>
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold ">ESC</kbd>
                   CLOSE
                 </span>
                 <span className="flex items-center gap-1.5 opacity-60">
-                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold shadow-sm">⏎</kbd>
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold ">⏎</kbd>
                   NAVIGATE
                 </span>
               </span>

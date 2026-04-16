@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { prisma } from '@/lib/prisma';
 import { Prisma } from "@prisma/client";
 import { format, subDays, subMonths, startOfMonth, startOfYear } from "date-fns";
 

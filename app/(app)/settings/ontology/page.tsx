@@ -92,8 +92,8 @@ export default function OntologyMapPage() {
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-[var(--border)] pb-10 gap-6">
         <div>
           <div className="flex items-center space-x-3 mb-2">
-            <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20 text-[8px] rounded-xl px-2 py-0.5">SYST_REC_v3.5</Badge>
-            <div className="w-1.5 h-1.5 bg-[var(--primary)] rounded-full animate-pulse shadow-none" />
+            <Badge className="bg-[var(--primary-muted)] text-[var(--primary)] border-[var(--primary)]/20 text-[8px] rounded-[6px] px-2 py-0.5">SYST_REC_v3.5</Badge>
+            <div className="w-1.5 h-1.5 bg-[var(--primary)] rounded-[6px] animate-pulse " />
           </div>
           <h1 className="text-display font-weight-display font-light text-[var(--foreground)] ">System Recon <span className="text-[var(--primary)]">Ontology Tree</span></h1>
           <p className="text-[10px] text-[var(--muted)]  mt-3 ">Dynamic persistence layer mapping for <span className="text-[var(--foreground)] font-bold tracking-normal">{tree.name}</span></p>
@@ -174,9 +174,9 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
          <div 
           onClick={() => hasChildren && setIsOpen(!isOpen)}
           className={`
-            min-w-[280px] p-5 bg-[var(--card)] border ${colorClasses} relative transition-all duration-300 rounded-[8px] shadow-sm hover:shadow-none
+            min-w-[280px] p-5 bg-[var(--card)] border ${colorClasses} relative transition-all duration-300 rounded-[8px]  hover:
             ${hasChildren ? 'cursor-pointer hover:bg-[var(--card-raised)] hover:scale-[1.02]' : 'cursor-default'}
-            dark:shadow-none
+            dark:
           `}
          >
            {/* TYPE & STATUS */}
@@ -188,7 +188,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
               {hasChildren && (
                  <motion.div 
                   animate={{ rotate: isOpen ? 90 : 0 }}
-                  className="w-4 h-4 rounded-full bg-[var(--card-raised)] flex items-center justify-center border border-[var(--border)]"
+                  className="w-4 h-4 rounded-[6px] bg-[var(--card-raised)] flex items-center justify-center border border-[var(--border)]"
                  >
                     <ChevronRight className="w-2.5 h-2.5 text-[var(--muted)]" />
                  </motion.div>
@@ -221,7 +221,7 @@ function TreeNode({ node, isRoot = false }: { node: any, isRoot?: boolean }) {
            {/* DATA FINGERPRINT */}
            <div className="mt-5 border-t border-[var(--border)] pt-3 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                 <div className={`w-1 h-1 rounded-full ${isOpen ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]/50'}`} />
+                 <div className={`w-1 h-1 rounded-[6px] ${isOpen ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]/50'}`} />
                  <span className="text-[7px] text-[var(--muted)]  truncate max-w-[120px]">REF_{node.id.slice(0,12)}</span>
               </div>
               <JumpToSource node={node} />

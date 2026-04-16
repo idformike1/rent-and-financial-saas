@@ -54,6 +54,7 @@ export async function getTenantForensicDossierService(
   return {
     tenant: {
       ...tenant,
+      ledgerEntries,
       integrityScore,
       stripChart
     }

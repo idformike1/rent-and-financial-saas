@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { runSecureServerAction } from '@/lib/auth-utils';
 import { AccountCategory, Charge, LedgerEntry, Prisma } from '@prisma/client';
 

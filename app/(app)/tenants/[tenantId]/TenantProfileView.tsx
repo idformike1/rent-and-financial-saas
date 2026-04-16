@@ -231,9 +231,9 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                <Activity className="w-4 h-4 text-brand" /> 12-Month Behavioral Payment DNA
             </h3>
             <div className="flex gap-4 text-[8px] text-muted-foreground ">
-               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[var(--primary)]" /> Compliant</div>
-               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500" /> Arrears</div>
-               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-rose-500" /> Defaults</div>
+               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[6px] bg-[var(--primary)]" /> Compliant</div>
+               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[6px] bg-amber-500" /> Arrears</div>
+               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[6px] bg-rose-500" /> Defaults</div>
             </div>
          </div>
          <div className="bg-background border border-border p-6 rounded-[8px] grid grid-cols-6 lg:grid-cols-12 gap-4">
@@ -262,7 +262,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
         {/* CORE PORTFOLIO */}
         <div className="md:col-span-4 space-y-8">
            <div className="bg-card border border-border rounded-[8px] p-6 relative overflow-hidden group">
-              <div className="absolute -right-12 -top-6 w-40 h-40 bg-brand/10 rounded-full blur-[60px] group-hover:bg-brand/20 transition-all duration-700" />
+              <div className="absolute -right-12 -top-6 w-40 h-40 bg-brand/10 rounded-[6px] blur-[60px] group-hover:bg-brand/20 transition-all duration-700" />
               <p className="text-muted-foreground   text-[10px] mb-6">Aggregate Liability</p>
               <div className="text-display font-weight-display text-foreground font-finance tabular-nums leading-none">
                  ${totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}
@@ -270,7 +270,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
               <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
                  <span className="text-muted-foreground text-[10px]  ">System Status</span>
                  <span className={cn(
-                   "px-6 py-2 rounded-xl text-[10px]   border transition-colors",
+                   "px-6 py-2 rounded-[6px] text-[10px]   border transition-colors",
                    totalBalance > 0 ? "bg-rose-500/10 text-rose-500 border-rose-500/20" : "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20"
                  )}>
                    {totalBalance > 0 ? 'DELINQUENT_RECAP' : 'FULLY_COLLATERIZED'}
@@ -365,7 +365,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                      <input {...register('nationalId')} className="w-full bg-background border border-border rounded-[8px] p-6 text-xl outline-none focus:border-brand transition-all text-foreground " />
                    </div>
                  </div>
-                 <button disabled={isSubmitting} className="w-full h-24 bg-brand text-foreground rounded-[8px] shadow-none hover:scale-[1.02] active:scale-98 disabled:opacity-50 transition-all   text-[12px]">
+                 <button disabled={isSubmitting} className="w-full h-24 bg-brand text-foreground rounded-[8px]  hover:scale-[1.02] active:scale-98 disabled:opacity-50 transition-all   text-[12px]">
                     {isSubmitting ? 'SYNCING_RECON...' : 'Commit Protocol Changes'}
                  </button>
               </form>
@@ -399,7 +399,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                       <input type="number" {...regLease('depositAmount', {valueAsNumber: true})} className="w-full bg-background border border-border rounded-[8px] p-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all" />
                     </div>
                  </div>
-                 <button disabled={isSubmitting} className="w-full h-24 bg-brand text-foreground rounded-[8px] shadow-none hover:scale-[1.02] active:scale-98 disabled:opacity-50 transition-all   text-[12px]">
+                 <button disabled={isSubmitting} className="w-full h-24 bg-brand text-foreground rounded-[8px]  hover:scale-[1.02] active:scale-98 disabled:opacity-50 transition-all   text-[12px]">
                     Provision Expansion Unit
                  </button>
               </form>
@@ -411,7 +411,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
             <div className="bg-card rounded-[8px] w-full max-w-lg overflow-hidden border border-rose-500/20 relative">
                <div className="p-6 text-center">
-                  <div className="bg-rose-500/10 text-rose-500 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-10 border border-rose-500/20">
+                  <div className="bg-rose-500/10 text-rose-500 rounded-[6px] w-32 h-32 flex items-center justify-center mx-auto mb-10 border border-rose-500/20">
                     <Trash2 className="w-14 h-14" />
                   </div>
                   <h2 className="text-display font-weight-display text-foreground mb-6  decoration-rose-500 decoration-4 underline underline-offset-8">Critical Purge Protocol</h2>
@@ -419,7 +419,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                     Initiating <span className="text-rose-500 ">Soft-Delete Phase 4</span>. This registry node will be sequestered into the immutable archive. Active unit occupancy will be terminated.
                   </p>
                   <div className="flex flex-col gap-4">
-                    <button onClick={onDeleteTenant} disabled={isSubmitting} className="w-full h-24 bg-rose-600 text-foreground rounded-[8px] shadow-none hover:bg-rose-700 transition-all disabled:opacity-50   text-[11px] scale-105">
+                    <button onClick={onDeleteTenant} disabled={isSubmitting} className="w-full h-24 bg-rose-600 text-foreground rounded-[8px]  hover:bg-rose-700 transition-all disabled:opacity-50   text-[11px] scale-105">
                       Confirm Final Purge
                     </button>
                     <button onClick={() => setIsDeleteModalOpen(false)} className="w-full text-muted-foreground   text-[8px] py-10 hover:text-foreground transition-colors">
@@ -435,7 +435,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
             <div className="bg-card rounded-[8px] w-full max-w-lg overflow-hidden border border-border relative">
                <div className="p-6 text-center">
-                  <div className="bg-amber-500/10 text-amber-500 rounded-full w-28 h-28 flex items-center justify-center mx-auto mb-10 border border-amber-500/20">
+                  <div className="bg-amber-500/10 text-amber-500 rounded-[6px] w-28 h-28 flex items-center justify-center mx-auto mb-10 border border-amber-500/20">
                     <Home className="w-12 h-12" />
                   </div>
                   <h2 className="text-display font-weight-display text-foreground mb-6 leading-none">Decommission Unit {isMoveOutModalOpen.unitNumber}?</h2>
@@ -443,7 +443,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                     Terminate lease specific to <span className="text-foreground ">Unit {isMoveOutModalOpen.unitNumber}</span>. Multi-unit nodes will remain operational.
                   </p>
                   <div className="flex flex-col gap-4">
-                    <button onClick={onMoveOut} disabled={isSubmitting} className="w-full h-24 bg-card text-foreground rounded-[8px] shadow-none hover:bg-muted transition-all active:scale-95   text-[11px]">
+                    <button onClick={onMoveOut} disabled={isSubmitting} className="w-full h-24 bg-card text-foreground rounded-[8px]  hover:bg-muted transition-all active:scale-95   text-[11px]">
                       Execute Decommission
                     </button>
                     <button onClick={() => setIsMoveOutModalOpen(null)} className="w-full text-muted-foreground   text-[8px] py-8 hover:text-foreground transition-colors">
@@ -471,7 +471,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
 
 function ForensicBadge({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <span className={cn("px-4 py-1.5 rounded-full text-[10px]  border-2", className)}>
+    <span className={cn("px-4 py-1.5 rounded-[6px] text-[10px]  border-2", className)}>
       {children}
     </span>
   )

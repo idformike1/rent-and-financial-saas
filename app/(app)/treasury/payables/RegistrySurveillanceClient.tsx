@@ -98,7 +98,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       </Card>
 
       {/* THE REGISTRY TABLE */}
-      <Card className="p-0 overflow-hidden border border-border shadow-none">
+      <Card className="p-0 overflow-hidden border border-border ">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-muted/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">

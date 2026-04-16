@@ -145,7 +145,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               </p>
             </div>
           </div>
-          <div className="bg-[var(--primary)]/20 p-3 rounded-full">
+          <div className="bg-[var(--primary)]/20 p-3 rounded-[6px]">
             <CheckCircle className="w-8 h-8 text-[var(--primary)]" />
           </div>
         </div>

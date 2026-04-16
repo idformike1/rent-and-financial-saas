@@ -39,17 +39,17 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-display: 'Arcadia Display', ui-sans-serif, system-ui, sans-serif;
 
-  /* Universal Mercury Scaling (V.3.2) */
+  /* Universal Mercury Scaling (V.3.2) - HARDENED */
   --text-base: 15px;
   --text-display: 28px;
-  --radius: 8px;
-  --radius-button: 16px;
+  --radius: 6px;
+  --radius-button: 6px;
   --height-button: 32px;
   --height-header: 56px;
   --width-sidebar: 232px;
 
-  /* Custom Mercury Float Shadow */
-  --shadow-mercury-float: 0 4px 14px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+  /* No custom floating shadows allowed in Mercury V.3.2 */
+  --shadow-mercury-float: none;
 }
 
 /* ── DARK MODE: SOVEREIGN DEFAULT — NO LIGHT MODE ───────────────────────── */
@@ -79,7 +79,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 6px;
   --sidebar: oklch(0.1743 0.0227 283.8);
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #5266EB;
@@ -134,8 +134,8 @@
   .mercury-card {
     background-color: var(--card) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
     padding: 24px !important;
     display: flex !important;
     flex-direction: column !important;
@@ -203,13 +203,11 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+  --radius-2xl: 6px;
+  --radius-3xl: 6px;
+  --radius-4xl: 6px;
 }
-
-/* .dark block removed — dark is the unconditional sovereign default via :root */

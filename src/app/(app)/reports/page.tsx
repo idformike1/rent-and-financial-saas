@@ -1,0 +1,60 @@
+import { prisma } from "@/lib/prisma";
+import ReportClient from "./ReportClient";
+
+export default async function StrategicReportsPage() {
+  const entries = await prisma.ledgerEntry.findMany({
+    where: {
+      status: "ACTIVE",
+    },
+    include: {
+      expenseCategory: true,
+      account: true,
+    },
+  });
+
+  const businessIncome = entries
+    .filter((e) => e.account.category === "INCOME" && !e.expenseCategory?.isPersonal)
+    .reduce((acc, e) => acc + Number(e.amount), 0);
+
+  const allExpenses = entries
+    .filter((e) => e.account.category === "EXPENSE");
+
+  const personalExpenses = allExpenses
+    .filter((e) => e.expenseCategory?.isPersonal)
+    .reduce((acc, e) => acc + Number(e.amount), 0);
+
+  const businessExpenses = allExpenses
+    .filter((e) => !e.expenseCategory?.isPersonal)
+    .reduce((acc, e) => acc + Number(e.amount), 0);
+
+  // NOI Calculation: Business Income - Business Operating Expenses
+  const noi = businessIncome - businessExpenses;
+
+  const stats = {
+    totalIncome: businessIncome,
+    totalExpenses: businessExpenses + personalExpenses,
+    noi,
+    personalExpenses,
+    businessExpenses,
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col gap-6 w-full">
+      <header className="flex justify-between items-end mb-4">
+        <div>
+          <h1 className="text-[11px] uppercase tracking-widest text-zinc-500 font-semibold mb-1">
+            God-View Telemetry
+          </h1>
+          <h2 className="text-2xl text-zinc-100 font-medium tracking-tight">
+            Strategic Analytics
+          </h2>
+        </div>
+        <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+          Fiscal_Nodes: {entries.length}
+        </div>
+      </header>
+
+      <ReportClient stats={stats} />
+    </div>
+  );
+}

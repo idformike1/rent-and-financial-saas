@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import prisma from "@/lib/prisma"
+import { prisma } from '@/lib/prisma'
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { ShieldAlert, Fingerprint, Activity, Clock, User as UserIcon, Tag, Database } from "lucide-react"
@@ -118,7 +118,7 @@ export default async function AuditLogPage() {
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[var(--primary-muted)] flex items-center justify-center text-[var(--primary)] text-xs">
+                        <div className="w-8 h-8 rounded-[6px] bg-[var(--primary-muted)] flex items-center justify-center text-[var(--primary)] text-xs">
                           {log.user.name?.[0].toUpperCase()}
                         </div>
                         <div className="flex flex-col">
@@ -128,7 +128,7 @@ export default async function AuditLogPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <span className={`px-3 py-1.5 rounded-xl text-[9px]   border ${getBadgeStyle(log.action)}`}>
+                      <span className={`px-3 py-1.5 rounded-[6px] text-[9px]   border ${getBadgeStyle(log.action)}`}>
                         {log.action}
                       </span>
                     </td>

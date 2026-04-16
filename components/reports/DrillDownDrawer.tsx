@@ -20,7 +20,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
       const fetchTransactions = async () => {
         setIsLoading(true);
         try {
-          const data = await getMasterLedger(categoryName);
+          const data = await getMasterLedger({ category: categoryName });
           setTransactions(data);
         } catch (e) {
           console.error(e);

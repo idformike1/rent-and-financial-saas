@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
+import { format, startOfMonth, endOfMonth, subMonths, subDays, startOfYear } from "date-fns"
 import { CalendarIcon, ChevronDown } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
@@ -91,7 +91,7 @@ export default function InsightsDatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 flex flex-row bg-popover border-white/10 backdrop-blur-xl shadow-2xl rounded-xl overflow-hidden" 
+          className="w-auto p-0 flex flex-row bg-popover border-white/10 backdrop-blur-xl  rounded-[6px] overflow-hidden" 
           align="start"
           sideOffset={8}
         >

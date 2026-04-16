@@ -27,7 +27,7 @@ const formatCurrency = (val: number) => {
 
 export default function TreasuryLedgerTable({ entries }: TreasuryLedgerTableProps) {
   return (
-    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-md overflow-hidden shadow-[var(--shadow-mercury-float)]">
+    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-[6px] overflow-hidden">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[15%]" />
@@ -47,7 +47,7 @@ export default function TreasuryLedgerTable({ entries }: TreasuryLedgerTableProp
           {entries.map((entry) => (
             <tr 
               key={entry.id}
-              className="group transition-all duration-200 bg-transparent hover:bg-white/5 hover:-translate-y-[1px] hover:shadow-sm hover:relative hover:z-10"
+              className="group transition-all duration-200 bg-transparent hover:bg-white/5 hover:-translate-y-[1px] hover:relative hover:z-10"
             >
               <td className="px-6 py-4">
                 <span className="font-mono text-[#9CA3AF] tracking-tight">{entry.date}</span>

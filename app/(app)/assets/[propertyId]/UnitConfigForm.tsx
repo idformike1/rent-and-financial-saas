@@ -4,6 +4,7 @@ import { useActionState, useEffect } from 'react';
 import { updateUnit } from '@/actions/asset.actions';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
+import { MaintenanceStatus } from '@/src/schema/enums';
 
 import { Check, Trash2 } from 'lucide-react';
 
@@ -15,7 +16,7 @@ const updateUnitAction = async (prevState: any, formData: FormData) => {
   const isDecommission = formData.get('decommission') === 'true';
 
   if (isDecommission) {
-    return await updateUnit(unitId, { maintenanceStatus: 'DECOMMISSIONED' });
+    return await updateUnit(unitId, { maintenanceStatus: MaintenanceStatus.DECOMMISSIONED });
   }
 
   const data = {
@@ -93,7 +94,7 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
         <button 
           type="submit" 
           disabled={isPending}
-          className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-lg h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 shadow-sm"
+          className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-[6px] h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 "
         >
           <Check size={14} />
           {isPending ? 'Executing...' : 'Commit Configuration'}
@@ -104,7 +105,7 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
           name="decommission" 
           value="true"
           disabled={isPending}
-          className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-lg h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[6px] h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
         >
           <Trash2 size={14} />
           {isPending ? 'Executing...' : 'Decommission Asset'}

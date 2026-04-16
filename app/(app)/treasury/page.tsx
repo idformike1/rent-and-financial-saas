@@ -31,7 +31,7 @@ export default function TreasuryDashboard() {
       {/* ── HEADER: FISCAL ANCHOR ─────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-6">
-          <div className="w-16 h-16 rounded-[1.75rem] bg-sidebar-primary/10 flex items-center justify-center shadow-inner">
+          <div className="w-16 h-16 rounded-[1.75rem] bg-sidebar-primary/10 flex items-center justify-center -inner">
             <Landmark className="w-8 h-8 text-sidebar-primary" />
           </div>
           <div>
@@ -43,8 +43,8 @@ export default function TreasuryDashboard() {
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-end">
             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Global Status</span>
-            <div className="flex items-center gap-2 mt-1 px-3 py-1 bg-mercury-green/10 border border-mercury-green/20 rounded-full">
-              <div className="w-1.5 h-1.5 rounded-full bg-mercury-green animate-pulse" />
+            <div className="flex items-center gap-2 mt-1 px-3 py-1 bg-mercury-green/10 border border-mercury-green/20 rounded-[6px]">
+              <div className="w-1.5 h-1.5 rounded-[6px] bg-mercury-green animate-pulse" />
               <span className="text-[10px] font-bold text-mercury-green uppercase">Sync Nominal</span>
             </div>
           </div>

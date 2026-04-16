@@ -33,7 +33,7 @@ export default function Toaster() {
             ${t.type === 'info' ? 'glass-panel text-foreground' : ''}
           `}
         >
-          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-xl bg-card/20">
+          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-[6px] bg-card/20">
             {t.type === 'success' && <CheckCircle2 className="w-6 h-6 text-foreground" />}
             {t.type === 'error' && <AlertCircle className="w-6 h-6 text-foreground" />}
             {t.type === 'info' && <Info className="w-6 h-6 text-foreground" />}
@@ -45,7 +45,7 @@ export default function Toaster() {
           </div>
           <button 
             onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
-            className="absolute top-4 right-4 p-1 hover:bg-muted rounded-xl transition-colors"
+            className="absolute top-4 right-4 p-1 hover:bg-muted rounded-[6px] transition-colors"
           >
             <X className="w-4 h-4 text-foreground/60 hover:text-foreground transition-colors" />
           </button>

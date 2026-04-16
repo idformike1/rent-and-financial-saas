@@ -1,5 +1,5 @@
 import React from 'react'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { generateReportData } from './reports'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { ReportPDF } from '@/components/ReportPDF'

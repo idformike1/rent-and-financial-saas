@@ -46,7 +46,9 @@ export default async function TransactionsPage({
   ]);
 
   // Strictly pick only the required fields to prevent Prisma metadata from crashing RSC transport
-  const serializedLedger = (ledgerData || []).map((tx: any) => ({
+  const rawLedger = Array.isArray(ledgerData) ? ledgerData : [];
+  
+  const serializedLedger = rawLedger.map((tx: any) => ({
     id: tx.id,
     description: tx.description,
     amount: tx.amount ? Number(tx.amount) : 0,

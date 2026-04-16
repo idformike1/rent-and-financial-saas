@@ -7,7 +7,7 @@ export { cn }
 
 /**
  * MERCURY: CARD (WORKSTATION STANDARD)
- * Flat, bordered, 6px radius. No shadows.
+ * Flat, bordered, 6px radius. No s.
  */
 interface CardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   children: React.ReactNode;
@@ -61,10 +61,10 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-none rounded-full",
-    secondary: "bg-secondary border border-border text-foreground hover:bg-secondary/80 shadow-none rounded-full",
-    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/30 rounded-full",
-    danger: "bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 shadow-none rounded-full",
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90 border-none  rounded-[6px]",
+    secondary: "bg-secondary border border-border text-foreground hover:bg-secondary/80  rounded-[6px]",
+    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/30 rounded-[6px]",
+    danger: "bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20  rounded-[6px]",
   };
 
   const sizes = {
@@ -87,7 +87,7 @@ export function Button({
       {...(props as any)}
     >
       {isLoading && (
-        <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin mr-2" />
+        <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-[6px] animate-spin mr-2" />
       )}
       {children}
     </motion.button>
@@ -128,7 +128,7 @@ export function Badge({
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0 rounded-full border text-[9px] font-medium leading-none tracking-tight",
+      "inline-flex items-center px-2 py-0 rounded-[6px] border text-[9px] font-medium leading-none tracking-tight",
       variants[variant],
       className
     )}>
@@ -143,7 +143,7 @@ export function Badge({
  */
 export function MercuryTable({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <div className={cn("w-full overflow-hidden rounded-[8px] border border-white/[0.08] bg-transparent", className)}>
+    <div className={cn("w-full overflow-hidden rounded-[6px] border border-white/[0.08] bg-transparent", className)}>
       <table className="w-full border-collapse">
         {children}
       </table>

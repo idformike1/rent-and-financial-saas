@@ -106,7 +106,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <button 
             type="submit"
             disabled={isMoveOutPending}
-            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-lg h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[6px] h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
           >
             <Trash2 size={14} />
             {isMoveOutPending ? 'Executing...' : 'Annul Lease'}
@@ -220,7 +220,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <button 
             type="submit" 
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-lg h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 shadow-sm"
+            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[6px] h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 "
           >
             <Check size={14} />
             {isPending ? 'Processing Ingestion...' : 'Execute Ingestion'}

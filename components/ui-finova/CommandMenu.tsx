@@ -36,7 +36,7 @@ export default function CommandMenu() {
 
       {/* Menu Container */}
       <Command
-        className="relative w-full max-w-[640px] bg-popover border border-border rounded-[12px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-[640px] bg-popover border border-border rounded-[12px]  overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === 'Escape') setOpen(false);
@@ -63,6 +63,7 @@ export default function CommandMenu() {
             >
               Master Ledger
             </CommandItem>
+            <CommandItem
               onSelect={() => navigate('/reports/insights')}
               icon={<BarChart3 className="w-4 h-4" />}
             >
@@ -102,7 +103,7 @@ function CommandItem({ children, onSelect, icon }: { children: React.ReactNode, 
   return (
     <Command.Item
       onSelect={onSelect}
-      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white text-[14px] cursor-pointer transition-all hover:bg-white/5 data-[selected=true]:bg-white/10 group"
+      className="flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-white text-[14px] cursor-pointer transition-all hover:bg-white/5 data-[selected=true]:bg-white/10 group"
     >
       <span className="text-muted-foreground group-hover:text-white transition-colors">
         {icon}

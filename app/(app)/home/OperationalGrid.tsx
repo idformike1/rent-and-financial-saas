@@ -9,9 +9,9 @@ export default function OperationalGrid() {
         <div className="flex justify-between items-center">
           <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Delinquent arrears</h3>
           <div className="flex items-center gap-1 text-white/30">
-            <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><ChevronLeft className="w-3.5 h-3.5" /></button>
+            <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors"><ChevronLeft className="w-3.5 h-3.5" /></button>
             <span className="text-[12px] font-[400] font-sans">1/9</span>
-            <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><ChevronRight className="w-3.5 h-3.5" /></button>
+            <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors"><ChevronRight className="w-3.5 h-3.5" /></button>
           </div>
         </div>
 
@@ -22,8 +22,8 @@ export default function OperationalGrid() {
           </div>
           
           <div className="space-y-2">
-            <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-mercury-green rounded-full" style={{ width: '65%' }} />
+            <div className="h-1.5 w-full bg-muted rounded-[6px] overflow-hidden">
+              <div className="h-full bg-mercury-green rounded-[6px]" style={{ width: '65%' }} />
             </div>
             <div className="flex justify-between items-center text-[11px] text-muted-foreground/60 font-[400]">
               <span>Collected</span>
@@ -54,15 +54,15 @@ export default function OperationalGrid() {
           </div>
           
           <div className="space-y-2">
-            <div className="h-2 w-full bg-muted rounded-full overflow-hidden flex">
+            <div className="h-2 w-full bg-muted rounded-[6px] overflow-hidden flex">
                <div className="h-full bg-foreground" style={{ width: '85%' }} />
                <div className="h-full bg-muted-foreground/40" style={{ width: '10%' }} />
                {/* remaining 5% is vacant (muted bg) */}
             </div>
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-[400] tracking-tight">
-              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-foreground" /> Occupied</div>
-              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-muted" /> Vacant</div>
-              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" /> Notice</div>
+              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-foreground" /> Occupied</div>
+              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-muted" /> Vacant</div>
+              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-muted-foreground/40" /> Notice</div>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function OperationalGrid() {
             <span className="text-[13px] font-[380] text-foreground/80">Autopay</span>
             <span className="text-[11px] font-[400] text-muted-foreground/60">144 Leases</span>
           </div>
-          <button className="px-3 py-1 bg-muted rounded-full text-[11px] font-[400] text-foreground hover:bg-white/10 transition-colors tracking-tight">
+          <button className="px-3 py-1 bg-muted rounded-[6px] text-[11px] font-[400] text-foreground hover:bg-white/10 transition-colors tracking-tight">
             Manage
           </button>
         </div>
@@ -83,8 +83,8 @@ export default function OperationalGrid() {
         <div className="flex justify-between items-center">
           <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Expense payables</h3>
           <div className="flex items-center gap-2 text-white/30">
-            <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><Upload className="w-3.5 h-3.5" /></button>
-            <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>
+            <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors"><Upload className="w-3.5 h-3.5" /></button>
+            <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>
           </div>
         </div>
 
@@ -116,8 +116,8 @@ export default function OperationalGrid() {
         <div className="flex justify-between items-center">
           <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Rent receivables</h3>
           <div className="flex items-center gap-1 text-white/30">
-            <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><Plus className="w-3.5 h-3.5" /></button>
-            <button className="p-1 hover:bg-white/5 rounded-full transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>
+            <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors"><Plus className="w-3.5 h-3.5" /></button>
+            <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors"><MoreHorizontal className="w-3.5 h-3.5" /></button>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import ExpenseFormClient from '../ExpenseFormClient'
 import { Landmark, ShieldAlert, History, ArrowLeft, Shield, Zap } from 'lucide-react'
@@ -68,7 +68,7 @@ export default async function ExpenseLoggingPage() {
           </Link>
           <Link
             href="/settings/audit"
-            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[8px] hover:shadow-brand/60 transition-all  flex items-center justify-center"
+            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[8px] hover:-brand/60 transition-all  flex items-center justify-center"
           >
             <Shield className="w-4 h-4 mr-3" />
             View Audit Trail

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import ReportHubClient from './ReportHubClient'
 import { BrainCircuit, ShieldCheck, History, ArrowRight } from 'lucide-react'
 import { Card, Badge, Button } from '@/components/ui-finova'
@@ -37,7 +37,7 @@ export default async function ReportsPage() {
 
       {/* AUDIT BUMPER: FINOVA STANDARD */}
       <Card className="bg-surface-900 dark:bg-surface-900 border-none rounded-[8px] p-6 flex flex-col md:flex-row items-center justify-between gap-6 group overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 rounded-full -mr-40 -mt-40 transition-transform duration-700 group-hover:scale-110" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 rounded-[6px] -mr-40 -mt-40 transition-transform duration-700 group-hover:scale-110" />
           <div className="flex items-center space-x-8 relative z-10">
              <div className="w-20 h-20 rounded-[8px] bg-[var(--primary-muted)]0/10 flex items-center justify-center">
                 <History className="w-10 h-10 text-brand" />

@@ -280,7 +280,7 @@ export default function InsightsClient(props: InsightsClientProps) {
       <div className="flex justify-between items-center w-full mb-2">
         {/* Segmented Control */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center h-8 bg-transparent border border-border rounded-[8px] p-[2px] shadow-sm">
+          <div className="flex items-center h-8 bg-transparent border border-border rounded-[8px] p-[2px] ">
             {tabs.map((tab, idx) => (
               <React.Fragment key={tab.id}>
                 <div
@@ -288,7 +288,7 @@ export default function InsightsClient(props: InsightsClientProps) {
                   className={cn(
                     "text-[15px] leading-[24px] h-full flex items-center px-4 rounded-[6px] cursor-pointer transition-all font-normal whitespace-nowrap",
                     activeTab === tab.id
-                      ? "bg-muted text-white shadow-sm"
+                      ? "bg-muted text-white "
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -309,7 +309,7 @@ export default function InsightsClient(props: InsightsClientProps) {
 
         <div className="flex items-center gap-2">
           <InsightsDatePicker date={dateRange} setDate={setDateRange} />
-          <button className="h-8 px-4 bg-white/[0.03] border border-border rounded-[8px] text-[15px] leading-[24px] font-normal text-foreground hover:bg-white/5 hover:text-white transition flex items-center gap-2 shadow-sm">
+          <button className="h-8 px-4 bg-white/[0.03] border border-border rounded-[8px] text-[15px] leading-[24px] font-normal text-foreground hover:bg-white/5 hover:text-white transition flex items-center gap-2 ">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             <span>Compare to</span>
             <span className="text-[10px] ml-1 opacity-70">▼</span>
@@ -338,18 +338,18 @@ export default function InsightsClient(props: InsightsClientProps) {
             onPointerDown={handlePointerDown}
             style={{ left: `${scrubberState.left}%`, width: `${scrubberState.width}%` }}
             className={cn(
-              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none backdrop-blur-[1px] shadow-blue-500/20",
-              isDragging ? "bg-blue-500/[0.15] border-blue-500 shadow-[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-blue-500/[0.12] hover:border-blue-500/[0.8] hover:shadow-[0_0_20px_rgba(96,165,250,0.35)]"
+              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none backdrop-blur-[1px] -blue-500/20",
+              isDragging ? "bg-blue-500/[0.15] border-blue-500 -[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-blue-500/[0.12] hover:border-blue-500/[0.8] hover:-[0_0_20px_rgba(96,165,250,0.35)]"
             )}
           >
-            <span className="absolute top-2 left-2 text-white text-[16px] font-normal whitespace-nowrap pointer-events-none tracking-tight leading-none drop-shadow-sm">
+            <span className="absolute top-2 left-2 text-white text-[16px] font-normal whitespace-nowrap pointer-events-none tracking-tight leading-none drop-">
               {dateRange?.from && dateRange?.to ? `${format(dateRange.from, 'LLL dd')} – ${format(dateRange.to, 'LLL dd')}` : 'Select Range'}
             </span>
             <div onPointerDown={(e) => { e.stopPropagation(); handleLeftDown(e); }} className="absolute top-0 left-0 bottom-0 w-[20px] flex items-center justify-start cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-full"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-[6px]"></div>
             </div>
             <div onPointerDown={(e) => { e.stopPropagation(); handleRightDown(e); }} className="absolute top-0 right-0 bottom-0 w-[20px] flex items-center justify-end cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-full"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-[6px]"></div>
             </div>
           </div>
         </div>
@@ -415,12 +415,12 @@ export default function InsightsClient(props: InsightsClientProps) {
           )}
 
           <div className="hidden lg:flex items-center gap-3">
-            <div className="flex p-1 bg-white/5 border border-white/5 rounded-lg h-8 items-center relative group">
+            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[6px] h-8 items-center relative group">
               <button className="flex items-center gap-2 px-3 h-full rounded-[6px] text-[15px] leading-[24px] font-normal transition-colors text-foreground hover:bg-white/5">
                 {aggregation.charAt(0).toUpperCase() + aggregation.slice(1)} <span className="text-[10px] opacity-70">▼</span>
               </button>
               {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-lg shadow-2xl invisible group-hover:visible z-50 overflow-hidden">
+              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-[6px]  invisible group-hover:visible z-50 overflow-hidden">
                 <div 
                   onClick={() => setAggregation('day')}
                   className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5", aggregation === 'day' ? "text-white" : "text-muted-foreground")}
@@ -441,11 +441,11 @@ export default function InsightsClient(props: InsightsClientProps) {
                 </div>
               </div>
             </div>
-            <div className="flex p-1 bg-white/5 border border-white/5 rounded-lg h-8 items-center">
-              <button onClick={() => setChartType('area')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'area' ? "bg-muted border border-white/10 text-white shadow-sm" : "text-muted-foreground hover:text-white")}>
+            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[6px] h-8 items-center">
+              <button onClick={() => setChartType('area')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'area' ? "bg-muted border border-white/10 text-white " : "text-muted-foreground hover:text-white")}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
               </button>
-              <button onClick={() => setChartType('bar')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'bar' ? "bg-muted border border-white/10 text-white shadow-sm" : "text-muted-foreground hover:text-white")}>
+              <button onClick={() => setChartType('bar')} className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center", chartType === 'bar' ? "bg-muted border border-white/10 text-white " : "text-muted-foreground hover:text-white")}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
               </button>
             </div>

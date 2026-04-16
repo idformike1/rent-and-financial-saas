@@ -31,7 +31,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
               />
            </div>
            <div className="flex items-center gap-2">
-              <div className="text-[11px] font-bold text-muted-foreground/40 tracking-tight px-3 py-1 bg-white/5 rounded-full border border-white/5 flex items-center gap-2">
+              <div className="text-[11px] font-bold text-muted-foreground/40 tracking-tight px-3 py-1 bg-white/5 rounded-[6px] border border-white/5 flex items-center gap-2">
                  <ShieldCheck className="w-3 h-3 opacity-40" />
                  {filteredTenants.length} Synchronized
               </div>
@@ -70,7 +70,7 @@ export default function TenantRegistryClient({ tenants: initialTenants }: { tena
                     </TD>
                     <TD>
                       <Link href={`/tenants/${tenant.id}`} className="flex items-center gap-3 group/name hover:opacity-80 transition-opacity cursor-pointer">
-                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-[11px] text-foreground/40 font-bold shrink-0 group-hover/name:border-white/20 transition-all">
+                        <div className="w-8 h-8 rounded-[6px] bg-white/5 border border-white/5 flex items-center justify-center text-[11px] text-foreground/40 font-bold shrink-0 group-hover/name:border-white/20 transition-all">
                           {tenant.name.charAt(0)}
                         </div>
                         <span className="font-[380] tracking-tight border-b border-transparent group-hover/name:border-white/20">{tenant.name}</span>

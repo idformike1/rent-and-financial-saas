@@ -111,12 +111,12 @@ export default function TransactionFilterBar({
               <Filter size={14} className="opacity-70" />
               <span>Filters</span>
               {(q || minAmount || maxAmount || activePropertyId || activeTenantId || cat !== 'ALL') && (
-                <div className="w-1 h-1 rounded-full bg-primary" />
+                <div className="w-1 h-1 rounded-[6px] bg-primary" />
               )}
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-[680px] p-0 bg-popover/90 backdrop-blur-md border border-white/10 shadow-2xl rounded-xl overflow-hidden" 
+            className="w-[680px] p-0 bg-popover/90 backdrop-blur-md border border-white/10 rounded-[6px] overflow-hidden" 
             align="start" 
             side="bottom"
             sideOffset={12}
@@ -173,25 +173,26 @@ export default function TransactionFilterBar({
                             onClick={() => onPropertyChange('')}
                             className={cn(
                               "w-full text-left px-3 py-2.5 text-sm rounded-md border transition-all",
+                              "w-full text-left px-3 py-2.5 text-sm rounded-[6px] border transition-all",
                               !activePropertyId ? "border-primary/20 bg-primary/5 text-primary" : "border-white/5 text-white/40 hover:text-white/60 hover:bg-white/[0.02]"
                             )}
                           >
                             All Properties
                           </button>
                           {properties.map(p => (
-                            <button 
-                              key={p.id}
-                              onClick={() => onPropertyChange(p.id)}
-                              className={cn(
-                                "flex items-center justify-between p-3 rounded-lg border transition-all",
-                                activePropertyId === p.id 
-                                  ? "border-primary/30 bg-primary/5 text-white" 
-                                  : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
-                              )}
-                            >
-                              <span className="text-sm">{p.name}</span>
-                              {activePropertyId === p.id && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                            </button>
+                             <button 
+                               key={p.id}
+                               onClick={() => onPropertyChange(p.id)}
+                               className={cn(
+                                 "flex items-center justify-between p-3 rounded-[6px] border transition-all",
+                                 activePropertyId === p.id 
+                                   ? "border-primary/30 bg-primary/5 text-white" 
+                                   : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
+                               )}
+                             >
+                               <span className="text-sm">{p.name}</span>
+                               {activePropertyId === p.id && <div className="w-1.5 h-1.5 rounded-[6px] bg-primary" />}
+                             </button>
                           ))}
                         </div>
                       </div>
@@ -211,26 +212,26 @@ export default function TransactionFilterBar({
                           <button
                             onClick={() => onTenantChange('')}
                             className={cn(
-                              "w-full text-left px-3 py-2.5 text-sm rounded-md border transition-all",
+                              "w-full text-left px-3 py-2.5 text-sm rounded-[6px] border transition-all",
                               !activeTenantId ? "border-primary/20 bg-primary/5 text-primary" : "border-white/5 text-white/40 hover:text-white/60 hover:bg-white/[0.02]"
                             )}
                           >
                             All Tenants
                           </button>
                           {tenants.map(t => (
-                            <button 
-                              key={t.id}
-                              onClick={() => onTenantChange(t.id)}
-                              className={cn(
-                                "flex items-center justify-between p-3 rounded-lg border transition-all",
-                                activeTenantId === t.id 
-                                  ? "border-primary/30 bg-primary/5 text-white" 
-                                  : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
-                              )}
-                            >
-                              <span className="text-sm">{t.name}</span>
-                              {activeTenantId === t.id && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                            </button>
+                             <button 
+                               key={t.id}
+                               onClick={() => onTenantChange(t.id)}
+                               className={cn(
+                                 "flex items-center justify-between p-3 rounded-[6px] border transition-all",
+                                 activeTenantId === t.id 
+                                   ? "border-primary/30 bg-primary/5 text-white" 
+                                   : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
+                               )}
+                             >
+                               <span className="text-sm">{t.name}</span>
+                               {activeTenantId === t.id && <div className="w-1.5 h-1.5 rounded-[6px] bg-primary" />}
+                             </button>
                           ))}
                         </div>
                       </div>
@@ -247,8 +248,8 @@ export default function TransactionFilterBar({
                       <div className="space-y-3">
                         <label className="text-[11px] uppercase tracking-widest text-white/30 font-semibold">Asset Classes</label>
                         <div className="grid grid-cols-1 gap-2">
-                          {['Commercial Core', 'Residential Hub', 'Industrial Estate', 'Mixed Use'].map(cls => (
-                            <div key={cls} className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer group">
+                           {['Commercial Core', 'Residential Hub', 'Industrial Estate', 'Mixed Use'].map(cls => (
+                            <div key={cls} className="flex items-center justify-between p-3 rounded-[6px] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer group">
                               <span className="text-sm text-white/70">{cls}</span>
                               <ChevronDown size={14} className="opacity-0 group-hover:opacity-40 transition-opacity -rotate-90" />
                             </div>
@@ -283,7 +284,7 @@ export default function TransactionFilterBar({
               <ChevronDown size={12} className="opacity-30" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-64 bg-popover/95 border-white/10 p-4 text-white shadow-2xl backdrop-blur-xl" align="start">
+          <PopoverContent className="w-64 bg-popover/95 border-white/10 p-4 text-white backdrop-blur-xl" align="start">
             <div className="space-y-4">
                <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Amount Scope</span>
@@ -321,7 +322,7 @@ export default function TransactionFilterBar({
               Reset Filters
             </Button>
 
-            <div className="flex-1 flex items-center h-8 border border-white/5 rounded-full px-4 group focus-within:border-white/10 transition-all">
+            <div className="flex-1 flex items-center h-8 border border-white/5 rounded-[6px] px-4 group focus-within:border-white/10 transition-all">
               <Search size={14} className="text-white/20 group-focus-within:text-white/60 transition-colors mr-3" />
               <input
                 type="text"
@@ -349,7 +350,7 @@ export default function TransactionFilterBar({
                   <ChevronDown size={12} className="opacity-30" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-48 bg-popover/95 border-white/10 p-1 backdrop-blur-xl shadow-2xl" align="end">
+              <PopoverContent className="w-48 bg-popover/95 border-white/10 p-1 backdrop-blur-xl" align="end">
                 <button 
                   onClick={() => onExport('csv')}
                   className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all"

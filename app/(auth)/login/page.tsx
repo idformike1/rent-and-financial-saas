@@ -98,7 +98,7 @@ export default function LoginPage() {
               type="submit"
               disabled={isLoading}
               variant="primary"
-              className="w-full h-[38px] rounded-full text-[13px] font-medium border-none mt-2"
+              className="w-full h-[38px] rounded-[6px] text-[13px] font-medium border-none mt-2"
             >
               {isLoading ? (
                 <>

@@ -43,7 +43,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
               <p className="text-[11px] font-bold text-muted-foreground  mt-2">Gross realization over 6 months</p>
            </div>
            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--sidebar-primary)' }} />
+              <div className="w-2 h-2 rounded-[6px]" style={{ backgroundColor: 'var(--sidebar-primary)' }} />
               <span className="text-[10px] font-bold text-muted-foreground ">Gross Revenue</span>
            </div>
         </div>
@@ -148,7 +148,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
            {recoveryData.map((item, idx) => (
              <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CHART_SERIES[idx % CHART_SERIES.length] }} />
+                   <div className="w-2 h-2 rounded-[6px] shrink-0" style={{ backgroundColor: CHART_SERIES[idx % CHART_SERIES.length] }} />
                    <span className="text-[10px] font-bold text-muted-foreground ">{item.name}</span>
                 </div>
                 <span className="font-finance text-[12px] font-bold text-foreground">${item.value.toLocaleString()}</span>

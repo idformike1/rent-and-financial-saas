@@ -17,7 +17,7 @@ interface PropertyMetricsHudProps {
 
 export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMetricsHudProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-card divide-x divide-border overflow-hidden rounded-xl shadow-sm">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-border bg-card divide-x divide-border overflow-hidden rounded-[6px] ">
       
       {/* NOI */}
       <button 

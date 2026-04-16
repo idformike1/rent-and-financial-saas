@@ -54,7 +54,7 @@ export default function WaterfallAnalyticsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-950 flex flex-col items-center justify-center space-y-8 p-6">
-         <div className="w-24 h-24 border-4 border-brand border-t-transparent rounded-full animate-spin shadow-none" />
+         <div className="w-24 h-24 border-4 border-brand border-t-transparent rounded-[6px] animate-spin " />
          <h2 className="text-foreground text-xl  animate-pulse">Materializing Waterfall</h2>
       </div>
     )
@@ -115,7 +115,7 @@ export default function WaterfallAnalyticsPage() {
 
          {!hasData ? (
            <div className="h-full flex flex-col items-center justify-center p-6 space-y-8">
-              <div className="w-20 h-20 rounded-full bg-surface-50 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-[6px] bg-surface-50 flex items-center justify-center">
                  <AlertCircle className="w-10 h-10 text-muted-foreground" />
               </div>
               <div className="text-center">
@@ -134,7 +134,7 @@ export default function WaterfallAnalyticsPage() {
                     <div key={node.id} className="group">
                        <div className="flex items-center justify-end space-x-3">
                           <span className="text-[10px]  text-muted-foreground truncate max-w-[100px]">{node.name}</span>
-                          <div className="w-2 h-10 bg-surface-100 rounded-full group-hover:bg-brand transition-all" />
+                          <div className="w-2 h-10 bg-surface-100 rounded-[6px] group-hover:bg-brand transition-all" />
                        </div>
                     </div>
                  ))}

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Landmark, ShieldCheck, Zap, ArrowLeft, History } from 'lucide-react'
 import RegistrySurveillanceClient from './RegistrySurveillanceClient'

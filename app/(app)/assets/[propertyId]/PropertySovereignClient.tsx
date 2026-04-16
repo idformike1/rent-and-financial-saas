@@ -51,14 +51,14 @@ export default function PropertySovereignClient({ propertyData, pulseData }: Pro
           <Button 
             variant="secondary" 
             onClick={() => setIsEditAssetModalOpen(true)}
-            className="h-10 px-4 rounded-full text-[12px] font-bold border-[#1F2937]"
+            className="h-10 px-4 rounded-[6px] text-[12px] font-bold border-[#1F2937]"
           >
             <Edit2 className="w-3.5 h-3.5 mr-2" />
             Edit Asset
           </Button>
           <Button 
             variant="danger" 
-            className="h-10 px-4 rounded-full text-[12px] font-bold opacity-50 hover:opacity-100"
+            className="h-10 px-4 rounded-[6px] text-[12px] font-bold opacity-50 hover:opacity-100"
             onClick={() => setIsArchiveModalOpen(true)}
           >
             <Trash2 className="w-3.5 h-3.5 mr-2" />
@@ -66,7 +66,7 @@ export default function PropertySovereignClient({ propertyData, pulseData }: Pro
           </Button>
           <Button 
             onClick={() => setIsAddUnitModalOpen(true)}
-            className="h-10 px-6 rounded-full text-[12px] font-bold bg-brand hover:bg-brand/90 text-white shadow-lg"
+            className="h-10 px-6 rounded-[6px] text-[12px] font-bold bg-brand hover:bg-brand/90 text-white "
           >
             <Plus className="w-4 h-4 mr-2" />
             Provision Unit
@@ -98,11 +98,11 @@ export default function PropertySovereignClient({ propertyData, pulseData }: Pro
             </h3>
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-mercury-green" />
+                <div className="w-1.5 h-1.5 rounded-[6px] bg-mercury-green" />
                 <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Active</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <div className="w-1.5 h-1.5 rounded-[6px] bg-rose-500" />
                 <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Vacant</span>
               </div>
             </div>
@@ -131,15 +131,15 @@ export default function PropertySovereignClient({ propertyData, pulseData }: Pro
                    </div>
                    <button 
                      onClick={() => setDrillDownType(null)}
-                     className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                     className="w-12 h-12 rounded-[6px] bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
                    >
                       <X className="w-5 h-5 text-white/40" />
                    </button>
                 </div>
                 
-                <div className="flex-1 flex items-center justify-center p-10 border border-dashed border-[#1F2937]/50 m-10 rounded-3xl">
+                <div className="flex-1 flex items-center justify-center p-10 border border-dashed border-[#1F2937]/50 m-10 rounded-[6px]">
                    <div className="text-center space-y-4">
-                      <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
+                      <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-[6px] flex items-center justify-center mx-auto animate-pulse">
                          <Building2 className="w-8 h-8 text-white/20" />
                       </div>
                       <p className="text-white/20 font-mono text-[11px] uppercase tracking-widest">Drill-down buffer materializing...</p>

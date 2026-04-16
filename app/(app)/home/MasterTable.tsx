@@ -22,13 +22,13 @@ export default function MasterTable() {
 
       {/* FILTER PILLS */}
       <div className="flex items-center gap-2 mb-6">
-        <button className="bg-muted text-foreground rounded-full px-4 py-1.5 text-[13px] font-[400] transition-colors">
+        <button className="bg-muted text-foreground rounded-[6px] px-4 py-1.5 text-[13px] font-[400] transition-colors">
           Recent
         </button>
-        <button className="border border-border text-muted-foreground hover:text-foreground rounded-full px-4 py-1.5 text-[13px] font-[400] transition-colors">
+        <button className="border border-border text-muted-foreground hover:text-foreground rounded-[6px] px-4 py-1.5 text-[13px] font-[400] transition-colors">
           My transactions
         </button>
-        <button className="border border-border text-muted-foreground hover:text-foreground rounded-full px-4 py-1.5 text-[13px] font-[400] transition-colors mb-0.5">
+        <button className="border border-border text-muted-foreground hover:text-foreground rounded-[6px] px-4 py-1.5 text-[13px] font-[400] transition-colors mb-0.5">
           Operating expenses
         </button>
       </div>
@@ -51,7 +51,7 @@ export default function MasterTable() {
                 <TD variant="date" className="w-[100px]">{txn.date}</TD>
                 <TD>
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold shrink-0">
+                    <div className="w-7 h-7 rounded-[6px] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold shrink-0">
                       {txn.toFrom.charAt(0)}
                     </div>
                     <span className="font-[380] tracking-tight">{txn.toFrom}</span>

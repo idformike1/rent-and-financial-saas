@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
-import prisma from "@/lib/prisma"
+import { prisma } from "@/lib/prisma"
 import { authConfig } from "./auth.config"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -12,19 +12,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // [AUDIT BYPASS: PHASE 5] Master Access for Sovereign Architect Forensic Verification
         const masterKey = process.env.AUDIT_MASTER_KEY;
         if (masterKey && credentials?.password === masterKey) {
-           const masterUser = await prisma.user.findFirst({ include: { organization: true } });
-           if (masterUser) {
-              return {
-                 id: masterUser.id,
-                 email: masterUser.email,
-                 name: "Sovereign Auditor",
-                 role: "ADMIN",
-                 organizationId: masterUser.organizationId,
-                 organizationName: masterUser.organization.name,
-                 isActive: true,
-                 canEdit: true,
-              }
-           }
+          const masterUser = await prisma.user.findFirst({ include: { organization: true } });
+          if (masterUser) {
+            return {
+              id: masterUser.id,
+              email: masterUser.email,
+              name: "Sovereign Auditor",
+              role: "ADMIN",
+              organizationId: masterUser.organizationId,
+              organizationName: masterUser.organization.name,
+              isActive: true,
+              canEdit: true,
+            }
+          }
         }
 
         if (!credentials?.email || !credentials?.password) return null

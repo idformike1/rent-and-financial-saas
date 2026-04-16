@@ -49,7 +49,7 @@ export default function HomeVisuals() {
               </div>
            </div>
 
-           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-[6px] border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
               <span className="text-[12px] font-[400] text-white/60 tracking-tight font-sans">Last 30 days</span>
               <Plus className="w-3 h-3 opacity-40 shrink-0" rotate={45} />
            </div>
@@ -98,10 +98,10 @@ export default function HomeVisuals() {
           <div className="flex justify-between items-center mb-6">
              <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Accounts</h3>
             <div className="flex items-center gap-2">
-               <button className="p-1 hover:bg-white/5 rounded-full transition-colors">
+               <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors">
                   <Plus className="w-3.5 h-3.5 text-muted-foreground/40" />
                </button>
-               <button className="p-1 hover:bg-white/5 rounded-full transition-colors">
+               <button className="p-1 hover:bg-white/5 rounded-[6px] transition-colors">
                   <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground/40" />
                </button>
             </div>
@@ -111,7 +111,7 @@ export default function HomeVisuals() {
             {ledgers.map((ledger) => (
                <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-10 px-2 -mx-2 hover:bg-white/[0.03] rounded-[6px] transition-all">
                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white/60 transition-colors shrink-0">
+                     <div className="w-8 h-8 rounded-[6px] bg-white/5 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white/60 transition-colors shrink-0">
                         <ledger.icon className="w-4 h-4" />
                      </div>
                      <span className="text-[15px] font-[400] text-white tracking-tight font-sans">{ledger.name}</span>

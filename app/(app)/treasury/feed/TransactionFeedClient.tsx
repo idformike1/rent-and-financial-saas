@@ -17,21 +17,8 @@ import { startOfMonth, endOfMonth, isSameDay } from 'date-fns'
 import TransactionDetailSheet from './TransactionDetailSheet'
 import { pdf } from '@react-pdf/renderer'
 import { ReportPDF } from '@/components/ReportPDF'
+import { Transaction } from './types'
 
-interface Transaction {
-  id: string
-  description: string
-  amount: number | any
-  transactionDate: Date | string
-  account: { name: string }
-  expenseCategory?: { name: string }
-  payee?: string
-  paymentMode?: 'CASH' | 'BANK'
-  referenceText?: string
-  property?: { name: string }
-  tenant?: { name: string }
-  receiptUrl?: string
-}
 
 interface Props {
   initialData: Transaction[]
@@ -409,7 +396,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
                     ${account.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
                 </div>
-                <div className="h-1.5 rounded-full w-full bg-muted overflow-hidden">
+                <div className="h-1.5 rounded-[6px] w-full bg-muted overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${(account.volume / (totalActivityVolume || 1)) * 100}%` }}
@@ -454,7 +441,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
               >
                 <div className="text-[14px] text-muted-foreground">{format(new Date(tx.transactionDate), 'MMM d')}</div>
                 <div className="flex items-center gap-4">
-                   <div className="w-7 h-7 rounded-full bg-white/[0.05] flex items-center justify-center text-[10px] text-white/40 shrink-0">
+                   <div className="w-7 h-7 rounded-[6px] bg-white/[0.05] flex items-center justify-center text-[10px] text-white/40 shrink-0">
                      {(tx.payee || tx.description || 'U').substring(0, 1).toUpperCase()}
                    </div>
                    <span className="text-[15px] text-foreground/80 leading-relaxed">{tx.description || tx.payee}</span>
@@ -486,7 +473,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       <div className="py-12 border-t border-white/[0.05] flex justify-between items-center px-4">
         <p className="text-[12px] text-white/20 uppercase tracking-widest font-medium">Volumetric Report: {filteredData.length} entries</p>
-        <button className="h-9 px-8 rounded-full border border-white/10 text-[12px] text-muted-foreground hover:text-white transition-all">Load Forensic History</button>
+        <button className="h-9 px-8 rounded-[6px] border border-white/10 text-[12px] text-muted-foreground hover:text-white transition-all">Load Forensic History</button>
       </div>
     </div>
   )

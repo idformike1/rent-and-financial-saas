@@ -102,7 +102,7 @@ export default function ReportHubClient({ properties }: { properties: any[] }) {
         {reports.map((r) => (
           <label key={r.id} className={btnClass(selectedReport === r.id)}>
             <input type="radio" value={r.id} {...register('reportType')} className="hidden" />
-            <div className={`p-4 rounded-xl ${selectedReport === r.id ? 'bg-[var(--primary)]' : 'bg-muted'}`}>{r.icon}</div>
+            <div className={`p-4 rounded-[6px] ${selectedReport === r.id ? 'bg-[var(--primary)]' : 'bg-muted'}`}>{r.icon}</div>
             <div className="flex flex-col">
                 <span className="text-sm leading-none mb-1">{r.name}</span>
                 <span className={`text-[9px] font-bold leading-none ${selectedReport === r.id ? 'text-[var(--primary)]' : 'text-muted-foreground'}`}>{r.desc}</span>
@@ -296,11 +296,11 @@ function ReportViewer({ data, onShare, isSharing, onDrillDown }: { data: any, on
                                         <td className={cellClass}>
                                             <div className="flex gap-2">
                                                 {isUnpaid ? (
-                                                    <span className="bg-destructive text-foreground text-[8px] px-2 py-1 rounded shadow-none animate-pulse">VAL_DELINQUENT</span>
+                                                    <span className="bg-destructive text-foreground text-[8px] px-2 py-1 rounded  animate-pulse">VAL_DELINQUENT</span>
                                                 ) : (
                                                     <span className="bg-[var(--primary-muted)] text-[var(--primary)] text-[8px] px-2 py-1 rounded">GOV_STABLE</span>
                                                 )}
-                                                {l.rentAmount < 1000 && <span className="bg-yellow-400 text-foreground text-[8px] px-2 py-1 rounded shadow-none">VAC_WARNING</span>}
+                                                {l.rentAmount < 1000 && <span className="bg-yellow-400 text-foreground text-[8px] px-2 py-1 rounded ">VAC_WARNING</span>}
                                             </div>
                                         </td>
                                     </tr>

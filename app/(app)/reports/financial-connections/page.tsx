@@ -134,7 +134,7 @@ export default function FinanceTranslationHub() {
                         : 'bg-muted hover:bg-card dark:hover:bg-surface-800 text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mr-6 transition-all ${
+                    <div className={`w-14 h-14 rounded-[6px] flex items-center justify-center mr-6 transition-all ${
                       isActive ? 'bg-card/20' : 'bg-muted'
                     }`}>
                       <Icon className={`w-6 h-6 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`} />
@@ -155,7 +155,7 @@ export default function FinanceTranslationHub() {
           </Card>
 
           <Card className="bg-brand border-none rounded-[8px] p-6 flex items-center justify-between text-foreground overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-full -mr-16 -mt-8 group-hover:scale-150 transition-transform" />
+             <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-[6px] -mr-16 -mt-8 group-hover:scale-150 transition-transform" />
              <div className="space-y-2 relative z-10">
                 <div className="flex items-center space-x-3">
                    <Zap className="w-5 h-5 text-foreground animate-pulse" />
@@ -191,7 +191,7 @@ export default function FinanceTranslationHub() {
                         <Link className="w-4 h-4 text-brand" />
                         <h5 className="text-[10px]   text-muted-foreground">Persistence Model</h5>
                       </div>
-                      <div className="bg-card/80 border border-border px-5 py-4 rounded-xl text-xs text-brand/80">
+                      <div className="bg-card/80 border border-border px-5 py-4 rounded-[6px] text-xs text-brand/80">
                         {selected.axiom_model}
                       </div>
                    </section>
@@ -203,7 +203,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
-                           <div key={i} className="flex items-center space-x-4 bg-card/40 p-4 rounded-xl border border-border/50">
+                           <div key={i} className="flex items-center space-x-4 bg-card/40 p-4 rounded-[6px] border border-border/50">
                               <ArrowRight className="w-3 h-3 text-muted-foreground" />
                               <span className="text-[11px] font-bold tracking-tight text-muted-foreground">{f}</span>
                            </div>
@@ -218,7 +218,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
-                           <div key={i} className="flex items-center justify-between bg-card p-4 rounded-xl border-l-[4px] border-mercury-green group cursor-default">
+                           <div key={i} className="flex items-center justify-between bg-card p-4 rounded-[6px] border-l-[4px] border-mercury-green group cursor-default">
                               <span className="text-[10px] text-[var(--primary)]/80">{act}</span>
                               <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] text-[8px] px-1.5 py-0">Active</Badge>
                            </div>
@@ -230,7 +230,7 @@ export default function FinanceTranslationHub() {
 
               <Card className="rounded-[8px] p-6 flex items-center justify-between transition-all cursor-pointer group bg-card border-none">
                  <div className="flex items-center space-x-6">
-                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-[6px] bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
                        <Activity className="w-6 h-6 text-brand" />
                     </div>
                     <div>

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, User, Building, ArrowRight, Search, ShieldCheck } from 'lucide-react'
 import { Card, Badge, Button } from '@/components/ui-finova'
@@ -50,7 +50,7 @@ export default async function TenantsPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/onboarding">
-            <Button size="sm" className="bg-sidebar-primary hover:bg-sidebar-primary/90 h-8 px-4 rounded-full text-[13px] border-none">
+            <Button size="sm" className="bg-sidebar-primary hover:bg-sidebar-primary/90 h-8 px-4 rounded-[6px] text-[13px] border-none">
               <Plus className="w-[14px] h-[14px] mr-2" /> New Provisioning
             </Button>
           </Link>

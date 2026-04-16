@@ -48,7 +48,7 @@ type AccountNode = {
   name: string;
   ledgerId: string;
   parentId: string | null;
-  children: AccountNode[];
+  children?: AccountNode[];
 }
 
 const LEDGER_ICONS = [Building2, Briefcase, Database, FileSpreadsheet, Activity, Layers, Command, Zap];
@@ -139,7 +139,7 @@ export default function GovernanceRegistryClient({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6 pb-12 border-b border-[var(--border)]">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <div className="flex items-center gap-6 mb-4">
-            <div className="w-16 h-16 rounded-[1.75rem] bg-brand/10 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-[6px] bg-brand/10 flex items-center justify-center">
               <Command className="w-8 h-8 text-brand" />
             </div>
             <div>
@@ -166,7 +166,7 @@ export default function GovernanceRegistryClient({
           </Button>
           <Button 
             variant="primary" 
-            className="rounded-[8px] h-14 px-8 shadow-none bg-[var(--primary)] text-foreground" 
+            className="rounded-[8px] h-14 px-8  bg-[var(--primary)] text-foreground" 
             onClick={() => {
               setIsCommandCenterVisible(!isCommandCenterVisible);
               setIsLedgerEditorVisible(false);
@@ -274,7 +274,7 @@ export default function GovernanceRegistryClient({
               className="group min-h-[500px] flex flex-col p-6 bg-[var(--card)] border border-border rounded-[8px] hover:border-[var(--primary)]/30 transition-all duration-300"
             >
               <div className="flex flex-col items-center text-center mb-10">
-                 <div className="w-20 h-20 rounded-[1.75rem] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
+                 <div className="w-20 h-20 rounded-[6px] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
                     <Icon className="w-10 h-10 text-brand fill-brand/10" />
                  </div>
                  <h2 className="text-2xl text-[var(--foreground)] leading-none">{ledger.name}</h2>
@@ -309,7 +309,7 @@ export default function GovernanceRegistryClient({
 
               {/* PREDICTIVE MINIMALISM: HOVER REVEAL */}
               <div className="mt-10 pt-8 border-t border-[var(--border)] flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                 <button onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[10px] ">
+                 <button onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 rounded-[6px] bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[10px] ">
                     <Trash2 className="w-4 h-4" /> Vaporize Registry
                  </button>
                  <div className="flex justify-between items-center px-2">
@@ -375,7 +375,7 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
             <input 
               value={editName} 
               onChange={(e) => setEditName(e.target.value)} 
-              className="h-14 py-1 px-6 text-[12px]  tracking-tight border-2 border-brand/20 bg-card rounded-xl outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground" 
+              className="h-14 py-1 px-6 text-[12px]  tracking-tight border-2 border-brand/20 bg-card rounded-[6px] outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground" 
               autoFocus 
             />
           ) : (
@@ -387,13 +387,13 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
         <div className="flex items-center gap-2 opacity-0 group-hover/node:opacity-100 transition-opacity duration-300">
            {isEditing ? (
              <>
-               <button onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 rounded-xl hover:scale-110 active:scale-95 transition-all"><Check className="w-4 h-4" /></button>
-               <button onClick={cancelEdit} className="bg-muted text-[var(--muted)] p-2 rounded-xl hover:scale-110 active:scale-95 transition-all"><X className="w-4 h-4" /></button>
+               <button onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 rounded-[6px] hover:scale-110 active:scale-95 transition-all"><Check className="w-4 h-4" /></button>
+               <button onClick={cancelEdit} className="bg-muted text-[var(--muted)] p-2 rounded-[6px] hover:scale-110 active:scale-95 transition-all"><X className="w-4 h-4" /></button>
              </>
            ) : (
              <>
-               <button onClick={startEdit} className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center text-[var(--muted)] hover:text-[var(--primary)] transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
-               <button onClick={handleDelete} className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center text-[var(--muted)] hover:text-rose-400 transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+               <button onClick={startEdit} className="w-8 h-8 rounded-[6px] bg-muted flex items-center justify-center text-[var(--muted)] hover:text-[var(--primary)] transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
+               <button onClick={handleDelete} className="w-8 h-8 rounded-[6px] bg-muted flex items-center justify-center text-[var(--muted)] hover:text-rose-400 transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
              </>
            )}
         </div>

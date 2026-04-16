@@ -66,7 +66,7 @@ export default function SettingsPage() {
             {/* Sovereign Lockdown Overlay */}
             {!isSovereign && (
               <div className="absolute inset-0 z-50 glass-panel flex flex-col items-center justify-center space-y-4 bg-background/40">
-                <div className="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center border border-rose-500/30">
+                <div className="w-16 h-16 rounded-[6px] bg-rose-500/20 flex items-center justify-center border border-rose-500/30">
                   <Lock className="w-8 h-8 text-rose-500" />
                 </div>
                 <div className="text-center">
@@ -87,7 +87,7 @@ export default function SettingsPage() {
 
           <div className="space-y-8 glass-panel p-6 rounded-[8px] border border-[var(--border)]">
             <div className="flex items-center gap-6 pb-8 border-b border-[var(--border)]">
-               <div className="w-20 h-20 rounded-full bg-[var(--primary-muted)] border border-[var(--primary)]/20 flex items-center justify-center text-display font-weight-display text-[var(--primary)]">
+               <div className="w-20 h-20 rounded-[6px] bg-[var(--primary-muted)] border border-[var(--primary)]/20 flex items-center justify-center text-display font-weight-display text-[var(--primary)]">
                  {session?.user?.organizationName?.charAt(0) || 'A'}
                </div>
                <div>

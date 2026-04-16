@@ -49,14 +49,14 @@ export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
 
       {/* ── SOVEREIGN SIDE SHEET ──────────────────────────────────────────── */}
       <div className={cn(
-        "fixed right-0 top-0 h-screen w-[40vw] min-w-[500px] border-l border-[#1F2937] bg-background z-50 flex flex-col shadow-[var(--shadow-mercury-float)]",
+        "fixed right-0 top-0 h-screen w-[40vw] min-w-[500px] border-l border-[#1F2937] bg-background z-50 flex flex-col -[var(---mercury-float)]",
         "animate-in slide-in-from-right-1/2 duration-300"
       )}>
         
         {/* HEADER BAR */}
         <div className="h-14 border-b border-[#1F2937] flex items-center justify-between px-8 shrink-0">
            <div className="flex items-center gap-4">
-             <div className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+             <div className="w-2 h-2 rounded-[6px] bg-brand animate-pulse" />
              <span className="font-mono text-[13px] font-bold text-[#E5E7EB] uppercase tracking-widest">
                Subject: {activeUnit?.unitNumber || 'UNKNOWN_NODE'}
              </span>

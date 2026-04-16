@@ -83,7 +83,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
            <button 
              onClick={() => setActiveTab('timeline')}
              className={cn(
-               "px-8 py-3 rounded-xl text-[10px]  transition-all",
+               "px-8 py-3 rounded-[6px] text-[10px]  transition-all",
                activeTab === 'timeline' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
              )}
            >
@@ -92,7 +92,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
            <button 
              onClick={() => setActiveTab('compliance')}
              className={cn(
-               "px-8 py-3 rounded-xl text-[10px]  transition-all",
+               "px-8 py-3 rounded-[6px] text-[10px]  transition-all",
                activeTab === 'compliance' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
              )}
            >
@@ -173,7 +173,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                     <tr key={c.id} className="group hover:bg-card/[0.02] transition-colors">
                        <td className="px-10 py-8">
                           <div className="flex items-center gap-6">
-                             <div className="bg-card h-10 w-10 rounded-xl flex items-center justify-center text-brand border border-border">
+                             <div className="bg-card h-10 w-10 rounded-[6px] flex items-center justify-center text-brand border border-border">
                                 <DollarSign className="w-4 h-4" />
                              </div>
                              <span className="text-foreground text-xs ">{c.type}</span>
@@ -201,7 +201,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                        </td>
                        <td className="px-10 py-8 text-right">
                           <span className={cn(
-                             "px-4 py-1.5 rounded-full text-[8px]  border-2",
+                             "px-4 py-1.5 rounded-[6px] text-[8px]  border-2",
                              c.isFullyPaid ? "border-mercury-green/30 text-mercury-green" : "border-rose-500/30 text-rose-500"
                           )}>
                              {c.isFullyPaid ? 'SETTLED' : 'OUTSTANDING'}

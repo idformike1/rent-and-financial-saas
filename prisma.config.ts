@@ -1,14 +1,11 @@
-import "dotenv/config";
-import { defineConfig } from "prisma/config";
+// prisma.config.ts
+import 'dotenv/config';
+import { defineConfig, env } from 'prisma/config';
 
 export default defineConfig({
-  schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-    seed: "node --loader ts-node/esm ./prisma/seed.ts",
-  },
-
+  schema: './prisma/schema.prisma',
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // The CLI will now use the direct 5432 connection for all migrations
+    url: env('DIRECT_URL'),
   },
 });

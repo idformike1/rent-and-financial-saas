@@ -1,26 +1,22 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+const connectionString = `${process.env.DATABASE_URL}`;
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
 const prismaClientSingleton = () => {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
-  const adapter = new PrismaPg(pool);
-  const client = new PrismaClient({ adapter });
-  
-  // Diagnostic Check for Stale Client
-  if (!(client as any).property) {
-    console.warn("⚠️ PRISMA CLIENT STALE: 'property' model missing at initialization!");
-  } else {
-    console.log("✅ PRISMA CLIENT INITIALIZED WITH PROPERTY MODEL");
-  }
-  
-  return client;
+  return new PrismaClient({ adapter });
 };
 
-const prisma = (globalThis as any).prismaGlobal ?? prismaClientSingleton()
+declare global {
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
+}
 
-export default prisma
+export const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== 'production') (globalThis as any).prismaGlobal = prisma
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.prismaGlobal = prisma;
+}

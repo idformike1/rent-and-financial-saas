@@ -50,7 +50,7 @@ export default async function AssetsPage() {
       }} />
 
       {/* ── MASTER LEDGER ───────────────────────────────────────────────────── */}
-      <div className="mt-12 bg-[#171721] border border-[#1F2937] rounded-[4px] overflow-hidden shadow-2xl">
+      <div className="mt-12 bg-[#171721] border border-[#1F2937] rounded-[4px] overflow-hidden ">
         <div className="px-6 py-4 bg-[#1A1A24] border-b border-[#1F2937] flex items-center justify-between">
            <h3 className="text-[12px] font-bold text-[#E5E7EB] uppercase tracking-[0.1em]">Hierarchical Asset Ledger</h3>
            <span className="text-[10px] font-bold text-[#9CA3AF] opacity-40 uppercase tabular-nums tracking-widest">

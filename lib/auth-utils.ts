@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN';
 
@@ -71,12 +71,9 @@ export async function runSecureServerAction<T>(
   });
 
   if (orgExists === 0) {
-    // RETURN structured error instead of throwing to prevent Next.js 500 crash
-    return { 
-      success: false, 
-      errorCode: 'ORPHANED_SESSION', 
-      message: 'SECURITY ALERT: Organization identity void. Please trigger re-authentication.' 
-    } as any;
+    console.error(`[SECURITY_FATAL] Orphaned session: Org ${session.organizationId} does not exist.`);
+    // We return a structured object that helps identified failed security checks in telemetry
+    return { success: false, error: 'IDENTITY_VOID', data: [] } as any;
   }
 
   return action(session);

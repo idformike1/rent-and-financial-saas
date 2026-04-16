@@ -32,7 +32,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
   }, [pathname, searchParams, router]);
 
   return (
-    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-md overflow-hidden shadow-[var(--shadow-mercury-float)]">
+    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-md overflow-hidden -[var(---mercury-float)]">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[20%]" />
@@ -71,7 +71,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
                 onClick={() => handleRowClick(unit.id)}
                 className={cn(
                   "group cursor-pointer transition-all duration-200",
-                  isSelected ? "bg-[#1E1E2A]" : "bg-transparent hover:bg-white/5 hover:-translate-y-[1px] hover:shadow-sm hover:relative hover:z-10"
+                  isSelected ? "bg-[#1E1E2A]" : "bg-transparent hover:bg-white/5 hover:-translate-y-[1px] hover: hover:relative hover:z-10"
                 )}
               >
                 <td className="px-6 py-4">

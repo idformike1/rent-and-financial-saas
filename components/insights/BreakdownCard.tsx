@@ -52,7 +52,7 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
   const barColor = isIncome ? 'var(--sidebar-primary)' : 'var(--destructive)'; // Indigo vs Pink/Red
 
   return (
-    <div className="bg-card border border-white/[0.05] rounded-[12px] p-6 flex flex-col gap-6 shadow-xl overflow-hidden relative">
+    <div className="bg-card border border-white/[0.05] rounded-[12px] p-6 flex flex-col gap-6  overflow-hidden relative">
       {/* Glossy Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
 
@@ -72,7 +72,7 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
             className={cn(
               "flex-1 text-center py-1.5 rounded-[6px] text-[13px] font-normal cursor-pointer transition-all duration-200",
               activeSubTab === tab 
-                ? "bg-muted text-foreground shadow-md border border-white/5" 
+                ? "bg-muted text-foreground  border border-white/5" 
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -100,9 +100,9 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
                   <td className="text-[14px] leading-[20px] text-foreground font-normal truncate max-w-[150px]">{row.name}</td>
                   <td>
                     <div className="flex items-center gap-3 pr-4">
-                      <div className="h-[4px] flex-1 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-[4px] flex-1 bg-white/10 rounded-[6px] overflow-hidden">
                         <div
-                          className="h-full rounded-full transition-all duration-700 ease-[cubic-bezier(0.25, 0.1, 0.25, 1)]"
+                          className="h-full rounded-[6px] transition-all duration-700 ease-[cubic-bezier(0.25, 0.1, 0.25, 1)]"
                           style={{ width: `${row.percent}%`, backgroundColor: barColor }}
                         />
                       </div>
