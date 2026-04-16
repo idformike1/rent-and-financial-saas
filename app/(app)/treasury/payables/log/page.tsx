@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 import Link from 'next/link'
-import ExpenseFormClient from './ExpenseFormClient'
+import ExpenseFormClient from '../ExpenseFormClient'
 import { Landmark, ShieldAlert, History, ArrowLeft, Shield, Zap } from 'lucide-react'
 
 export default async function ExpenseLoggingPage() {

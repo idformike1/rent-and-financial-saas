@@ -17,15 +17,15 @@ enum MaintenanceStatus {
 }
 
 model Property {
-  id             String        @id @default(uuid())
+  id             String   @id @default(uuid())
   organizationId String
-  name           String        // e.g., "North Complex"
+  name           String // e.g., "North Complex"
   address        String
-  createdAt      DateTime      @default(now())
-  
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  units          Unit[]
-  ledgerEntries  LedgerEntry[]
+  createdAt      DateTime @default(now())
+
+  organization  Organization  @relation(fields: [organizationId], references: [id])
+  units         Unit[]
+  ledgerEntries LedgerEntry[]
 }
 
 model Unit {
@@ -33,64 +33,62 @@ model Unit {
   organizationId    String
   propertyId        String
   unitNumber        String
-  type              String            // e.g., "Apartment", "Parking", "Storage"
+  type              String // e.g., "Apartment", "Parking", "Storage"
   category          String            @default("FLAT") // e.g., "FLAT", "STORE", "SHUTTER", "PARKING"
   maintenanceStatus MaintenanceStatus @default(OPERATIONAL)
   marketRent        Decimal           @default(0.00) // Baseline market rate for leak analysis
-  
-  organization      Organization      @relation(fields: [organizationId], references: [id])
-  property          Property          @relation(fields: [propertyId], references: [id])
-  leases            Lease[]
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  property     Property     @relation(fields: [propertyId], references: [id])
+  leases       Lease[]
 }
 
 model Tenant {
-  id             String        @id @default(uuid())
+  id             String  @id @default(uuid())
   organizationId String
   name           String
-  email          String?       // Deduplication candidate
-  phone          String?       // Deduplication candidate
-  nationalId     String?       // Deduplication candidate
-  isDeleted      Boolean       @default(false)
-  
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  leases         Lease[]
-  charges        Charge[]
-  ledgerEntries  LedgerEntry[]
+  email          String? // Deduplication candidate
+  phone          String? // Deduplication candidate
+  nationalId     String? // Deduplication candidate
+  isDeleted      Boolean @default(false)
+
+  organization  Organization  @relation(fields: [organizationId], references: [id])
+  leases        Lease[]
+  charges       Charge[]
+  ledgerEntries LedgerEntry[]
 }
 
 model Lease {
-  id             String        @id @default(uuid())
+  id             String   @id @default(uuid())
   organizationId String
   tenantId       String
   unitId         String
-  isPrimary      Boolean       @default(false)
+  isPrimary      Boolean  @default(false)
   rentAmount     Decimal
-  depositAmount  Decimal       @default(0.00)
+  depositAmount  Decimal  @default(0.00)
   startDate      DateTime
   endDate        DateTime
-  isActive       Boolean       @default(true)
-  
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  unit           Unit          @relation(fields: [unitId], references: [id])
-  tenant         Tenant        @relation(fields: [tenantId], references: [id])
-  charges        Charge[]
+  isActive       Boolean  @default(true)
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  unit         Unit         @relation(fields: [unitId], references: [id])
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  charges      Charge[]
 }
 
 // ----------------------------------------------------------------------------
 // Financial Entities
 // ----------------------------------------------------------------------------
 
-
-
 model FinancialLedger {
-  id             String            @id @default(uuid())
+  id             String   @id @default(uuid())
   organizationId String
   name           String
-  class          String            @default("EXPENSE") // REVENUE, EXPENSE, CAPEX
-  createdAt      DateTime          @default(now())
-  
-  categories     ExpenseCategory[]
-  organization   Organization      @relation(fields: [organizationId], references: [id])
+  class          String   @default("EXPENSE") // REVENUE, EXPENSE, CAPEX
+  createdAt      DateTime @default(now())
+
+  categories   ExpenseCategory[]
+  organization Organization      @relation(fields: [organizationId], references: [id])
 
   @@unique([name, organizationId])
 }
@@ -104,9 +102,11 @@ model ExpenseCategory {
   parent         ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
   children       ExpenseCategory[] @relation("SubCategories")
   entries        LedgerEntry[]
+  isPersonal     Boolean           @default(false)
 
-  organization   Organization      @relation(fields: [organizationId], references: [id])
-  ledger         FinancialLedger   @relation(fields: [ledgerId], references: [id])
+  organization Organization    @relation(fields: [organizationId], references: [id])
+  ledger       FinancialLedger @relation(fields: [ledgerId], references: [id])
+
   @@unique([name, ledgerId, parentId, organizationId])
 }
 
@@ -119,35 +119,35 @@ enum ChargeType {
 }
 
 enum AccountCategory {
-  ASSET       // Cash, Bank Checking, Savings
-  INCOME      // Rental Revenue, Utility Recovery
-  EXPENSE     // Master Water Bill, Master Elec Bill, Personal Draw
+  ASSET // Cash, Bank Checking, Savings
+  INCOME // Rental Revenue, Utility Recovery
+  EXPENSE // Master Water Bill, Master Elec Bill, Personal Draw
 }
 
 model Charge {
-  id             String        @id @default(uuid())
+  id             String     @id @default(uuid())
   organizationId String
   tenantId       String
-  leaseId        String     
+  leaseId        String
   type           ChargeType
   amount         Decimal
-  amountPaid     Decimal       @default(0.00)
+  amountPaid     Decimal    @default(0.00)
   dueDate        DateTime
-  isFullyPaid    Boolean       @default(false)
+  isFullyPaid    Boolean    @default(false)
 
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  tenant         Tenant        @relation(fields: [tenantId], references: [id])
-  lease          Lease         @relation(fields: [leaseId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  lease        Lease        @relation(fields: [leaseId], references: [id])
 }
 
 model Account {
   id             String          @id @default(uuid())
   organizationId String
-  name           String          
+  name           String
   category       AccountCategory
   entries        LedgerEntry[]
-  
-  organization   Organization    @relation(fields: [organizationId], references: [id])
+
+  organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 enum PaymentMode {
@@ -161,30 +161,32 @@ enum EntryStatus {
 }
 
 model LedgerEntry {
-  id                String           @id @default(uuid())
-  organizationId    String
-  transactionId     String   
-  accountId         String
-  amount            Decimal  
-  date              DateTime         @default(now()) // System timestamp
-  transactionDate   DateTime         @default(now()) // Actual payment date
-  description       String
-  paymentMode       PaymentMode      @default(CASH)
-  referenceText     String?
-  status            EntryStatus      @default(ACTIVE)
-  
+  id              String      @id @default(uuid())
+  organizationId  String
+  transactionId   String
+  accountId       String
+  amount          Decimal
+  date            DateTime    @default(now()) // System timestamp
+  transactionDate DateTime    @default(now()) // Actual payment date
+  description     String
+  paymentMode     PaymentMode @default(CASH)
+  referenceText   String?
+  status          EntryStatus @default(ACTIVE)
+  isCleared       Boolean     @default(false)
+  clearedAt       DateTime?
+
   // Unified Wealth Ledger Upgrades
   expenseCategoryId String?
   propertyId        String?
-  tenantId          String?          @map("tenant_id")
+  tenantId          String? @map("tenant_id")
   payee             String?
   receiptUrl        String?
-  
-  organization      Organization     @relation(fields: [organizationId], references: [id])
-  account           Account          @relation(fields: [accountId], references: [id])
-  expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
-  property          Property?        @relation(fields: [propertyId], references: [id])
-  tenant            Tenant?          @relation(fields: [tenantId], references: [id])
+
+  organization    Organization     @relation(fields: [organizationId], references: [id])
+  account         Account          @relation(fields: [accountId], references: [id])
+  expenseCategory ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
+  property        Property?        @relation(fields: [propertyId], references: [id])
+  tenant          Tenant?          @relation(fields: [tenantId], references: [id])
 
   @@index([organizationId, transactionDate])
 }
@@ -194,17 +196,17 @@ model LedgerEntry {
 // ----------------------------------------------------------------------------
 
 model AuditLog {
-  id             String       @id @default(uuid())
-  action         String       // e.g., 'CREATE', 'UPDATE', 'DELETE', 'NUCLEAR_PURGE'
-  entityType     String       // e.g., 'USER', 'EXPENSE', 'PROPERTY', 'TENANT'
+  id             String   @id @default(uuid())
+  action         String // e.g., 'CREATE', 'UPDATE', 'DELETE', 'NUCLEAR_PURGE'
+  entityType     String // e.g., 'USER', 'EXPENSE', 'PROPERTY', 'TENANT'
   entityId       String
   metadata       Json?
   userId         String
   organizationId String
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime @default(now())
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  user           User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
 
   @@index([organizationId, createdAt(sort: Desc)])
 }
@@ -214,56 +216,56 @@ model AuditLog {
 // ----------------------------------------------------------------------------
 
 model Organization {
-  id                String            @id @default(uuid())
-  name              String
-  createdAt         DateTime          @default(now())
-  
-  users             User[]
-  properties        Property[]
-  units             Unit[]
-  tenants           Tenant[]
-  leases            Lease[]
-  charges           Charge[]
-  accounts          Account[]
-  ledgerEntries     LedgerEntry[]
-  financialLedgers  FinancialLedger[]
-  expenseCategories ExpenseCategory[]
-  auditLogs         AuditLog[]
-  reportSnapshots   ReportSnapshot[]
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  users               User[]
+  properties          Property[]
+  units               Unit[]
+  tenants             Tenant[]
+  leases              Lease[]
+  charges             Charge[]
+  accounts            Account[]
+  ledgerEntries       LedgerEntry[]
+  financialLedgers    FinancialLedger[]
+  expenseCategories   ExpenseCategory[]
+  auditLogs           AuditLog[]
+  reportSnapshots     ReportSnapshot[]
   categorizationRules CategorizationRule[]
 }
 
 model ReportSnapshot {
-  id             String       @id @default(uuid())
-  urlToken       String       @unique
+  id             String   @id @default(uuid())
+  urlToken       String   @unique
   payload        Json
   expiresAt      DateTime
   organizationId String
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime @default(now())
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model CategorizationRule {
-  id             String       @id @default(uuid())
+  id             String @id @default(uuid())
   keyword        String
   mappedCategory String
   organizationId String
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 }
 
 model User {
-  id             String       @id @default(uuid())
-  email          String       @unique
-  passwordHash   String       @map("password")
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String   @map("password")
   name           String?
-  role           String       @default("MANAGER") // OWNER, ADMIN, MANAGER
+  role           String   @default("MANAGER") // OWNER, ADMIN, MANAGER
   organizationId String
-  isActive       Boolean      @default(true)
-  canEdit        Boolean      @default(true)
-  createdAt      DateTime     @default(now())
-  
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  auditLogs      AuditLog[]
+  isActive       Boolean  @default(true)
+  canEdit        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  auditLogs    AuditLog[]
 }
