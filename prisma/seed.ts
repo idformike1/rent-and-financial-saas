@@ -1,6 +1,6 @@
-import { PrismaClient, AccountCategory, PaymentMode, EntryStatus } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import 'dotenv/config';
+import { AccountCategory, PaymentMode, EntryStatus } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 
 async function main() {
   console.log("🚀 Initializing Axiom 2026 Sovereign Seed Engine (300 Entries Portfolio)...");
