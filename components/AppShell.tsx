@@ -49,6 +49,7 @@ const navigationSections = [
       { name: 'Analytic Hub',      href: '/reports',            icon: BarChart3 },
       { name: 'Waterfall Core',    href: '/reports/ledger-waterfall', icon: TrendingDown },
       { name: 'Forex Engine',      href: '/reports/forex',      icon: Globe },
+      { name: 'Forensic Explorer',    href: '/governance/ledger',  icon: Database },
       { name: 'Aging Matrix',      href: '/treasury/receivables/aging', icon: CalendarDays },
     ]
   },
@@ -184,7 +185,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   <input 
                     type="text" 
                     placeholder="Search for anything" 
-                    className="w-full h-8 bg-card border border-border rounded-[6px] pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-white/10 transition-all font-[360] tracking-tight"
+                    className="w-full h-8 bg-card border border-border rounded-[6px] pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-primary/20 transition-all font-[360] tracking-tight"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
                      <kbd className="text-[10px] font-sans">⌘</kbd>
@@ -194,7 +195,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             
             <div className="flex items-center gap-4 ml-auto">
-               <div className="w-8 h-8 rounded-[6px] bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+               <div className="w-8 h-8 rounded-[6px] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
                   <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
                </div>
             </div>

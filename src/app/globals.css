@@ -13,31 +13,40 @@
   --radius-md: 6px;
   --radius-lg: 6px;
   --radius-xl: 6px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-brand: var(--brand);
 }
 
 :root {
-  --background: #171721;
+  --background: #161821;
   --foreground: #F4F4F5;
-  --card: #1A1A24;
+  --card: #1E1E2A;
   --card-foreground: #F4F4F5;
-  --popover: #171721;
+  --popover: #161821;
   --popover-foreground: #F4F4F5;
-  --primary: #5D71F9;
+  --primary: #2D2E39;
   --primary-foreground: #FFFFFF;
   --secondary: #1F2937;
   --secondary-foreground: #F4F4F5;
   --muted: #1F2937;
   --muted-foreground: #9CA3AF;
-  --accent: #5D71F9;
+  --accent: #2D2E39;
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #F4F4F5;
   --border: #1F2937;
-  --input: #1A1A24;
-  --ring: #5D71F9;
+  --input: #1E1E2A;
+  --ring: #2D2E39;
   --radius: 8px;
-  --brand: #5D71F9;
+  --brand: #2D2E39;
   --mercury-green: #10B981;
+  --sidebar: #0F0F1A;
+  --sidebar-accent: #1E1E2A;
 }
 
 @layer base {
@@ -53,5 +62,15 @@
   }
   .font-finance {
     font-variant-numeric: tabular-nums;
+  }
+  .mercury-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s;
   }
 }

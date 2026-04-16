@@ -131,10 +131,10 @@ export default function GovernanceRegistryClient({
                <span className="text-brand text-2xl font-bold">[G]</span>
             </div>
             <div>
-              <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none text-white">Taxonomy Control</h1>
+              <h1 className="text-display font-weight-display text-foreground leading-none">Taxonomy Control</h1>
               <div className="flex items-center gap-3 mt-3">
-                 <Badge variant="brand" className="px-3 py-1 text-[8px] bg-[#5D71F9]/10 text-[#5D71F9] border-[#5D71F9]/20">Mercury Standard</Badge>
-                 <Badge variant="success" className="px-3 py-1 text-[8px] bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20">Registry Synchronized</Badge>
+                 <Badge variant="brand" className="px-3 py-1 text-[8px]">Mercury Standard</Badge>
+                 <Badge variant="success" className="px-3 py-1 text-[8px]">Registry Synchronized</Badge>
               </div>
             </div>
           </div>

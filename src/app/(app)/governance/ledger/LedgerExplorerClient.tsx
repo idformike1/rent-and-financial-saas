@@ -162,8 +162,8 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
       {/* Header forensic context */}
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <h1 className="text-display font-display tracking-tight text-white">System Ledger Explorer</h1>
-          <p className="text-muted-foreground text-sm uppercase tracking-[0.2em] font-medium">Forensic Data Visualizer / V.4.0</p>
+          <h1 className="text-display font-display tracking-tight text-white">Forensic Ledger</h1>
+          <p className="text-[#5D71F9] text-sm uppercase tracking-[0.2em] font-medium">Mercury Alpha // Visualizer V.4.1</p>
         </div>
         <div className="flex items-center gap-4">
            <Button type="button" variant="ghost" onClick={handleReset} disabled={!q && !pid && !tid && !aid && !cid && !min && !max} className="text-white/40 hover:text-white uppercase tracking-widest text-[10px] font-bold h-10 px-4">
