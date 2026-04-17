@@ -248,8 +248,6 @@ export async function getUnitLedgerFeedService(unitId: string, context: { operat
       amount: true,
       paymentMode: true,
       status: true,
-      payee: true,
-      tenant: { select: { name: true } },
       account: { select: { category: true } }
     }
   });
