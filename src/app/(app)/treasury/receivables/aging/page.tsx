@@ -82,11 +82,11 @@ export default async function DelinquencyReport() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       {tenant.isSevere ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[6px] text-xs font-bold bg-destructive/10 text-destructive  tracking-wide">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius)] text-xs font-bold bg-destructive/10 text-destructive  tracking-wide">
                           Severe (30+ Days)
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[6px] text-xs font-bold bg-amber-500/10 text-amber-500  tracking-wide">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius)] text-xs font-bold bg-amber-500/10 text-amber-500  tracking-wide">
                           Warning
                         </span>
                       )}

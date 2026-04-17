@@ -4,10 +4,10 @@ import { Home, Zap, AlertTriangle } from 'lucide-react'
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="bg-card rounded-[8px] p-6 max-w-xl w-full text-center space-y-10 border border-border">
+      <div className="bg-card rounded-[var(--radius)] p-6 max-w-xl w-full text-center space-y-10 border border-border">
         
         {/* Icon */}
-        <div className="w-16 h-16 bg-background border border-border rounded-[8px] flex items-center justify-center mx-auto mb-8">
+        <div className="w-16 h-16 bg-background border border-border rounded-[var(--radius)] flex items-center justify-center mx-auto mb-8">
           <AlertTriangle className="w-8 h-8 text-muted-foreground" />
         </div>
 
@@ -33,7 +33,7 @@ export default function NotFound() {
         {/* CTA */}
         <Link
           href="/home"
-          className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold  text-[11px] px-8 py-4 rounded-[8px] hover:bg-primary/90 transition-none active:scale-95"
+          className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold  text-[11px] px-8 py-4 rounded-[var(--radius)] hover:bg-primary/90 transition-none "
         >
           <Zap className="w-4 h-4" />
           Return Home

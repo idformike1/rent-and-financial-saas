@@ -70,7 +70,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
   }, [charges, ledgerEntries]);
 
   return (
-    <div className="bg-background border border-border rounded-[8px] overflow-hidden">
+    <div className="bg-background border border-border rounded-[var(--radius)] overflow-hidden">
       
       {/* TAB NAVIGATION: TACTICAL TOGGLE */}
       <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-card[0.02]">
@@ -79,11 +79,11 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
            <h3 className="text-xl text-foreground leading-none">Forensic Unified Ledger</h3>
         </div>
 
-        <div className="flex p-1.5 bg-card rounded-[8px] border border-border">
+        <div className="flex p-1.5 bg-card rounded-[var(--radius)] border border-border">
            <button 
              onClick={() => setActiveTab('timeline')}
              className={cn(
-               "px-8 py-3 rounded-[6px] text-[10px]  transition-all",
+               "px-8 py-3 rounded-[var(--radius)] text-[10px]  transition-all",
                activeTab === 'timeline' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
              )}
            >
@@ -92,7 +92,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
            <button 
              onClick={() => setActiveTab('compliance')}
              className={cn(
-               "px-8 py-3 rounded-[6px] text-[10px]  transition-all",
+               "px-8 py-3 rounded-[var(--radius)] text-[10px]  transition-all",
                activeTab === 'compliance' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
              )}
            >
@@ -173,7 +173,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                     <tr key={c.id} className="group hover:bg-card[0.02] transition-colors">
                        <td className="px-10 py-8">
                           <div className="flex items-center gap-6">
-                             <div className="bg-card h-10 w-10 rounded-[6px] flex items-center justify-center text-brand border border-border">
+                             <div className="bg-card h-10 w-10 rounded-[var(--radius)] flex items-center justify-center text-brand border border-border">
                                 <DollarSign className="w-4 h-4" />
                              </div>
                              <span className="text-foreground text-xs ">{c.type}</span>
@@ -201,7 +201,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                        </td>
                        <td className="px-10 py-8 text-right">
                           <span className={cn(
-                             "px-4 py-1.5 rounded-[6px] text-[8px]  border-2",
+                             "px-4 py-1.5 rounded-[var(--radius)] text-[8px]  border-2",
                              c.isFullyPaid ? "border-mercury-green/30 text-mercury-green" : "border-rose-500/30 text-rose-500"
                           )}>
                              {c.isFullyPaid ? 'SETTLED' : 'OUTSTANDING'}

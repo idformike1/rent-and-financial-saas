@@ -94,7 +94,7 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
         <button 
           type="submit" 
           disabled={isPending}
-          className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-[6px] h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 "
+          className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius)] h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 "
         >
           <Check size={14} />
           {isPending ? 'Executing...' : 'Commit Configuration'}
@@ -105,7 +105,7 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
           name="decommission" 
           value="true"
           disabled={isPending}
-          className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[6px] h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius)] h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
         >
           <Trash2 size={14} />
           {isPending ? 'Executing...' : 'Decommission Asset'}

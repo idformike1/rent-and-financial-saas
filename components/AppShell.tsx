@@ -128,7 +128,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-md transition-all duration-150 my-0.5 group",
+                          "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-[var(--radius)] transition-all duration-150 my-0.5 group",
                           isActive
                             ? "text-foreground bg-sidebar-accent border-l-2 border-primary rounded-l-none"
                             : "text-muted-foreground/40 hover:text-foreground hover:bg-sidebar-accent/50"
@@ -152,7 +152,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
         <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card">
-          <div className="w-7 h-7 rounded-[4px] bg-foreground text-background flex items-center justify-center text-[10px] font-bold shrink-0">
+          <div className="w-7 h-7 rounded-[var(--radius)] bg-foreground text-background flex items-center justify-center text-[10px] font-bold shrink-0">
             {userName.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
@@ -181,7 +181,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   <input 
                     type="text" 
                     placeholder="Search for anything" 
-                    className="w-full h-8 bg-card border border-border rounded-[6px] pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-primary/20 transition-all font-[360] tracking-tight"
+                    className="w-full h-8 bg-card border border-border rounded-[var(--radius)] pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-primary/20 transition-all font-[360] tracking-tight"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
                      <kbd className="text-[10px] font-sans">⌘</kbd>
@@ -191,7 +191,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             
             <div className="flex items-center gap-4 ml-auto">
-               <div className="w-8 h-8 rounded-[6px] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
+               <div className="w-8 h-8 rounded-[var(--radius)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
                   <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
                </div>
             </div>
@@ -219,7 +219,7 @@ function Badge({ children, className, variant = 'default' }: { children: React.R
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0.5 rounded-[4px] border text-[11px] font-bold leading-none uppercase tracking-tight",
+      "inline-flex items-center px-2 py-0.5 rounded-[var(--radius)] border text-[11px] font-bold leading-none uppercase tracking-tight",
       variants[variant],
       className
     )}>

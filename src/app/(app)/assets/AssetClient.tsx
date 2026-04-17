@@ -86,7 +86,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
       accessor: (prop: Property) => (
         <Link 
           href={`/assets/${prop.id}`}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[6px] bg-white/[0.04] border border-white/5 text-[11px] font-bold text-white/60 hover:text-white hover:bg-brand hover:border-brand/40 transition-all uppercase tracking-wider group"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius)] bg-white/[0.04] border border-white/5 text-[11px] font-bold text-white/60 hover:text-white hover:bg-brand hover:border-brand/40 transition-all uppercase tracking-wider group"
         >
           Workstation
           <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -101,7 +101,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
       <div className="flex justify-end mb-10">
         <Button 
           onClick={() => setIsAddPropertyOpen(true)}
-          className="h-11 bg-brand hover:bg-brand/90 text-white rounded-[6px] text-[12px] font-bold px-6 shadow-xl shadow-brand/20 uppercase tracking-widest"
+          className="h-11 bg-brand hover:bg-brand/90 text-white rounded-[var(--radius)] text-[12px] font-bold px-6 shadow-xl shadow-brand/20 uppercase tracking-widest"
         >
           <Plus className="w-4 h-4 mr-2" />
           Deploy New Asset
@@ -135,7 +135,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
                   required
                   value={newPropData.name}
                   onChange={(e) => setNewPropData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-11 px-4 text-[14px] text-white outline-none focus:border-brand/40 transition-all font-sans" 
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-11 px-4 text-[14px] text-white outline-none focus:border-brand/40 transition-all font-sans" 
                   placeholder="e.g. Sovereign Heights"
                 />
               </div>
@@ -145,7 +145,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
                   required
                   value={newPropData.address}
                   onChange={(e) => setNewPropData(prev => ({ ...prev, address: e.target.value }))}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-11 px-4 text-[14px] text-white outline-none focus:border-brand/40 transition-all font-sans" 
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-11 px-4 text-[14px] text-white outline-none focus:border-brand/40 transition-all font-sans" 
                   placeholder="Full physical location"
                 />
               </div>
@@ -153,7 +153,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
                 <Button 
                   type="submit" 
                   disabled={isCreating}
-                  className="w-full h-12 bg-brand text-white font-bold text-[12px] uppercase tracking-widest rounded-[6px] hover:bg-brand/90 transition-all border-none shadow-lg shadow-brand/10"
+                  className="w-full h-12 bg-brand text-white font-bold text-[12px] uppercase tracking-widest rounded-[var(--radius)] hover:bg-brand/90 transition-all border-none shadow-lg shadow-brand/10"
                 >
                   {isCreating ? 'Synchronizing...' : 'Execute Registration'}
                 </Button>

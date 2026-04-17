@@ -21,7 +21,7 @@ export default async function TeamPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border)] pb-10">
         <div className="space-y-4">
-          <Badge variant="brand" className="px-5 py-2 rounded-[8px]  text-[9px] bg-[var(--primary-muted)] border-2 border-[var(--primary)]/20">
+          <Badge variant="brand" className="px-5 py-2 rounded-[var(--radius)]  text-[9px] bg-[var(--primary-muted)] border-2 border-[var(--primary)]/20">
             Team Command Center
           </Badge>
           <h1 className="text-display font-weight-display text-[var(--foreground)] leading-none">
@@ -37,7 +37,7 @@ export default async function TeamPage() {
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {statCards.map((s) => (
-          <div key={s.label} className="glass-panel rounded-[8px] p-6 flex flex-col justify-between gap-4 border border-[var(--border)] hover:border-[var(--primary)]/30 transition-all">
+          <div key={s.label} className="glass-panel rounded-[var(--radius)] p-6 flex flex-col justify-between gap-4 border border-[var(--border)] hover:border-[var(--primary)]/30 transition-all">
             <div className="flex justify-between items-start">
               <s.icon size={24} className={s.color} />
               <span className={`text-display font-weight-display ${s.color}`}>{s.value}</span>

@@ -16,8 +16,8 @@ export default function TransactionsLoading() {
         <div className="flex items-center justify-between">
             <div className="h-9 w-64 bg-white/[0.03] rounded-md" />
             <div className="flex items-center gap-3">
-               <div className="h-8 w-64 bg-white/[0.03] rounded-[6px]" />
-               <div className="h-8 w-20 bg-white/[0.03] rounded-[6px]" />
+               <div className="h-8 w-64 bg-white/[0.03] rounded-[var(--radius)]" />
+               <div className="h-8 w-20 bg-white/[0.03] rounded-[var(--radius)]" />
             </div>
         </div>
         
@@ -45,8 +45,8 @@ export default function TransactionsLoading() {
       {/* ── 3. TOOLBAR SKELETON ──────────────────────────────────────────── */}
       <div className="py-5 flex items-center justify-between bg-background border-b border-white/[0.05]">
           <div className="flex items-center gap-3">
-             <div className="h-8 w-32 bg-white/[0.03] rounded-[6px]" />
-             <div className="h-8 w-24 bg-white/[0.03] rounded-[6px]" />
+             <div className="h-8 w-32 bg-white/[0.03] rounded-[var(--radius)]" />
+             <div className="h-8 w-24 bg-white/[0.03] rounded-[var(--radius)]" />
           </div>
           <div className="flex items-center gap-6">
              <div className="h-4 w-12 bg-white/[0.02] rounded" />
@@ -81,7 +81,7 @@ export default function TransactionsLoading() {
              </div>
              <div className="h-4 bg-white/[0.03] rounded w-12" />
              <div className="flex items-center gap-4">
-                <div className="w-7 h-7 rounded-[6px] bg-white/[0.03] shrink-0" />
+                <div className="w-7 h-7 rounded-[var(--radius)] bg-white/[0.03] shrink-0" />
                 <div className="h-4 bg-white/[0.03] rounded w-48" />
              </div>
              <div className="flex justify-end pr-4">

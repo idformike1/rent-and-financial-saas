@@ -143,8 +143,8 @@ export default function OnboardingWizard() {
   if (step === 4) {
     return (
       <div className="max-w-3xl mx-auto py-20 px-6 animate-in zoom-in-95 duration-500">
-        <Card className="p-12 text-center space-y-10 rounded-[6px] border border-border bg-card ">
-          <div className="w-20 h-20 bg-mercury-green/10 rounded-[6px] flex items-center justify-center mx-auto mb-8 border border-mercury-green/20">
+        <Card className="p-12 text-center space-y-10 rounded-[var(--radius)] border border-border bg-card ">
+          <div className="w-20 h-20 bg-mercury-green/10 rounded-[var(--radius)] flex items-center justify-center mx-auto mb-8 border border-mercury-green/20">
             <span className="text-mercury-green text-3xl">✓</span>
           </div>
           
@@ -155,7 +155,7 @@ export default function OnboardingWizard() {
             </p>
           </div>
           
-          <div className=" border border-border rounded-[6px] p-8 text-left space-y-6">
+          <div className=" border border-border rounded-[var(--radius)] p-8 text-left space-y-6">
              <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-1">
                    <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Lease Reference</p>
@@ -174,14 +174,14 @@ export default function OnboardingWizard() {
                type="button"
                disabled={false}
                onClick={() => router.push('/tenants')} 
-               className="h-12 px-10 bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white rounded-[6px] text-[14px] font-bold uppercase tracking-widest transition-all "
+               className="h-12 px-10 bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white rounded-[var(--radius)] text-[14px] font-bold uppercase tracking-widest transition-all "
             >
                View Profile →
             </Button>
             <Button 
                variant="ghost" 
                onClick={() => { reset(); setStep(1); }} 
-               className="h-12 px-8 rounded-[6px] text-[13px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all"
+               className="h-12 px-8 rounded-[var(--radius)] text-[13px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all"
             >
                Finish
             </Button>
@@ -223,9 +223,9 @@ export default function OnboardingWizard() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-12 pb-32">
              {step === 1 && (
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <Card className="bg-card border-border rounded-[6px]  overflow-hidden p-8">
+                 <Card className="bg-card border-border rounded-[var(--radius)]  overflow-hidden p-8">
                     <div className="flex items-center gap-8">
-                       <div className="w-14 h-14 rounded-[6px] bg-background border border-border flex items-center justify-center text-[16px] font-bold text-[#5D71F9]">
+                       <div className="w-14 h-14 rounded-[var(--radius)] bg-background border border-border flex items-center justify-center text-[16px] font-bold text-[#5D71F9]">
                          {watchedValues.tenantName ? watchedValues.tenantName.substring(0, 2).toUpperCase() : '??'}
                        </div>
                        <div className="flex-1 space-y-6">
@@ -261,7 +261,7 @@ export default function OnboardingWizard() {
 
                  <div className="space-y-3">
                     <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Identity Identifier</label>
-                    <div className="bg-card border border-border rounded-[6px] p-5 flex items-center gap-4">
+                    <div className="bg-card border border-border rounded-[var(--radius)] p-5 flex items-center gap-4">
                        <span className="text-muted-foreground/30 font-bold">[S]</span>
                        <Input 
                          {...register('nationalId')} 
@@ -277,7 +277,7 @@ export default function OnboardingWizard() {
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                  <div className="space-y-3">
                     <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Asset Allocation</label>
-                    <div className="bg-card border border-border rounded-[6px] overflow-hidden">
+                    <div className="bg-card border border-border rounded-[var(--radius)] overflow-hidden">
                        <select 
                          {...register('unitId')} 
                          className="w-full bg-transparent text-foreground p-6 text-[16px] outline-none appearance-none cursor-pointer border-0"
@@ -291,7 +291,7 @@ export default function OnboardingWizard() {
                  <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-3">
                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Monthly Baseline</label>
-                       <div className="bg-card border border-border rounded-[6px] p-6 flex items-center">
+                       <div className="bg-card border border-border rounded-[var(--radius)] p-6 flex items-center">
                           <span className="text-muted-foreground/20 text-[18px] mr-3 font-mono">$</span>
                           <Input 
                              type="number" 
@@ -303,7 +303,7 @@ export default function OnboardingWizard() {
                     </div>
                     <div className="space-y-3">
                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Security Reserve</label>
-                       <div className="bg-card border border-border rounded-[6px] p-6 flex items-center">
+                       <div className="bg-card border border-border rounded-[var(--radius)] p-6 flex items-center">
                           <span className="text-muted-foreground/20 text-[18px] mr-3 font-mono">$</span>
                           <Input 
                              type="number" 
@@ -317,7 +317,7 @@ export default function OnboardingWizard() {
 
                  <div className="space-y-3">
                     <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Activation Date</label>
-                    <div className="bg-card border border-border rounded-[6px] p-6 flex items-center gap-5">
+                    <div className="bg-card border border-border rounded-[var(--radius)] p-6 flex items-center gap-5">
                        <span className="text-muted-foreground/30">🗓️</span>
                        <Input 
                           type="date" 
@@ -331,7 +331,7 @@ export default function OnboardingWizard() {
 
              {step === 3 && (
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <Card className="bg-card border border-border rounded-[6px] p-10 overflow-hidden relative ">
+                 <Card className="bg-card border border-border rounded-[var(--radius)] p-10 overflow-hidden relative ">
                     <div className="absolute top-0 right-0 p-8 opacity-[0.02]">
                        <span className="text-6xl font-bold">⚡</span>
                     </div>
@@ -373,7 +373,7 @@ export default function OnboardingWizard() {
                  </Card>
                  
                  {serverError && (
-                   <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-[6px] flex items-center gap-5 text-red-500/80">
+                   <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-[var(--radius)] flex items-center gap-5 text-red-500/80">
                      <span className="text-xl shrink-0">⚠️</span>
                      <div className="space-y-0.5">
                        <p className="text-[14px] font-bold uppercase tracking-wider">Protocol Violation</p>
@@ -388,14 +388,14 @@ export default function OnboardingWizard() {
       </div>
 
       <div className="fixed bottom-0 left-[240px] right-0 h-24 flex items-center justify-center gap-3 bg-gradient-to-t from-background to-transparent pointer-events-none">
-         <div className="flex items-center gap-3 pointer-events-auto   p-2 rounded-[6px] border border-border/50">
+         <div className="flex items-center gap-3 pointer-events-auto   p-2 rounded-[var(--radius)] border border-border/50">
            {step > 1 && (
              <Button 
                type="button" 
                variant="ghost"
                disabled={isSubmitting}
                onClick={() => { setStep(step-1); setServerError(''); }} 
-               className="h-10 px-8 rounded-[6px] text-[13px] font-bold text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all bg-transparent border-none"
+               className="h-10 px-8 rounded-[var(--radius)] text-[13px] font-bold text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all bg-transparent border-none"
              >
                Go back
              </Button>
@@ -407,7 +407,7 @@ export default function OnboardingWizard() {
                variant="primary" 
                onClick={nextStep} 
                disabled={false}
-               className="h-10 px-10 rounded-[6px] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white flex items-center gap-2  transition-all"
+               className="h-10 px-10 rounded-[var(--radius)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white flex items-center gap-2  transition-all"
              >
                Next Step →
              </Button>
@@ -418,7 +418,7 @@ export default function OnboardingWizard() {
                onClick={handleSubmit(onSubmit)}
                disabled={isSubmitting} 
                isLoading={isSubmitting}
-               className="h-10 px-12 rounded-[6px] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white  transition-all"
+               className="h-10 px-12 rounded-[var(--radius)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white  transition-all"
              >
                Authorize Registry ✓
              </Button>

@@ -56,7 +56,7 @@ export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
         {/* HEADER BAR */}
         <div className="h-14 border-b border-[#1F2937] flex items-center justify-between px-8 shrink-0">
            <div className="flex items-center gap-4">
-             <div className="w-2 h-2 rounded-[6px] bg-brand animate-pulse" />
+             <div className="w-2 h-2 rounded-[var(--radius)] bg-brand animate-pulse" />
              <span className="font-mono text-[13px] font-bold text-[#E5E7EB] uppercase tracking-widest">
                Subject: {activeUnit?.unitNumber || 'UNKNOWN_NODE'}
              </span>

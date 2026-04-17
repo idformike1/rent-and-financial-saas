@@ -46,7 +46,7 @@ export default function HomeVisuals() {
               </div>
            </div>
 
-           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-[6px] border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-[var(--radius)] border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
               <span className="text-[12px] font-[400] text-white/60 tracking-tight font-sans">Last 30 days</span>
               <span className="text-[11px] opacity-40">✕</span>
            </div>
@@ -97,10 +97,10 @@ export default function HomeVisuals() {
           <div className="flex justify-between items-center mb-6">
              <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Accounts</h3>
             <div className="flex items-center gap-2">
-               <Button type="button" variant="ghost" disabled={false} className="p-1 h-7 w-7 bg-transparent hover:bg-white/5 rounded-[6px] transition-colors border-none group text-muted-foreground/40 hover:text-white">
+               <Button type="button" variant="ghost" disabled={false} className="p-1 h-7 w-7 bg-transparent hover:bg-white/5 rounded-[var(--radius)] transition-colors border-none group text-muted-foreground/40 hover:text-white">
                   +
                </Button>
-               <Button type="button" variant="ghost" disabled={false} className="p-1 h-7 w-7 bg-transparent hover:bg-white/5 rounded-[6px] transition-colors border-none group text-muted-foreground/40 hover:text-white font-bold">
+               <Button type="button" variant="ghost" disabled={false} className="p-1 h-7 w-7 bg-transparent hover:bg-white/5 rounded-[var(--radius)] transition-colors border-none group text-muted-foreground/40 hover:text-white font-bold">
                   •••
                </Button>
             </div>
@@ -108,9 +108,9 @@ export default function HomeVisuals() {
 
          <div className="flex-1 space-y-4">
             {ledgers.map((ledger) => (
-               <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-10 px-2 -mx-2 hover:bg-white/[0.03] rounded-[6px] transition-all">
+               <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-10 px-2 -mx-2 hover:bg-white/[0.03] rounded-[var(--radius)] transition-all">
                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-[6px] bg-white/5 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white/60 transition-colors shrink-0 text-[10px] font-bold">
+                     <div className="w-8 h-8 rounded-[var(--radius)] bg-white/5 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white/60 transition-colors shrink-0 text-[10px] font-bold">
                         {ledger.name.charAt(0)}
                      </div>
                      <span className="text-[15px] font-[400] text-white tracking-tight font-sans">{ledger.name}</span>

@@ -111,10 +111,7 @@ export async function logExpense(formData: FormData) {
       }
 
       if (!expenseCategoryId) {
-        const categoryTarget = type === 'INCOME' ? 'INCOME' : 'EXPENSE';
         const primaryCategory = await db.expenseCategory.findFirst({
-          where: { organizationId: session.organizationId, type: categoryTarget as any }
-        }) || await db.expenseCategory.findFirst({
           where: { organizationId: session.organizationId }
         });
         if (primaryCategory) expenseCategoryId = primaryCategory.id;

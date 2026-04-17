@@ -37,7 +37,7 @@ export default function CashFlowGrid() {
     <div className="mt-10">
       <div className="flex items-center gap-4 mb-4">
         <h2 className="text-[16px] font-[380] text-foreground tracking-tight">Cash Flow Dynamics</h2>
-        <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.02] border border-white/[0.08] rounded-[6px]">
+        <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.02] border border-white/[0.08] rounded-[var(--radius)]">
            <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground bg-transparent border-none">
              ◀
            </Button>
@@ -63,7 +63,7 @@ export default function CashFlowGrid() {
               {moneyInSources.map((source, i) => (
                 <div key={i} className="flex justify-between items-center group">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-[6px] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
+                    <div className="w-7 h-7 rounded-[var(--radius)] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
                        {source.name.charAt(0)}
                     </div>
                     <span className="text-[15px] font-[400] text-white font-sans">{source.name}</span>
@@ -108,7 +108,7 @@ export default function CashFlowGrid() {
               {moneyOutSources.map((source, i) => (
                 <div key={i} className="flex justify-between items-center group">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-[6px] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
+                    <div className="w-7 h-7 rounded-[var(--radius)] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
                        {source.name.charAt(0)}
                     </div>
                     <span className="text-[15px] font-[400] text-white/80 font-sans">{source.name}</span>

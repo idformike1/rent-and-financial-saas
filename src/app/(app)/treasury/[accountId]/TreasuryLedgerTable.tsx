@@ -27,7 +27,7 @@ const formatCurrency = (val: number) => {
 
 export default function TreasuryLedgerTable({ entries }: TreasuryLedgerTableProps) {
   return (
-    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-[6px] overflow-hidden">
+    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-[var(--radius)] overflow-hidden">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[15%]" />

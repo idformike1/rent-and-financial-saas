@@ -63,11 +63,11 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
         <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Identity</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Role Allocation</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Perms</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Status</th>
-              <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-right">Actions</th>
+              <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Identity</th>
+              <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Role Allocation</th>
+              <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground text-center">Perms</th>
+              <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground text-center">Status</th>
+              <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -75,10 +75,10 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
               <tr key={user.id} className="h-[52px] hover:bg-foreground/[0.02] group transition-none cursor-pointer">
                 <td className="px-4 py-3">
                   <div className="flex flex-col">
-                    <span className="text-[13px] font-bold text-foreground tracking-tight">
+                    <span className="text-[13px] font-medium text-foreground tracking-tight">
                       {user.name || 'UNNAMED OPERATOR'}
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-bold lowercase">{user.email}</span>
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{user.email}</span>
                   </div>
                 </td>
                 <td className="px-4 py-3">
@@ -86,7 +86,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                     value={user.role}
                     disabled={user.id === currentUserId}
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    className="w-32 py-1 h-8 text-[11px] font-bold"
+                    className="w-32 py-1 h-8 text-[11px] font-bold uppercase tracking-tight"
                   >
                     <option value="OWNER">OWNER</option>
                     <option value="ADMIN">ADMIN</option>
@@ -141,7 +141,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
           <div className="fixed inset-0 z-50 " />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[12px] p-6 flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-sm font-bold text-foreground uppercase">Authorize Nuclear Purge</h2>
+              <h2 className="text-[11px] font-bold text-foreground uppercase tracking-widest">Authorize Nuclear Purge</h2>
               <button 
                 onClick={() => setDeleteModal({ open: false, user: null })} 
                 className="text-muted-foreground hover:text-foreground transition-none"
@@ -153,14 +153,14 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
             <div className="bg-destructive/10 border border-destructive/20 p-4 mb-8 rounded-[8px] flex items-start gap-4">
               <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p className="text-xs font-bold text-foreground">Vaporizing identity: {deleteModal.user.email}</p>
-                <p className="text-[11px] text-muted-foreground uppercase tracking-tight leading-relaxed font-bold">This action is irreversible. All access tokens will be invalidated immediately.</p>
+                <p className="text-[13px] font-bold text-foreground leading-tight">Vaporizing identity: {deleteModal.user.email}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed font-bold">This action is irreversible. All access tokens will be invalidated immediately.</p>
               </div>
             </div>
 
             <div className="space-y-6">
               <div>
-                <label className="text-[11px] font-bold text-muted-foreground uppercase block mb-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-2">
                   Type "CONFIRM" to validate
                 </label>
                 <Input 
@@ -176,7 +176,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 variant="primary"
                 disabled={confirmEmail !== 'CONFIRM'}
                 onClick={handleDelete}
-                className="w-full bg-destructive hover:bg-destructive/90 text-white h-12 rounded-[8px]"
+                className="w-full bg-destructive hover:bg-destructive/90 text-white h-12 rounded-[8px] text-[11px] font-bold uppercase tracking-widest"
               >
                 EXECUTE PURGE
               </Button>

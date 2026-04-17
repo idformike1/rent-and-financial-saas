@@ -71,7 +71,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
             <div className="w-1 h-1 rounded-full bg-mercury-green animate-pulse" />
             <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Registry ID: {propertyData.id.slice(0, 8)}</span>
           </div>
-          <Badge variant="ghost" className="font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 border-white/5 text-white/40 bg-white/[0.02]">
+          <Badge variant="default" className="font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 border-white/5 text-white/40 bg-white/[0.02]">
             Asset_Class: Tier_1
           </Badge>
         </div>
@@ -95,7 +95,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
           <Button 
             variant="ghost" 
             onClick={() => setIsEditAssetModalOpen(true)}
-            className="h-10 px-5 rounded-[6px] text-[11px] font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/5 border-none"
+            className="h-10 px-5 rounded-[var(--radius)] text-[11px] font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/5 border-none"
           >
             <Edit2 className="w-3.5 h-3.5 mr-2 opacity-50" />
             Edit Profile
@@ -103,7 +103,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
           <div className="w-[1px] h-5 bg-white/10 mx-1" />
           <Button 
             variant="ghost" 
-            className="h-10 px-5 rounded-[6px] text-[11px] font-bold uppercase tracking-wider text-rose-500/50 hover:text-rose-500 hover:bg-rose-500/5 border-none"
+            className="h-10 px-5 rounded-[var(--radius)] text-[11px] font-bold uppercase tracking-wider text-rose-500/50 hover:text-rose-500 hover:bg-rose-500/5 border-none"
             onClick={() => setIsArchiveModalOpen(true)}
           >
             <Trash2 className="w-3.5 h-3.5 mr-2 opacity-50" />
@@ -112,7 +112,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
           <div className="w-[1px] h-5 bg-white/10 mx-1" />
           <Button 
             onClick={() => setIsAddUnitModalOpen(true)}
-            className="h-10 px-6 rounded-[6px] text-[11px] font-bold bg-brand hover:bg-brand/90 text-white uppercase tracking-wider ml-1 shadow-lg shadow-brand/20"
+            className="h-10 px-6 rounded-[var(--radius)] text-[11px] font-bold bg-brand hover:bg-brand/90 text-white uppercase tracking-wider ml-1 shadow-lg shadow-brand/20"
           >
             <Plus className="w-4 h-4 mr-2" />
             Provision Unit
@@ -178,14 +178,14 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
              <div className="p-8 space-y-6">
                 <div className="space-y-1.5">
                    <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Property Name</label>
-                   <input value={editPropName} onChange={(e) => setEditPropName(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
+                   <input value={editPropName} onChange={(e) => setEditPropName(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
                 </div>
                 <div className="space-y-1.5">
                    <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Address Coordinates</label>
-                   <input value={editPropAddr} onChange={(e) => setEditPropAddr(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
+                   <input value={editPropAddr} onChange={(e) => setEditPropAddr(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
                 </div>
                 <div className="pt-4">
-                  <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[6px] hover:bg-brand/90 border-none transition-all">{isUpdating ? 'Synchronizing...' : 'Update Protocol'}</Button>
+                  <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[var(--radius)] hover:bg-brand/90 border-none transition-all">{isUpdating ? 'Synchronizing...' : 'Update Protocol'}</Button>
                 </div>
              </div>
           </div>
@@ -304,12 +304,12 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
         <form onSubmit={handleSubmit} className="p-8 space-y-5">
            <div className="space-y-1.5">
              <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Unit Identifier</label>
-             <input required value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-10 px-4 text-white text-[14px] outline-none focus:border-brand/40" placeholder="e.g. Unit 402" />
+             <input required value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none focus:border-brand/40" placeholder="e.g. Unit 402" />
            </div>
            <div className="grid grid-cols-2 gap-4">
              <div className="space-y-1.5">
                <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Category</label>
-               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-10 px-4 text-white text-[14px] outline-none">
+               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none">
                  <option value="RESIDENTIAL">Residential</option>
                  <option value="COMMERCIAL">Commercial</option>
                  <option value="STORAGE">Storage</option>
@@ -317,15 +317,15 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
              </div>
              <div className="space-y-1.5">
                <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Type</label>
-               <input value={type} onChange={(e) => setType(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-10 px-4 text-white text-[14px] outline-none" placeholder="STUDIO, 1BR, etc." />
+               <input value={type} onChange={(e) => setType(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none" placeholder="STUDIO, 1BR, etc." />
              </div>
            </div>
            <div className="space-y-1.5">
              <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Market Rent ($)</label>
-             <input type="number" value={marketRent} onChange={(e) => setMarketRent(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[6px] h-10 px-4 text-white text-[14px] outline-none" placeholder="0.00" />
+             <input type="number" value={marketRent} onChange={(e) => setMarketRent(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none" placeholder="0.00" />
            </div>
            <div className="pt-4">
-             <Button type="submit" disabled={isPending} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[6px] border-none">{isPending ? 'Provisioning...' : 'Confirm Provisioning'}</Button>
+             <Button type="submit" disabled={isPending} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[var(--radius)] border-none">{isPending ? 'Provisioning...' : 'Confirm Provisioning'}</Button>
            </div>
         </form>
       </div>

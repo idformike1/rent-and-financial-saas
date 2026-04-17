@@ -123,7 +123,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   }
 
   const inputClass = (error?: any) => cn(
-    "w-full bg-card border-2 rounded-[8px] px-6 h-16 text-foreground outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px]  tracking-tight placeholder-muted-foreground dark:placeholder-muted-foreground",
+    "w-full bg-card border-2 rounded-[var(--radius)] px-6 h-16 text-foreground outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px]  tracking-tight placeholder-muted-foreground dark:placeholder-muted-foreground",
     error ? "border-rose-500 bg-rose-50/10" : "border-transparent focus:border-brand/20"
   );
   const labelClass = "text-[10px] text-muted-foreground  tracking-[0.25rem] mb-3 ml-1 block";
@@ -131,9 +131,9 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   return (
     <div className="space-y-10">
       {sessionCount > 0 && lastEntry && (
-        <div className="rounded-[8px] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
+        <div className="rounded-[var(--radius)] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
-            <div className={cn("w-14 h-14 rounded-[8px] flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive')}>
+            <div className={cn("w-14 h-14 rounded-[var(--radius)] flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive')}>
                {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-foreground" /> : <ArrowDownCircle className="w-7 h-7 text-foreground" />}
             </div>
             <div>
@@ -145,21 +145,21 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               </p>
             </div>
           </div>
-          <div className="bg-[var(--primary)]/20 p-3 rounded-[6px]">
+          <div className="bg-[var(--primary)]/20 p-3 rounded-[var(--radius)]">
             <CheckCircle className="w-8 h-8 text-[var(--primary)]" />
           </div>
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-        <div className="bg-card border border-border border-border rounded-[8px] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="bg-card border border-border border-border rounded-[var(--radius)] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
           
           {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
           <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-muted/50 rounded-[1.75rem]">
              <button 
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
-               className={cn("py-5 rounded-[8px]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+               className={cn("py-5 rounded-[var(--radius)]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
                  selectedType === 'EXPENSE' ? 'bg-destructive text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
                )}
              >
@@ -168,7 +168,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
              <button 
                type="button" 
                onClick={() => setValue('type', 'REVENUE')}
-               className={cn("py-5 rounded-[8px]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+               className={cn("py-5 rounded-[var(--radius)]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
                  selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
                )}
              >
@@ -254,7 +254,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
             <button
               type="submit"
               disabled={isSubmitting}
-              className={cn("w-full text-foreground h-20 rounded-[8px] transition-all flex items-center justify-center  tracking-[0.5rem] text-[12px] group relative overflow-hidden active:translate-y-[1px] transition-transform",
+              className={cn("w-full text-foreground h-20 rounded-[var(--radius)] transition-all flex items-center justify-center  tracking-[0.5rem] text-[12px] group relative overflow-hidden active:translate-y-[1px] transition-transform",
                 selectedType === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive'
               )}
             >

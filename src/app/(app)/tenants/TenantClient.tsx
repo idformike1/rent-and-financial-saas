@@ -72,7 +72,7 @@ export default function TenantClient({ initialData }: TenantClientProps) {
       header: "Tenure Status", 
       accessor: (tenant: Tenant) => {
         const lease = tenant.leases[0];
-        if (!lease) return <Badge variant="secondary" className="bg-zinc-900/50 text-zinc-500 border-zinc-800">INACTIVE</Badge>;
+        if (!lease) return <Badge variant="default" className="bg-zinc-900/50 text-zinc-500 border-zinc-800">INACTIVE</Badge>;
         return (
           <div className="flex flex-col gap-1">
              <Badge variant="success" className="w-fit scale-90 origin-left desaturate opacity-80">

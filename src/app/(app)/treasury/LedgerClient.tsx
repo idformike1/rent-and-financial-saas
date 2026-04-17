@@ -93,7 +93,7 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
         >
           <div className="space-y-12">
             <section>
-              <div className="bg-zinc-900/40 border border-zinc-800/50 p-6 rounded-[6px]">
+              <div className="bg-zinc-900/40 border border-zinc-800/50 p-6 rounded-[var(--radius)]">
                 <div className="text-[10px] uppercase text-zinc-600 mb-1">Total Throughput</div>
                 <div className={cn(
                   "text-3xl font-semibold tabular-nums tracking-tight",
@@ -124,7 +124,7 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
               <button
                 onClick={onToggleClear}
                 disabled={isPending || selectedEntry.status === "VOIDED"}
-                className="w-full h-10 bg-zinc-100 text-zinc-950 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-zinc-300 transition-colors disabled:opacity-30"
+                className="w-full h-10 bg-zinc-100 text-zinc-950 text-[11px] uppercase tracking-wider font-bold rounded-[var(--radius)] hover:bg-zinc-300 transition-colors disabled:opacity-30"
               >
                 {selectedEntry.isCleared ? "Unclear Transaction" : "Mark as Cleared"}
               </button>
@@ -132,7 +132,7 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
               <button
                 onClick={onVoid}
                 disabled={isPending || selectedEntry.status === "VOIDED"}
-                className="w-full h-10 bg-red-950/20 border border-red-900/30 text-red-500 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-red-900/30 transition-colors disabled:opacity-30"
+                className="w-full h-10 bg-red-950/20 border border-red-900/30 text-red-500 text-[11px] uppercase tracking-wider font-bold rounded-[var(--radius)] hover:bg-red-900/30 transition-colors disabled:opacity-30"
               >
                 Void Transaction
               </button>

@@ -281,13 +281,13 @@ export default function InsightsClient(props: InsightsClientProps) {
       <div className="flex justify-between items-center w-full mb-2">
         {/* Segmented Control */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center h-8 bg-transparent border border-border rounded-[8px] p-[2px] ">
+          <div className="flex items-center h-8 bg-transparent border border-border rounded-[var(--radius)] p-[2px] ">
             {tabs.map((tab, idx) => (
               <React.Fragment key={tab.id}>
                 <div
                   onClick={() => setActiveTab(tab.id as TabType)}
                   className={cn(
-                    "text-[15px] leading-[24px] h-full flex items-center px-4 rounded-[6px] cursor-pointer transition-all font-normal whitespace-nowrap",
+                    "text-[15px] leading-[24px] h-full flex items-center px-4 rounded-[var(--radius)] cursor-pointer transition-all font-normal whitespace-nowrap",
                     activeTab === tab.id
                       ? "bg-muted text-white "
                       : "text-muted-foreground hover:text-foreground"
@@ -303,7 +303,7 @@ export default function InsightsClient(props: InsightsClientProps) {
             ))}
           </div>
           <div className="w-[1px] h-3 bg-white/10 mx-0.5"></div>
-          <Button type="button" variant="ghost" disabled={false} className="h-8 w-8 flex items-center justify-center p-0 rounded-[8px] text-muted-foreground bg-transparent border-none">
+          <Button type="button" variant="ghost" disabled={false} className="h-8 w-8 flex items-center justify-center p-0 rounded-[var(--radius)] text-muted-foreground bg-transparent border-none">
             [↓]
           </Button>
         </div>
@@ -314,7 +314,7 @@ export default function InsightsClient(props: InsightsClientProps) {
             type="button" 
             variant="ghost" 
             disabled={false}
-            className="h-8 px-4 bg-white/[0.03] border border-border rounded-[8px] text-[15px] leading-[24px] font-normal text-foreground"
+            className="h-8 px-4 bg-white/[0.03] border border-border rounded-[var(--radius)] text-[15px] leading-[24px] font-normal text-foreground"
           >
             [+] Compare to
             <span className="text-[10px] ml-1 opacity-70">▼</span>
@@ -343,7 +343,7 @@ export default function InsightsClient(props: InsightsClientProps) {
             onPointerDown={handlePointerDown}
             style={{ left: `${scrubberState.left}%`, width: `${scrubberState.width}%` }}
             className={cn(
-              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none [1px] -blue-500/20",
+              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[var(--radius)] cursor-grab active:cursor-grabbing transition-all z-10 select-none [1px] -blue-500/20",
               isDragging ? "bg-blue-500/[0.15] border-blue-500 -[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-blue-500/[0.12] hover:border-blue-500/[0.8] hover:-[0_0_20px_rgba(96,165,250,0.35)]"
             )}
           >
@@ -351,10 +351,10 @@ export default function InsightsClient(props: InsightsClientProps) {
               {dateRange?.from && dateRange?.to ? `${format(dateRange.from, 'LLL dd')} – ${format(dateRange.to, 'LLL dd')}` : 'Select Range'}
             </span>
             <div onPointerDown={(e) => { e.stopPropagation(); handleLeftDown(e); }} className="absolute top-0 left-0 bottom-0 w-[20px] flex items-center justify-start cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-[6px]"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-[var(--radius)]"></div>
             </div>
             <div onPointerDown={(e) => { e.stopPropagation(); handleRightDown(e); }} className="absolute top-0 right-0 bottom-0 w-[20px] flex items-center justify-end cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-[6px]"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-[var(--radius)]"></div>
             </div>
           </div>
         </div>
@@ -420,17 +420,17 @@ export default function InsightsClient(props: InsightsClientProps) {
           )}
 
           <div className="hidden lg:flex items-center gap-3">
-            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[6px] h-8 items-center relative group">
+            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[var(--radius)] h-8 items-center relative group">
               <Button 
                 type="button" 
                 variant="ghost" 
                 disabled={false}
-                className="flex items-center gap-2 px-3 h-full rounded-[6px] text-[15px] leading-[24px] font-normal border-none bg-transparent"
+                className="flex items-center gap-2 px-3 h-full rounded-[var(--radius)] text-[15px] leading-[24px] font-normal border-none bg-transparent"
                >
                 {aggregation.charAt(0).toUpperCase() + aggregation.slice(1)} <span className="text-[10px] opacity-70">▼</span>
               </Button>
               {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-[6px]  invisible group-hover:visible z-50 overflow-hidden">
+              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-[var(--radius)]  invisible group-hover:visible z-50 overflow-hidden">
                 <div 
                   onClick={() => setAggregation('day')}
                   className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5", aggregation === 'day' ? "text-white" : "text-muted-foreground")}
@@ -451,13 +451,13 @@ export default function InsightsClient(props: InsightsClientProps) {
                 </div>
               </div>
             </div>
-            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[6px] h-8 items-center transition-all">
+            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[var(--radius)] h-8 items-center transition-all">
                <Button 
                 type="button" 
                 variant="ghost"
                 disabled={false}
                 onClick={() => setChartType('area')} 
-                className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'area' ? "bg-muted text-white " : "text-muted-foreground hover:text-white")}
+                className={cn("h-full px-2.5 transition-all rounded-[var(--radius)] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'area' ? "bg-muted text-white " : "text-muted-foreground hover:text-white")}
                >
                  📈
                </Button>
@@ -466,7 +466,7 @@ export default function InsightsClient(props: InsightsClientProps) {
                 variant="ghost"
                 disabled={false}
                 onClick={() => setChartType('bar')} 
-                className={cn("h-full px-2.5 transition-all rounded-[6px] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'bar' ? "bg-muted text-white " : "text-muted-foreground hover:text-white")}
+                className={cn("h-full px-2.5 transition-all rounded-[var(--radius)] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'bar' ? "bg-muted text-white " : "text-muted-foreground hover:text-white")}
                >
                  📊
                </Button>

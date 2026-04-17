@@ -33,7 +33,7 @@ export default async function ExpenseLoggingPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-[var(--primary)]/10 px-4 py-2 rounded-[8px] border border-[var(--primary)]/20">
+          <div className="flex items-center bg-[var(--primary)]/10 px-4 py-2 rounded-[var(--radius)] border border-[var(--primary)]/20">
             <ShieldAlert className="w-4 h-4 mr-3 text-[var(--primary)]" />
             <span className="text-[9px]  text-[var(--primary)] dark:text-[var(--primary)] leading-none">Governance Signal: Active</span>
           </div>
@@ -45,7 +45,7 @@ export default async function ExpenseLoggingPage() {
       </div>
 
       {/* Footer panel — Glassmorphic Integrity Anchor */}
-      <div className="bg-card border border-border border-border rounded-[8px] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="bg-card border border-border border-border rounded-[var(--radius)] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
         <div className="flex items-center gap-8">
           <div className="w-16 h-16 rounded-[1.75rem] bg-card flex items-center justify-center shrink-0">
              <History className="w-8 h-8 text-muted-foreground" />
@@ -61,14 +61,14 @@ export default async function ExpenseLoggingPage() {
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
           <Link
             href="/treasury/payables"
-            className="h-14 px-8 bg-card border border-border border-border text-[10px] rounded-[8px] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
+            className="h-14 px-8 bg-card border border-border border-border text-[10px] rounded-[var(--radius)] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
           >
             <ArrowLeft className="w-4 h-4 mr-3 text-muted-foreground" />
             Wealth Registry
           </Link>
           <Link
             href="/settings/audit"
-            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[8px] hover:-brand/60 transition-all  flex items-center justify-center"
+            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[var(--radius)] hover:-brand/60 transition-all  flex items-center justify-center"
           >
             <Shield className="w-4 h-4 mr-3" />
             View Audit Trail

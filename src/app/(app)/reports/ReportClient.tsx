@@ -54,19 +54,19 @@ export default function ReportClient({ stats }: ReportClientProps) {
       </div>
 
       {/* BIFURCATION ENGINE */}
-      <div className="border bg-card rounded-[6px] p-8">
-        <h3 className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-10">
+      <div className="border bg-card rounded-[var(--radius)] p-8">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-10">
           Expense Distribution // Business vs Personal
         </h3>
         
         <div className="space-y-10">
           {/* VISUALS: CSS PROGRESS BARS */}
           <div className="space-y-2">
-            <div className="flex justify-between text-[11px] uppercase tracking-wider">
-              <span className="text-zinc-100">Business Operations</span>
-              <span className="text-zinc-400 tabular-nums">{businessRatio.toFixed(1)}%</span>
+            <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.15em]">
+              <span className="text-foreground">Business Operations</span>
+              <span className="text-foreground/40 tabular-nums">{businessRatio.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full bg-zinc-900 rounded-[6px] overflow-hidden">
+            <div className="h-1.5 w-full bg-zinc-900 rounded-[var(--radius)] overflow-hidden">
               <div 
                 className="h-full bg-zinc-100 transition-all duration-1000 ease-out" 
                 style={{ width: `${businessRatio}%` }} 
@@ -75,11 +75,11 @@ export default function ReportClient({ stats }: ReportClientProps) {
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between text-[11px] uppercase tracking-wider">
-              <span className="text-zinc-500">Personal Draw / Non-OPEX</span>
-              <span className="text-zinc-400 tabular-nums">{personalRatio.toFixed(1)}%</span>
+            <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.15em]">
+              <span className="text-foreground/60">Personal Draw / Non-OPEX</span>
+              <span className="text-foreground/40 tabular-nums">{personalRatio.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full bg-zinc-900 rounded-[6px] overflow-hidden">
+            <div className="h-1.5 w-full bg-zinc-900 rounded-[var(--radius)] overflow-hidden">
               <div 
                 className="h-full bg-zinc-600 transition-all duration-1000 ease-out" 
                 style={{ width: `${personalRatio}%` }} 
@@ -90,12 +90,12 @@ export default function ReportClient({ stats }: ReportClientProps) {
 
         <div className="grid grid-cols-2 gap-8 mt-12 pt-12 border-t border-zinc-800/30">
           <div>
-            <div className="text-[10px] uppercase text-zinc-600 mb-1">Business Aggregate</div>
-            <div className="text-xl font-medium text-zinc-100 tabular-nums">${stats.businessExpenses.toLocaleString()}</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-1">Business Aggregate</div>
+            <div className="text-[18px] font-medium text-foreground tabular-nums">${stats.businessExpenses.toLocaleString()}</div>
           </div>
           <div>
-            <div className="text-[10px] uppercase text-zinc-600 mb-1">Personal Aggregate</div>
-            <div className="text-xl font-medium text-zinc-400 tabular-nums">${stats.personalExpenses.toLocaleString()}</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-1">Personal Aggregate</div>
+            <div className="text-[18px] font-medium text-foreground/60 tabular-nums">${stats.personalExpenses.toLocaleString()}</div>
           </div>
         </div>
       </div>

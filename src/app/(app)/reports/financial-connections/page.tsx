@@ -73,7 +73,7 @@ export default function FinanceTranslationHub() {
       {/* HEADER SECTION: FINOVA RECONSTRUCTION */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border border-border pb-12 gap-6 relative overflow-hidden group">
         <div className="flex items-center space-x-6 relative z-10">
-          <div className="w-16 h-16 bg-brand/10 rounded-[8px] flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
+          <div className="w-16 h-16 bg-brand/10 rounded-[var(--radius)] flex items-center justify-center transition-transform group-hover:rotate-12 duration-500">
              <span className="text-3xl text-brand font-bold">[L]</span>
           </div>
           <div>
@@ -97,7 +97,7 @@ export default function FinanceTranslationHub() {
         
         {/* HIERARCHY VISUALIZER (LEFT) */}
         <div className="lg:col-span-7 space-y-8 animate-in slide-in-from-left-8 duration-700">
-          <Card className="rounded-[8px] p-6 border-none bg-card">
+          <Card className="rounded-[var(--radius)] p-6 border-none bg-card">
             <h2 className="text-xl  mb-10 flex items-center text-foreground border-b border-border border-border pb-6">
                 Hierarchical Translation Map
                 <span className="text-brand ml-4 font-bold">[Ξ]</span>
@@ -113,13 +113,13 @@ export default function FinanceTranslationHub() {
                     disabled={false}
                     key={node.id}
                     onClick={() => setSelected(node)}
-                    className={`flex items-center text-left p-5 rounded-[8px] transition-all relative z-10 w-full h-auto border-none justify-start ${
+                    className={`flex items-center text-left p-5 rounded-[var(--radius)] transition-all relative z-10 w-full h-auto border-none justify-start ${
                       isActive 
                         ? 'bg-card dark:bg-brand text-foreground -translate-y-1' 
                         : 'bg-muted hover:bg-card dark:hover:bg-surface-800 text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    <div className={`w-14 h-14 rounded-[6px] flex items-center justify-center mr-6 transition-all shrink-0 ${
+                    <div className={`w-14 h-14 rounded-[var(--radius)] flex items-center justify-center mr-6 transition-all shrink-0 ${
                       isActive ? 'bg-card' : 'bg-muted'
                     }`}>
                       <span className={`text-2xl ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>{node.icon}</span>
@@ -139,8 +139,8 @@ export default function FinanceTranslationHub() {
             </div>
           </Card>
 
-          <Card className="bg-brand border-none rounded-[8px] p-6 flex items-center justify-between text-foreground overflow-hidden relative group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-[6px] -mr-16 -mt-8 group-hover:scale-150 transition-transform" />
+          <Card className="bg-brand border-none rounded-[var(--radius)] p-6 flex items-center justify-between text-foreground overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-muted/50 rounded-[var(--radius)] -mr-16 -mt-8 group-hover:scale-150 transition-transform" />
              <div className="space-y-2 relative z-10">
                  <div className="flex items-center space-x-3">
                     <span className="text-foreground text-xl">⚡</span>
@@ -158,14 +158,14 @@ export default function FinanceTranslationHub() {
         <div className="lg:col-span-5 animate-in slide-in-from-right-8 duration-700 delay-100">
            <div className="sticky top-28 space-y-8">
               
-              <Card className="rounded-[8px] p-6 border-none bg-card border-l-8 border-brand">
+              <Card className="rounded-[var(--radius)] p-6 border-none bg-card border-l-8 border-brand">
                 <h4 className="text-[9px]   text-muted-foreground mb-6">GAAP Logical Proxy</h4>
                 <p className="text-xl text-foreground leading-relaxed">
                   "{selected.gaap_definition}"
                 </p>
               </Card>
 
-              <Card className="bg-background border-none p-6 rounded-[8px] text-foreground relative overflow-hidden group">
+              <Card className="bg-background border-none p-6 rounded-[var(--radius)] text-foreground relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-transform">
                      <span className="text-[192px] text-brand font-bold">[!]</span>
                   </div>
@@ -176,7 +176,7 @@ export default function FinanceTranslationHub() {
                         <span className="text-brand font-bold">➲</span>
                        <h5 className="text-[10px]   text-muted-foreground">Persistence Model</h5>
                       </div>
-                      <div className="bg-card border border-border px-5 py-4 rounded-[6px] text-xs text-brand/80">
+                      <div className="bg-card border border-border px-5 py-4 rounded-[var(--radius)] text-xs text-brand/80">
                         {selected.axiom_model}
                       </div>
                    </section>
@@ -188,7 +188,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
-                           <div key={i} className="flex items-center space-x-4 bg-card p-4 rounded-[6px] border border-border/50">
+                           <div key={i} className="flex items-center space-x-4 bg-card p-4 rounded-[var(--radius)] border border-border/50">
                                <span className="text-muted-foreground font-bold">→</span>
                                <span className="text-[11px] font-bold tracking-tight text-muted-foreground">{f}</span>
                            </div>
@@ -203,7 +203,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-4">
                          {selected.server_actions.map((act, i) => (
-                           <div key={i} className="flex items-center justify-between bg-card p-4 rounded-[6px] border-l-[4px] border-mercury-green group cursor-default">
+                           <div key={i} className="flex items-center justify-between bg-card p-4 rounded-[var(--radius)] border-l-[4px] border-mercury-green group cursor-default">
                               <span className="text-[10px] text-[var(--primary)]/80">{act}</span>
                               <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] text-[8px] px-1.5 py-0">Active</Badge>
                            </div>
@@ -213,9 +213,9 @@ export default function FinanceTranslationHub() {
                  </div>
               </Card>
 
-              <Card className="rounded-[8px] p-6 flex items-center justify-between transition-all cursor-pointer group bg-card border-none">
+              <Card className="rounded-[var(--radius)] p-6 flex items-center justify-between transition-all cursor-pointer group bg-card border-none">
                  <div className="flex items-center space-x-6">
-                     <div className="w-12 h-12 rounded-[6px] bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
+                     <div className="w-12 h-12 rounded-[var(--radius)] bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
                         <span className="text-brand text-xl">➲</span>
                      </div>
                     <div>

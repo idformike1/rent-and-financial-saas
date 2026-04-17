@@ -42,14 +42,14 @@ export default async function StrategicReportsPage() {
     <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col gap-6 w-full">
       <header className="flex justify-between items-end mb-4">
         <div>
-          <h1 className="text-[11px] uppercase tracking-widest text-zinc-500 font-semibold mb-1">
+          <h1 className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-1">
             God-View Telemetry
           </h1>
-          <h2 className="text-2xl text-zinc-100 font-medium tracking-tight">
+          <h2 className="text-display font-weight-display text-foreground leading-none">
             Strategic Analytics
           </h2>
         </div>
-        <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+        <div className="text-[10px] font-bold tabular-nums text-foreground/40 uppercase tracking-[0.15em]">
           Fiscal_Nodes: {entries.length}
         </div>
       </header>

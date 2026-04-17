@@ -29,9 +29,9 @@ export default async function CategoriesManagementPage() {
         initialNodes={JSON.parse(JSON.stringify(allNodes))} 
       />
 
-      <Card className="glass-panel border border-[var(--border)] rounded-[8px] p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-[6px] -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-110" />
-          <div className="w-20 h-20 rounded-[8px] bg-[var(--primary-muted)] flex items-center justify-center shrink-0 border border-[var(--border)] relative z-10">
+      <Card className="glass-panel border border-[var(--border)] rounded-[var(--radius)] p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-[var(--radius)] -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-110" />
+          <div className="w-20 h-20 rounded-[var(--radius)] bg-[var(--primary-muted)] flex items-center justify-center shrink-0 border border-[var(--border)] relative z-10">
              <Info className="w-10 h-10 text-[var(--primary)]" />
           </div>
           <div className="space-y-4 relative z-10">

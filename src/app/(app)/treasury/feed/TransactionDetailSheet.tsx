@@ -56,7 +56,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
             {/* Header / Forensic Stamp */}
             <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-[6px] bg-white/5 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--radius)] bg-white/5 flex items-center justify-center">
                   <span className={cn("text-[16px] font-bold", isVoided ? "text-destructive" : "text-white/44")}>[S]</span>
                 </div>
                 <div>
@@ -131,7 +131,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
               {transaction.referenceText && (
                 <div className="space-y-3 pt-4">
                   <p className="text-[11px] text-white/30 uppercase tracking-[0.2em] font-bold">Reference Notes</p>
-                  <div className="p-4 rounded-[6px] bg-white/[0.02] border border-white/5 text-[14px] text-white/70 leading-relaxed">
+                  <div className="p-4 rounded-[var(--radius)] bg-white/[0.02] border border-white/5 text-[14px] text-white/70 leading-relaxed">
                     {transaction.referenceText}
                   </div>
                 </div>
@@ -147,11 +147,11 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                     </Button>
                   </div>
                   {transaction.receiptUrl ? (
-                     <div className="aspect-[3/4] rounded-[6px] bg-white/[0.03] border border-dashed border-white/10 flex items-center justify-center group cursor-pointer overflow-hidden">
+                     <div className="aspect-[3/4] rounded-[var(--radius)] bg-white/[0.03] border border-dashed border-white/10 flex items-center justify-center group cursor-pointer overflow-hidden">
                         <img src={transaction.receiptUrl} alt="Receipt" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" />
                      </div>
                   ) : (
-                    <div className="h-40 rounded-[6px] bg-white/[0.03] border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 group cursor-pointer hover:bg-white/[0.05] transition-all">
+                    <div className="h-40 rounded-[var(--radius)] bg-white/[0.03] border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 group cursor-pointer hover:bg-white/[0.05] transition-all">
                      <span className="text-white/10 text-xl font-bold">[_]</span>
                       <p className="text-[12px] text-white/20 font-medium tracking-wide">Digital Receipt Missing</p>
                     </div>
@@ -169,7 +169,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                  </div>
                ) : (
                  <div className="w-full flex items-center gap-4">
-                   <Button type="button" disabled={false} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[6px]">
+                   <Button type="button" disabled={false} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius)]">
                      Export Forensic Receipt
                    </Button>
                    <Button 
@@ -177,7 +177,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                     variant="ghost" 
                     onClick={handleVoid}
                     disabled={isPending}
-                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-[6px] text-white/40 hover:text-destructive transition-colors"
+                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-[var(--radius)] text-white/40 hover:text-destructive transition-colors"
                    >
                      {isPending ? "Voiding..." : "Void Activity"}
                    </Button>
