@@ -1,6 +1,6 @@
 import { getCurrentSession } from '@/lib/auth-utils';
 import { redirect } from 'next/navigation';
-import { getPropertySovereignViewService } from '@/src/services/queries/assets.services';
+import { getPropertySovereignViewService, getSidebarPropertiesService } from '@/src/services/queries/assets.services';
 import { getPropertyAssetPulse } from '@/actions/analytics.actions';
 import PropertySovereignClient from './PropertySovereignClient';
 
@@ -16,25 +16,33 @@ export default async function SovereignViewport({ params }: SovereignPageProps) 
 
   let propertyData;
   let pulseData;
+  let allProperties;
+
   try {
-    const [pData, plData] = await Promise.all([
+    const [pData, plData, sidebarProps] = await Promise.all([
       getPropertySovereignViewService(propertyId, {
         operatorId: session.userId,
         organizationId: session.organizationId,
       }),
-      getPropertyAssetPulse(propertyId)
+      getPropertyAssetPulse(propertyId),
+      getSidebarPropertiesService({
+        operatorId: session.userId,
+        organizationId: session.organizationId
+      })
     ]);
+    
     propertyData = pData;
     pulseData = plData;
+    allProperties = sidebarProps;
   } catch (error) {
-    redirect('/assets'); // Redirect back to parent command if deep link fails or is unauthorized
+    redirect('/assets');
   }
 
   return (
     <PropertySovereignClient 
       propertyData={propertyData} 
       pulseData={pulseData.success ? pulseData.data : null} 
+      allProperties={allProperties}
     />
   );
 }
-

@@ -3,7 +3,6 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useCallback } from 'react';
-
 import { ChevronRight } from 'lucide-react';
 
 interface UnitGridProps {
@@ -32,7 +31,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
   }, [pathname, searchParams, router]);
 
   return (
-    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-md overflow-hidden -[var(---mercury-float)]">
+    <div className="w-full bg-[#1E1E2A]/20 border border-white/5 rounded-[8px] overflow-hidden backdrop-blur-sm shadow-xl">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[20%]" />
@@ -42,27 +41,30 @@ export default function UnitGrid({ units }: UnitGridProps) {
           <col className="w-[10%]" />
         </colgroup>
         <thead>
-          <tr className="bg-[#1A1A24] border-b border-[#1F2937]">
-            <th className="text-left px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Unit Identifier</th>
-            <th className="text-left px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Taxonomy</th>
-            <th className="text-left px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider">Clinical State</th>
-            <th className="text-right px-6 py-4 font-bold text-[#E5E7EB] uppercase tracking-wider tabular-nums">Market Value</th>
+          <tr className="bg-white/[0.02] border-b border-white/[0.04]">
+            <th className="text-left px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px]">Identifier</th>
+            <th className="text-left px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px]">Taxonomy</th>
+            <th className="text-left px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px]">Registry Status</th>
+            <th className="text-right px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px] tabular-nums">Market Value</th>
             <th className="px-6 py-4"></th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#1F2937]">
+        <tbody className="divide-y divide-white/[0.02]">
           {units.map((unit) => {
             const isSelected = searchParams.get('unitId') === unit.id;
             
-            // Re-calc clinical status since the data passed here is raw Prisma unit
-            let status = '[ SURVEILLANCE ]';
-            let statusColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+            let status = 'SURVEILLANCE';
+            let statusColor = 'text-amber-500/80 bg-amber-500/5 border-amber-500/10';
+            let dotColor = 'bg-amber-500';
+
             if (unit.maintenanceStatus === 'OPERATIONAL' && unit.leases?.length > 0) {
-              status = '[ OPTIMIZED ]';
-              statusColor = 'text-mercury-green bg-mercury-green/10 border-mercury-green/20';
+              status = 'OPTIMIZED';
+              statusColor = 'text-mercury-green/80 bg-mercury-green/5 border-mercury-green/10';
+              dotColor = 'bg-mercury-green';
             } else if (unit.maintenanceStatus === 'DECOMMISSIONED') {
-              status = '[ CRITICAL ]';
-              statusColor = 'text-destructive bg-destructive/10 border-destructive/20';
+              status = 'CRITICAL';
+              statusColor = 'text-rose-500/80 bg-rose-500/5 border-rose-500/10';
+              dotColor = 'bg-rose-500';
             }
 
             return (
@@ -70,35 +72,42 @@ export default function UnitGrid({ units }: UnitGridProps) {
                 key={unit.id}
                 onClick={() => handleRowClick(unit.id)}
                 className={cn(
-                  "group cursor-pointer transition-all duration-200",
-                  isSelected ? "bg-[#1E1E2A]" : "bg-transparent hover:bg-white/5 hover:-translate-y-[1px] hover: hover:relative hover:z-10"
+                  "group cursor-pointer transition-all duration-300",
+                  isSelected ? "bg-white/[0.04]" : "bg-transparent hover:bg-white/[0.02]"
                 )}
               >
-                <td className="px-6 py-4">
-                  <span className="font-mono text-[#F9FAFB] tracking-tight">{unit.unitNumber}</span>
+                <td className="px-6 py-5">
+                  <span className="font-mono text-white tracking-tight flex items-center gap-2">
+                    <div className={cn("w-1 h-1 rounded-full", dotColor)} />
+                    {unit.unitNumber}
+                  </span>
                 </td>
-                <td className="px-6 py-4">
-                  <span className="text-[#9CA3AF] uppercase tracking-wider">{unit.category} / {unit.type}</span>
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white/60 font-medium">{unit.category}</span>
+                    <span className="text-white/10">•</span>
+                    <span className="text-white/40 text-[11px] uppercase tracking-wider">{unit.type}</span>
+                  </div>
                 </td>
-                <td className="px-6 py-4">
-                  <span className={cn("px-2 py-1 border rounded-md text-[10px] font-bold tracking-widest", statusColor)}>
+                <td className="px-6 py-5">
+                  <span className={cn("px-2.5 py-0.5 border rounded-full text-[9px] font-bold tracking-widest uppercase", statusColor)}>
                     {status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <span className="font-mono tracking-tight text-[#E5E7EB] tabular-nums">
+                <td className="px-6 py-5 text-right">
+                  <span className="font-finance tracking-tight text-white/80 tabular-nums">
                     {formatCurrency(unit.marketRent)}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <ChevronRight size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                <td className="px-6 py-5 text-right">
+                  <ChevronRight size={14} className="text-white/20 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
                 </td>
               </tr>
             );
           })}
           {units.length === 0 && (
             <tr>
-              <td colSpan={5} className="px-6 py-12 text-center text-[#9CA3AF] uppercase tracking-widest text-[11px]">
+              <td colSpan={5} className="px-6 py-16 text-center text-white/20 uppercase tracking-widest text-[10px]">
                 No operational units detected in this domain.
               </td>
             </tr>

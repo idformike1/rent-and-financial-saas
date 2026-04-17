@@ -88,6 +88,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return true
   })
 
+  // ── AUTH ISOLATION GUARD ─────────────────────────────────────────────
+  // If the current path is /login, we bypass the shell to prevent 
+  // UI overlap. We wrap in a w-full container to maintain centering
+  // within the RootLayout's flex body.
+  if (pathname === '/login') return <div className="w-full h-screen">{children}</div>;
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden font-sans selection:bg-primary/10 text-foreground">

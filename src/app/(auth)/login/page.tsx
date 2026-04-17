@@ -57,12 +57,11 @@ export default function LoginPage() {
               <div className="space-y-3">
                 <label className="text-[11px] font-medium text-muted-foreground ml-1">Email address</label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">[E]</span>
                   <Input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted" 
+                    className="h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted" 
                     placeholder="Enter email..."
                     required
                   />
@@ -72,12 +71,11 @@ export default function LoginPage() {
               <div className="space-y-3">
                 <label className="text-[11px] font-medium text-muted-foreground ml-1">Password</label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">[P]</span>
                   <Input 
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted"
+                    className="h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted"
                     placeholder="••••••••"
                     required
                   />
@@ -101,11 +99,6 @@ export default function LoginPage() {
               {isLoading ? "Authenticating..." : "Sign In →"}
             </Button>
           </form>
-
-          <div className="pt-10 border-t border-border flex justify-between items-center text-[10px] font-bold text-muted-foreground ">
-            <span className="flex items-center gap-2 font-medium">(✓) V.3.2 Secure Pipeline</span>
-            <span>Ref: 0xMERCURY</span>
-          </div>
         </div>
       </Card>
     </div>
