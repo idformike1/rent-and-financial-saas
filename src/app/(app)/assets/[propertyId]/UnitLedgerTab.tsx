@@ -8,6 +8,8 @@ interface LedgerEntryRow {
   id: string;
   transactionDate: string;
   description: string;
+  payee?: string;
+  tenant?: { name: string };
   amount: number | string;
   paymentMode: string;
   status: 'ACTIVE' | 'VOIDED';
@@ -73,6 +75,7 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
         <thead>
           <tr className="bg-[#1A1A24] border-b border-[#1F2937]">
             <th className="text-left px-4 py-3 font-mono text-[10px] text-[#9CA3AF] uppercase tracking-widest">Date</th>
+            <th className="text-left px-4 py-3 font-mono text-[10px] text-[#9CA3AF] uppercase tracking-widest">Subject</th>
             <th className="text-left px-4 py-3 font-mono text-[10px] text-[#9CA3AF] uppercase tracking-widest">Descriptor</th>
             <th className="text-left px-4 py-3 font-mono text-[10px] text-[#9CA3AF] uppercase tracking-widest">Mode</th>
             <th className="text-right px-4 py-3 font-mono text-[10px] text-[#9CA3AF] uppercase tracking-widest">Amount</th>
@@ -95,6 +98,9 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
                   {entry.transactionDate && !isNaN(new Date(entry.transactionDate).getTime())
                     ? new Date(entry.transactionDate).toISOString().split('T')[0]
                     : "ERR_DATE"}
+                </td>
+                <td className="px-4 py-3 text-[#E5E7EB] truncate max-w-[120px]">
+                  {entry.tenant?.name || entry.payee || 'ANONYMOUS'}
                 </td>
                 <td className="px-4 py-3 text-[#9CA3AF] truncate max-w-[150px]">
                   {entry.description || 'System Entry'}
