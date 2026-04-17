@@ -89,7 +89,7 @@ export default function OntologyMapPage() {
         <div className="hidden md:flex flex-col items-end opacity-40">
            <span className="text-[8px] text-[var(--primary)]  mb-1">DATA_INTEGRITY: 100%</span>
            <div className="w-32 h-[2px] bg-[var(--border)] overflow-hidden relative">
-              <div className="absolute inset-0 bg-[var(--primary)] animate-progress origin-left" />
+              <div className="absolute inset-0 bg-brand animate-progress origin-left" />
            </div>
         </div>
       </div>

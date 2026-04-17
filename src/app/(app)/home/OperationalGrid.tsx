@@ -56,12 +56,12 @@ export default function OperationalGrid() {
           
           <div className="space-y-2">
             <div className="h-2 w-full bg-muted rounded-[6px] overflow-hidden flex">
-               <div className="h-full bg-foreground" style={{ width: '85%' }} />
+               <div className="h-full bg-brand" style={{ width: '85%' }} />
                <div className="h-full bg-muted-foreground/40" style={{ width: '10%' }} />
                {/* remaining 5% is vacant (muted bg) */}
             </div>
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-[400] tracking-tight">
-              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-foreground" /> Occupied</div>
+              <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-brand" /> Occupied</div>
               <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-muted" /> Vacant</div>
               <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-[6px] bg-muted-foreground/40" /> Notice</div>
             </div>
