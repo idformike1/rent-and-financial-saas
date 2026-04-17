@@ -19,8 +19,8 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
   // unitId is not required by processPayment, but we might pass it as reference text
 
   try {
-    if (type === 'REVENUE') {
-      if (!tenantId) throw new Error("A Revenue log requires an active occupant registry.");
+    if (type === 'REVENUE' && tenantId) {
+      // TENANT-DIRECT FLOW: Maps to tenant credit waterfall
       const res = await processPayment({
         tenantId,
         amountPaid: amount,
@@ -30,19 +30,19 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
       });
       return { success: res.success, message: res.message, ts: Date.now() };
     } else {
-      // EXPENSE -> call logExpense (which takes FormData generally, so we can wrap a new FormData)
+      // ANONYMOUS/OFF-LEASE FLOW: Routes through unified ingestion
       const expenseData = new FormData();
       expenseData.append('amount', String(amount));
-      expenseData.append('payee', tenantId ? 'ACTIVE_OCCUPANT' : 'SYSTEM_VENDOR');
-      expenseData.append('description', 'DIRECT_INJECTION_EXPENSE');
-      expenseData.append('scope', 'PROPERTY'); // Generic
+      expenseData.append('payee', tenantId ? 'ACTIVE_OCCUPANT' : 'VACANT_NODE_INJECTION');
+      expenseData.append('description', type === 'REVENUE' ? 'VACANT_REVENUE_ARTIFACT' : 'DIRECT_EXPENSE_ARTIFACT');
+      expenseData.append('scope', 'PROPERTY');
       expenseData.append('propertyId', propertyId);
-      expenseData.append('type', 'EXPENSE');
+      expenseData.append('type', type === 'REVENUE' ? 'INCOME' : 'EXPENSE');
       expenseData.append('paymentMode', paymentMode);
       expenseData.append('date', transactionDate);
 
       const res = await logExpense(expenseData);
-      return { success: res?.success !== false, message: "Artifact logged", ts: Date.now() };
+      return { success: res?.success !== false, message: "Fiscal artifact synchronized.", ts: Date.now() };
     }
   } catch (e: any) {
     return { success: false, message: e.message || 'Injection failure.', ts: Date.now() };
