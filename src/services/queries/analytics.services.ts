@@ -456,8 +456,7 @@ export async function getMasterLedgerService(
       { description: { contains: query, mode: 'insensitive' } },
       { account: { name: { contains: query, mode: 'insensitive' } } },
       { expenseCategory: { name: { contains: query, mode: 'insensitive' } } },
-      { payee: { contains: query, mode: 'insensitive' } },
-      { tenant: { name: { contains: query, mode: 'insensitive' } } }
+      { payee: { contains: query, mode: 'insensitive' } }
     ];
   }
 

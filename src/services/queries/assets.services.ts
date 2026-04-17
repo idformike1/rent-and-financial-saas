@@ -227,18 +227,15 @@ export async function getUnitLedgerFeedService(unitId: string, context: { operat
     include: { leases: { select: { tenantId: true } } }
   });
 
-  if (!unit) return [];
+  if (!unit || !unit.leases.length) return [];
 
   const tenantIds = unit.leases.map((l: any) => l.tenantId);
 
   // Materialize the absolute ledger across all tenant timelines linked to this unit
   return await db.ledgerEntry.findMany({
     where: {
-      organizationId: context.organizationId,
-      OR: [
-        { tenantId: { in: tenantIds } },
-        { unitId: unitId }
-      ]
+      tenantId: { in: tenantIds },
+      organizationId: context.organizationId
     },
     orderBy: { transactionDate: 'desc' },
     select: {

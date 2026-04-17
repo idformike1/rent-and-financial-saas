@@ -113,6 +113,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
           data={initialData}
           columns={columns}
           className="border-none bg-transparent"
+          onRowClick={(prop) => router.push(`/assets/${prop.id}`)}
         />
       </div>
 

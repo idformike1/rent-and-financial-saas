@@ -92,7 +92,6 @@ export async function logExpense(formData: FormData) {
       const description = formData.get('description') as string;
       const type = (formData.get('type') as string || 'EXPENSE') as 'INCOME' | 'EXPENSE';
       const propertyId = formData.get('propertyId') as string || undefined;
-      const unitId = formData.get('unitId') as string || undefined;
       const paymentMode = formData.get('paymentMode') as PaymentMode || PaymentMode.BANK;
       
       let ledgerId = formData.get('scope') as string;
@@ -133,7 +132,6 @@ export async function logExpense(formData: FormData) {
           ledgerId,
           type,
           propertyId,
-          unitId,
           expenseCategoryId,
           paymentMode
         },

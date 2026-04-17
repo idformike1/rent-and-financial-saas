@@ -13,11 +13,10 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
   const amount = Number(formData.get('amount'));
   const transactionDate = formData.get('date') as string;
   const paymentMode = formData.get('mode') as 'CASH' | 'BANK';
-  const customPayee = formData.get('payee') as string;
   
   const propertyId = formData.get('propertyId') as string;
-  const unitId = formData.get('unitId') as string;
   const tenantId = formData.get('tenantId') as string;
+  // unitId is not required by processPayment, but we might pass it as reference text
 
   try {
     if (type === 'REVENUE' && tenantId) {
@@ -27,18 +26,17 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
         amountPaid: amount,
         transactionDate,
         paymentMode,
-        referenceText: customPayee || `DIRECT_INJECTION: ${propertyId}`
+        referenceText: `DIRECT_INJECTION: ${propertyId}`
       });
       return { success: res.success, message: res.message, ts: Date.now() };
     } else {
       // ANONYMOUS/OFF-LEASE FLOW: Routes through unified ingestion
       const expenseData = new FormData();
       expenseData.append('amount', String(amount));
-      expenseData.append('payee', customPayee || (tenantId ? 'ACTIVE_OCCUPANT' : 'VACANT_NODE_INJECTION'));
-      expenseData.append('description', customPayee || (type === 'REVENUE' ? 'VACANT_REVENUE_ARTIFACT' : 'DIRECT_EXPENSE_ARTIFACT'));
+      expenseData.append('payee', tenantId ? 'ACTIVE_OCCUPANT' : 'VACANT_NODE_INJECTION');
+      expenseData.append('description', type === 'REVENUE' ? 'VACANT_REVENUE_ARTIFACT' : 'DIRECT_EXPENSE_ARTIFACT');
       expenseData.append('scope', 'PROPERTY');
       expenseData.append('propertyId', propertyId);
-      expenseData.append('unitId', unitId);
       expenseData.append('type', type === 'REVENUE' ? 'INCOME' : 'EXPENSE');
       expenseData.append('paymentMode', paymentMode);
       expenseData.append('date', transactionDate);
@@ -56,11 +54,13 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
 
   const activeLease = activeUnit?.leases?.[0];
   const tenantId = activeLease?.tenantId || '';
+  const propertyId = activeUnit?.propertyId || '';
 
   useEffect(() => {
     if (state?.ts) {
       if (state.success) {
         toast.success("Fiscal artifact locally synchronized.");
+        // We do not have direct access to reset the form easily without ref, but typical useActionState forces a re-render
       } else {
         toast.error(state.message);
       }
@@ -69,11 +69,10 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
 
   return (
     <form action={formAction} className="w-full flex items-center gap-4 border-b border-[#1F2937] pb-6 mb-6">
-      <input type="hidden" name="propertyId" value={activeUnit?.propertyId || ''} />
-      <input type="hidden" name="unitId" value={activeUnit?.id || ''} />
+      <input type="hidden" name="propertyId" value={propertyId} />
       <input type="hidden" name="tenantId" value={tenantId} />
 
-      <div className="flex-[0.8]">
+      <div className="flex-1">
         <input 
           name="date" 
           type="date" 
@@ -86,16 +85,6 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
 
       <div className="flex-1">
         <input 
-          name="payee" 
-          type="text" 
-          placeholder="PAYEE / MEMO"
-          disabled={isPending}
-          className={cn(inputClass)} 
-        />
-      </div>
-
-      <div className="flex-[0.7]">
-        <input 
           name="amount" 
           type="number" 
           step="0.01"
@@ -106,14 +95,14 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
         />
       </div>
 
-      <div className="flex-[0.7]">
+      <div className="flex-1">
         <select name="type" disabled={isPending} className={cn(inputClass, "appearance-none cursor-pointer")}>
           <option value="REVENUE">REVENUE</option>
           <option value="EXPENSE">EXPENSE</option>
         </select>
       </div>
 
-      <div className="flex-[0.7]">
+      <div className="flex-1">
         <select name="mode" disabled={isPending} className={cn(inputClass, "appearance-none cursor-pointer")}>
           <option value="BANK">BANK</option>
           <option value="CASH">CASH</option>
