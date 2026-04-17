@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import {
   ComposedChart,
@@ -164,6 +164,12 @@ interface LedgerChartProps {
 }
 
 export default function LedgerChart({ data, type = 'area', mode = 'overview' }: LedgerChartProps) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Switched from Index to ID/Date string to avoid Recharts internal index offset issues
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
@@ -182,7 +188,8 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
 
   return (
     <div className="w-full h-full p-4 relative z-20">
-      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+      {mounted && (
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
         <ComposedChart
           data={data}
           margin={{ top: 20, right: 0, left: 0, bottom: 24 }}
@@ -301,6 +308,7 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
           )}
         </ComposedChart>
       </ResponsiveContainer>
+      )}
     </div>
   );
 }

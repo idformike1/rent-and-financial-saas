@@ -1,5 +1,4 @@
-'use client'
-
+import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
 
 interface ChartData {
@@ -9,6 +8,12 @@ interface ChartData {
 }
 
 export default function IncomeStatementChart({ data }: { data: ChartData[] }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   if (!data?.length) return (
     <div className="h-64 flex items-center justify-center border border-dashed border-border rounded-[8px] bg-muted/30">
        <span className="text-[10px] font-bold uppercase text-muted-foreground">Insufficient historical data for MoM projection</span>
@@ -25,45 +30,47 @@ export default function IncomeStatementChart({ data }: { data: ChartData[] }) {
         </div>
       </div>
       
-      <ResponsiveContainer width="100%" height="80%">
-        <BarChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          barGap={6}
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeWidth={1} />
-          <XAxis 
-            dataKey="name" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--muted-foreground)' }}
-          />
-          <YAxis 
-             axisLine={false} 
-             tickLine={false} 
-             tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--muted-foreground)', fontFamily: 'var(--font-ibm-plex-mono)' }}
-             tickFormatter={(val) => `$${val.toLocaleString()}`}
-          />
-          <Tooltip 
-             cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
-             contentStyle={{ 
-                border: '1px solid var(--border)', 
-                borderRadius: '8px',
-                padding: '12px',
-                backgroundColor: 'var(--card)',
-                boxShadow: 'none',
-                fontSize: '10px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                color: 'var(--foreground)'
-             }}
-             itemStyle={{ color: 'var(--foreground)', fontWeight: 700 }}
-          />
-          {/* Data series colours are intentional — emerald=positive, rose=negative */}
-          <Bar dataKey="revenue" fill="#10B981" radius={[3, 3, 0, 0]} barSize={20} />
-          <Bar dataKey="expense" fill="#F43F5E" radius={[3, 3, 0, 0]} barSize={20} />
-        </BarChart>
-      </ResponsiveContainer>
+      {mounted && (
+        <ResponsiveContainer width="100%" height="80%" minWidth={0} minHeight={0} debounce={50}>
+          <BarChart
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            barGap={6}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeWidth={1} />
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--muted-foreground)' }}
+            />
+            <YAxis 
+               axisLine={false} 
+               tickLine={false} 
+               tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--muted-foreground)', fontFamily: 'var(--font-ibm-plex-mono)' }}
+               tickFormatter={(val) => `$${val.toLocaleString()}`}
+            />
+            <Tooltip 
+               cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
+               contentStyle={{ 
+                  border: '1px solid var(--border)', 
+                  borderRadius: '8px',
+                  padding: '12px',
+                  backgroundColor: 'var(--card)',
+                  boxShadow: 'none',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: 'var(--foreground)'
+               }}
+               itemStyle={{ color: 'var(--foreground)', fontWeight: 700 }}
+            />
+            {/* Data series colours are intentional — emerald=positive, rose=negative */}
+            <Bar dataKey="revenue" fill="#10B981" radius={[3, 3, 0, 0]} barSize={20} />
+            <Bar dataKey="expense" fill="#F43F5E" radius={[3, 3, 0, 0]} barSize={20} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </div>
   )
 }

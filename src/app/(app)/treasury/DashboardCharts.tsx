@@ -15,6 +15,7 @@ import {
   CartesianGrid
 } from 'recharts'
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 
 interface DashboardChartsProps {
   trendData: { month: string; income: number; expense: number }[];
@@ -27,6 +28,12 @@ interface DashboardChartsProps {
 const CHART_SERIES = ['var(--sidebar-primary)', 'var(--mercury-green)', 'var(--chart-3)', 'var(--destructive)', 'var(--sidebar-primary)'];
 
 export default function DashboardCharts({ trendData, recoveryData }: DashboardChartsProps) {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
@@ -49,51 +56,53 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         </div>
         
         <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={trendData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
-              <defs>
-                <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--sidebar-primary)" stopOpacity={0.12}/>
-                  <stop offset="95%" stopColor="var(--sidebar-primary)" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={1} />
-              <XAxis 
-                dataKey="month" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 700 }} 
-                dy={12} 
-              />
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 700 }} 
-                tickFormatter={(val) => `$${val/1000}k`} 
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  borderRadius: '8px', 
-                  border: '1px solid var(--border)', 
-                  backgroundColor: 'var(--card)', 
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                  padding: '12px 16px',
-                }} 
-                itemStyle={{ color: 'var(--foreground)', fontSize: '12px', fontWeight: 700 }}
-                labelStyle={{ color: 'var(--muted-foreground)', fontSize: '10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-                cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="income" 
-                stroke="var(--sidebar-primary)" 
-                strokeWidth={2.5} 
-                fillOpacity={1} 
-                fill="url(#colorIncome)" 
-                activeDot={{ r: 6, fill: 'var(--sidebar-primary)', stroke: 'var(--card)', strokeWidth: 2 }} 
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {mounted && (
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+              <AreaChart data={trendData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+                <defs>
+                  <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--sidebar-primary)" stopOpacity={0.12}/>
+                    <stop offset="95%" stopColor="var(--sidebar-primary)" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={1} />
+                <XAxis 
+                  dataKey="month" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 700 }} 
+                  dy={12} 
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 700 }} 
+                  tickFormatter={(val) => `$${val/1000}k`} 
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    borderRadius: '8px', 
+                    border: '1px solid var(--border)', 
+                    backgroundColor: 'var(--card)', 
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                    padding: '12px 16px',
+                  }} 
+                  itemStyle={{ color: 'var(--foreground)', fontSize: '12px', fontWeight: 700 }}
+                  labelStyle={{ color: 'var(--muted-foreground)', fontSize: '10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                  cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="income" 
+                  stroke="var(--sidebar-primary)" 
+                  strokeWidth={2.5} 
+                  fillOpacity={1} 
+                  fill="url(#colorIncome)" 
+                  activeDot={{ r: 6, fill: 'var(--sidebar-primary)', stroke: 'var(--card)', strokeWidth: 2 }} 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </motion.div>
 
@@ -110,34 +119,36 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         </div>
         
         <div className="flex-1 relative min-h-[180px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={recoveryData}
-                innerRadius={60}
-                outerRadius={85}
-                paddingAngle={6}
-                dataKey="value"
-                stroke="none"
-                cornerRadius={4}
-              >
-                {recoveryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={CHART_SERIES[index % CHART_SERIES.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ 
-                  borderRadius: '8px', 
-                  border: '1px solid var(--border)', 
-                  backgroundColor: 'var(--card)', 
-                  color: 'var(--foreground)',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                }} 
-                itemStyle={{ color: 'var(--foreground)', fontSize: '11px', fontWeight: 700 }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          {mounted && (
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+              <PieChart>
+                <Pie
+                  data={recoveryData}
+                  innerRadius={60}
+                  outerRadius={85}
+                  paddingAngle={6}
+                  dataKey="value"
+                  stroke="none"
+                  cornerRadius={4}
+                >
+                  {recoveryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_SERIES[index % CHART_SERIES.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    borderRadius: '8px', 
+                    border: '1px solid var(--border)', 
+                    backgroundColor: 'var(--card)', 
+                    color: 'var(--foreground)',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                  }} 
+                  itemStyle={{ color: 'var(--foreground)', fontSize: '11px', fontWeight: 700 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
              <span className="font-finance text-2xl font-bold text-foreground">84%</span>
              <span className="text-[9px] font-bold  text-muted-foreground  mt-1">Efficiency</span>

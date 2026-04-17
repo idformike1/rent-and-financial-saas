@@ -1,5 +1,4 @@
-'use client'
-
+import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 
 // Mercury chart palette — intentional semantic data-viz colours.
@@ -8,6 +7,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
 
 export default function ExpensesChartClient({ data }: { data: any[] }) {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   if (data.length === 0) {
     return (
       <div className="h-full flex items-center justify-center border border-dashed border-border rounded-[8px]">
@@ -16,8 +21,10 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
     );
   }
 
+  if (!mounted) return null;
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
       <PieChart>
         <Pie
           data={data}
@@ -49,7 +56,7 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
         <Legend 
             verticalAlign="bottom" 
             height={36} 
-            formatter={(value) => <span className="text-[9px] font-bold  text-muted-foreground ml-2">{value}</span>}
+            formatter={(value) => <span className="text-[10px] font-bold  text-muted-foreground ml-2">{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>
