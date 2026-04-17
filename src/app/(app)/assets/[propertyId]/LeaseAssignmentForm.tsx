@@ -88,7 +88,9 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
         <div className="space-y-1">
           <h4 className="text-[10px] text-[#9CA3AF] uppercase tracking-widest font-bold">Active Tenure</h4>
           <p className="font-mono text-[14px] text-[#E5E7EB] opacity-70">
-            {new Date(activeLease.startDate).toLocaleDateString()}
+            {activeLease.startDate && !isNaN(new Date(activeLease.startDate).getTime())
+              ? new Date(activeLease.startDate).toLocaleDateString()
+              : "PROTOCOL_PENDING"}
           </p>
         </div>
         <div className="space-y-1">

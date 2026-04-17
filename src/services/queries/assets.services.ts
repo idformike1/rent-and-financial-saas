@@ -201,6 +201,7 @@ export async function getPropertySovereignViewService(propertyId: string, contex
         id: l.id,
         rentAmount: Number(l.rentAmount),
         depositAmount: Number(l.depositAmount),
+        startDate: l.startDate,
         tenant: l.tenant ? { name: l.tenant.name } : null
       }))
     })),

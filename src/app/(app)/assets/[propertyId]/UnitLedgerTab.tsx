@@ -92,7 +92,9 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
                 )}
               >
                 <td className="px-4 py-3 text-[#E5E7EB] whitespace-nowrap">
-                  {new Date(entry.transactionDate).toISOString().split('T')[0]}
+                  {entry.transactionDate && !isNaN(new Date(entry.transactionDate).getTime())
+                    ? new Date(entry.transactionDate).toISOString().split('T')[0]
+                    : "ERR_DATE"}
                 </td>
                 <td className="px-4 py-3 text-[#9CA3AF] truncate max-w-[150px]">
                   {entry.description || 'System Entry'}
