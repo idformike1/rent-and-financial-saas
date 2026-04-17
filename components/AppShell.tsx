@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils'
 import {
   Home,
   List,
-  LayoutDashboard,
   Building2,
   Users,
   Zap,
@@ -16,14 +15,11 @@ import {
   Wallet,
   Activity,
   BarChart3,
-  TrendingDown,
-  Globe,
   CalendarDays,
   Database,
   Search,
   Settings,
   ShieldCheck,
-  FileSpreadsheet,
   Users2
 } from 'lucide-react'
 
@@ -34,7 +30,6 @@ const navigationSections = [
     items: [
       { name: 'Home',              href: '/home',               icon: Home },
       { name: 'Transactions',      href: '/treasury/feed',      icon: List },
-      { name: 'Dashboard',         href: '/reports',            icon: LayoutDashboard },
       { name: 'Properties',        href: '/assets',             icon: Building2 },
       { name: 'Tenants',           href: '/tenants',            icon: Users },
       { name: 'Onboarding',        href: '/onboarding',         icon: Zap },
@@ -47,8 +42,6 @@ const navigationSections = [
     items: [
       { name: 'Insights',          href: '/reports/insights',   icon: Activity },
       { name: 'Analytic Hub',      href: '/reports',            icon: BarChart3 },
-      { name: 'Waterfall Core',    href: '/reports/ledger-waterfall', icon: TrendingDown },
-      { name: 'Forex Engine',      href: '/reports/forex',      icon: Globe },
       { name: 'Forensic Explorer',    href: '/governance/ledger',  icon: Database },
       { name: 'Aging Matrix',      href: '/treasury/receivables/aging', icon: CalendarDays },
     ]
@@ -57,9 +50,7 @@ const navigationSections = [
     label: 'Governance control',
     items: [
       { name: 'Taxonomy Logic',    href: '/settings/categories', icon: Database },
-      { name: 'System Ontology',   href: '/governance/system',  icon: Settings },
       { name: 'Audit Protocol',    href: '/settings/audit',     icon: ShieldCheck },
-      { name: 'Data Ingestion',    href: '/settings/ingestion', icon: FileSpreadsheet },
       { name: 'Team Command',      href: '/settings/team',      icon: Users2 },
     ]
   }

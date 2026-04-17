@@ -29,8 +29,6 @@ export function Card({
 
   return (
     <motion.div
-      whileTap={{ scale: 0.995 }}
-      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
         variants[variant as keyof typeof variants],
         className
@@ -75,8 +73,6 @@ export function Button({
 
   return (
     <motion.button
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
         "inline-flex items-center justify-center transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none leading-none tracking-tight",
         variants[variant as keyof typeof variants],

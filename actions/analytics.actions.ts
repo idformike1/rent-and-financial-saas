@@ -3,8 +3,6 @@
 import { runSecureServerAction } from '@/lib/auth-utils'
 import {
   getGlobalPortfolioTelemetryService,
-  getDetailedOntologyService,
-  getWaterfallDataService,
   getProfitAndLossService,
   getRentRollService,
   getTaxPrepService,
@@ -42,43 +40,7 @@ export async function getGlobalPortfolioTelemetry() {
   });
 }
 
-/**
- * STRUCTURAL ONTOLOGY GATEKEEPER
- */
-export async function getDetailedOntology() {
-  return runSecureServerAction('MANAGER', async (session) => {
-    try {
-      const result = await getDetailedOntologyService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-      return { success: true, data: result };
-    } catch (e: any) {
-      console.error('[ANALYTICS_ONTOLOGY_FATAL]', e);
-      return { success: false, message: e.message || "Ontology Materialization Failure" };
-    }
-  });
-}
-
 /* ── 2. FINANCIAL REPORTS ───────────────────────────────────────────────── */
-
-/**
- * LIVE WATERFALL (SANKEY) DATA GATEKEEPER
- */
-export async function getLiveWaterfallData() {
-  return runSecureServerAction('MANAGER', async (session) => {
-    try {
-      const data = await getWaterfallDataService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-      return { success: true, data };
-    } catch (e: any) {
-      console.error('[ANALYTICS_WATERFALL_FATAL]', e);
-      return { success: false, error: "ERR_REPORTING_SERVICE_FAILURE" };
-    }
-  });
-}
 
 /**
  * GAAP PROFIT & LOSS ENGINE GATEKEEPER
