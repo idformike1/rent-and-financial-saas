@@ -25,55 +25,57 @@ export function SovereignTable<T>({
   className,
 }: SovereignTableProps<T>) {
   return (
-    <div className={cn("w-full overflow-x-auto border border-zinc-800/50 rounded-[6px] bg-zinc-950/20", className)}>
-      <table className="w-full border-collapse">
-        <thead className="bg-[#0A0A0A]/90 backdrop-blur-md sticky top-0 z-10">
-          <tr>
-            {columns.map((column, idx) => (
-              <th
-                key={idx}
+    <div className={cn("w-full overflow-hidden border border-white/5 rounded-[var(--radius)] bg-white/[0.01]", className)}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead className="bg-[#0A0A0A]/90 backdrop-blur-md sticky top-0 z-10 border-b border-white/10">
+            <tr>
+              {columns.map((column, idx) => (
+                <th
+                  key={idx}
+                  className={cn(
+                    "px-4 py-4 text-[10px] font-bold uppercase tracking-[0.15em] text-white/40",
+                    column.align === 'right' ? "text-right" : "text-left"
+                  )}
+                >
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/[0.02]">
+            {data.map((item, rowIdx) => (
+              <tr
+                key={rowIdx}
+                onClick={() => onRowClick?.(item)}
                 className={cn(
-                  "px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-800/50",
-                  column.align === 'right' ? "text-right" : "text-left"
+                  "group hover:bg-brand/[0.04] transition-all duration-300 ease-out",
+                  onRowClick ? "cursor-pointer" : "",
+                  getRowClassName?.(item)
                 )}
               >
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, rowIdx) => (
-            <tr
-              key={rowIdx}
-              onClick={() => onRowClick?.(item)}
-              className={cn(
-                "group border-b border-zinc-800/30 hover:bg-zinc-900/60 transition-colors duration-200 ease-in-out",
-                onRowClick ? "cursor-pointer" : "",
-                getRowClassName?.(item)
-              )}
-            >
-              {columns.map((column, colIdx) => {
-                const content = typeof column.accessor === 'function' 
-                  ? column.accessor(item) 
-                  : (item[column.accessor] as React.ReactNode);
+                {columns.map((column, colIdx) => {
+                  const content = typeof column.accessor === 'function' 
+                    ? column.accessor(item) 
+                    : (item[column.accessor] as React.ReactNode);
 
-                return (
-                  <td
-                    key={colIdx}
-                    className={cn(
-                      "px-4 py-3 text-[13px] text-zinc-400 group-hover:text-zinc-100 transition-colors duration-200",
-                      column.align === 'right' ? "tabular-nums tracking-tight text-right" : "text-left"
-                    )}
-                  >
-                    {content}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  return (
+                    <td
+                      key={colIdx}
+                      className={cn(
+                        "px-4 py-4 text-[13px] text-white/60 group-hover:text-white transition-all duration-300",
+                        column.align === 'right' ? "tabular-nums tracking-tight text-right pr-4" : "text-left"
+                      )}
+                    >
+                      {content}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

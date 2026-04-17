@@ -1,8 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import AssetClient from "./AssetClient";
+import { getCurrentSession } from "@/lib/auth-utils";
+import { redirect } from "next/navigation";
 
 export default async function AssetsPage() {
+  const session = await getCurrentSession();
+  if (!session) redirect('/login');
+
   const properties = await prisma.property.findMany({
+    where: { 
+      organizationId: session.organizationId 
+    },
     include: {
       units: true,
     },

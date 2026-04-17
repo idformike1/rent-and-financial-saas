@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { SovereignTable } from "@/src/components/ui/SovereignTable";
-import { SovereignSheet } from "@/src/components/ui/SovereignSheet";
 import { Button } from "@/components/ui-finova";
+import { DollarSign, ArrowUpRight, User, Home, Mail, Phone, ExternalLink } from "lucide-react";
+import PaymentDrawer from "@/components/PaymentDrawer";
+import { Badge } from "@/components/ui-finova";
+import { cn } from "@/lib/utils";
 
 interface Tenant {
   id: string;
@@ -11,10 +16,18 @@ interface Tenant {
   email: string | null;
   phone: string | null;
   leases: {
-    unitId: string;
-    rentAmount: any; // Decimal
+    unit: {
+      unitNumber: string;
+      property: {
+        name: string;
+      };
+    };
+    rentAmount: any; 
     status: string;
+    startDate: string;
+    endDate: string;
   }[];
+  charges: any[];
 }
 
 interface TenantClientProps {
@@ -22,95 +35,133 @@ interface TenantClientProps {
 }
 
 export default function TenantClient({ initialData }: TenantClientProps) {
-  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const router = useRouter();
+  const [selectedTenantForPayment, setSelectedTenantForPayment] = useState<Tenant | null>(null);
 
   const columns: any[] = [
-    { header: "Occupant Name", accessor: "name", align: "left" },
-    { header: "Contact", accessor: "email", align: "left" },
     { 
-      header: "Unit ID", 
-      accessor: (tenant: Tenant) => tenant.leases[0]?.unitId || "UNASSIGNED",
+      header: "Occupant", 
+      accessor: (tenant: Tenant) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-[4px] bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[11px] font-bold text-zinc-500">
+            {tenant.name.charAt(0)}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium text-zinc-100">{tenant.name}</span>
+            <span className="text-[10px] text-zinc-500 font-mono lowercase">{tenant.email || 'no-endpoint'}</span>
+          </div>
+        </div>
+      ),
       align: "left" 
     },
     { 
-      header: "Status", 
-      accessor: (tenant: Tenant) => tenant.leases[0]?.status || "INACTIVE",
+      header: "Asset Deployment", 
+      accessor: (tenant: Tenant) => {
+        const lease = tenant.leases[0];
+        if (!lease) return <span className="text-zinc-700 italic text-[11px]">UNASSIGNED</span>;
+        return (
+          <div className="flex flex-col">
+            <span className="text-zinc-200 font-medium tracking-tight">{lease.unit.property.name}</span>
+            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Unit {lease.unit.unitNumber}</span>
+          </div>
+        );
+      },
       align: "left" 
     },
+    { 
+      header: "Tenure Status", 
+      accessor: (tenant: Tenant) => {
+        const lease = tenant.leases[0];
+        if (!lease) return <Badge variant="secondary" className="bg-zinc-900/50 text-zinc-500 border-zinc-800">INACTIVE</Badge>;
+        return (
+          <div className="flex flex-col gap-1">
+             <Badge variant="success" className="w-fit scale-90 origin-left desaturate opacity-80">
+               {lease.status}
+             </Badge>
+             <span className="text-[9px] text-zinc-600 font-mono tracking-tighter">
+                EXP: {new Date(lease.endDate).toLocaleDateString()}
+             </span>
+          </div>
+        );
+      },
+      align: "left" 
+    },
+    { 
+      header: "Aggregate Fisc", 
+      accessor: (tenant: Tenant) => {
+        const balance = tenant.charges.reduce((acc, c) => acc + (Number(c.amount) - Number(c.amountPaid)), 0);
+        return (
+          <div className="flex flex-col items-end">
+            <span className={cn(
+              "font-mono font-bold tracking-tight",
+              balance > 0 ? "text-rose-500" : "text-emerald-500"
+            )}>
+              ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </span>
+            <span className="text-[9px] text-zinc-600 uppercase">Balance Owed</span>
+          </div>
+        );
+      },
+      align: "right" 
+    },
+    {
+      header: "Protocol",
+      accessor: (tenant: Tenant) => (
+        <div className="flex items-center justify-end gap-2">
+           <Button 
+            type="button" 
+            variant="ghost" 
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedTenantForPayment(tenant);
+            }}
+            className="h-8 w-8 p-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20"
+          >
+            <DollarSign className="w-4 h-4" />
+          </Button>
+          <Button 
+            type="button" 
+            variant="ghost" 
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/tenants/${tenant.id}`);
+            }}
+            className="h-8 w-8 p-0 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-400 hover:text-zinc-100 border border-zinc-800"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+      align: "right"
+    }
   ];
 
   const handleRowClick = (tenant: Tenant) => {
-    setSelectedTenant(tenant);
-    setIsSheetOpen(true);
+    router.push(`/tenants/${tenant.id}`);
   };
 
   return (
-    <>
+    <div className="space-y-4">
       <SovereignTable
         data={initialData}
         columns={columns}
         onRowClick={handleRowClick}
       />
 
-      {selectedTenant && (
-        <SovereignSheet
-          isOpen={isSheetOpen}
-          onClose={() => setIsSheetOpen(false)}
-          title={`Occupant: ${selectedTenant.name}`}
-          size="lg"
-        >
-          <div className="space-y-12">
-            {/* CONTACT MATRIX */}
-            <section>
-              <h3 className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-6">
-                Contact Matrix
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-zinc-900/40 border border-zinc-800/50 p-4 rounded-[6px]">
-                  <div className="text-[10px] uppercase text-zinc-600 mb-1">Email Endpoint</div>
-                  <div className="text-[13px] text-zinc-100">{selectedTenant.email || "N/A"}</div>
-                </div>
-                <div className="bg-zinc-900/40 border border-zinc-800/50 p-4 rounded-[6px]">
-                  <div className="text-[10px] uppercase text-zinc-600 mb-1">Phone Line</div>
-                  <div className="text-[13px] text-zinc-100">{selectedTenant.phone || "N/A"}</div>
-                </div>
-              </div>
-            </section>
-
-            {/* ACTIVE LEASE */}
-            <section>
-              <h3 className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-6">
-                Active Lease
-              </h3>
-              <div className="bg-zinc-900/40 border border-zinc-800/50 p-6 rounded-[6px] flex justify-between items-center">
-                <div>
-                  <div className="text-[10px] uppercase text-zinc-600 mb-1">Monthly Throughput</div>
-                  <div className="text-2xl font-semibold text-zinc-100 tabular-nums tracking-tight">
-                    ${Number(selectedTenant.leases[0]?.rentAmount || 0).toLocaleString()}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[10px] uppercase text-zinc-600 mb-1">Status</div>
-                  <div className="text-[11px] font-bold text-mercury-green uppercase tracking-wider">
-                    {selectedTenant.leases[0]?.status || "NO_ACTIVE_LEASE"}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* ACTION DECK */}
-            <section className="pt-8 border-t border-zinc-800/50 flex gap-4">
-              <Button type="button" variant="secondary" disabled={false} className="flex-1 h-10 bg-zinc-800/50 text-zinc-100 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-zinc-700/50 transition-colors border-none">
-                Edit Profile
-              </Button>
-              <Button type="button" variant="ghost" disabled={false} className="flex-1 h-10 bg-red-950/20 border border-red-900/30 text-red-500 text-[11px] uppercase tracking-wider font-bold rounded-[6px] hover:bg-red-900/30 transition-colors">
-                Terminate Lease
-              </Button>
-            </section>
-          </div>
-        </SovereignSheet>
+      {selectedTenantForPayment && (
+        <PaymentDrawer 
+          tenant={selectedTenantForPayment}
+          activeCharges={selectedTenantForPayment.charges}
+          isOpen={!!selectedTenantForPayment}
+          onClose={() => setSelectedTenantForPayment(null)}
+          onSuccess={() => {
+            setSelectedTenantForPayment(null);
+            router.refresh();
+          }}
+        />
       )}
-    </>
+    </div>
   );
 }

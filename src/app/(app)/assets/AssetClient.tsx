@@ -108,14 +108,11 @@ export default function AssetClient({ initialData }: AssetClientProps) {
         </Button>
       </div>
 
-      <div className="bg-[#1E1E2A]/20 border border-white/5 rounded-[12px] overflow-hidden backdrop-blur-sm shadow-2xl">
-        <SovereignTable
-          data={initialData}
-          columns={columns}
-          className="border-none bg-transparent"
-          onRowClick={(prop) => router.push(`/assets/${prop.id}`)}
-        />
-      </div>
+      <SovereignTable
+        data={initialData}
+        columns={columns}
+        className="bg-[#1E1E2A]/20 backdrop-blur-sm shadow-2xl"
+      />
 
       {isAddPropertyOpen && (
         <div className="fixed inset-0 z-[110] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-md">

@@ -1,12 +1,33 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentSession } from "@/lib/auth-utils";
+import { redirect } from "next/navigation";
 import TenantClient from "./TenantClient";
 
 export default async function TenantRegistryPage() {
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
+
   const tenants = await prisma.tenant.findMany({
+    where: {
+      organizationId: session.organizationId,
+      isDeleted: false,
+    },
     include: {
       leases: {
         where: {
           isActive: true,
+        },
+        include: {
+          unit: {
+            include: {
+              property: true
+            }
+          }
+        }
+      },
+      charges: {
+        where: {
+          isFullyPaid: false,
         },
       },
     },

@@ -8,11 +8,11 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-display: 'Arcadia Display', ui-sans-serif, system-ui, sans-serif;
 
-  --radius: 6px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 6px;
-  --radius-xl: 6px;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -58,7 +58,7 @@
   --border: rgba(186, 204, 255, 0.12);
   --input: #1E1E2A;
   --ring: #2D2E39;
-  --radius: 8px;
+  --radius: 12px;
   --brand: #5D71F9;
   --mercury-green: #10B981;
   --sidebar: #0F0F1A;
@@ -84,7 +84,7 @@
     opacity: 1 !important;
     border: 1px solid var(--border);
     padding: 1.5rem;
-    border-radius: 8px;
+    border-radius: var(--radius);
     display: flex;
     flex-direction: column;
     justify-content: space-between;

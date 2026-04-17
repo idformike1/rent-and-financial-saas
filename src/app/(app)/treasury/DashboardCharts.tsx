@@ -42,7 +42,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="lg:col-span-2 bg-card border border-border rounded-[8px] p-6"
+        className="lg:col-span-2 bg-card border border-border rounded-[var(--radius)] p-6"
       >
         <div className="flex items-center justify-between mb-8">
            <div>
@@ -81,7 +81,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    borderRadius: '8px', 
+                    borderRadius: 'var(--radius)', 
                     border: '1px solid var(--border)', 
                     backgroundColor: 'var(--card)', 
                     boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
@@ -111,7 +111,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="bg-card border border-border rounded-[8px] p-6 flex flex-col"
+        className="bg-card border border-border rounded-[var(--radius)] p-6 flex flex-col"
       >
         <div className="mb-6">
            <h3 className="text-[14px] font-bold text-foreground  tracking-tight leading-none">NOI Allocation</h3>
@@ -137,7 +137,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    borderRadius: '8px', 
+                    borderRadius: 'var(--radius)', 
                     border: '1px solid var(--border)', 
                     backgroundColor: 'var(--card)', 
                     color: 'var(--foreground)',

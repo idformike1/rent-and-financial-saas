@@ -91,7 +91,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
           </div>
         </div>
         
-        <div className="flex items-center p-1 bg-white/[0.02] border border-white/5 rounded-[8px] backdrop-blur-sm">
+        <div className="flex items-center p-1 bg-white/[0.02] border border-white/5 rounded-[var(--radius)] backdrop-blur-sm">
           <Button 
             variant="ghost" 
             onClick={() => setIsEditAssetModalOpen(true)}
@@ -238,7 +238,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                    </div>
                    <button 
                      onClick={() => setDrillDownType(null)}
-                     className="w-12 h-12 rounded-[8px] bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                     className="w-12 h-12 rounded-[var(--radius)] bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
                    >
                       <X className="w-5 h-5 text-white/40" />
                    </button>
@@ -246,7 +246,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                 
                 <div className="flex-1 flex items-center justify-center p-10 border border-dashed border-white/5 m-10 rounded-[12px]">
                    <div className="text-center space-y-6">
-                      <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-[8px] flex items-center justify-center mx-auto animate-pulse">
+                      <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-[var(--radius)] flex items-center justify-center mx-auto animate-pulse">
                          <Globe className="w-10 h-10 text-brand/40" />
                       </div>
                       <div className="space-y-2">
