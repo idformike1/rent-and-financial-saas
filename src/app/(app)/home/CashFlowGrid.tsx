@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState, useEffect } from 'react'
 import { Card, Button } from '@/components/ui-finova'
 
 import { BarChart, Bar, ResponsiveContainer, Cell } from 'recharts'
@@ -29,6 +30,9 @@ const sparklineData = [
 ]
 
 export default function CashFlowGrid() {
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => { setMounted(true) }, [])
+
   return (
     <div className="mt-10">
       <div className="flex items-center gap-4 mb-4">
@@ -73,15 +77,17 @@ export default function CashFlowGrid() {
           <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
             <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average $585K</span>
             <div className="w-[80px] h-[30px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sparklineData}>
-                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
-                    {sparklineData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.current ? "var(--foreground)" : "var(--muted)"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {mounted && (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                  <BarChart data={sparklineData}>
+                    <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                      {sparklineData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.current ? "var(--foreground)" : "var(--muted)"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
         </div>
@@ -118,15 +124,17 @@ export default function CashFlowGrid() {
           <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
             <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average -$220K</span>
             <div className="w-[80px] h-[30px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sparklineData}>
-                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
-                    {sparklineData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.current ? "var(--foreground)" : "var(--muted)"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {mounted && (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                  <BarChart data={sparklineData}>
+                    <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                      {sparklineData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.current ? "var(--foreground)" : "var(--muted)"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
         </div>

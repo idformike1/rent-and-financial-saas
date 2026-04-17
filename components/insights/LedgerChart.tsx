@@ -182,7 +182,7 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
 
   return (
     <div className="w-full h-full p-4 relative z-20">
-      <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
         <ComposedChart
           data={data}
           margin={{ top: 20, right: 0, left: 0, bottom: 24 }}

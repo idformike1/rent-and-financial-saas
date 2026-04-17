@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState, useEffect } from 'react'
 import { Area, AreaChart, ResponsiveContainer, XAxis, Tooltip } from 'recharts'
 import { Card, Button, cn } from '@/components/ui-finova'
 
@@ -23,6 +24,9 @@ const ledgers = [
 // Zap removed for V4 compliance
 
 export default function HomeVisuals() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true) }, []);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
       
@@ -49,7 +53,8 @@ export default function HomeVisuals() {
         </div>
 
         <div className="flex-1 mt-8 -mx-6 -mb-6 rounded-b-[12px] overflow-hidden">
-           <ResponsiveContainer width="100%" height={260}>
+          {mounted && (
+           <ResponsiveContainer width="100%" height={260} minWidth={0} debounce={50}>
               <AreaChart data={treasuryData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
@@ -82,6 +87,7 @@ export default function HomeVisuals() {
                   />
               </AreaChart>
            </ResponsiveContainer>
+            )}
         </div>
       </Card>
 
