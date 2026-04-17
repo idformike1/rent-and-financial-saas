@@ -155,7 +155,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
-        <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card/10">
+        <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card">
           <div className="w-7 h-7 rounded-[4px] bg-foreground text-background flex items-center justify-center text-[10px] font-bold shrink-0">
             {userName.charAt(0)}
           </div>

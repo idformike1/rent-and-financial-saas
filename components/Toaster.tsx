@@ -33,7 +33,7 @@ export default function Toaster() {
             ${t.type === 'info' ? 'glass-panel text-foreground' : ''}
           `}
         >
-          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-[6px] bg-card/20">
+          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-[6px] bg-card">
             {t.type === 'success' && <CheckCircle2 className="w-6 h-6 text-foreground" />}
             {t.type === 'error' && <AlertCircle className="w-6 h-6 text-foreground" />}
             {t.type === 'info' && <Info className="w-6 h-6 text-foreground" />}

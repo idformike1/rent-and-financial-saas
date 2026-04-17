@@ -110,7 +110,7 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
 
     return (
       <div
-        className="bg-popover/95 border border-white/[0.1] -[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[8px] flex flex-col gap-3 z-50 min-w-[220px] backdrop-blur-3xl"
+        className=" border border-white/[0.1] -[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[8px] flex flex-col gap-3 z-50 min-w-[220px] "
       >
         <div className="flex flex-col gap-2">
           {showIn && (

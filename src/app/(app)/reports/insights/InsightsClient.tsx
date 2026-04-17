@@ -343,7 +343,7 @@ export default function InsightsClient(props: InsightsClientProps) {
             onPointerDown={handlePointerDown}
             style={{ left: `${scrubberState.left}%`, width: `${scrubberState.width}%` }}
             className={cn(
-              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none backdrop-blur-[1px] -blue-500/20",
+              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[6px] cursor-grab active:cursor-grabbing transition-all z-10 select-none [1px] -blue-500/20",
               isDragging ? "bg-blue-500/[0.15] border-blue-500 -[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-blue-500/[0.12] hover:border-blue-500/[0.8] hover:-[0_0_20px_rgba(96,165,250,0.35)]"
             )}
           >

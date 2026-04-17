@@ -17,7 +17,7 @@ export function MetricTile({
   className,
 }: MetricTileProps) {
   return (
-    <div className={cn("border border-zinc-800/50 bg-zinc-950/20 p-5 rounded-[6px] flex flex-col gap-2", className)}>
+    <div className={cn("border bg-card p-5 rounded-[6px] flex flex-col gap-2", className)}>
       <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
         {label}
       </span>

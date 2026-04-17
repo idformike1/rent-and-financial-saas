@@ -138,7 +138,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
       {/* ── MERCURY MODAL (DUAL-THEME) ─────────────────────────────────────────── */}
       {deleteModal.open && deleteModal.user && (
         <>
-          <div className="fixed inset-0 z-50 bg-background/80" />
+          <div className="fixed inset-0 z-50 " />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[12px] p-6 flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-sm font-bold text-foreground uppercase">Authorize Nuclear Purge</h2>

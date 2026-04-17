@@ -19,7 +19,7 @@ export default async function AssetsDeepRoutingLayout({ children }: { children: 
     <div className="flex h-[calc(100vh-56px)] -mt-8 -mx-8 bg-background">
       
       {/* ── HYBRID DEEP ROUTING SIDEBAR ───────────────────────────────────── */}
-      <aside className="w-[260px] border-r border-[#1F2937] bg-card/10 flex flex-col pt-8 shrink-0">
+      <aside className="w-[260px] border-r border-[#1F2937] bg-card flex flex-col pt-8 shrink-0">
         <div className="px-6 mb-8 flex flex-col gap-6">
           <Link href="/assets" className="text-[13px] font-bold text-[#E5E7EB] hover:text-[#5D71F9] transition-colors uppercase tracking-[0.1em]">
             Portfolio Command

@@ -92,7 +92,7 @@ export default function InsightsDatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 flex flex-row bg-popover border-white/10 backdrop-blur-xl  rounded-[6px] overflow-hidden" 
+          className="w-auto p-0 flex flex-row bg-popover border-white/10   rounded-[6px] overflow-hidden" 
           align="start"
           sideOffset={8}
         >

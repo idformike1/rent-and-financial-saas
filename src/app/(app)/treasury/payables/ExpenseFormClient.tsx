@@ -152,7 +152,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-        <div className="bg-card/40 border border-border border-border rounded-[8px] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="bg-card border border-border border-border rounded-[8px] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
           
           {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
           <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-muted/50 rounded-[1.75rem]">

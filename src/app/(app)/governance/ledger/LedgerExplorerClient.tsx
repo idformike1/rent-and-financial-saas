@@ -176,7 +176,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
       </div>
 
       {/* FILTER STACK */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-center bg-white/[0.02] border border-white/5 rounded-[12px] p-4">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-center bg-card border rounded-[12px] p-4">
         <div className="flex flex-wrap items-center gap-3">
           
           {/* PROPERTY */}
@@ -187,7 +187,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                 <span className="ml-2 opacity-20">▼</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-1 bg-popover/90 backdrop-blur-xl border-white/10" align="start">
+            <PopoverContent className="w-64 p-1" align="start">
                <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('pid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-md text-white/60">All Properties</Button>
                {metadata.properties.map(p => (
                  <Button type="button" disabled={false} key={p.id} variant="ghost" onClick={() => updateParam('pid', p.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-md">{p.name}</Button>
@@ -203,7 +203,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                 <span className="ml-2 opacity-20">▼</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-1 bg-popover/90 backdrop-blur-xl border-white/10" align="start">
+            <PopoverContent className="w-64 p-1   border-white/10" align="start">
                <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('tid', null)} className="w-full h-9 justify-start px-3 py-2 text-sm hover:bg-white/5 rounded-md text-white/60">All Tenants</Button>
                {metadata.tenants.map(t => (
                  <Button type="button" key={t.id} variant="ghost" disabled={false} onClick={() => updateParam('tid', t.id)} className="w-full h-9 justify-start px-3 py-2 text-sm hover:bg-white/5 rounded-md">{t.name}</Button>
@@ -219,7 +219,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                 <span className="ml-2 opacity-20">▼</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-1 bg-popover/90 backdrop-blur-xl border-white/10" align="start">
+            <PopoverContent className="w-64 p-1   border-white/10" align="start">
                <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('aid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-md text-white/60">All Accounts</Button>
                {metadata.accounts.map(a => (
                  <Button type="button" key={a.id} variant="ghost" disabled={false} onClick={() => updateParam('aid', a.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-md flex items-center justify-between">
@@ -238,7 +238,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                 <span className="ml-2 opacity-20">▼</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-1 bg-popover/90 backdrop-blur-xl border-white/10" align="start">
+            <PopoverContent className="w-64 p-1   border-white/10" align="start">
                <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('cid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-md text-white/60">All Categories</Button>
                {metadata.categories.map(c => (
                  <Button type="button" key={c.id} variant="ghost" disabled={false} onClick={() => updateParam('cid', c.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-md">{c.name}</Button>
@@ -295,7 +295,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                 <span className="ml-2 opacity-20">▼</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 p-4 bg-popover/90 backdrop-blur-xl border-white/10 space-y-4" align="end">
+            <PopoverContent className="w-64 p-4   border-white/10 space-y-4" align="end">
                 <div className="flex items-center justify-between">
                    <span className="text-[10px] uppercase font-bold tracking-widest text-white/30">Scope Range</span>
                    <Button type="button" variant="ghost" disabled={false} onClick={() => { setMinInput(''); setMaxInput(''); updateParam('min', null); updateParam('max', null); }} className="h-auto p-0 text-[10px] text-primary hover:bg-transparent">Reset</Button>
@@ -345,21 +345,21 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
 
       {/* METRIC RIBBON */}
       <div className="grid grid-cols-3 gap-6">
-        <div className="bg-white/[0.02] border border-white/5 rounded-[12px] p-6 space-y-2">
+        <div className="bg-card border rounded-[12px] p-6 space-y-2">
            <p className="text-muted-foreground text-[11px] uppercase tracking-widest font-semibold flex items-center gap-2">
              <ArrowUpRight size={12} className="text-mercury-green" />
              Aggregated Income
            </p>
            <p className="text-[32px] font-finance text-white">${summary.income.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
         </div>
-        <div className="bg-white/[0.02] border border-white/5 rounded-[12px] p-6 space-y-2">
+        <div className="bg-card border rounded-[12px] p-6 space-y-2">
            <p className="text-muted-foreground text-[11px] uppercase tracking-widest font-semibold flex items-center gap-2">
              <ArrowUpRight size={12} className="text-rose-500 rotate-90" />
              Aggregated Outflow
            </p>
            <p className="text-[32px] font-finance text-white">${summary.expense.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
         </div>
-        <div className="bg-white/[0.02] border border-white/5 rounded-[12px] p-6 space-y-2">
+        <div className="bg-card border rounded-[12px] p-6 space-y-2">
            <p className="text-muted-foreground text-[11px] uppercase tracking-widest font-semibold">Net Forensic Balance</p>
            <p className={cn("text-[32px] font-finance", summary.net >= 0 ? "text-mercury-green" : "text-white")}>
              {summary.net < 0 ? '−' : ''}${Math.abs(summary.net).toLocaleString('en-US', { minimumFractionDigits: 2 })}
@@ -369,7 +369,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
 
       {/* ANALYTICAL GRID */}
       <div className="space-y-1">
-        <div className={cn(GRID_CLASS, "h-10 text-[10px] uppercase font-bold tracking-widest text-white/30 border-b border-white/5 sticky top-0 bg-background/80 backdrop-blur-md z-10")}>
+        <div className={cn(GRID_CLASS, "h-10 text-[10px] uppercase font-bold tracking-widest text-white/30 border-b border-white/5 sticky top-0   z-10")}>
            <div>Date</div>
            <div>Description / Payee</div>
            <div className="text-right">Amount</div>

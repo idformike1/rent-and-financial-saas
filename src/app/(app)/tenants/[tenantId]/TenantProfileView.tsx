@@ -297,7 +297,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
               
               <div className="space-y-6">
                  {activeLeases.length === 0 ? (
-                    <div className="py-12 text-center bg-card/[0.02] rounded-[8px] border border-dashed border-border">
+                    <div className="py-12 text-center bg-card[0.02] rounded-[8px] border border-dashed border-border">
                        <p className="text-[10px] text-muted-foreground  leading-relaxed px-10">NO OPERATIONAL TENURE DETECTED IN CURRENT REALM</p>
                     </div>
                  ) : (
@@ -354,7 +354,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                >
                  <XCircle className="w-10 h-10" />
                </Button>
-              <div className="p-6 border-b border-border bg-card/[0.02]">
+              <div className="p-6 border-b border-border bg-card[0.02]">
                   <h2 className="text-display font-weight-display text-foreground  underline decoration-brand/50 decoration-4 underline-offset-8">Override Identity</h2>
                   <p className="text-[11px] text-muted-foreground   mt-6">Master Registry Forensic Mutation</p>
               </div>

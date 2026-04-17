@@ -32,7 +32,7 @@ export default function CommandMenu() {
       onClick={() => setOpen(false)}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+      <div className="absolute inset-0  " />
 
       {/* Menu Container */}
       <Command

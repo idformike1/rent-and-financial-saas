@@ -77,7 +77,7 @@ export default function TransactionFilterBar({
               <span className="opacity-30">▼</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-56 bg-popover/95 border-white/10 p-1 backdrop-blur-xl" align="start">
+          <PopoverContent className="w-56 p-1" align="start">
             {tabs.map((tab) => (
               <Button
                 type="button"
@@ -119,7 +119,7 @@ export default function TransactionFilterBar({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-[680px] p-0 bg-popover/90 backdrop-blur-md border border-white/10 rounded-[6px] overflow-hidden" 
+            className="w-[680px] p-0 rounded-[6px] overflow-hidden" 
             align="start" 
             side="bottom"
             sideOffset={12}
@@ -300,7 +300,7 @@ export default function TransactionFilterBar({
               <span className="opacity-30">▼</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-64 bg-popover/95 border-white/10 p-4 text-white backdrop-blur-xl" align="start">
+          <PopoverContent className="w-64 p-4 text-white" align="start">
             <div className="space-y-4">
                <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Amount Scope</span>
@@ -367,7 +367,7 @@ export default function TransactionFilterBar({
                   <ChevronDown size={12} className="opacity-30" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-48 bg-popover/95 border-white/10 p-1 backdrop-blur-xl" align="end">
+              <PopoverContent className="w-48 p-1" align="end">
                 <Button 
                   type="button"
                   variant="ghost"

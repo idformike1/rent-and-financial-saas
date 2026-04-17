@@ -45,7 +45,7 @@ export default async function ExpenseLoggingPage() {
       </div>
 
       {/* Footer panel — Glassmorphic Integrity Anchor */}
-      <div className="bg-card/40 border border-border border-border rounded-[8px] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="bg-card border border-border border-border rounded-[8px] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
         <div className="flex items-center gap-8">
           <div className="w-16 h-16 rounded-[1.75rem] bg-card flex items-center justify-center shrink-0">
              <History className="w-8 h-8 text-muted-foreground" />

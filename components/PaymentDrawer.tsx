@@ -97,7 +97,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   return (
     <>
       {/* ── BACKDROP ─────────────────────────────────────────── */}
-      <div className="fixed inset-0 bg-background/80 z-40" onClick={onClose} />
+      <div className="fixed inset-0  z-40" onClick={onClose} />
       
       <div className="fixed inset-y-0 right-0 w-full max-w-md bg-card border-l border-border z-50 flex flex-col transform transition-transform duration-300 ease-in-out">
         

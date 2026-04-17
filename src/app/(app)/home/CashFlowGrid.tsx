@@ -70,7 +70,7 @@ export default function CashFlowGrid() {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/[0.04] flex justify-between items-center">
+          <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
             <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average $585K</span>
             <div className="w-[80px] h-[30px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -115,7 +115,7 @@ export default function CashFlowGrid() {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/[0.04] flex justify-between items-center">
+          <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
             <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average -$220K</span>
             <div className="w-[80px] h-[30px]">
               <ResponsiveContainer width="100%" height="100%">

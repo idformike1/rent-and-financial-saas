@@ -73,7 +73,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
     <div className="bg-background border border-border rounded-[8px] overflow-hidden">
       
       {/* TAB NAVIGATION: TACTICAL TOGGLE */}
-      <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-card/[0.02]">
+      <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-card[0.02]">
         <div className="flex items-center gap-6">
            <Landmark className="w-8 h-8 text-brand" />
            <h3 className="text-xl text-foreground leading-none">Forensic Unified Ledger</h3>
@@ -105,7 +105,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
         {activeTab === 'timeline' ? (
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-card/[0.01]">
+              <tr className="border-b border-border bg-card[0.01]">
                 <th className="px-10 py-6 text-[10px] text-muted-foreground ">Date</th>
                 <th className="px-10 py-6 text-[10px] text-muted-foreground ">Description</th>
                 <th className="px-10 py-6 text-[10px] text-muted-foreground  text-right">Debit (+)</th>
@@ -115,7 +115,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
             </thead>
             <tbody className="divide-y divide-white/5">
               {unifiedTimeline.map((row, idx) => (
-                <tr key={idx} className="group hover:bg-card/[0.02] transition-colors">
+                <tr key={idx} className="group hover:bg-card[0.02] transition-colors">
                   <td className="px-10 py-6 whitespace-nowrap">
                     <span className="text-[10px] text-muted-foreground ">{row.date.toLocaleDateString()}</span>
                   </td>
@@ -154,7 +154,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
         ) : (
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-card/[0.01]">
+              <tr className="border-b border-border bg-card[0.01]">
                  <th className="px-10 py-6 text-[10px] text-muted-foreground ">Charge Node</th>
                  <th className="px-10 py-6 text-[10px] text-muted-foreground  text-center">Due Date</th>
                  <th className="px-10 py-6 text-[10px] text-muted-foreground  text-center">Payment Date</th>
@@ -170,7 +170,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                   const isLate = matchedEntry && new Date(matchedEntry.transactionDate) > new Date(new Date(c.dueDate).getTime() + 5 * 24 * 60 * 60 * 1000);
                   
                   return (
-                    <tr key={c.id} className="group hover:bg-card/[0.02] transition-colors">
+                    <tr key={c.id} className="group hover:bg-card[0.02] transition-colors">
                        <td className="px-10 py-8">
                           <div className="flex items-center gap-6">
                              <div className="bg-card h-10 w-10 rounded-[6px] flex items-center justify-center text-brand border border-border">

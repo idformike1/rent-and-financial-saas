@@ -33,7 +33,7 @@ export default function AccountTelemetryHud({ accountId, balance }: AccountTelem
   };
 
   return (
-    <div className="bg-card/40 border border-[#1F2937] p-8 rounded-[6px] mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="bg-card border border-[#1F2937] p-8 rounded-[6px] mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-gray-500">

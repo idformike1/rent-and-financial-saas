@@ -24,7 +24,7 @@ export function Card({
     default: "mercury-card",
     muted:   "mercury-card border-border bg-muted",
     outline: "mercury-card bg-transparent",
-    glass:   "mercury-card bg-white/[0.04] backdrop-blur-md",
+    glass:   "mercury-card bg-white/[0.04] ",
   };
 
   return (

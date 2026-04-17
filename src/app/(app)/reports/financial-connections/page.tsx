@@ -120,7 +120,7 @@ export default function FinanceTranslationHub() {
                     }`}
                   >
                     <div className={`w-14 h-14 rounded-[6px] flex items-center justify-center mr-6 transition-all shrink-0 ${
-                      isActive ? 'bg-card/20' : 'bg-muted'
+                      isActive ? 'bg-card' : 'bg-muted'
                     }`}>
                       <span className={`text-2xl ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>{node.icon}</span>
                     </div>
@@ -176,7 +176,7 @@ export default function FinanceTranslationHub() {
                         <span className="text-brand font-bold">➲</span>
                        <h5 className="text-[10px]   text-muted-foreground">Persistence Model</h5>
                       </div>
-                      <div className="bg-card/80 border border-border px-5 py-4 rounded-[6px] text-xs text-brand/80">
+                      <div className="bg-card border border-border px-5 py-4 rounded-[6px] text-xs text-brand/80">
                         {selected.axiom_model}
                       </div>
                    </section>
@@ -188,7 +188,7 @@ export default function FinanceTranslationHub() {
                       </div>
                       <div className="space-y-3">
                         {selected.axiom_fields.map((f, i) => (
-                           <div key={i} className="flex items-center space-x-4 bg-card/40 p-4 rounded-[6px] border border-border/50">
+                           <div key={i} className="flex items-center space-x-4 bg-card p-4 rounded-[6px] border border-border/50">
                                <span className="text-muted-foreground font-bold">→</span>
                                <span className="text-[11px] font-bold tracking-tight text-muted-foreground">{f}</span>
                            </div>

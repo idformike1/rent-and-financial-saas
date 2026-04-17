@@ -119,7 +119,7 @@ export default function HomeVisuals() {
             ))}
          </div>
 
-          <div className="mt-auto pt-4 border-t border-white/[0.04]">
+          <div className="mt-auto pt-4 border-t border-border">
              <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-[15px] font-[400] text-white/40 hover:text-white transition-colors tracking-tight bg-transparent hover:bg-transparent border-none">
                 View all accounts
              </Button>

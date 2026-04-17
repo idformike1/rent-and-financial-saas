@@ -54,7 +54,7 @@ export default function ReportClient({ stats }: ReportClientProps) {
       </div>
 
       {/* BIFURCATION ENGINE */}
-      <div className="border border-zinc-800/50 bg-zinc-950/10 rounded-[6px] p-8">
+      <div className="border bg-card rounded-[6px] p-8">
         <h3 className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-10">
           Expense Distribution // Business vs Personal
         </h3>

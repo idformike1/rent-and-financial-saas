@@ -37,7 +37,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
 
   return (
     <>
-      <div className="fixed inset-0 bg-background/80 z-[100] animate-in fade-in" onClick={onClose} />
+      <div className="fixed inset-0  z-[100] animate-in fade-in" onClick={onClose} />
       <div className="fixed inset-y-0 right-0 w-full max-w-xl bg-card z-[101] flex flex-col animate-in slide-in-from-right duration-300 border-l border-border">
         <div className="px-8 py-8 border-b border-border flex items-center justify-between bg-card">
           <div>

@@ -116,7 +116,7 @@ export default function PropertySovereignClient({ propertyData, pulseData }: Pro
       {/* ── DRILL-DOWN OVERLAY ────────────────────────────────────────────── */}
       <AnimatePresence>
         {drillDownType && (
-           <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex justify-end animate-in fade-in duration-300">
+           <div className="fixed inset-0 z-[100] bg-black/60  flex justify-end animate-in fade-in duration-300">
              <motion.div 
                initial={{ x: '100%' }}
                animate={{ x: 0 }}
@@ -124,7 +124,7 @@ export default function PropertySovereignClient({ propertyData, pulseData }: Pro
                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                className="w-full max-w-4xl h-full border-l border-[#1F2937] bg-[#0A0A0F] flex flex-col overflow-hidden"
              >
-                <div className="p-10 border-b border-[#1F2937] flex justify-between items-center bg-card/20">
+                <div className="p-10 border-b border-[#1F2937] flex justify-between items-center bg-card">
                    <div className="space-y-1">
                       <h2 className="text-[28px] font-display text-white leading-tight tracking-tight">Ledger Surveillance</h2>
                       <p className="text-[12px] text-brand font-bold uppercase tracking-[0.2em]">{propertyData.name} // Drill-Down: {drillDownType}</p>

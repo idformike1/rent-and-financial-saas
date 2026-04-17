@@ -43,7 +43,7 @@ export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
     <>
       {/* ── BACKDROP ──────────────────────────────────────────────────────── */}
       <div 
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] transition-opacity"
+        className="fixed inset-0 z-40 bg-black/40 [2px] transition-opacity"
         onClick={closeSheet}
       />
 

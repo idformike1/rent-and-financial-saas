@@ -155,7 +155,7 @@ export default function OnboardingWizard() {
             </p>
           </div>
           
-          <div className="bg-background/50 border border-border rounded-[6px] p-8 text-left space-y-6">
+          <div className=" border border-border rounded-[6px] p-8 text-left space-y-6">
              <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-1">
                    <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Lease Reference</p>
@@ -388,7 +388,7 @@ export default function OnboardingWizard() {
       </div>
 
       <div className="fixed bottom-0 left-[240px] right-0 h-24 flex items-center justify-center gap-3 bg-gradient-to-t from-background to-transparent pointer-events-none">
-         <div className="flex items-center gap-3 pointer-events-auto bg-background/80 backdrop-blur-sm p-2 rounded-[6px] border border-border/50">
+         <div className="flex items-center gap-3 pointer-events-auto   p-2 rounded-[6px] border border-border/50">
            {step > 1 && (
              <Button 
                type="button" 

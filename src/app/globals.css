@@ -17,6 +17,22 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-brand: var(--brand);
@@ -27,7 +43,7 @@
   --foreground: #F4F4F5;
   --card: #1E1E2A;
   --card-foreground: #F4F4F5;
-  --popover: #161821;
+  --popover: #1E1E2A;
   --popover-foreground: #F4F4F5;
   --primary: #2D2E39;
   --primary-foreground: #FFFFFF;
@@ -39,7 +55,7 @@
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #F4F4F5;
-  --border: #1F2937;
+  --border: rgba(180, 183, 200, 0.2);
   --input: #1E1E2A;
   --ring: #2D2E39;
   --radius: 8px;
@@ -64,7 +80,8 @@
     font-variant-numeric: tabular-nums;
   }
   .mercury-card {
-    background-color: var(--card);
+    background-color: var(--card) !important;
+    opacity: 1 !important;
     border: 1px solid var(--border);
     padding: 1.5rem;
     border-radius: 8px;
@@ -72,5 +89,14 @@
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s;
+  }
+}
+
+@layer utilities {
+  .bg-solid-card {
+    background-color: var(--card) !important;
+  }
+  .bg-solid-sidebar {
+    background-color: var(--sidebar) !important;
   }
 }
