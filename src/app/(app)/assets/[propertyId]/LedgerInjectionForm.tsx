@@ -15,8 +15,8 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
   const paymentMode = formData.get('mode') as 'CASH' | 'BANK';
   
   const propertyId = formData.get('propertyId') as string;
+  const unitId = formData.get('unitId') as string;
   const tenantId = formData.get('tenantId') as string;
-  // unitId is not required by processPayment, but we might pass it as reference text
 
   try {
     if (type === 'REVENUE' && tenantId) {
@@ -37,6 +37,7 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
       expenseData.append('description', type === 'REVENUE' ? 'VACANT_REVENUE_ARTIFACT' : 'DIRECT_EXPENSE_ARTIFACT');
       expenseData.append('scope', 'PROPERTY');
       expenseData.append('propertyId', propertyId);
+      expenseData.append('unitId', unitId);
       expenseData.append('type', type === 'REVENUE' ? 'INCOME' : 'EXPENSE');
       expenseData.append('paymentMode', paymentMode);
       expenseData.append('date', transactionDate);
@@ -69,7 +70,8 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
 
   return (
     <form action={formAction} className="w-full flex items-center gap-4 border-b border-[#1F2937] pb-6 mb-6">
-      <input type="hidden" name="propertyId" value={propertyId} />
+      <input type="hidden" name="propertyId" value={activeUnit?.propertyId || ''} />
+      <input type="hidden" name="unitId" value={activeUnit?.id || ''} />
       <input type="hidden" name="tenantId" value={tenantId} />
 
       <div className="flex-1">

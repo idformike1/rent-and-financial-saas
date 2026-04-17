@@ -263,6 +263,7 @@ export async function logExpenseService(
     ledgerId: string;
     type: 'INCOME' | 'EXPENSE';
     propertyId?: string;
+    unitId?: string;
     expenseCategoryId: string;
     paymentMode: string;
   },
@@ -294,6 +295,7 @@ export async function logExpenseService(
         description: payload.description,
         payee: payload.payee,
         propertyId: payload.propertyId,
+        unitId: payload.unitId,
         expenseCategoryId: payload.expenseCategoryId,
         paymentMode: payload.paymentMode as any
       }

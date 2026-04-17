@@ -130,6 +130,7 @@ model LedgerEntry {
   clearedAt         DateTime?
   expenseCategoryId String?
   propertyId        String?
+  unitId            String?
   tenantId          String?          @map("tenant_id")
   payee             String?
   receiptUrl        String?
@@ -137,6 +138,7 @@ model LedgerEntry {
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   organization      Organization     @relation(fields: [organizationId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
+  unit              Unit?            @relation(fields: [unitId], references: [id])
   tenant            Tenant?          @relation(fields: [tenantId], references: [id])
 
   @@index([organizationId, transactionDate])
