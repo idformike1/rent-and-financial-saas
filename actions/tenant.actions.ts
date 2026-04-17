@@ -49,7 +49,8 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
       );
 
       revalidatePath('/tenants');
-      revalidatePath('/properties');
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       
       return { 
         success: true, 
@@ -210,7 +211,8 @@ export async function addAdditionalLease(data: {
       );
 
       revalidatePath(`/tenants/${data.tenantId}`);
-      revalidatePath('/properties');
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       return { success: true, message: "Additional lease protocol established.", data: result };
     } catch (e: any) {
       console.error('[ADD_LEASE_FATAL]', e);
@@ -235,7 +237,8 @@ export async function processMoveOut(tenantId: string, leaseId: string, unitId: 
       
       revalidatePath(`/tenants/${tenantId}`);
       revalidatePath('/tenants');
-      revalidatePath('/properties');
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       return { success: true, message: "Move-out protocol executed successfully." };
     } catch (e: any) {
       console.error('[MOVE_OUT_FATAL]', e);

@@ -32,7 +32,8 @@ export async function createProperty(data: { name: string, address: string }) {
         }
       );
 
-      revalidatePath('/properties');
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       return { success: true, data: property };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_CREATE_FATAL]', e);
@@ -53,8 +54,9 @@ export async function updateProperty(propertyId: string, data: { name?: string, 
         }
       );
 
-      revalidatePath(`/properties/${propertyId}`);
-      revalidatePath('/properties');
+      revalidatePath(`/assets/${propertyId}`);
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       return { success: true, data: property };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_UPDATE_FATAL]', e);
@@ -74,7 +76,8 @@ export async function deleteProperty(propertyId: string) {
         }
       );
 
-      revalidatePath('/properties');
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       revalidatePath(`/properties/${propertyId}`);
       return { success: true };
     } catch (e: any) {
@@ -97,7 +100,7 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
         }
       );
 
-      revalidatePath(`/properties/${data.propertyId}`);
+      revalidatePath(`/assets/${data.propertyId}`);
       return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
     } catch (e: any) {
       console.error('[ASSET_UNIT_CREATE_FATAL]', e);
@@ -119,7 +122,8 @@ export async function updateUnit(unitId: string, data: { maintenanceStatus?: Mai
       );
 
       if (data.propertyId) revalidatePath(`/properties/${data.propertyId}`);
-      revalidatePath('/properties');
+      revalidatePath('/assets');
+      revalidatePath('/assets/[propertyId]', 'page');
       
       return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
     } catch (e: any) {
