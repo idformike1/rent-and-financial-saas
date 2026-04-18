@@ -79,10 +79,12 @@ export default async function InsightsPage() {
   const burnRate = totalExpense / activeMonths;
 
   return (
-    <InsightsClient 
-      chartData={chartData}
-      entries={sanitizedEntries}
-      totalAssets={totalAssets}
-    />
+    <div className="w-full theme-sharp">
+      <InsightsClient 
+        chartData={chartData}
+        entries={sanitizedEntries}
+        totalAssets={totalAssets}
+      />
+    </div>
   );
 }

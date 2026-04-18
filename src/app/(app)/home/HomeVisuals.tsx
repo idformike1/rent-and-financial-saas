@@ -72,7 +72,7 @@ export default function HomeVisuals() {
                    padding={{ left: 0, right: 0 }}
                  />
                  <Tooltip 
-                   contentStyle={{ backgroundColor: '#171721', border: '1px solid var(--border)', borderRadius: '8px' }}
+                   contentStyle={{ backgroundColor: '#171721', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}
                    itemStyle={{ color: 'var(--foreground)' }}
                    cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 1 }}
                  />

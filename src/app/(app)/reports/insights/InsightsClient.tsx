@@ -286,7 +286,7 @@ export default function InsightsClient(props: InsightsClientProps) {
   return (
     <div className="w-full">
       {/* ── CONTEXT RESTORATION (Page Identity) ── */}
-      <h1 className="text-[24px] font-normal text-foreground mb-6 flex items-center gap-3 tracking-tight font-arcadia">
+      <h1 className="text-[24px] font-normal text-foreground mb-6 flex items-center gap-3 tracking-clinical font-arcadia">
         Insights
       </h1>
 
@@ -383,21 +383,21 @@ export default function InsightsClient(props: InsightsClientProps) {
           {activeTab === 'overview' ? (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
-                <p className="text-[38px] text-white tracking-[-0.02em] leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
+                <p className="text-[38px] text-white tracking-clinical leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 500 }}>
                   {renderMetric(metrics.net, true)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
-                <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
+                <p className="text-[24px] text-white tracking-clinical leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 500 }}>
                   {renderMetric(metrics.income)}
                 </p>
               </div>
               <div className="flex flex-row flex-1 justify-between items-end md:pb-0.5 pr-12">
                 <div className="flex flex-col">
-                  <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
-                  <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
+                  <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
+                  <p className="text-[24px] text-white tracking-clinical leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 500 }}>
                     {renderMetric(-metrics.expense)}
                   </p>
                 </div>
@@ -503,21 +503,21 @@ export default function InsightsClient(props: InsightsClientProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-2 mb-16">
         <div className="bg-transparent flex flex-col justify-start">
           <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
-            <span className="text-muted-foreground">〰</span> Runway and cash position
+            <span className="text-mercury-muted">〰</span> Runway and cash position
           </p>
-          <div className="text-[15px] leading-[24px] font-normal text-foreground/80 h-[4.5em] overflow-hidden">{semanticNodes.runway}</div>
+          <div className="text-[15px] leading-narrative font-normal text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.runway}</div>
         </div>
         <div className="bg-transparent flex flex-col justify-start">
           <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
             <span className="text-destructive">▼</span> Money out trends
           </p>
-          <div className="text-[15px] leading-[24px] font-normal text-foreground/80 h-[4.5em] overflow-hidden">{semanticNodes.outflow}</div>
+          <div className="text-[15px] leading-narrative font-normal text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.outflow}</div>
         </div>
         <div className="bg-transparent flex flex-col justify-start">
           <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
              <span className="text-mercury-green">▲</span> Money in trends
           </p>
-          <div className="text-[15px] leading-[24px] font-normal text-foreground/80 h-[4.5em] overflow-hidden">{semanticNodes.income}</div>
+          <div className="text-[15px] leading-narrative font-normal text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.income}</div>
         </div>
       </div>
 

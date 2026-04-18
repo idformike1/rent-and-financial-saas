@@ -62,7 +62,7 @@ export default function TransactionsLoading() {
          {/* THEAD */}
          <div className={cn(GRID_CLASS, "py-3 border-b border-white/[0.05] bg-background")}>
             <div className="flex justify-center">
-              <div className="w-3.5 h-3.5 bg-white/[0.05] rounded-[3px]" />
+              <div className="w-3.5 h-3.5 bg-white/[0.05] rounded-[var(--radius-sm)]" />
             </div>
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="h-3 bg-white/[0.02] rounded w-16" />
@@ -77,7 +77,7 @@ export default function TransactionsLoading() {
              style={{ opacity: 1 - (i * 0.05) }}
            >
              <div className="flex justify-center">
-                <div className="w-3.5 h-3.5 bg-white/[0.02] rounded-[3px]" />
+                <div className="w-3.5 h-3.5 bg-white/[0.02] rounded-[var(--radius-sm)]" />
              </div>
              <div className="h-4 bg-white/[0.03] rounded w-12" />
              <div className="flex items-center gap-4">

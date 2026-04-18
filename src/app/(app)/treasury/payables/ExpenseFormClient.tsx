@@ -133,7 +133,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
       {sessionCount > 0 && lastEntry && (
         <div className="rounded-[var(--radius)] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
-            <div className={cn("w-14 h-14 rounded-[var(--radius)] flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive')}>
+            <div className={cn("w-14 h-14 rounded-[calc(var(--radius)*2)] flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive')}>
                {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-foreground" /> : <ArrowDownCircle className="w-7 h-7 text-foreground" />}
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
         <div className="bg-card border border-border border-border rounded-[var(--radius)] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
           
           {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
-          <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-muted/50 rounded-[1.75rem]">
+          <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-muted/50 rounded-[calc(var(--radius)*2)]">
              <button 
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}

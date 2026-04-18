@@ -14,8 +14,8 @@ export default function MasterTable() {
   return (
     <div className="mt-10 mb-20">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-[16px] font-[380] text-foreground tracking-tight">Master Ledger Feed</h2>
-        <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-[13px] font-[380] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 bg-transparent hover:bg-transparent border-none">
+        <h2 className="text-[16px] font-normal text-foreground tracking-clinical">Master Ledger Feed</h2>
+        <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-[13px] font-normal text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 bg-transparent hover:bg-transparent border-none">
           View all <ArrowRight className="w-3 h-3" />
         </Button>
       </div>
@@ -58,15 +58,15 @@ export default function MasterTable() {
                   </div>
                 </TD>
                 <TD className="text-right">
-                  <span className={txn.amount > 0 ? "text-mercury-green font-[380] font-finance" : "text-foreground font-[380] font-finance"}>
+                  <span className={txn.amount > 0 ? "text-mercury-green font-data" : "text-foreground font-data"}>
                     {txn.amount < 0 ? '−' : ''}${Math.abs(txn.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </TD>
                 <TD>
-                  <span className="text-muted-foreground/60 font-[380] tracking-tight">{txn.account}</span>
+                  <span className="text-mercury-muted font-normal tracking-clinical">{txn.account}</span>
                 </TD>
                 <TD>
-                  <span className="text-muted-foreground/60 font-[380] tracking-tight">{txn.method}</span>
+                  <span className="text-mercury-muted font-normal tracking-clinical">{txn.method}</span>
                 </TD>
               </TR>
             ))}

@@ -7,7 +7,7 @@ export { cn }
 
 /**
  * MERCURY: CARD (WORKSTATION STANDARD)
- * Flat, bordered, 6px radius. No s.
+ * Flat, bordered, token-sync radius. No shadows.
  */
 interface CardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   children: React.ReactNode;
@@ -42,7 +42,7 @@ export function Card({
 
 /**
  * MERCURY: BUTTON (WORKSTATION STANDARD)
- * High contrast, no glows, 16px/Pill radius.
+ * High contrast, adaptive token radius.
  */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';

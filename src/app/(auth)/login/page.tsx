@@ -43,7 +43,7 @@ export default function LoginPage() {
       <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[var(--radius)] animate-in zoom-in-95 duration-700 bg-card">
         <div className="space-y-10">
           <div className="text-center space-y-4">
-             <div className="w-12 h-12 bg-foreground rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
+             <div className="w-12 h-12 bg-foreground rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-6 transition-none">
                 <span className="text-background font-bold text-xl">M</span>
              </div>
              <div>

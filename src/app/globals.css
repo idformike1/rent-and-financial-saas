@@ -8,11 +8,11 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-display: 'Arcadia Display', ui-sans-serif, system-ui, sans-serif;
 
-  --radius: 6px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 6px;
-  --radius-xl: 6px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 16px;
+  --radius-xl: 16px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -50,7 +50,7 @@
   --secondary: #1F2937;
   --secondary-foreground: #F4F4F5;
   --muted: #1F2937;
-  --muted-foreground: #9CA3AF;
+  --muted-foreground: #D1D5DB; /* Elevated from #9CA3AF for high contrast */
   --accent: #2D2E39;
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
@@ -58,15 +58,19 @@
   --border: rgba(186, 204, 255, 0.12);
   --input: #1E1E2A;
   --ring: #2D2E39;
-  --radius: 6px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 6px;
-  --radius-xl: 6px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 16px;
+  --radius-xl: 16px;
   --brand: #5D71F9;
   --mercury-green: #10B981;
   --sidebar: #0F0F1A;
   --sidebar-accent: #1E1E2A;
+  
+  /* Clinical Typography Primitives */
+  --tracking-clinical: 0.015em;
+  --leading-narrative: 1.6;
 }
 
 @layer base {
@@ -103,5 +107,27 @@
   }
   .bg-solid-sidebar {
     background-color: var(--sidebar) !important;
+  }
+  .tracking-clinical {
+    letter-spacing: var(--tracking-clinical);
+  }
+  .leading-narrative {
+    line-height: var(--leading-narrative);
+  }
+  .text-mercury-muted {
+    color: var(--muted-foreground) !important;
+    opacity: 1 !important;
+  }
+  .font-data {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-clinical);
+    font-weight: 500;
+  }
+  .theme-sharp {
+    --radius: 6px !important;
+    --radius-sm: 4px !important;
+    --radius-md: 6px !important;
+    --radius-lg: 6px !important;
+    --radius-xl: 6px !important;
   }
 }

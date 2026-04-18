@@ -16,7 +16,7 @@ export default async function ExpenseLoggingPage() {
     <div className="py-12 px-6 max-w-5xl mx-auto space-y-16">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border border-border pb-10 gap-8">
         <div className="flex items-center gap-6">
-          <div className="w-16 h-16 rounded-[1.75rem] bg-brand/10 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-[calc(var(--radius)*2)] bg-brand/10 flex items-center justify-center">
             <Landmark className="w-8 h-8 text-brand" />
           </div>
           <div>
