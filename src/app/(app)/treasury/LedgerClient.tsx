@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { SovereignTable } from "@/src/components/ui/SovereignTable";
 import { SovereignSheet } from "@/src/components/ui/SovereignSheet";
-import { voidTransaction, clearTransaction } from "@/src/app/actions/treasury";
+import { voidTransaction, clearTransaction } from "@/actions/finance.actions";
 import { cn } from "@/lib/utils";
 
 interface LedgerEntry {

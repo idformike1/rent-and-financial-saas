@@ -296,3 +296,25 @@ export async function voidTransaction(transactionId: string) {
     }
   });
 }
+export async function clearTransaction(transactionId: string, currentStatus: boolean) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const { prisma } = await import('@/lib/prisma');
+      await prisma.ledgerEntry.update({
+        where: { id: transactionId, organizationId: session.organizationId },
+        data: { 
+          isCleared: !currentStatus,
+          clearedAt: !currentStatus ? new Date() : null,
+        },
+      });
+
+      revalidatePath('/treasury');
+      revalidatePath('/treasury/feed');
+      
+      return { success: true, message: "Transaction clearance state synchronized." };
+    } catch (e: any) {
+      console.error('[FINANCE_CLEAR_FATAL]', e);
+      return { success: false, message: "ERR_CLEARANCE_SERVICE_FAILURE" };
+    }
+  });
+}

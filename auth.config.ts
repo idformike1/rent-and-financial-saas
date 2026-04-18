@@ -18,12 +18,12 @@ export const authConfig = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id
-        session.user.role = token.role
-        session.user.organizationId = token.organizationId
-        session.user.organizationName = token.organizationName
-        session.user.isActive = token.isActive
-        session.user.canEdit = token.canEdit
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+        session.user.organizationId = token.organizationId as string
+        session.user.organizationName = token.organizationName as string
+        session.user.isActive = token.isActive as boolean
+        session.user.canEdit = token.canEdit as boolean
       }
       return session
     }
