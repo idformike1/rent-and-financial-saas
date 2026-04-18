@@ -22,18 +22,18 @@ export default async function ExpenseLoggingPage() {
           <div>
             <Link
               href="/treasury/payables"
-              className="inline-flex items-center text-[9px]  text-muted-foreground hover:text-brand transition-colors mb-3 group"
+              className="inline-flex items-center text-[9px]  text-clinical-muted hover:text-brand transition-colors mb-3 group"
             >
               <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to Wealth Ledger
             </Link>
             <h1 className="text-display font-weight-display text-foreground leading-none">Treasury Entry Hub</h1>
-            <p className="text-[10px] text-muted-foreground   mt-3">Fiscal Materialization v3.1</p>
+            <p className="text-[10px] text-clinical-muted   mt-3">Fiscal Materialization v3.1</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-[var(--primary)]/10 px-4 py-2 rounded-[var(--radius)] border border-[var(--primary)]/20">
+          <div className="flex items-center bg-[var(--primary)]/10 px-4 py-2 rounded-[var(--radius-sm)] border border-[var(--primary)]/20">
             <ShieldAlert className="w-4 h-4 mr-3 text-[var(--primary)]" />
             <span className="text-[9px]  text-[var(--primary)] dark:text-[var(--primary)] leading-none">Governance Signal: Active</span>
           </div>
@@ -45,30 +45,30 @@ export default async function ExpenseLoggingPage() {
       </div>
 
       {/* Footer panel — Glassmorphic Integrity Anchor */}
-      <div className="bg-card border border-border border-border rounded-[var(--radius)] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="bg-card border border-border border-border rounded-[var(--radius-sm)] p-6 flex flex-col lg:flex-row items-center justify-between gap-10">
         <div className="flex items-center gap-8">
           <div className="w-16 h-16 rounded-[1.75rem] bg-card flex items-center justify-center shrink-0">
-             <History className="w-8 h-8 text-muted-foreground" />
+             <History className="w-8 h-8 text-clinical-muted" />
           </div>
           <div>
             <p className="text-2xl text-foreground leading-none">System Integrity Anchored</p>
             <div className="flex items-center gap-3 mt-3">
                <Zap className="w-3 h-3 text-brand" />
-               <p className="text-[10px] text-muted-foreground ">Double-Entry Ledger Verified</p>
+               <p className="text-[10px] text-clinical-muted ">Double-Entry Ledger Verified</p>
             </div>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
           <Link
             href="/treasury/payables"
-            className="h-14 px-8 bg-card border border-border border-border text-[10px] rounded-[var(--radius)] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
+            className="h-14 px-8 bg-card border border-border border-border text-[10px] rounded-[var(--radius-sm)] hover:bg-muted dark:hover:bg-muted transition-all  flex items-center justify-center"
           >
-            <ArrowLeft className="w-4 h-4 mr-3 text-muted-foreground" />
+            <ArrowLeft className="w-4 h-4 mr-3 text-clinical-muted" />
             Wealth Registry
           </Link>
           <Link
             href="/settings/audit"
-            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[var(--radius)] hover:-brand/60 transition-all  flex items-center justify-center"
+            className="h-14 px-8 bg-card dark:bg-brand text-foreground text-[10px] rounded-[var(--radius-sm)] hover:-brand/60 transition-all  flex items-center justify-center"
           >
             <Shield className="w-4 h-4 mr-3" />
             View Audit Trail

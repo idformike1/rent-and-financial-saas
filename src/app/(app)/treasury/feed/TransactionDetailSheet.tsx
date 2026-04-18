@@ -68,14 +68,14 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
             {/* Header / Forensic Stamp */}
             <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-[var(--radius)] bg-white/5 flex items-center justify-center">
-                  <span className={cn("text-[16px] font-bold", isVoided ? "text-destructive" : "text-white/44")}>[S]</span>
+                <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-white/5 flex items-center justify-center">
+                  <span className={cn("text-mercury-heading font-bold", isVoided ? "text-destructive" : "text-white/44")}>[S]</span>
                 </div>
                 <div>
-                  <SheetTitle className="text-[14px] font-medium text-white">
+                  <SheetTitle className="text-mercury-heading text-white">
                     {isVoided ? "Voided Forensic Record" : "Forensic Audit"}
                   </SheetTitle>
-                  <SheetDescription className="text-[10px] text-mercury-muted uppercase tracking-widest font-bold">
+                  <SheetDescription className="text-mercury-label-caps text-clinical-muted">
                     TX ID: {transaction.id.substring(0, 8)}
                   </SheetDescription>
                 </div>
@@ -90,17 +90,17 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
               
               {/* Primary Amount Block */}
               <div className="space-y-2">
-                <p className="text-[11px] text-mercury-muted uppercase tracking-[0.2em] font-bold">Transaction Value</p>
+                <p className="text-mercury-label-caps text-clinical-muted">Transaction Value</p>
                 <div className="flex items-baseline gap-2">
                   <span className={cn(
-                    "text-[42px] tracking-clinical font-data",
+                    "text-mercury-headline tracking-clinical",
                     isVoided ? "text-white/40" : isNegative ? "text-white" : "text-mercury-green"
                   )}>
                     {isNegative ? '−' : ''}${absAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
-                  <span className="text-mercury-muted text-[16px] font-normal uppercase">USD</span>
+                  <span className="text-clinical-muted text-mercury-label-caps">USD</span>
                 </div>
-                <p className="text-[15px] text-foreground/80 leading-narrative font-normal">
+                <p className="text-mercury-body text-foreground/80 leading-narrative font-normal">
                   {transaction.description || "No description provided"}
                 </p>
               </div>
@@ -142,8 +142,8 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
               {/* Reference Block */}
               {transaction.referenceText && (
                 <div className="space-y-3 pt-4">
-                  <p className="text-[11px] text-mercury-muted uppercase tracking-[0.2em] font-bold">Reference Notes</p>
-                  <div className="p-4 rounded-[var(--radius)] bg-white/[0.02] border border-white/5 text-[14px] text-foreground/80 leading-narrative">
+                  <p className="text-mercury-label-caps text-clinical-muted">Reference Notes</p>
+                  <div className="p-4 rounded-[var(--radius-sm)] bg-white/[0.02] border border-white/5 text-mercury-body text-foreground/80 leading-narrative">
                     {transaction.referenceText}
                   </div>
                 </div>
@@ -153,19 +153,19 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
               {!isVoided && (
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] text-white/30 uppercase tracking-[0.2em] font-bold">Audit Evidence</p>
-                    <Button type="button" variant="ghost" onClick={handleExternalView} className="text-[10px] h-auto p-0 text-white/40 hover:text-white flex items-center gap-1.5 transition-colors bg-transparent border-none">
+                    <p className="text-mercury-label-caps text-clinical-muted">Audit Evidence</p>
+                    <Button type="button" variant="ghost" onClick={handleExternalView} className="text-mercury-label-caps h-auto p-0 text-clinical-muted hover:text-white flex items-center gap-1.5 transition-colors bg-transparent border-none">
                       ➲ External View
                     </Button>
                   </div>
                   {transaction.receiptUrl ? (
-                     <div className="aspect-[3/4] rounded-[var(--radius)] bg-white/[0.03] border border-dashed border-white/10 flex items-center justify-center group cursor-pointer overflow-hidden">
+                     <div className="aspect-[3/4] rounded-[var(--radius-sm)] bg-white/[0.03] border border-dashed border-white/10 flex items-center justify-center group cursor-pointer overflow-hidden">
                         <img src={transaction.receiptUrl} alt="Receipt" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" />
                      </div>
                   ) : (
-                    <div className="h-40 rounded-[var(--radius)] bg-white/[0.03] border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 group cursor-pointer hover:bg-white/[0.05] transition-all">
+                    <div className="h-40 rounded-[var(--radius-sm)] bg-white/[0.03] border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 group cursor-pointer hover:bg-white/[0.05] transition-all">
                      <span className="text-white/10 text-xl font-bold">[_]</span>
-                      <p className="text-[12px] text-white/20 font-medium tracking-wide">Digital Receipt Missing</p>
+                      <p className="text-mercury-body text-clinical-muted">Digital Receipt Missing</p>
                     </div>
                   )}
                 </div>
@@ -176,12 +176,12 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
             <div className="p-6 border-t border-white/5 bg-white/[0.01] flex items-center justify-center min-h-[92px]">
                {isVoided ? (
                  <div className="flex flex-col items-center gap-1 animate-pulse">
-                   <p className="text-[11px] text-white/20 uppercase tracking-[0.3em] font-bold">DECOMMISSIONED</p>
-                   <p className="text-[10px] text-white/10 uppercase tracking-tighter">Immutable Record</p>
+                   <p className="text-mercury-label-caps text-clinical-muted">DECOMMISSIONED</p>
+                   <p className="text-mercury-label-caps opacity-40">Immutable Record</p>
                  </div>
                ) : (
                  <div className="w-full flex items-center gap-4">
-                   <Button type="button" onClick={handleExport} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius)]">
+                   <Button type="button" onClick={handleExport} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius-sm)]">
                      Export Forensic Receipt
                    </Button>
                    <Button 
@@ -189,7 +189,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                     variant="ghost" 
                     onClick={handleVoid}
                     disabled={isPending}
-                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-[var(--radius)] text-white/40 hover:text-destructive transition-colors"
+                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-[var(--radius-sm)] text-white/40 hover:text-destructive transition-colors"
                    >
                      {isPending ? "Voiding..." : "Void Activity"}
                    </Button>
@@ -206,11 +206,11 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
 function MetadataItem({ icon, label, value }: { icon: string, label: string, value: string }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 text-mercury-muted uppercase tracking-widest text-[10px] font-bold">
+      <div className="flex items-center gap-2 text-mercury-label-caps text-clinical-muted">
         {icon}
         {label}
       </div>
-      <p className="text-[14px] text-foreground font-normal leading-tight">{value}</p>
+      <p className="text-mercury-heading text-foreground font-normal leading-tight">{value}</p>
     </div>
   );
 }

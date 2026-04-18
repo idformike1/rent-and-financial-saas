@@ -40,10 +40,10 @@ export default async function DelinquencyReport() {
     <div className="w-full">
       <div className="mb-8 flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground ">Delinquency Report</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Ranking of outstanding balances and aging metrics.</p>
+          <h1 className="text-2xl font-bold tracking-clinical text-foreground ">Delinquency Report</h1>
+          <p className="text-clinical-muted mt-1 text-sm">Ranking of outstanding balances and aging metrics.</p>
         </div>
-        <div className="bg-card text-destructive font-sans font-[400] px-4 py-2 border border-border rounded-[var(--radius)] text-[12px] flex items-center">
+        <div className="bg-card text-destructive font-sans font-[400] px-4 py-2 border border-border rounded-[var(--radius-sm)] text-[12px] flex items-center">
           <AlertTriangle className="w-3.5 h-3.5 mr-2" />
           Severe Delinquencies ({reportData.filter((d: any) => d.isSevere).length})
         </div>
@@ -54,16 +54,16 @@ export default async function DelinquencyReport() {
           <table className="min-w-full divide-y divide-border">
             <thead className="bg-muted">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-[10px] font-bold text-muted-foreground ">Tenant</th>
-                <th scope="col" className="px-6 py-3 text-left text-[10px] font-bold text-muted-foreground ">Total Due</th>
-                <th scope="col" className="px-6 py-3 text-left text-[10px] font-bold text-muted-foreground ">Days Past Due</th>
-                <th scope="col" className="px-6 py-3 text-right text-[10px] font-bold text-muted-foreground ">Status</th>
+                <th scope="col" className="px-6 py-3 text-left text-[10px] font-bold text-clinical-muted ">Tenant</th>
+                <th scope="col" className="px-6 py-3 text-left text-[10px] font-bold text-clinical-muted ">Total Due</th>
+                <th scope="col" className="px-6 py-3 text-left text-[10px] font-bold text-clinical-muted ">Days Past Due</th>
+                <th scope="col" className="px-6 py-3 text-right text-[10px] font-bold text-clinical-muted ">Status</th>
               </tr>
             </thead>
             <tbody className="bg-card divide-y divide-border">
               {reportData.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-sm text-muted-foreground">No delinquencies recorded. Operations are current.</td>
+                  <td colSpan={4} className="px-6 py-12 text-center text-sm text-clinical-muted">No delinquencies recorded. Operations are current.</td>
                 </tr>
               ) : (
                 reportData.map((tenant: any) => (
@@ -76,17 +76,17 @@ export default async function DelinquencyReport() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-foreground font-finance">
                       ${tenant.totalDue.toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground flex items-center">
-                      <Clock className="w-4 h-4 mr-1.5 text-muted-foreground" />
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-clinical-muted flex items-center">
+                      <Clock className="w-4 h-4 mr-1.5 text-clinical-muted" />
                       {tenant.daysPastDue} days
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       {tenant.isSevere ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius)] text-xs font-bold bg-destructive/10 text-destructive  tracking-wide">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius-sm)] text-xs font-bold bg-destructive/10 text-destructive  tracking-wide">
                           Severe (30+ Days)
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius)] text-xs font-bold bg-amber-500/10 text-amber-500  tracking-wide">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius-sm)] text-xs font-bold bg-amber-500/10 text-amber-500  tracking-wide">
                           Warning
                         </span>
                       )}

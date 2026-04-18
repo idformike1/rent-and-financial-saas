@@ -18,10 +18,10 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
   return (
     <div className="flex flex-col md:flex-row gap-8">
       {/* Left Column: Profile */}
-      <div className="w-full md:w-1/3 bg-card border border-border sm:rounded-[var(--radius)] p-6 h-fit">
+      <div className="w-full md:w-1/3 bg-card border border-border sm:rounded-[var(--radius-sm)] p-6 h-fit">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-foreground">{tenant.name}</h2>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius)] text-xs bg-[var(--primary-muted)] text-[var(--primary)]  tracking-wider border border-[var(--primary)]/20">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius-sm)] text-xs bg-[var(--primary-muted)] text-[var(--primary)]  tracking-wider border border-[var(--primary)]/20">
             Active
           </span>
         </div>
@@ -29,7 +29,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
         <div className="space-y-4">
           <button 
             onClick={() => setDrawerOpen(true)}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--destructive))] text-foreground flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-[var(--radius)] transition-colors"
+            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--destructive))] text-foreground flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-[var(--radius-sm)] transition-colors"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Receive Payment
@@ -38,20 +38,20 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
       </div>
 
       {/* Right Column: Ledger / Charges */}
-      <div className="w-full md:w-2/3 bg-card border border-border sm:rounded-[var(--radius)] overflow-hidden">
+      <div className="w-full md:w-2/3 bg-card border border-border sm:rounded-[var(--radius-sm)] overflow-hidden">
         <div className="px-6 py-5 border-b border-border flex justify-between items-center bg-muted">
           <h3 className="text-lg leading-6 font-medium text-foreground flex items-center">
-            <FileText className="mr-2 h-5 w-5 text-muted-foreground" />
+            <FileText className="mr-2 h-5 w-5 text-clinical-muted" />
             Outstanding Charges
           </h3>
-          <span className="text-sm font-medium text-muted-foreground">
+          <span className="text-sm font-medium text-clinical-muted">
             Total Due: ${charges.reduce((acc, c) => acc + (c.amount - c.amountPaid), 0).toFixed(2)}
           </span>
         </div>
         
         <ul className="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
           {charges.length === 0 ? (
-            <li className="px-6 py-10 text-center text-muted-foreground text-sm">
+            <li className="px-6 py-10 text-center text-clinical-muted text-sm">
               No outstanding charges found.
             </li>
           ) : (
@@ -62,7 +62,7 @@ export default function TenantProfileClient({ tenant, charges }: { tenant: Tenan
                     <p className="text-sm font-medium text-foreground truncate  tracking-wider">
                       {charge.type}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-clinical-muted mt-1">
                       Due: {new Date(charge.dueDate).toLocaleDateString()}
                     </p>
                   </div>

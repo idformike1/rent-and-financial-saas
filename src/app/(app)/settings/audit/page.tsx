@@ -52,10 +52,10 @@ export default async function AuditLogPage() {
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border)] pb-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-rose-500/10 rounded-[var(--radius)] flex items-center justify-center border border-rose-500/20">
+            <div className="w-12 h-12 bg-rose-500/10 rounded-[var(--radius-sm)] flex items-center justify-center border border-rose-500/20">
               <ShieldAlert className="w-6 h-6 text-rose-400" />
             </div>
-            <Badge variant="brand" className="px-5 py-2 rounded-[var(--radius)] text-[10px] font-bold uppercase tracking-widest bg-[#5D71F9]/10 text-[#5D71F9] border-[#5D71F9]/20">
+            <Badge variant="brand" className="px-5 py-2 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-widest bg-[#5D71F9]/10 text-[#5D71F9] border-[#5D71F9]/20">
               System Security Log
             </Badge>
           </div>
@@ -67,7 +67,7 @@ export default async function AuditLogPage() {
             System Activity Log
           </p>
         </div>
-        <div className="glass-panel rounded-[var(--radius)] px-6 py-3 border border-[var(--border)] flex items-center gap-2">
+        <div className="glass-panel rounded-[var(--radius-sm)] px-6 py-3 border border-[var(--border)] flex items-center gap-2">
           <Activity className="w-4 h-4 text-[var(--primary)] animate-pulse" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--foreground)]">Live Monitoring</span>
         </div>
@@ -76,18 +76,18 @@ export default async function AuditLogPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {statCards.map((s) => (
-          <div key={s.label} className="glass-panel rounded-[var(--radius)] p-6 border border-[var(--border)] flex flex-col justify-between gap-3 hover:border-[var(--primary)]/30 transition-all">
+          <div key={s.label} className="glass-panel rounded-[var(--radius-sm)] p-6 border border-[var(--border)] flex flex-col justify-between gap-3 hover:border-[var(--primary)]/30 transition-all">
             <div className="flex justify-between items-center text-[var(--muted)]">
               <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">{s.label}</span>
               <s.icon className="w-4 h-4" />
             </div>
-            <div className="text-xl font-medium tracking-tight text-[var(--foreground)] ">{s.value}</div>
+            <div className="text-xl font-medium tracking-clinical text-[var(--foreground)] ">{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Audit Log Table */}
-      <div className="glass-panel rounded-[var(--radius)] border border-[var(--border)] overflow-hidden">
+      <div className="glass-panel rounded-[var(--radius-sm)] border border-[var(--border)] overflow-hidden">
         {/* Table Header */}
         <div className="bg-[var(--card-raised,#202840)] px-8 py-5 border-b border-[var(--border)] flex justify-between items-center">
           <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40">Chronological Forensic Feed</span>
@@ -113,12 +113,12 @@ export default async function AuditLogPage() {
               ) : (
                 logs.map((log: any) => (
                   <tr key={log.id} className="bg-[var(--card)]/50 hover:bg-[var(--primary)]/5 transition-colors group">
-                    <td className="px-8 py-5 text-[13px] font-medium tracking-tight text-foreground/60">
+                    <td className="px-8 py-5 text-[13px] font-medium tracking-clinical text-foreground/60">
                       {format(new Date(log.createdAt), 'yyyy-MM-dd HH:mm:ss')}
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-[var(--radius)] bg-[var(--primary-muted)] flex items-center justify-center text-[var(--primary)] text-xs">
+                        <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-[var(--primary-muted)] flex items-center justify-center text-[var(--primary)] text-xs">
                           {log.user.name?.[0].toUpperCase()}
                         </div>
                         <div className="flex flex-col">
@@ -128,13 +128,13 @@ export default async function AuditLogPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <span className={`px-3 py-1.5 rounded-[var(--radius)] text-[10px] font-bold uppercase tracking-widest border ${getBadgeStyle(log.action)}`}>
+                      <span className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-widest border ${getBadgeStyle(log.action)}`}>
                         {log.action}
                       </span>
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex flex-col gap-1">
-                        <span className="text-[11px] font-bold uppercase tracking-tight text-[var(--foreground)] flex items-center gap-1">
+                        <span className="text-[11px] font-bold uppercase tracking-clinical text-[var(--foreground)] flex items-center gap-1">
                           <Tag className="w-3 h-3 text-foreground/40" /> {log.entityType}
                         </span>
                         <span className="text-[10px] tabular-nums text-foreground/40 truncate w-32 group-hover:w-auto transition-all">
@@ -143,7 +143,7 @@ export default async function AuditLogPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <div className="glass-panel text-[11px] font-medium p-4 rounded-[var(--radius)] border border-[var(--border)] min-w-[280px]">
+                      <div className="glass-panel text-[11px] font-medium p-4 rounded-[var(--radius-sm)] border border-[var(--border)] min-w-[280px]">
                         {log.metadata && Object.keys(log.metadata).length > 0 ? (
                           <div className="flex flex-col gap-1.5 line-clamp-4 group-hover:line-clamp-none transition-all">
                             {Object.entries(log.metadata).map(([key, value]) => (

@@ -104,13 +104,13 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
           </h1>
           <div className="flex items-center gap-2 mt-4 text-foreground/40">
             <Building2 className="w-3 h-3 opacity-40" />
-            <p className="text-[13px] font-medium tracking-tight">
+            <p className="text-[13px] font-medium tracking-clinical">
               {propertyData.address}
             </p>
           </div>
         </div>
         
-        <div className="flex items-center p-1 bg-muted border border-border rounded-[var(--radius)] shadow-xl">
+        <div className="flex items-center p-1 bg-muted border border-border rounded-[var(--radius-sm)] shadow-xl">
           <Button 
             variant="ghost" 
             onClick={() => setIsEditAssetModalOpen(true)}
@@ -187,7 +187,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
       {/* EDIT ASSET MODAL */}
       {isEditAssetModalOpen && (
         <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[var(--radius)] overflow-hidden shadow-2xl">
+          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[var(--radius-sm)] overflow-hidden shadow-2xl">
              <div className="p-6 border-b border-white/[0.08] flex justify-between items-center bg-white/[0.02]">
                 <h3 className="text-[12px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
                    <Edit2 className="w-4 h-4 text-brand" /> Edit Asset Intelligence
@@ -197,14 +197,14 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
              <div className="p-8 space-y-6">
                 <div className="space-y-1.5">
                    <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Property Name</label>
-                   <input value={editPropName} onChange={(e) => setEditPropName(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
+                   <input value={editPropName} onChange={(e) => setEditPropName(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius-sm)] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
                 </div>
                 <div className="space-y-1.5">
                    <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Address Coordinates</label>
-                   <input value={editPropAddr} onChange={(e) => setEditPropAddr(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
+                   <input value={editPropAddr} onChange={(e) => setEditPropAddr(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius-sm)] h-11 px-4 text-white text-[14px] outline-none focus:border-brand/40 transition-all" />
                 </div>
                 <div className="pt-4">
-                  <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[var(--radius)] hover:bg-brand/90 border-none transition-all">{isUpdating ? 'Synchronizing...' : 'Update Protocol'}</Button>
+                  <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[var(--radius-sm)] hover:bg-brand/90 border-none transition-all">{isUpdating ? 'Synchronizing...' : 'Update Protocol'}</Button>
                 </div>
              </div>
           </div>
@@ -214,12 +214,12 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
       {/* ARCHIVE CONFIRMATION */}
       {isArchiveModalOpen && (
         <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-           <div className="bg-[#0A0A0F] border border-red-500/20 w-full max-w-sm rounded-[var(--radius)] p-10 text-center space-y-8 shadow-2xl">
+           <div className="bg-[#0A0A0F] border border-red-500/20 w-full max-w-sm rounded-[var(--radius-sm)] p-10 text-center space-y-8 shadow-2xl">
               <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
                  <Trash2 className="w-10 h-10 text-red-500" />
               </div>
               <div className="space-y-3">
-                 <h3 className="text-white font-display text-xl tracking-tight uppercase">Decommission Node?</h3>
+                 <h3 className="text-white font-display text-xl tracking-clinical uppercase">Decommission Node?</h3>
                  <p className="text-white/40 text-[14px] leading-relaxed">This protocol will permanently eliminate <span className="text-white font-bold">{propertyData.name}</span> and all associated unit identifiers from the sovereign registry.</p>
               </div>
               <div className="flex gap-4">
@@ -252,12 +252,12 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
              >
                 <div className="p-10 border-b border-white/[0.04] flex justify-between items-center bg-white/[0.02]">
                    <div className="space-y-1">
-                      <h2 className="text-[32px] font-display text-white leading-tight tracking-tight uppercase">Ledger Surveillance</h2>
+                      <h2 className="text-[32px] font-display text-white leading-tight tracking-clinical uppercase">Ledger Surveillance</h2>
                       <p className="text-[12px] text-brand font-bold uppercase tracking-[0.2em]">{propertyData.name} // Telemetry: {drillDownType}</p>
                    </div>
                    <button 
                      onClick={() => setDrillDownType(null)}
-                     className="w-12 h-12 rounded-[var(--radius)] bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                     className="w-12 h-12 rounded-[var(--radius-sm)] bg-white/[0.04] border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
                    >
                       <X className="w-5 h-5 text-white/40" />
                    </button>
@@ -267,7 +267,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                    {isLedgerLoading ? (
                      <div className="flex items-center justify-center h-full">
                        <div className="text-center space-y-6">
-                          <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-[var(--radius)] flex items-center justify-center mx-auto animate-pulse">
+                          <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-[var(--radius-sm)] flex items-center justify-center mx-auto animate-pulse">
                              <Globe className="w-10 h-10 text-brand/40" />
                           </div>
                           <div className="space-y-2">
@@ -284,13 +284,13 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                         </div>
                         <div className="space-y-3">
                            {ledgerEntries.map((e: any) => (
-                             <div key={e.id} className="group p-5 bg-white/[0.02] border border-white/[0.04] hover:border-white/10 rounded-[var(--radius)] transition-all flex items-center justify-between">
+                             <div key={e.id} className="group p-5 bg-white/[0.02] border border-white/[0.04] hover:border-white/10 rounded-[var(--radius-sm)] transition-all flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                   <div className="w-10 h-10 rounded-[var(--radius)] bg-white/[0.03] flex items-center justify-center text-white/20 group-hover:text-brand transition-colors">
+                                   <div className="w-10 h-10 rounded-[var(--radius-sm)] bg-white/[0.03] flex items-center justify-center text-white/20 group-hover:text-brand transition-colors">
                                       <Receipt size={18} />
                                    </div>
                                    <div>
-                                      <p className="text-[15px] font-medium text-white tracking-tight">{e.description || e.expenseCategory?.name || 'Uncategorized Entry'}</p>
+                                      <p className="text-[15px] font-medium text-white tracking-clinical">{e.description || e.expenseCategory?.name || 'Uncategorized Entry'}</p>
                                       <div className="flex items-center gap-3 mt-1 text-[11px] text-white/30 font-bold uppercase tracking-widest">
                                          <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(e.transactionDate).toLocaleDateString()}</span>
                                          <span className="w-1 h-1 rounded-full bg-white/10" />
@@ -300,7 +300,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                                 </div>
                                 <div className="text-right">
                                    <p className={cn(
-                                      "text-[18px] font-medium tabular-nums tracking-tight",
+                                      "text-[18px] font-medium tabular-nums tracking-clinical",
                                       e.amount < 0 ? "text-rose-500/80" : "text-mercury-green"
                                    )}>
                                       {e.amount < 0 ? '-' : '+'}${Math.abs(Number(e.amount)).toLocaleString()}
@@ -314,7 +314,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                    ) : (
                      <div className="flex items-center justify-center h-full grayscale opacity-40">
                         <div className="text-center space-y-4">
-                           <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-[var(--radius)] flex items-center justify-center mx-auto">
+                           <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-[var(--radius-sm)] flex items-center justify-center mx-auto">
                               <Receipt className="w-8 h-8" />
                            </div>
                            <p className="text-[12px] font-bold uppercase tracking-widest text-white/40">Zero record state detected</p>
@@ -361,7 +361,7 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
 
   return (
     <div className="fixed inset-0 z-[120] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-      <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[var(--radius)] overflow-hidden shadow-2xl">
+      <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[var(--radius-sm)] overflow-hidden shadow-2xl">
         <div className="p-6 border-b border-white/[0.08] flex justify-between items-center bg-white/[0.02]">
           <h3 className="text-[12px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
             <Plus className="w-4 h-4 text-brand" /> Provision Asset Unit
@@ -371,12 +371,12 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
         <form onSubmit={handleSubmit} className="p-8 space-y-5">
            <div className="space-y-1.5">
              <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Unit Identifier</label>
-             <input required value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none focus:border-brand/40" placeholder="e.g. Unit 402" />
+             <input required value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius-sm)] h-10 px-4 text-white text-[14px] outline-none focus:border-brand/40" placeholder="e.g. Unit 402" />
            </div>
            <div className="grid grid-cols-2 gap-4">
              <div className="space-y-1.5">
                <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Category</label>
-               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none">
+               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius-sm)] h-10 px-4 text-white text-[14px] outline-none">
                  <option value="RESIDENTIAL">Residential</option>
                  <option value="COMMERCIAL">Commercial</option>
                  <option value="STORAGE">Storage</option>
@@ -384,15 +384,15 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
              </div>
              <div className="space-y-1.5">
                <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Type</label>
-               <input value={type} onChange={(e) => setType(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none" placeholder="STUDIO, 1BR, etc." />
+               <input value={type} onChange={(e) => setType(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius-sm)] h-10 px-4 text-white text-[14px] outline-none" placeholder="STUDIO, 1BR, etc." />
              </div>
            </div>
            <div className="space-y-1.5">
              <label className="text-[10px] text-white/40 uppercase font-bold tracking-widest pl-1">Market Rent ($)</label>
-             <input type="number" value={marketRent} onChange={(e) => setMarketRent(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius)] h-10 px-4 text-white text-[14px] outline-none" placeholder="0.00" />
+             <input type="number" value={marketRent} onChange={(e) => setMarketRent(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-[var(--radius-sm)] h-10 px-4 text-white text-[14px] outline-none" placeholder="0.00" />
            </div>
            <div className="pt-4">
-             <Button type="submit" disabled={isPending} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[var(--radius)] border-none">{isPending ? 'Provisioning...' : 'Confirm Provisioning'}</Button>
+             <Button type="submit" disabled={isPending} className="w-full bg-brand h-11 font-bold text-[12px] uppercase tracking-wider rounded-[var(--radius-sm)] border-none">{isPending ? 'Provisioning...' : 'Confirm Provisioning'}</Button>
            </div>
         </form>
       </div>

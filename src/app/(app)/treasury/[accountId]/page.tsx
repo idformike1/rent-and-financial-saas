@@ -31,7 +31,7 @@ export default async function TreasuryAccountPage(props: { params: Promise<{ acc
     <div className="w-full h-full animate-in fade-in duration-700">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#1F2937]">
         <div>
-          <h1 className="text-[28px] font-[400] text-white tracking-tight font-sans">
+          <h1 className="text-[28px] font-[400] text-white tracking-clinical font-sans">
             Treasury Gateway
           </h1>
           <p className="text-[13px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-1">

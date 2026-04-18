@@ -70,7 +70,7 @@ export default function GlobalSearch() {
       case 'TENANT':     return 'bg-primary/10 text-primary border-primary/20'
       case 'ASSET':      return 'bg-primary/10 text-primary border-primary/20'
       case 'GOVERNANCE': return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-      default:           return 'bg-muted border-border text-muted-foreground'
+      default:           return 'bg-muted border-border text-clinical-muted'
     }
   }
 
@@ -78,14 +78,14 @@ export default function GlobalSearch() {
     <div className="relative flex-1 max-w-[640px] mx-8" ref={dropdownRef}>
       {/* Search Input Bar */}
       <div className={cn(
-        "flex items-center gap-4 h-[38px] px-4 rounded-[var(--radius)] bg-muted border border-border transition-all duration-200",
+        "flex items-center gap-4 h-[38px] px-4 rounded-[var(--radius-sm)] bg-muted border border-border transition-all duration-200",
         isOpen
           ? "bg-background border-foreground/20 ring-4 ring-ring/5"
           : "hover:border-border"
       )}>
         {isSearching
-          ? <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-          : <Search className="w-4 h-4 text-muted-foreground/50" />
+          ? <Loader2 className="w-4 h-4 animate-spin text-clinical-muted" />
+          : <Search className="w-4 h-4 text-clinical-muted" />
         }
         <input
           type="text"
@@ -93,11 +93,11 @@ export default function GlobalSearch() {
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="Search..."
-          className="flex-1 bg-transparent border-none text-[13px] font-medium text-foreground placeholder:text-muted-foreground/50 outline-none"
+          className="flex-1 bg-transparent border-none text-mercury-body text-foreground placeholder:text-clinical-muted outline-none"
         />
         <div className="flex items-center gap-1 opacity-20">
-          <span className="text-[10px] font-medium border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">⌘</span>
-          <span className="text-[10px] font-medium border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">K</span>
+          <span className="text-mercury-label-caps border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">⌘</span>
+          <span className="text-mercury-label-caps border border-border px-1.5 py-0.5 rounded-[4px] text-foreground">K</span>
         </div>
       </div>
 
@@ -109,17 +109,17 @@ export default function GlobalSearch() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             transition={{ duration: 0.1, ease: "easeOut" }}
-            className="absolute top-14 left-0 right-0 max-h-[520px] overflow-hidden rounded-[var(--radius)] bg-card border border-border z-50 flex flex-col"
+            className="absolute top-14 left-0 right-0 max-h-[520px] overflow-hidden rounded-[var(--radius-sm)] bg-card border border-border z-50 flex flex-col"
           >
             <div className="p-4 overflow-y-auto flex-1 space-y-8 scrollbar-hide">
 
               {/* Search Results Section */}
               <div className="space-y-3">
-                <p className="text-[11px] font-medium text-muted-foreground pl-3 border-l border-foreground/20">
+                <p className="text-mercury-label-caps text-clinical-muted pl-3 border-l border-foreground/20">
                   Search results
                 </p>
                 {results.length === 0 && !isSearching ? (
-                  <p className="p-12 text-center text-[13px] font-medium text-muted-foreground/50">
+                  <p className="p-12 text-center text-mercury-body text-clinical-muted">
                     Search for transactions, accounts, or properties
                   </p>
                 ) : (
@@ -128,23 +128,23 @@ export default function GlobalSearch() {
                       <Link
                         key={`${r.type}-${r.id}`}
                         href={r.href}
-                        className="flex items-center justify-between px-3 py-2 rounded-[var(--radius)] hover:bg-muted transition-none group border border-transparent"
+                        className="flex items-center justify-between px-3 py-2 rounded-[var(--radius-sm)] hover:bg-muted transition-none group border border-transparent"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-10 h-10 rounded-[var(--radius)] flex items-center justify-center border transition-none bg-muted text-muted-foreground border-border", getTypeStyle(r.type))}>
+                          <div className={cn("w-10 h-10 rounded-[var(--radius-sm)] flex items-center justify-center border transition-none bg-muted text-clinical-muted border-border", getTypeStyle(r.type))}>
                             {getIcon(r.type)}
                           </div>
                           <div>
-                            <h4 className="text-[13px] font-medium text-foreground tracking-tight leading-none mb-1 transition-none">
+                            <h4 className="text-mercury-heading text-foreground mb-1 transition-none">
                               {r.title}
                             </h4>
-                            <p className="text-[11px] font-medium text-muted-foreground opacity-60">
+                            <p className="text-mercury-label-caps text-clinical-low">
                               {r.description || r.type}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-none">
-                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius)] border", getTypeStyle(r.type))}>
+                          <span className={cn("text-mercury-label-caps px-2 py-0.5 rounded-[var(--radius-sm)] border", getTypeStyle(r.type))}>
                             {r.type}
                           </span>
                           <ArrowRight className="w-4 h-4 text-foreground/40" />
@@ -157,7 +157,7 @@ export default function GlobalSearch() {
 
               {/* Suggested Actions Section */}
               <div className="space-y-3">
-                <p className="text-[11px] font-medium text-muted-foreground pl-3 border-l border-border">
+                <p className="text-mercury-label-caps text-clinical-muted pl-3 border-l border-border">
                   Suggested actions
                 </p>
                 <div className="grid grid-cols-1 gap-0.5">
@@ -165,13 +165,13 @@ export default function GlobalSearch() {
                     <Link
                       key={s.title}
                       href={s.href}
-                      className="flex items-center justify-between px-3 py-2 rounded-[var(--radius)] hover:bg-muted transition-none border border-transparent group"
+                      className="flex items-center justify-between px-3 py-2 rounded-[var(--radius-sm)] hover:bg-muted transition-none border border-transparent group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-[var(--radius)] bg-muted flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-none border border-border">
+                        <div className="w-10 h-10 rounded-[var(--radius-sm)] bg-muted flex items-center justify-center text-clinical-muted group-hover:text-foreground transition-none border border-border">
                           <s.icon className="w-4 h-4" />
                         </div>
-                        <h4 className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-none">
+                        <h4 className="text-mercury-body text-clinical-muted group-hover:text-foreground transition-none">
                           {s.title}
                         </h4>
                       </div>
@@ -185,16 +185,16 @@ export default function GlobalSearch() {
 
             {/* Footer */}
             <div className="p-4 border-t border-border flex justify-between items-center px-6 bg-muted/50">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase ">
+              <span className="text-mercury-label-caps text-clinical-muted">
                 Mercury Deep Scan
               </span>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-4">
+              <span className="text-mercury-label-caps text-clinical-muted flex items-center gap-4">
                 <span className="flex items-center gap-1.5 opacity-60">
-                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold ">ESC</kbd>
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border font-normal">ESC</kbd>
                   CLOSE
                 </span>
                 <span className="flex items-center gap-1.5 opacity-60">
-                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border not-font-bold ">⏎</kbd>
+                  <kbd className="bg-card px-2 py-0.5 rounded-[4px] border border-border font-normal">⏎</kbd>
                   NAVIGATE
                 </span>
               </span>

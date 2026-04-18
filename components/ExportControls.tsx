@@ -32,7 +32,7 @@ export default function ExportControls() {
     <div className="flex gap-4">
       <button 
         onClick={handleCSVExport} 
-        className="bg-brand text-foreground px-6 py-3 rounded-[var(--radius)] hover:-translate-y-1 transition-transform flex items-center uppercase text-[10px]"
+        className="bg-brand text-foreground px-6 py-3 rounded-[var(--radius-sm)] hover:-translate-y-1 transition-transform flex items-center uppercase text-[10px]"
       >
         <Download className="w-4 h-4 mr-3" /> Export CSV
       </button>

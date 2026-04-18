@@ -27,7 +27,7 @@ const formatCurrency = (val: number) => {
 
 export default function TreasuryLedgerTable({ entries }: TreasuryLedgerTableProps) {
   return (
-    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-[var(--radius)] overflow-hidden">
+    <div className="w-full bg-[#171721] border border-[#1F2937] rounded-[var(--radius-sm)] overflow-hidden">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[15%]" />
@@ -50,7 +50,7 @@ export default function TreasuryLedgerTable({ entries }: TreasuryLedgerTableProp
               className="group transition-all duration-200 bg-transparent hover:bg-white/5 hover:-translate-y-[1px] hover:relative hover:z-10"
             >
               <td className="px-6 py-4">
-                <span className="font-mono text-[#9CA3AF] tracking-tight">{entry.date}</span>
+                <span className="font-mono text-[#9CA3AF] tracking-clinical">{entry.date}</span>
               </td>
               <td className="px-6 py-4">
                 <span className="text-[#E5E7EB] tracking-wider uppercase font-medium">{entry.payee}</span>
@@ -60,7 +60,7 @@ export default function TreasuryLedgerTable({ entries }: TreasuryLedgerTableProp
               </td>
               <td className="px-6 py-4 text-right">
                 <span className={cn(
-                  "font-mono tracking-tight tabular-nums block",
+                  "font-mono tracking-clinical tabular-nums block",
                   entry.amount < 0 ? "text-destructive" : "text-[#E5E7EB]"
                 )}>
                   {formatCurrency(entry.amount)}

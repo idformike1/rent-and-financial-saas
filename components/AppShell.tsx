@@ -131,16 +131,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                           "flex items-center w-full px-3 h-[36px] text-mercury-body rounded-[var(--radius-sm)] transition-all duration-150 my-0.5 group",
                           isActive
                             ? "text-foreground bg-sidebar-accent border-l-2 border-primary rounded-l-none"
-                            : "text-muted-foreground/40 hover:text-foreground hover:bg-sidebar-accent/50"
+                            : "text-clinical-muted hover:text-foreground hover:bg-sidebar-accent/50"
                         )}
                       >
                         <item.icon 
                           className={cn(
                             "w-[15px] h-[14px] mr-3 transition-opacity duration-150 shrink-0",
-                            isActive ? "opacity-100 text-foreground" : "opacity-40 text-muted-foreground group-hover:opacity-100 group-hover:text-foreground"
+                            isActive ? "opacity-100 text-foreground" : "opacity-40 text-clinical-muted group-hover:opacity-100 group-hover:text-foreground"
                           )} 
                         />
-                        <span className="truncate tracking-tight">{item.name}</span>
+                        <span className="truncate tracking-clinical">{item.name}</span>
                       </Link>
                     )
                   })}
@@ -162,7 +162,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <button 
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1 text-clinical-muted hover:text-foreground transition-colors"
           >
             <span className="text-mercury-body">➲</span>
           </button>
@@ -200,7 +200,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
 function Badge({ children, className, variant = 'default' }: { children: React.ReactNode, className?: string, variant?: 'default' | 'success' | 'warning' | 'danger' }) {
   const variants = {
-    default: "border-border text-muted-foreground bg-secondary",
+    default: "border-border text-clinical-muted bg-secondary",
     success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
     danger:  "border-destructive/20 text-destructive bg-destructive/10",

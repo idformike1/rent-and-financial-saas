@@ -143,27 +143,27 @@ export default function OnboardingWizard() {
   if (step === 4) {
     return (
       <div className="max-w-3xl mx-auto py-20 px-6 animate-in zoom-in-95 duration-500">
-        <Card className="p-12 text-center space-y-10 rounded-[var(--radius)] border border-border bg-card ">
-          <div className="w-20 h-20 bg-mercury-green/10 rounded-[var(--radius)] flex items-center justify-center mx-auto mb-8 border border-mercury-green/20">
+        <Card className="p-12 text-center space-y-10 rounded-[var(--radius-sm)] border border-border bg-card ">
+          <div className="w-20 h-20 bg-mercury-green/10 rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-8 border border-mercury-green/20">
             <span className="text-mercury-green text-3xl">✓</span>
           </div>
           
           <div className="space-y-4">
-            <h2 className="text-[28px] font-display font-medium text-foreground tracking-tight leading-tight">Identity Activated</h2>
-            <p className="text-[15px] text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto">
+            <h2 className="text-mercury-headline font-display text-foreground">Identity Activated</h2>
+            <p className="text-mercury-body text-clinical-muted max-w-sm mx-auto">
               The tenant has been successfully registered and the initial ledger accounts have been initialized.
             </p>
           </div>
           
-          <div className=" border border-border rounded-[var(--radius)] p-8 text-left space-y-6">
+          <div className=" border border-border rounded-[var(--radius-sm)] p-8 text-left space-y-6">
              <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-1">
-                   <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Lease Reference</p>
-                   <p className="text-[15px] text-foreground font-mono">{successData?.leaseId || '—'}</p>
+                   <p className="text-mercury-label-caps text-clinical-muted">Lease Reference</p>
+                   <p className="text-mercury-heading text-foreground font-mono">{successData?.leaseId || '—'}</p>
                 </div>
                 <div className="space-y-1">
-                   <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Registry ID</p>
-                   <p className="text-[15px] text-foreground font-mono">{successData?.tenantId || '—'}</p>
+                   <p className="text-mercury-label-caps text-clinical-muted">Registry ID</p>
+                   <p className="text-mercury-heading text-foreground font-mono">{successData?.tenantId || '—'}</p>
                 </div>
              </div>
           </div>
@@ -174,14 +174,14 @@ export default function OnboardingWizard() {
                type="button"
                disabled={false}
                onClick={() => router.push('/tenants')} 
-               className="h-12 px-10 bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white rounded-[var(--radius)] text-[14px] font-bold uppercase tracking-widest transition-all "
+               className="h-12 px-10 rounded-[var(--radius-sm)] text-mercury-label-caps transition-all "
             >
                View Profile →
             </Button>
             <Button 
                variant="ghost" 
                onClick={() => { reset(); setStep(1); }} 
-               className="h-12 px-8 rounded-[var(--radius)] text-[13px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all"
+               className="h-12 px-8 rounded-[var(--radius-sm)] text-mercury-label-caps text-clinical-muted hover:text-foreground transition-all"
             >
                Finish
             </Button>
@@ -200,7 +200,7 @@ export default function OnboardingWizard() {
                key={s.id} 
                className={cn(
                  "relative pl-6 py-2.5 transition-all duration-300",
-                 mercuryStepInfo.index === idx ? "text-foreground opacity-100" : "text-muted-foreground/40"
+                 mercuryStepInfo.index === idx ? "text-foreground opacity-100" : "text-clinical-muted/40"
                )}
              >
                 <div className={cn(
@@ -214,23 +214,23 @@ export default function OnboardingWizard() {
 
         <div className="space-y-12">
           <div className="space-y-1">
-             <h1 className="text-[28px] font-display text-foreground tracking-tight leading-none">
+             <h1 className="text-mercury-headline font-display text-foreground">
                {mercuryStepInfo.title}
              </h1>
-             <p className="text-[14px] text-muted-foreground">Registry Initialization Protocol // V.4.1</p>
+             <p className="text-mercury-body text-clinical-muted">Registry Initialization Protocol // V.4.1</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-12 pb-32">
              {step === 1 && (
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <Card className="bg-card border-border rounded-[var(--radius)]  overflow-hidden p-8">
+                 <Card className="bg-card border-border rounded-[var(--radius-sm)]  overflow-hidden p-8">
                     <div className="flex items-center gap-8">
-                       <div className="w-14 h-14 rounded-[var(--radius)] bg-background border border-border flex items-center justify-center text-[16px] font-bold text-[#5D71F9]">
+                       <div className="w-14 h-14 rounded-[var(--radius-sm)] bg-background border border-border flex items-center justify-center text-[16px] font-bold text-[#5D71F9]">
                          {watchedValues.tenantName ? watchedValues.tenantName.substring(0, 2).toUpperCase() : '??'}
                        </div>
                        <div className="flex-1 space-y-6">
                          <div className="space-y-2">
-                           <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Legal Identity</label>
+                           <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Legal Identity</label>
                            <Input 
                              {...register('tenantName')} 
                              className="h-10 border-b border-t-0 border-x-0 border-border rounded-none bg-transparent px-0 text-[16px] focus:border-[#5D71F9] transition-all" 
@@ -239,7 +239,7 @@ export default function OnboardingWizard() {
                          </div>
                          <div className="flex gap-8">
                             <div className="flex-1 space-y-2">
-                               <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
+                               <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Email Address</label>
                                <Input 
                                  {...register('email')} 
                                  className="h-9 border-b border-t-0 border-x-0 border-border rounded-none bg-transparent px-0 text-[14px] focus:border-[#5D71F9] transition-all" 
@@ -247,7 +247,7 @@ export default function OnboardingWizard() {
                                />
                             </div>
                             <div className="flex-1 space-y-2">
-                               <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Mobile Contact</label>
+                               <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Mobile Contact</label>
                                <Input 
                                  {...register('phone')} 
                                  className="h-9 border-b border-t-0 border-x-0 border-border rounded-none bg-transparent px-0 text-[14px] focus:border-[#5D71F9] transition-all" 
@@ -260,12 +260,12 @@ export default function OnboardingWizard() {
                  </Card>
 
                  <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Identity Identifier</label>
-                    <div className="bg-card border border-border rounded-[var(--radius)] p-5 flex items-center gap-4">
-                       <span className="text-muted-foreground/30 font-bold">[S]</span>
+                    <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Identity Identifier</label>
+                    <div className="bg-card border border-border rounded-[var(--radius-sm)] p-5 flex items-center gap-4">
+                       <span className="text-clinical-muted/30 font-bold">[S]</span>
                        <Input 
                          {...register('nationalId')} 
-                         className="bg-transparent border-0 focus:ring-0 text-[15px] h-8 px-0 flex-1 placeholder:text-muted-foreground/20" 
+                         className="bg-transparent border-0 focus:ring-0 text-[15px] h-8 px-0 flex-1 placeholder:text-clinical-muted/20" 
                          placeholder="Enter SSN or Passport details" 
                        />
                     </div>
@@ -276,8 +276,8 @@ export default function OnboardingWizard() {
              {step === 2 && (
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                  <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Asset Allocation</label>
-                    <div className="bg-card border border-border rounded-[var(--radius)] overflow-hidden">
+                    <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Asset Allocation</label>
+                    <div className="bg-card border border-border rounded-[var(--radius-sm)] overflow-hidden">
                        <select 
                          {...register('unitId')} 
                          className="w-full bg-transparent text-foreground p-6 text-[16px] outline-none appearance-none cursor-pointer border-0"
@@ -290,25 +290,25 @@ export default function OnboardingWizard() {
 
                  <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-3">
-                       <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Monthly Baseline</label>
-                       <div className="bg-card border border-border rounded-[var(--radius)] p-6 flex items-center">
-                          <span className="text-muted-foreground/20 text-[18px] mr-3 font-mono">$</span>
+                       <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Monthly Baseline</label>
+                       <div className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex items-center">
+                          <span className="text-clinical-muted/20 text-[18px] mr-3 font-mono">$</span>
                           <Input 
                              type="number" 
                              {...register('baseRent', {valueAsNumber: true})} 
-                             className="bg-transparent border-0 focus:ring-0 text-[20px] p-0 flex-1 font-mono tracking-tight" 
+                             className="bg-transparent border-0 focus:ring-0 text-[20px] p-0 flex-1 font-mono tracking-clinical" 
                              placeholder="0.00" 
                           />
                        </div>
                     </div>
                     <div className="space-y-3">
-                       <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Security Reserve</label>
-                       <div className="bg-card border border-border rounded-[var(--radius)] p-6 flex items-center">
-                          <span className="text-muted-foreground/20 text-[18px] mr-3 font-mono">$</span>
+                       <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Security Reserve</label>
+                       <div className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex items-center">
+                          <span className="text-clinical-muted/20 text-[18px] mr-3 font-mono">$</span>
                           <Input 
                              type="number" 
                              {...register('securityDeposit', {valueAsNumber: true})} 
-                             className="bg-transparent border-0 focus:ring-0 text-[20px] p-0 flex-1 font-mono tracking-tight" 
+                             className="bg-transparent border-0 focus:ring-0 text-[20px] p-0 flex-1 font-mono tracking-clinical" 
                              placeholder="0.00" 
                           />
                        </div>
@@ -316,9 +316,9 @@ export default function OnboardingWizard() {
                  </div>
 
                  <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Activation Date</label>
-                    <div className="bg-card border border-border rounded-[var(--radius)] p-6 flex items-center gap-5">
-                       <span className="text-muted-foreground/30">🗓️</span>
+                    <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Activation Date</label>
+                    <div className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex items-center gap-5">
+                       <span className="text-clinical-muted/30">🗓️</span>
                        <Input 
                           type="date" 
                           {...register('moveInDate')} 
@@ -331,7 +331,7 @@ export default function OnboardingWizard() {
 
              {step === 3 && (
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <Card className="bg-card border border-border rounded-[var(--radius)] p-10 overflow-hidden relative ">
+                 <Card className="bg-card border border-border rounded-[var(--radius-sm)] p-10 overflow-hidden relative ">
                     <div className="absolute top-0 right-0 p-8 opacity-[0.02]">
                        <span className="text-6xl font-bold">⚡</span>
                     </div>
@@ -339,33 +339,33 @@ export default function OnboardingWizard() {
                     <div className="space-y-10">
                        <div className="flex justify-between items-end border-b border-white/[0.04] pb-8">
                           <div className="space-y-1">
-                             <h4 className="text-[22px] font-display text-foreground tracking-tight">Ledger Summary</h4>
-                             <p className="text-[11px] text-muted-foreground uppercase tracking-widest">Initial Ledger Hit</p>
+                             <h4 className="text-[22px] font-display text-foreground tracking-clinical">Ledger Summary</h4>
+                             <p className="text-[11px] text-clinical-muted uppercase tracking-widest">Initial Ledger Hit</p>
                           </div>
                           <div className="text-right">
-                             <p className="text-[28px] font-mono text-foreground tracking-tighter">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+                             <p className="text-[28px] font-mono text-foreground tracking-clinicaler">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                           </div>
                        </div>
 
                        <div className="grid grid-cols-2 gap-16">
                           <div className="space-y-5">
                              <div className="space-y-0.5">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Prorated Allocation</p>
+                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Prorated Allocation</p>
                                 <p className="text-[16px] font-mono text-foreground/80">${prorationPreview?.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                              </div>
                              <div className="space-y-0.5">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Security Reserve</p>
+                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Security Reserve</p>
                                 <p className="text-[16px] font-mono text-foreground/80">${watchedValues.securityDeposit?.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                              </div>
                           </div>
                           <div className="space-y-5">
                              <div className="space-y-0.5">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Entity</p>
-                                <p className="text-[16px] text-foreground/80 tracking-tight">{watchedValues.tenantName || 'UNKNOWN'}</p>
+                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Entity</p>
+                                <p className="text-[16px] text-foreground/80 tracking-clinical">{watchedValues.tenantName || 'UNKNOWN'}</p>
                              </div>
                              <div className="space-y-0.5">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Allocated Asset</p>
-                                <p className="text-[16px] text-foreground/80 tracking-tight">Unit {units.find(u => u.id === watchedValues.unitId)?.unitNumber || 'TBD'}</p>
+                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Allocated Asset</p>
+                                <p className="text-[16px] text-foreground/80 tracking-clinical">Unit {units.find(u => u.id === watchedValues.unitId)?.unitNumber || 'TBD'}</p>
                              </div>
                           </div>
                        </div>
@@ -373,7 +373,7 @@ export default function OnboardingWizard() {
                  </Card>
                  
                  {serverError && (
-                   <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-[var(--radius)] flex items-center gap-5 text-red-500/80">
+                   <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-[var(--radius-sm)] flex items-center gap-5 text-red-500/80">
                      <span className="text-xl shrink-0">⚠️</span>
                      <div className="space-y-0.5">
                        <p className="text-[14px] font-bold uppercase tracking-wider">Protocol Violation</p>
@@ -388,14 +388,14 @@ export default function OnboardingWizard() {
       </div>
 
       <div className="fixed bottom-0 left-[240px] right-0 h-24 flex items-center justify-center gap-3 bg-gradient-to-t from-background to-transparent pointer-events-none">
-         <div className="flex items-center gap-3 pointer-events-auto   p-2 rounded-[var(--radius)] border border-border/50">
+         <div className="flex items-center gap-3 pointer-events-auto   p-2 rounded-[var(--radius-sm)] border border-border/50">
            {step > 1 && (
              <Button 
                type="button" 
                variant="ghost"
                disabled={isSubmitting}
                onClick={() => { setStep(step-1); setServerError(''); }} 
-               className="h-10 px-8 rounded-[var(--radius)] text-[13px] font-bold text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all bg-transparent border-none"
+               className="h-10 px-8 rounded-[var(--radius-sm)] text-[13px] font-bold text-clinical-muted hover:text-foreground hover:bg-white/5 transition-all bg-transparent border-none"
              >
                Go back
              </Button>
@@ -407,7 +407,7 @@ export default function OnboardingWizard() {
                variant="primary" 
                onClick={nextStep} 
                disabled={false}
-               className="h-10 px-10 rounded-[var(--radius)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white flex items-center gap-2  transition-all"
+               className="h-10 px-10 rounded-[var(--radius-sm)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white flex items-center gap-2  transition-all"
              >
                Next Step →
              </Button>
@@ -418,7 +418,7 @@ export default function OnboardingWizard() {
                onClick={handleSubmit(onSubmit)}
                disabled={isSubmitting} 
                isLoading={isSubmitting}
-               className="h-10 px-12 rounded-[var(--radius)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white  transition-all"
+               className="h-10 px-12 rounded-[var(--radius-sm)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white  transition-all"
              >
                Authorize Registry ✓
              </Button>

@@ -59,10 +59,10 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-primary text-primary-foreground hover:bg-primary/90 border-none  rounded-[var(--radius)]",
-    secondary: "bg-secondary border border-border text-foreground hover:bg-secondary/80  rounded-[var(--radius)]",
-    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/30 rounded-[var(--radius)]",
-    danger: "bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20  rounded-[var(--radius)]",
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90 border-none  rounded-[var(--radius-sm)]",
+    secondary: "bg-secondary border border-border text-foreground hover:bg-secondary/80  rounded-[var(--radius-sm)]",
+    ghost: "bg-transparent text-clinical-muted hover:text-foreground hover:bg-secondary/30 rounded-[var(--radius-sm)]",
+    danger: "bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20  rounded-[var(--radius-sm)]",
   };
 
   const sizes = {
@@ -83,7 +83,7 @@ export function Button({
       {...(props as any)}
     >
       {isLoading && (
-        <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-[var(--radius)] animate-spin mr-2" />
+        <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-[var(--radius-sm)] animate-spin mr-2" />
       )}
       {children}
     </motion.button>
@@ -115,7 +115,7 @@ export function Badge({
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'brand'
 }) {
   const variants = {
-    default: "border-border text-muted-foreground bg-secondary",
+    default: "border-border text-clinical-muted bg-secondary",
     success: "border-mercury-green/20 text-mercury-green bg-mercury-green/10",
     warning: "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/10",
     danger:  "border-destructive/20 text-destructive bg-destructive/10",
@@ -139,7 +139,7 @@ export function Badge({
  */
 export function MercuryTable({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <div className={cn("w-full overflow-hidden rounded-[var(--radius)] border border-white/[0.08] bg-transparent", className)}>
+    <div className={cn("w-full overflow-hidden rounded-[var(--radius-sm)] border border-white/[0.08] bg-transparent", className)}>
       <table className="w-full border-collapse">
         {children}
       </table>
@@ -223,7 +223,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground px-3 rounded-[var(--radius)] text-[13px] font-normal placeholder:text-mercury-muted focus:outline-none focus:border-white/10 transition-all duration-150",
+        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground px-3 rounded-[var(--radius-sm)] text-mercury-body placeholder:text-clinical-muted focus:outline-none focus:border-white/10 transition-all duration-150",
         className
       )}
       {...props}
@@ -237,7 +237,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
   return (
     <select
       className={cn(
-        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground px-3 rounded-[var(--radius)] text-[13px] font-normal focus:outline-none focus:border-white/10 transition-all duration-150 appearance-none cursor-pointer",
+        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground px-3 rounded-[var(--radius-sm)] text-mercury-body focus:outline-none focus:border-white/10 transition-all duration-150 appearance-none cursor-pointer",
         className
       )}
       {...props}

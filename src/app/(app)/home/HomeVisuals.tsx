@@ -91,7 +91,7 @@ export default function HomeVisuals() {
       </Card>
 
       {/* ── COMPONENT B: LEDGER BALANCES CARD (1-COLUMN) ───────────────────── */}
-       <div className="lg:col-span-1 bg-muted/5 border border-border p-8 rounded-[var(--radius)] backdrop-blur-sm shadow-2xl flex flex-col">
+       <div className="lg:col-span-1 bg-muted/5 border border-border p-8 rounded-[var(--radius-sm)] backdrop-blur-sm shadow-2xl flex flex-col">
           
           <div className="flex justify-between items-center mb-10">
              <h3 className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">Registry Node Balances</h3>

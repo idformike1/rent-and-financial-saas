@@ -74,7 +74,7 @@ export default async function LedgerExplorerPage({
 
   return (
     <div className="w-full">
-      <Suspense fallback={<div className="h-screen flex items-center justify-center text-muted-foreground uppercase tracking-widest text-[11px] animate-pulse bg-background">Initiating Universal Scan...</div>}>
+      <Suspense fallback={<div className="h-screen flex items-center justify-center text-clinical-muted uppercase tracking-widest text-[11px] animate-pulse bg-background">Initiating Universal Scan...</div>}>
         <LedgerExplorerClient 
           initialData={serializedLedger as any} 
           metadata={metadata as any}

@@ -26,14 +26,14 @@ export default function Toaster() {
           key={t.id} 
           className={`
             pointer-events-auto
-            flex items-center gap-4 p-5 rounded-[var(--radius)] border border-border
+            flex items-center gap-4 p-5 rounded-[var(--radius-sm)] border border-border
             animate-in slide-in-from-right-full duration-500
             ${t.type === 'success' ? 'bg-[var(--primary)] text-foreground' : ''}
             ${t.type === 'error' ? 'bg-destructive text-foreground' : ''}
             ${t.type === 'info' ? 'glass-panel text-foreground' : ''}
           `}
         >
-          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-[var(--radius)] bg-card">
+          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-[var(--radius-sm)] bg-card">
             {t.type === 'success' && <CheckCircle2 className="w-6 h-6 text-foreground" />}
             {t.type === 'error' && <AlertCircle className="w-6 h-6 text-foreground" />}
             {t.type === 'info' && <Info className="w-6 h-6 text-foreground" />}
@@ -45,7 +45,7 @@ export default function Toaster() {
           </div>
           <button 
             onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
-            className="absolute top-4 right-4 p-1 hover:bg-muted rounded-[var(--radius)] transition-colors"
+            className="absolute top-4 right-4 p-1 hover:bg-muted rounded-[var(--radius-sm)] transition-colors"
           >
             <X className="w-4 h-4 text-foreground/60 hover:text-foreground transition-colors" />
           </button>

@@ -41,15 +41,15 @@ export default function AccessControlTable({
   }
 
   return (
-    <div className="w-full overflow-x-auto relative bg-card rounded-[var(--radius)] border border-border">
+    <div className="w-full overflow-x-auto relative bg-card rounded-[var(--radius-sm)] border border-border">
       <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
         <thead className="bg-muted/50 border-b border-border">
           <tr>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">User Identity</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Overarching Role</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Permissions</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-center">Status</th>
-            <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-right">Actions</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-clinical-muted uppercase">User Identity</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-clinical-muted uppercase">Overarching Role</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-clinical-muted uppercase text-center">Permissions</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-clinical-muted uppercase text-center">Status</th>
+            <th className="px-4 py-3 text-[12px] font-bold text-clinical-muted uppercase text-right">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
@@ -64,14 +64,14 @@ export default function AccessControlTable({
               <td className="px-4 py-3">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-bold text-foreground tracking-tight">
+                    <span className="text-[13px] font-bold text-foreground tracking-clinical">
                       {member.name || 'Anonymous'}
                     </span>
                     {member.id === currentUserId && (
                       <Badge variant="default" className="text-[9px] px-1.5 py-0 border-primary/20 lowercase bg-primary/10 text-primary">you</Badge>
                     )}
                   </div>
-                  <span className="text-[10px] text-muted-foreground font-bold lowercase">{member.email}</span>
+                  <span className="text-[10px] text-clinical-muted font-bold lowercase">{member.email}</span>
                 </div>
               </td>
               
@@ -80,7 +80,7 @@ export default function AccessControlTable({
                   value={member.role}
                   onChange={(e) => handleAction(() => updateUserRole(member.id, e.target.value), "Role recalibrated")}
                   disabled={member.id === currentUserId}
-                  className="bg-card border border-border text-[11px] font-bold text-foreground px-2 py-1 rounded-[var(--radius)] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none disabled:opacity-30 appearance-none"
+                  className="bg-card border border-border text-[11px] font-bold text-foreground px-2 py-1 rounded-[var(--radius-sm)] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none disabled:opacity-30 appearance-none"
                 >
                   <option value="OWNER">OWNER</option>
                   <option value="MANAGER">MANAGER</option>
@@ -98,10 +98,10 @@ export default function AccessControlTable({
                     handleAction(() => toggleUserEditPermission(member.id, !member.canEdit), member.canEdit ? "Muzzled" : "Unmuzzled")
                   }}
                   className={cn(
-                    "p-1.5 rounded-[var(--radius)] border transition-none h-auto min-w-[32px]",
+                    "p-1.5 rounded-[var(--radius-sm)] border transition-none h-auto min-w-[32px]",
                     member.canEdit 
                       ? "border-mercury-green/20 bg-mercury-green/10 text-mercury-green" 
-                      : "border-border bg-muted/50 text-muted-foreground"
+                      : "border-border bg-muted/50 text-clinical-muted"
                   )}
                 >
                   {member.canEdit ? "✓" : "⚠️"}
@@ -139,7 +139,7 @@ export default function AccessControlTable({
                     }
                   }}
                   disabled={member.id === currentUserId}
-                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[var(--radius)] transition-none disabled:opacity-10 h-auto"
+                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[var(--radius-sm)] transition-none disabled:opacity-10 h-auto"
                 >
                   [⌫]
                 </Button>

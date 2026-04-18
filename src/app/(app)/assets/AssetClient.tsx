@@ -56,7 +56,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
           <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-foreground/40 shrink-0">
              <LayoutTemplate size={14} />
           </div>
-          <span className="font-medium text-foreground tracking-tight">{prop.name}</span>
+          <span className="font-medium text-foreground tracking-clinical">{prop.name}</span>
         </div>
       ),
       align: "left" 
@@ -66,7 +66,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
       accessor: (prop: Property) => (
         <div className="flex items-center gap-2 text-foreground/40">
            <MapPin size={12} className="opacity-40" />
-           <span className="truncate max-w-[240px] text-[13px] tracking-tight">{prop.address}</span>
+           <span className="truncate max-w-[240px] text-[13px] tracking-clinical">{prop.address}</span>
         </div>
       ),
       align: "left" 
@@ -101,7 +101,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
       <div className="flex justify-end mb-10">
         <Button 
           onClick={() => setIsAddPropertyOpen(true)}
-          className="h-9 bg-brand hover:bg-brand/90 text-white rounded-[var(--radius)] text-[11px] font-bold px-5 shadow-xl shadow-brand/10 uppercase tracking-[0.15em] border-none"
+          className="h-9 bg-brand hover:bg-brand/90 text-white rounded-[var(--radius-sm)] text-[11px] font-bold px-5 shadow-xl shadow-brand/10 uppercase tracking-[0.15em] border-none"
         >
           <Plus className="w-4 h-4 mr-2" />
           Deploy New Asset
@@ -116,7 +116,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
 
       {isAddPropertyOpen && (
         <div className="fixed inset-0 z-[110] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-md">
-          <div className="bg-background border border-border w-full max-w-md rounded-[var(--radius)] overflow-hidden shadow-2xl">
+          <div className="bg-background border border-border w-full max-w-md rounded-[var(--radius-sm)] overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-border flex justify-between items-center bg-muted/30">
               <h3 className="text-[10px] font-bold text-foreground uppercase tracking-[0.15em] flex items-center gap-2">
                 <Plus className="w-4 h-4 text-brand" /> Register New Asset
@@ -135,7 +135,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
                   required
                   value={newPropData.name}
                   onChange={(e) => setNewPropData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-10 px-4 text-[14px] text-foreground outline-none focus:border-brand/40 transition-all font-sans" 
+                  className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] h-10 px-4 text-[14px] text-foreground outline-none focus:border-brand/40 transition-all font-sans" 
                   placeholder="e.g. Sovereign Heights"
                 />
               </div>
@@ -145,7 +145,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
                   required
                   value={newPropData.address}
                   onChange={(e) => setNewPropData(prev => ({ ...prev, address: e.target.value }))}
-                  className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-10 px-4 text-[14px] text-foreground outline-none focus:border-brand/40 transition-all font-sans" 
+                  className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] h-10 px-4 text-[14px] text-foreground outline-none focus:border-brand/40 transition-all font-sans" 
                   placeholder="Full physical location"
                 />
               </div>
@@ -153,7 +153,7 @@ export default function AssetClient({ initialData }: AssetClientProps) {
                 <Button 
                   type="submit" 
                   disabled={isCreating}
-                  className="w-full h-11 bg-brand text-white font-bold text-[11px] uppercase tracking-[0.15em] rounded-[var(--radius)] hover:bg-brand/90 transition-all border-none shadow-lg shadow-brand/10"
+                  className="w-full h-11 bg-brand text-white font-bold text-[11px] uppercase tracking-[0.15em] rounded-[var(--radius-sm)] hover:bg-brand/90 transition-all border-none shadow-lg shadow-brand/10"
                 >
                   {isCreating ? 'Synchronizing...' : 'Execute Registration'}
                 </Button>

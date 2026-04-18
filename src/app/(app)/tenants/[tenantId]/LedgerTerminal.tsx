@@ -70,7 +70,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
   }, [charges, ledgerEntries]);
 
   return (
-    <div className="bg-muted/5 border border-border rounded-[var(--radius)] overflow-hidden shadow-2xl backdrop-blur-sm">
+    <div className="bg-muted/5 border border-border rounded-[var(--radius-sm)] overflow-hidden shadow-2xl backdrop-blur-sm">
       
       {/* TAB NAVIGATION: TACTICAL TOGGLE */}
       <div className="px-10 py-8 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-muted/20">
@@ -79,7 +79,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
            <h3 className="text-display font-weight-display text-foreground">Forensic Unified Ledger</h3>
         </div>
 
-        <div className="flex p-1 bg-background border border-border rounded-[var(--radius)]">
+        <div className="flex p-1 bg-background border border-border rounded-[var(--radius-sm)]">
            <button 
              onClick={() => setActiveTab('timeline')}
              className={cn(
@@ -126,7 +126,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                        ) : (
                          <ArrowDownLeft className="w-3 h-3 text-mercury-green/60" />
                        )}
-                       <span className="text-[13px] font-medium text-foreground tracking-tight truncate max-w-sm">{row.description}</span>
+                       <span className="text-[13px] font-medium text-foreground tracking-clinical truncate max-w-sm">{row.description}</span>
                     </div>
                   </td>
                   <td className="px-10 py-5 text-right">
@@ -180,7 +180,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                               <div className="bg-muted h-9 w-9 rounded-[var(--radius-sm)] flex items-center justify-center text-foreground/40 border border-border">
                                  <DollarSign className="w-4 h-4" />
                               </div>
-                              <span className="text-foreground text-[13px] font-medium tracking-tight uppercase tracking-[0.1em]">{c.type}</span>
+                              <span className="text-foreground text-[13px] font-medium tracking-clinical uppercase tracking-[0.1em]">{c.type}</span>
                            </div>
                         </td>
                         <td className="px-10 py-6 text-center">
@@ -199,7 +199,7 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                            )}
                         </td>
                         <td className="px-10 py-6 text-right">
-                           <span className="text-[18px] text-foreground font-finance tabular-nums font-medium tracking-tight">
+                           <span className="text-[18px] text-foreground font-finance tabular-nums font-medium tracking-clinical">
                               ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                            </span>
                         </td>

@@ -65,7 +65,7 @@ export default async function TransactionsPage({
 
   return (
     <div className="w-full theme-sharp">
-      <Suspense fallback={<div className="h-96 flex items-center justify-center text-muted-foreground uppercase tracking-widest text-[11px] animate-pulse">Materializing Ledger...</div>}>
+      <Suspense fallback={<div className="h-96 flex items-center justify-center text-clinical-muted uppercase tracking-widest text-[11px] animate-pulse">Materializing Ledger...</div>}>
         <TransactionFeedClient 
           initialData={serializedLedger as any} 
           properties={metadata.properties || []}

@@ -42,7 +42,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="lg:col-span-2 bg-card border border-border rounded-[var(--radius)] p-6"
+        className="lg:col-span-2 bg-card border border-border rounded-[var(--radius-sm)] p-6"
       >
         <div className="flex items-center justify-between mb-8">
            <div>
@@ -50,7 +50,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
               <p className="text-mercury-label-caps text-clinical-muted mt-2">Gross realization over 6 months</p>
            </div>
            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-[var(--radius)]" style={{ backgroundColor: 'var(--sidebar-primary)' }} />
+              <div className="w-2 h-2 rounded-[var(--radius-sm)]" style={{ backgroundColor: 'var(--sidebar-primary)' }} />
               <span className="text-mercury-label-caps text-clinical-muted">Gross Revenue</span>
            </div>
         </div>
@@ -111,7 +111,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="bg-card border border-border rounded-[var(--radius)] p-6 flex flex-col"
+        className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex flex-col"
       >
         <div className="mb-6">
            <h3 className="text-mercury-heading text-foreground">NOI Allocation</h3>
@@ -159,7 +159,7 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
            {recoveryData.map((item, idx) => (
              <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-[var(--radius)] shrink-0" style={{ backgroundColor: CHART_SERIES[idx % CHART_SERIES.length] }} />
+                   <div className="w-2 h-2 rounded-[var(--radius-sm)] shrink-0" style={{ backgroundColor: CHART_SERIES[idx % CHART_SERIES.length] }} />
                    <span className="text-mercury-label-caps text-clinical-muted">{item.name}</span>
                 </div>
                 <span className="text-mercury-body text-mercury-finance text-foreground">${item.value.toLocaleString()}</span>

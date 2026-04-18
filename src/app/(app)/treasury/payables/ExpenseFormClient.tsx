@@ -131,7 +131,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   return (
     <div className="space-y-10">
       {sessionCount > 0 && lastEntry && (
-        <div className="rounded-[var(--radius)] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
+        <div className="rounded-[var(--radius-sm)] px-10 py-8 flex items-center justify-between bg-[var(--card)] border border-[var(--primary)]/20 animate-in zoom-in-95 duration-500">
           <div className="flex items-center space-x-6">
             <div className={cn("w-14 h-14 rounded-[calc(var(--radius)*2)] flex items-center justify-center border-4 border-foreground/20", lastEntry.type === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive')}>
                {lastEntry.type === 'REVENUE' ? <ArrowUpCircle className="w-7 h-7 text-foreground" /> : <ArrowDownCircle className="w-7 h-7 text-foreground" />}
@@ -145,14 +145,14 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               </p>
             </div>
           </div>
-          <div className="bg-[var(--primary)]/20 p-3 rounded-[var(--radius)]">
+          <div className="bg-[var(--primary)]/20 p-3 rounded-[var(--radius-sm)]">
             <CheckCircle className="w-8 h-8 text-[var(--primary)]" />
           </div>
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-        <div className="bg-card border border-border border-border rounded-[var(--radius)] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="bg-card border border-border border-border rounded-[var(--radius-sm)] p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
           
           {/* FLOW TYPE SELECTOR — SIGNAL-ALIGNED SIGNAL GRADIENTS */}
           <div className="md:col-span-2 grid grid-cols-2 gap-6 p-2 bg-muted/50 rounded-[calc(var(--radius)*2)]">
@@ -160,7 +160,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
                className={cn("py-5 rounded-[var(--radius-sm)] text-mercury-label-caps transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'EXPENSE' ? 'bg-destructive text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
+                 selectedType === 'EXPENSE' ? 'bg-destructive text-foreground' : 'text-clinical-muted hover:text-clinical-muted dark:hover:text-foreground'
                )}
              >
                 <ArrowDownCircle className="w-4 h-4" /> Outflow / Out-Take
@@ -169,7 +169,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
                type="button" 
                onClick={() => setValue('type', 'REVENUE')}
                className={cn("py-5 rounded-[var(--radius-sm)] text-mercury-label-caps transition-all duration-500 flex items-center justify-center gap-3",
-                 selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
+                 selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-foreground' : 'text-clinical-muted hover:text-clinical-muted dark:hover:text-foreground'
                )}
              >
                 <ArrowUpCircle className="w-4 h-4" /> Inflow / Revenue
@@ -185,7 +185,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           <div className="space-y-1">
             <label className={labelClass}>Liquid Volume (Amount)</label>
             <div className="relative">
-              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-clinical-muted">$</span>
               <input type="text" {...register('amount')} className={cn(inputClass(errors.amount), "pl-12 text-2xl")} placeholder="00.00" />
             </div>
             {errors.amount && <p className="text-mercury-label-caps text-destructive mt-2 ml-1">{errors.amount.message}</p>}
@@ -254,7 +254,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
             <button
               type="submit"
               disabled={isSubmitting}
-              className={cn("w-full text-foreground h-20 rounded-[var(--radius)] transition-all flex items-center justify-center  tracking-[0.5rem] text-[12px] group relative overflow-hidden active:translate-y-[1px] transition-transform",
+              className={cn("w-full text-foreground h-20 rounded-[var(--radius-sm)] transition-all flex items-center justify-center  tracking-[0.5rem] text-[12px] group relative overflow-hidden active:translate-y-[1px] transition-transform",
                 selectedType === 'REVENUE' ? 'bg-[var(--primary)]' : 'bg-destructive'
               )}
             >

@@ -33,14 +33,14 @@ export default function AccountTelemetryHud({ accountId, balance }: AccountTelem
   };
 
   return (
-    <div className="bg-muted/10 border border-border p-10 rounded-[var(--radius)] mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-2xl backdrop-blur-sm">
+    <div className="bg-muted/10 border border-border p-10 rounded-[var(--radius-sm)] mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-2xl backdrop-blur-sm">
       
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           {getIcon()}
           <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40">{getLabel()}</span>
         </div>
-        <div className="text-display font-weight-display text-foreground font-finance tabular-nums tracking-tight leading-none text-4xl md:text-5xl">
+        <div className="text-display font-weight-display text-foreground font-finance tabular-nums tracking-clinical leading-none text-4xl md:text-5xl">
           {formatter.format(balance)}
         </div>
       </div>

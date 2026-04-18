@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
 import { Check, Trash2 } from 'lucide-react';
 
-const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500";
+const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius-sm)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500";
 const labelClass = "text-[10px] text-[#9CA3AF] uppercase tracking-widest font-bold mb-1 block";
 
 const submitAction = async (prevState: any, formData: FormData) => {
@@ -108,7 +108,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <button 
             type="submit"
             disabled={isMoveOutPending}
-            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius)] h-10 text-[12px] font-bold tracking-tight hover:bg-destructive/10 transition-colors disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-50"
           >
             <Trash2 size={14} />
             {isMoveOutPending ? 'Executing...' : 'Annul Lease'}
@@ -222,7 +222,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <button 
             type="submit" 
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius)] h-10 text-[12px] font-bold tracking-tight hover:bg-brand/90 transition-colors disabled:opacity-50 "
+            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-50 "
           >
             <Check size={14} />
             {isPending ? 'Processing Ingestion...' : 'Execute Ingestion'}

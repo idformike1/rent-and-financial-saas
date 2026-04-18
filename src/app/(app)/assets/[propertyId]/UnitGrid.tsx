@@ -31,7 +31,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
   }, [pathname, searchParams, router]);
 
   return (
-    <div className="w-full bg-muted/10 border border-border rounded-[var(--radius)] overflow-hidden backdrop-blur-sm shadow-xl">
+    <div className="w-full bg-muted/10 border border-border rounded-[var(--radius-sm)] overflow-hidden backdrop-blur-sm shadow-xl">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[20%]" />
@@ -77,7 +77,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
                 )}
               >
                 <td className="px-6 py-5">
-                  <span className="font-mono text-foreground tracking-tight flex items-center gap-3">
+                  <span className="font-mono text-foreground tracking-clinical flex items-center gap-3">
                     <div className={cn("w-1.5 h-1.5 rounded-full", dotColor)} />
                     {unit.unitNumber}
                   </span>
@@ -95,7 +95,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
                   </span>
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <span className="font-finance tracking-tight text-foreground/80 tabular-nums">
+                  <span className="font-finance tracking-clinical text-foreground/80 tabular-nums">
                     {formatCurrency(unit.marketRent)}
                   </span>
                 </td>

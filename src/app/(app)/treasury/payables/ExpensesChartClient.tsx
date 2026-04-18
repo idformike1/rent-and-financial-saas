@@ -15,8 +15,8 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
 
   if (data.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center border border-dashed border-border rounded-[var(--radius)]">
-        <p className="text-[10px] font-bold text-muted-foreground ">No Data Nodes Found</p>
+      <div className="h-full flex items-center justify-center border border-dashed border-border rounded-[var(--radius-sm)]">
+        <p className="text-[10px] font-bold text-clinical-muted ">No Data Nodes Found</p>
       </div>
     );
   }

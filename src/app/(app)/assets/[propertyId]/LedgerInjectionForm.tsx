@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
 import { Plus } from 'lucide-react';
 
-const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500";
+const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius-sm)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500";
 
 const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
   const type = formData.get('type') as string;
@@ -112,7 +112,7 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
       <button 
         type="submit" 
         disabled={isPending}
-        className="px-6 h-10 bg-[#E5E7EB] text-[#12121A] rounded-[var(--radius)] text-[11px] font-bold tracking-widest hover:bg-white transition-colors disabled:opacity-50 shrink-0 flex items-center justify-center gap-2 uppercase"
+        className="px-6 h-10 bg-[#E5E7EB] text-[#12121A] rounded-[var(--radius-sm)] text-[11px] font-bold tracking-widest hover:bg-white transition-colors disabled:opacity-50 shrink-0 flex items-center justify-center gap-2 uppercase"
       >
         <Plus size={14} />
         {isPending ? 'Syncing...' : 'Inject Row'}

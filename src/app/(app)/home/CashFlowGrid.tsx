@@ -37,12 +37,12 @@ export default function CashFlowGrid() {
     <div className="mt-10">
       <div className="flex items-center gap-4 mb-4">
         <h2 className="text-mercury-heading text-foreground">Cash Flow Dynamics</h2>
-        <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.02] border border-white/[0.08] rounded-[var(--radius)]">
-           <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground bg-transparent border-none">
+        <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.02] border border-white/[0.08] rounded-[var(--radius-sm)]">
+           <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-clinical-muted hover:text-foreground bg-transparent border-none">
              ◀
            </Button>
            <span className="text-mercury-body text-foreground">Apr 2026</span>
-           <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground bg-transparent border-none">
+           <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-clinical-muted hover:text-foreground bg-transparent border-none">
              ▶
            </Button>
         </div>

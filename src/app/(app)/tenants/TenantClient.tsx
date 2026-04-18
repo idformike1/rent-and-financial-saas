@@ -47,7 +47,7 @@ export default function TenantClient({ initialData }: TenantClientProps) {
             {tenant.name.charAt(0)}
           </div>
           <div className="flex flex-col">
-            <span className="font-medium text-foreground tracking-tight">{tenant.name}</span>
+            <span className="font-medium text-foreground tracking-clinical">{tenant.name}</span>
             <span className="text-[10px] text-foreground/40 font-mono lowercase">{tenant.email || 'no-endpoint'}</span>
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function TenantClient({ initialData }: TenantClientProps) {
         if (!lease) return <span className="text-zinc-700 italic text-[11px]">UNASSIGNED</span>;
         return (
           <div className="flex flex-col">
-            <span className="text-foreground font-medium tracking-tight">{lease.unit.property.name}</span>
+            <span className="text-foreground font-medium tracking-clinical">{lease.unit.property.name}</span>
             <span className="text-[10px] text-foreground/40 uppercase tracking-[0.15em] font-bold">Unit {lease.unit.unitNumber}</span>
           </div>
         );
@@ -78,7 +78,7 @@ export default function TenantClient({ initialData }: TenantClientProps) {
               <Badge variant="success" className="w-fit scale-90 origin-left desaturate opacity-60">
                 {lease.status}
               </Badge>
-              <span className="text-[10px] text-foreground/20 font-mono tracking-tighter">
+              <span className="text-[10px] text-foreground/20 font-mono tracking-clinicaler">
                 EXP: {new Date(lease.endDate).toLocaleDateString()}
               </span>
           </div>
@@ -93,7 +93,7 @@ export default function TenantClient({ initialData }: TenantClientProps) {
         return (
           <div className="flex flex-col items-end">
             <span className={cn(
-              "font-mono font-bold tracking-tight",
+              "font-mono font-bold tracking-clinical",
               balance > 0 ? "text-destructive/80" : "text-mercury-green"
             )}>
               ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}

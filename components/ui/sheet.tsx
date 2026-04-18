@@ -60,7 +60,7 @@ const SheetContent = React.forwardRef<
         className="flex-1 flex flex-col relative"
       >
         {children}
-        <SheetPrimitive.Close className="absolute right-6 top-6 rounded-[var(--radius)] opacity-40 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none p-1 z-50">
+        <SheetPrimitive.Close className="absolute right-6 top-6 rounded-[var(--radius-sm)] opacity-40 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none p-1 z-50">
           <X className="h-5 w-5 text-white" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
@@ -117,7 +117,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm text-clinical-muted", className)}
     {...props}
   />
 ))

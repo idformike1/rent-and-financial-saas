@@ -24,24 +24,24 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
     <div className="space-y-8">
       {/* SEARCH COMMAND STRIP */}
       <div className="relative group max-w-sm">
-         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-clinical-muted group-focus-within:text-primary transition-colors" />
          <Input 
            type="text" 
            placeholder="Search identity registry..." 
            value={searchQuery}
            onChange={(e) => setSearchQuery(e.target.value)}
-           className="pl-10 h-10" 
+           className="pl-10 h-10 rounded-[var(--radius-sm)] text-mercury-body" 
          />
       </div>
 
       {/* CORE REGISTRY TABLE */}
-      <div className="bg-card border border-border rounded-[var(--radius)] overflow-hidden">
+      <div className="bg-card border border-border rounded-[var(--radius-sm)] overflow-hidden">
         {filteredTenants.length === 0 ? (
           <div className="p-20 text-center space-y-4 bg-card">
             <User className="w-10 h-10 text-border mx-auto" />
             <div>
-               <p className="text-xl font-bold text-foreground tracking-tight">Identity Void</p>
-               <p className="text-muted-foreground text-[11px] mt-2 uppercase leading-relaxed font-bold">No active signals found matching your current search parameters.</p>
+               <p className="text-mercury-headline text-foreground">Identity Void</p>
+               <p className="text-clinical-muted text-mercury-body mt-2">No active signals found matching your current search parameters.</p>
             </div>
           </div>
         ) : (
@@ -49,10 +49,10 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
             <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
               <thead className="bg-muted/50 border-b border-border">
                 <tr>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Identity Protocol</th>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Lease Portfolio</th>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase">Status Flag</th>
-                  <th className="px-4 py-3 text-[12px] font-bold text-muted-foreground uppercase text-right">Domain Access</th>
+                  <th className="px-4 py-3 text-mercury-label-caps text-clinical-muted">Identity Protocol</th>
+                  <th className="px-4 py-3 text-mercury-label-caps text-clinical-muted">Lease Portfolio</th>
+                  <th className="px-4 py-3 text-mercury-label-caps text-clinical-muted">Status Flag</th>
+                  <th className="px-4 py-3 text-mercury-label-caps text-clinical-muted text-right">Domain Access</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -64,23 +64,23 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                     <tr key={tenant.id} className="h-[64px] hover:bg-foreground/[0.02] group transition-none cursor-pointer">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-[var(--radius)] bg-muted border border-border text-foreground flex items-center justify-center font-bold text-sm">
+                          <div className="h-10 w-10 rounded-[var(--radius-sm)] bg-muted border border-border text-foreground flex items-center justify-center font-bold text-mercury-body">
                             {tenant.name.charAt(0)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[14px] font-bold text-foreground tracking-tight">{tenant.name}</span>
-                            <span className="text-[10px] text-muted-foreground uppercase font-bold">{tenant.email || 'PROTOCOL_NULL'}</span>
+                            <span className="text-mercury-heading text-foreground">{tenant.name}</span>
+                            <span className="text-mercury-label-caps text-clinical-muted">{tenant.email || 'PROTOCOL_NULL'}</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <Building className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-sm font-bold text-foreground">
+                          <Building className="w-3.5 h-3.5 text-clinical-muted" />
+                          <span className="text-mercury-heading text-foreground">
                             {primaryLease?.unit.unitNumber || 'UNASSIGNED'}
                           </span>
                         </div>
-                        <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold">{activeLeases.length} ACTIVE</p>
+                        <p className="text-mercury-label-caps text-clinical-muted mt-1">{activeLeases.length} ACTIVE</p>
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant={activeLeases.length > 0 ? 'success' : 'default'} className="text-[10px] font-bold">
@@ -89,7 +89,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                       </td>
                       <td className="px-4 py-3 text-right">
                         <Link href={`/tenants/${tenant.id}`} onClick={(e) => e.stopPropagation()}>
-                           <Button type="button" variant="secondary" disabled={false} className="h-9 w-9 p-0 rounded-[var(--radius)] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-none">
+                           <Button type="button" variant="secondary" disabled={false} className="h-9 w-9 p-0 rounded-[var(--radius-sm)] border border-border flex items-center justify-center text-clinical-muted hover:text-foreground hover:bg-muted transition-none">
                               <ArrowRight className="w-4 h-4" />
                            </Button>
                         </Link>

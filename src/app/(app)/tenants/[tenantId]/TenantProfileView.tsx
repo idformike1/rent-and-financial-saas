@@ -210,10 +210,10 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
         <div className="flex items-center gap-3">
            {!tenant.isDeleted && (
              <>
-               <Button type="button" variant="primary" onClick={onReconcileCredits} disabled={isReconciling} className="h-9 px-6 text-[10px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)]">
+               <Button type="button" variant="primary" onClick={onReconcileCredits} disabled={isReconciling} className="h-9 px-6 text-[10px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius-sm)]">
                   {isReconciling ? 'SYNCHRONIZING...' : 'Execute Settlement'}
                </Button>
-               <Button type="button" variant="secondary" disabled={false} onClick={() => setIsDrawerOpen(true)} className="h-9 px-6 text-[10px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)] bg-muted border-border hover:bg-muted/50">
+               <Button type="button" variant="secondary" disabled={false} onClick={() => setIsDrawerOpen(true)} className="h-9 px-6 text-[10px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius-sm)] bg-muted border-border hover:bg-muted/50">
                   Log Entry
                </Button>
                <Button type="button" variant="ghost" disabled={false} onClick={() => setIsEditModalOpen(true)} className="h-9 px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 hover:text-foreground">
@@ -236,11 +236,11 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius-sm)] bg-destructive/60" /> Defaults</div>
             </div>
          </div>
-         <div className="bg-muted/10 border border-border p-6 rounded-[var(--radius)] grid grid-cols-6 lg:grid-cols-12 gap-4">
+         <div className="bg-muted/10 border border-border p-6 rounded-[var(--radius-sm)] grid grid-cols-6 lg:grid-cols-12 gap-4">
             {tenant.stripChart.map((m, idx) => (
                <div key={idx} className="space-y-4 text-center">
                   <div className={cn(
-                    "h-20 rounded-[var(--radius)] border transition-all flex items-center justify-center relative overflow-hidden group",
+                    "h-20 rounded-[var(--radius-sm)] border transition-all flex items-center justify-center relative overflow-hidden group",
                     m.status === 'GREEN' ? "bg-mercury-green/10 border-mercury-green/30" :
                     m.status === 'YELLOW' ? "bg-amber-500/10 border-amber-500/30" :
                     m.status === 'RED' ? "bg-destructive/10 border-destructive/30" :
@@ -261,7 +261,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
         
         {/* CORE PORTFOLIO */}
         <div className="md:col-span-4 space-y-8">
-           <div className="bg-muted/10 border border-border rounded-[var(--radius)] p-6 relative overflow-hidden group">
+           <div className="bg-muted/10 border border-border rounded-[var(--radius-sm)] p-6 relative overflow-hidden group">
               <div className="absolute -right-12 -top-6 w-40 h-40 bg-brand/5 rounded-full blur-[60px] group-hover:bg-brand/10 transition-all duration-700" />
               <p className="text-foreground/40 font-bold uppercase tracking-[0.15em] text-[10px] mb-6">Aggregate Liability</p>
               <div className="text-display font-weight-display text-foreground font-finance tabular-nums leading-none">
@@ -278,7 +278,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
               </div>
            </div>
 
-           <div className="bg-muted/10 border border-border rounded-[var(--radius)] p-6">
+           <div className="bg-muted/10 border border-border rounded-[var(--radius-sm)] p-6">
               <div className="flex justify-between items-center mb-10">
                  <h4 className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] flex items-center">
                     <Layers className="w-4 h-4 mr-4 text-brand opacity-40" /> Active Assets
@@ -345,7 +345,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
       
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-            <div className="bg-background rounded-[var(--radius)] w-full max-w-xl overflow-hidden border border-border relative shadow-2xl">
+            <div className="bg-background rounded-[var(--radius-sm)] w-full max-w-xl overflow-hidden border border-border relative shadow-2xl">
                <button 
                  onClick={() => setIsEditModalOpen(false)} 
                  className="absolute top-6 right-6 text-foreground/20 hover:text-foreground h-10 w-10 flex items-center justify-center transition-colors"
@@ -360,27 +360,27 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                  <div className="space-y-6">
                    <div>
                      <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Legal Identifier</label>
-                     <input {...register('name')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-xl outline-none focus:border-brand/40 transition-all text-foreground" />
+                     <input {...register('name')} className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] h-12 px-6 text-xl outline-none focus:border-brand/40 transition-all text-foreground" />
                    </div>
                    <div className="grid grid-cols-2 gap-6">
                      <div>
                        <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Electronic Endpoint</label>
-                       <input {...register('email')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-sm font-medium outline-none focus:border-brand/40 transition-all text-foreground" />
+                       <input {...register('email')} className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] h-12 px-6 text-sm font-medium outline-none focus:border-brand/40 transition-all text-foreground" />
                      </div>
                      <div>
                        <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Telephonic Line</label>
-                       <input {...register('phone')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-sm font-medium outline-none focus:border-brand/40 transition-all text-foreground" />
+                       <input {...register('phone')} className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] h-12 px-6 text-sm font-medium outline-none focus:border-brand/40 transition-all text-foreground" />
                      </div>
                    </div>
                    <div>
                      <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Structural Verification (ID/SSN)</label>
-                     <input {...register('nationalId')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-xl outline-none focus:border-brand/40 transition-all text-foreground " />
+                     <input {...register('nationalId')} className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] h-12 px-6 text-xl outline-none focus:border-brand/40 transition-all text-foreground " />
                    </div>
                  </div>
                   <Button 
                     type="submit" 
                     isLoading={isSubmitting}
-                    className="w-full h-12 bg-brand text-white text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)] hover:bg-brand/90 transition-all border-none"
+                    className="w-full h-12 bg-brand text-white text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius-sm)] hover:bg-brand/90 transition-all border-none"
                   >
                      Commit Logic Changes
                   </Button>
@@ -391,12 +391,12 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
 
       {isAddLeaseModalOpen && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div className="bg-card rounded-[var(--radius)] w-full max-w-xl overflow-hidden border border-border relative">
+            <div className="bg-card rounded-[var(--radius-sm)] w-full max-w-xl overflow-hidden border border-border relative">
                <Button 
                  type="button"
                  variant="ghost"
                  onClick={() => setIsAddLeaseModalOpen(false)} 
-                 className="absolute top-6 right-12 text-muted-foreground hover:text-foreground h-10 w-10 p-0"
+                 className="absolute top-6 right-12 text-clinical-muted hover:text-foreground h-10 w-10 p-0"
                >
                  <XCircle className="w-10 h-10" />
                </Button>
@@ -406,20 +406,20 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
               </div>
               <form onSubmit={handleLeaseSubmit(onAddLease)} className="p-6 space-y-10">
                  <div>
-                    <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Target Deployment Asset</label>
-                    <select {...regLease('unitId')} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-xl outline-none focus:border-brand transition-all appearance-none cursor-pointer text-foreground">
+                    <label className="text-[10px] text-clinical-muted   block mb-4 ml-6">Target Deployment Asset</label>
+                    <select {...regLease('unitId')} className="w-full bg-background border border-border rounded-[var(--radius-sm)] p-6 text-xl outline-none focus:border-brand transition-all appearance-none cursor-pointer text-foreground">
                       <option value="">-- Deploy to Node --</option>
                       {availableUnits.map(u => (<option key={u.id} value={u.id}>Unit {u.unitNumber} ({u.type})</option>))}
                     </select>
                  </div>
                  <div className="grid grid-cols-2 gap-8">
                     <div>
-                      <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Monthly Fisc ($)</label>
-                      <input type="number" {...regLease('rentAmount', {valueAsNumber: true})} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all" />
+                      <label className="text-[10px] text-clinical-muted   block mb-4 ml-6">Monthly Fisc ($)</label>
+                      <input type="number" {...regLease('rentAmount', {valueAsNumber: true})} className="w-full bg-background border border-border rounded-[var(--radius-sm)] p-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all" />
                     </div>
                     <div>
-                      <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Collateral ($)</label>
-                      <input type="number" {...regLease('depositAmount', {valueAsNumber: true})} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all" />
+                      <label className="text-[10px] text-clinical-muted   block mb-4 ml-6">Collateral ($)</label>
+                      <input type="number" {...regLease('depositAmount', {valueAsNumber: true})} className="w-full bg-background border border-border rounded-[var(--radius-sm)] p-6 text-sm font-bold text-foreground outline-none focus:border-brand transition-all" />
                     </div>
                  </div>
                   <Button 
@@ -436,13 +436,13 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
 
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div className="bg-card rounded-[var(--radius)] w-full max-w-lg overflow-hidden border border-rose-500/20 relative">
+            <div className="bg-card rounded-[var(--radius-sm)] w-full max-w-lg overflow-hidden border border-rose-500/20 relative">
                <div className="p-6 text-center">
-                  <div className="bg-rose-500/10 text-rose-500 rounded-[var(--radius)] w-32 h-32 flex items-center justify-center mx-auto mb-10 border border-rose-500/20">
+                  <div className="bg-rose-500/10 text-rose-500 rounded-[var(--radius-sm)] w-32 h-32 flex items-center justify-center mx-auto mb-10 border border-rose-500/20">
                     <Trash2 className="w-14 h-14" />
                   </div>
                   <h2 className="text-display font-weight-display text-foreground mb-6  decoration-rose-500 decoration-4 underline underline-offset-8">Critical Purge Protocol</h2>
-                  <p className="text-muted-foreground font-medium mb-12 leading-relaxed px-10 text-sm">
+                  <p className="text-clinical-muted font-medium mb-12 leading-relaxed px-10 text-sm">
                     Initiating <span className="text-rose-500 ">Soft-Delete Phase 4</span>. This registry node will be sequestered into the immutable archive. Active unit occupancy will be terminated.
                   </p>
                    <div className="flex flex-col gap-4">
@@ -459,7 +459,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                       type="button"
                       variant="ghost"
                       onClick={() => setIsDeleteModalOpen(false)} 
-                      className="w-full text-muted-foreground text-[8px] py-10 hover:text-foreground"
+                      className="w-full text-clinical-muted text-[8px] py-10 hover:text-foreground"
                     >
                       [Abort_Protocol]
                     </Button>
@@ -471,13 +471,13 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
 
       {isMoveOutModalOpen && (
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div className="bg-card rounded-[var(--radius)] w-full max-w-lg overflow-hidden border border-border relative">
+            <div className="bg-card rounded-[var(--radius-sm)] w-full max-w-lg overflow-hidden border border-border relative">
                <div className="p-6 text-center">
-                  <div className="bg-amber-500/10 text-amber-500 rounded-[var(--radius)] w-28 h-28 flex items-center justify-center mx-auto mb-10 border border-amber-500/20">
+                  <div className="bg-amber-500/10 text-amber-500 rounded-[var(--radius-sm)] w-28 h-28 flex items-center justify-center mx-auto mb-10 border border-amber-500/20">
                     <Home className="w-12 h-12" />
                   </div>
                   <h2 className="text-display font-weight-display text-foreground mb-6 leading-none">Decommission Unit {isMoveOutModalOpen.unitNumber}?</h2>
-                  <p className="text-muted-foreground font-medium mb-12 leading-relaxed px-10 text-sm">
+                  <p className="text-clinical-muted font-medium mb-12 leading-relaxed px-10 text-sm">
                     Terminate lease specific to <span className="text-foreground ">Unit {isMoveOutModalOpen.unitNumber}</span>. Multi-unit nodes will remain operational.
                   </p>
                    <div className="flex flex-col gap-4">
@@ -494,7 +494,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                       type="button"
                       variant="ghost"
                       onClick={() => setIsMoveOutModalOpen(null)} 
-                      className="w-full text-muted-foreground text-[8px] py-8 hover:text-foreground"
+                      className="w-full text-clinical-muted text-[8px] py-8 hover:text-foreground"
                     >
                       Maintain Assignment
                     </Button>

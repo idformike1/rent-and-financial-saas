@@ -4,25 +4,25 @@ import { Home, Zap, AlertTriangle } from 'lucide-react'
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="bg-card rounded-[var(--radius)] p-6 max-w-xl w-full text-center space-y-10 border border-border">
+      <div className="bg-card rounded-[var(--radius-sm)] p-6 max-w-xl w-full text-center space-y-10 border border-border">
         
         {/* Icon */}
-        <div className="w-16 h-16 bg-background border border-border rounded-[var(--radius)] flex items-center justify-center mx-auto mb-8">
-          <AlertTriangle className="w-8 h-8 text-muted-foreground" />
+        <div className="w-16 h-16 bg-background border border-border rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-8">
+          <AlertTriangle className="w-8 h-8 text-clinical-muted" />
         </div>
 
         {/* Code */}
         <div className="space-y-4">
-          <p className="text-[10px] font-bold text-muted-foreground  ">
+          <p className="text-[10px] font-bold text-clinical-muted  ">
             System Error // Routing Protocol Failure
           </p>
           <h1 className="text-7xl font-bold text-foreground leading-none">
-            4<span className="text-muted-foreground">0</span>4
+            4<span className="text-clinical-muted">0</span>4
           </h1>
           <p className="text-lg font-bold text-foreground">
             Coordinates Lost
           </p>
-          <p className="text-sm text-muted-foreground font-bold leading-relaxed max-w-sm mx-auto">
+          <p className="text-sm text-clinical-muted font-bold leading-relaxed max-w-sm mx-auto">
             The asset you requested does not exist in this registry. The route may have been decommissioned or never provisioned.
           </p>
         </div>
@@ -33,13 +33,13 @@ export default function NotFound() {
         {/* CTA */}
         <Link
           href="/home"
-          className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold  text-[11px] px-8 py-4 rounded-[var(--radius)] hover:bg-primary/90 transition-none "
+          className="inline-flex items-center gap-3 bg-primary text-primary-foreground font-bold  text-[11px] px-8 py-4 rounded-[var(--radius-sm)] hover:bg-primary/90 transition-none "
         >
           <Zap className="w-4 h-4" />
           Return Home
         </Link>
 
-        <p className="text-[9px] font-bold text-muted-foreground ">
+        <p className="text-[9px] font-bold text-clinical-muted ">
           Mercury Alpha // System Navigation Protocol
         </p>
       </div>

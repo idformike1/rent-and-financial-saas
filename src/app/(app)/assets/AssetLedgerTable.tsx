@@ -37,7 +37,7 @@ export default function AssetLedgerTable({ properties }: AssetLedgerTableProps) 
                 <td className="py-3 px-4 font-mono">
                   {property.id.slice(0, 8).toUpperCase()}
                 </td>
-                <td className="py-3 px-4 uppercase tracking-tight">
+                <td className="py-3 px-4 uppercase tracking-clinical">
                   {property.name} — {property.address}
                 </td>
                 <td className="py-3 px-4 text-right font-mono tabular-nums">
@@ -68,7 +68,7 @@ export default function AssetLedgerTable({ properties }: AssetLedgerTableProps) 
                   <td className="py-2 px-4 text-right">—</td>
                   <td className="py-2 px-4 text-center">
                     <span className={cn(
-                      "font-mono font-bold tracking-tighter scale-90 inline-block",
+                      "font-mono font-bold tracking-clinicaler scale-90 inline-block",
                       unit.status.includes('OPTIMIZED') ? "text-mercury-green" : 
                       unit.status.includes('CRITICAL') ? "text-destructive" : "text-amber-500"
                     )}>

@@ -286,7 +286,7 @@ export default function InsightsClient(props: InsightsClientProps) {
   return (
     <div className="w-full">
       {/* ── CONTEXT RESTORATION (Page Identity) ── */}
-      <h1 className="text-[24px] font-normal text-foreground mb-6 flex items-center gap-3 tracking-clinical font-arcadia">
+      <h1 className="text-mercury-headline text-foreground mb-6 flex items-center gap-3">
         Insights
       </h1>
 
@@ -294,16 +294,16 @@ export default function InsightsClient(props: InsightsClientProps) {
       <div className="flex justify-between items-center w-full mb-2">
         {/* Segmented Control */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center h-8 bg-transparent border border-border rounded-[var(--radius)] p-[2px] ">
+          <div className="flex items-center h-8 bg-transparent border border-border rounded-[var(--radius-sm)] p-[2px] ">
             {tabs.map((tab, idx) => (
               <React.Fragment key={tab.id}>
                 <div
                   onClick={() => setActiveTab(tab.id as TabType)}
                   className={cn(
-                    "text-[15px] leading-[24px] h-full flex items-center px-4 rounded-[var(--radius)] cursor-pointer transition-all font-normal whitespace-nowrap",
+                    "text-mercury-body h-full flex items-center px-4 rounded-[var(--radius-sm)] cursor-pointer transition-all font-normal whitespace-nowrap",
                     activeTab === tab.id
                       ? "bg-muted text-white "
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-clinical-muted hover:text-foreground"
                   )}
                 >
                   {tab.label}
@@ -320,7 +320,7 @@ export default function InsightsClient(props: InsightsClientProps) {
             type="button" 
             variant="ghost" 
             onClick={handleDownload}
-            className="h-8 w-8 flex items-center justify-center p-0 rounded-[var(--radius)] text-muted-foreground bg-transparent border-none"
+            className="h-8 w-8 flex items-center justify-center p-0 rounded-[var(--radius-sm)] text-clinical-muted bg-transparent border-none"
           >
             [↓]
           </Button>
@@ -332,7 +332,7 @@ export default function InsightsClient(props: InsightsClientProps) {
             type="button" 
             variant="ghost" 
             onClick={handleCompare}
-            className="h-8 px-4 bg-white/[0.03] border border-border rounded-[var(--radius)] text-[15px] leading-[24px] font-normal text-foreground"
+            className="h-8 px-4 bg-white/[0.03] border border-border rounded-[var(--radius-sm)] text-mercury-body font-normal text-foreground"
           >
             [+] Compare to
             <span className="text-[10px] ml-1 opacity-70">▼</span>
@@ -353,26 +353,26 @@ export default function InsightsClient(props: InsightsClientProps) {
               <div className="absolute bottom-[4px] left-[66.6%] w-[1px] h-[4px] bg-white opacity-20"></div>
               <div className="absolute bottom-[4px] left-[83.3%] w-[1px] h-[4px] bg-white opacity-20"></div>
               <div className="absolute bottom-[4px] left-0 w-[1.2px] h-[12px] bg-white"></div>
-              <span className="absolute bottom-[16px] left-0 text-[11px] font-normal text-muted-foreground">{month}</span>
-              {month === 'Jan' && <span className="absolute bottom-[36px] left-0 text-[16px] font-normal text-white/40 tracking-tight">2026</span>}
+              <span className="absolute bottom-[16px] left-0 text-mercury-label-caps text-clinical-muted">{month}</span>
+              {month === 'Jan' && <span className="absolute bottom-[36px] left-0 text-[16px] font-normal text-white/40 tracking-clinical">2026</span>}
             </div>
           ))}
           <div
             onPointerDown={handlePointerDown}
             style={{ left: `${scrubberState.left}%`, width: `${scrubberState.width}%` }}
             className={cn(
-              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[var(--radius)] cursor-grab active:cursor-grabbing transition-all z-10 select-none [1px] -blue-500/20",
+              "absolute bottom-[4px] h-[48px] bg-blue-500/[0.08] border-[1.5px] border-blue-500/[0.6] rounded-[var(--radius-sm)] cursor-grab active:cursor-grabbing transition-all z-10 select-none [1px] -blue-500/20",
               isDragging ? "bg-blue-500/[0.15] border-blue-500 -[0_0_25px_rgba(96,165,250,0.45)] scale-y-[1.02]" : "hover:bg-blue-500/[0.12] hover:border-blue-500/[0.8] hover:-[0_0_20px_rgba(96,165,250,0.35)]"
             )}
           >
-            <span className="absolute top-2 left-2 text-white text-[16px] font-normal whitespace-nowrap pointer-events-none tracking-tight leading-none drop-">
+            <span className="absolute top-2 left-2 text-white text-mercury-heading font-normal whitespace-nowrap pointer-events-none drop-">
               {dateRange?.from && dateRange?.to ? `${format(dateRange.from, 'LLL dd')} – ${format(dateRange.to, 'LLL dd')}` : 'Select Range'}
             </span>
             <div onPointerDown={(e) => { e.stopPropagation(); handleLeftDown(e); }} className="absolute top-0 left-0 bottom-0 w-[20px] flex items-center justify-start cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-[var(--radius)]"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity ml-1 rounded-[var(--radius-sm)]"></div>
             </div>
             <div onPointerDown={(e) => { e.stopPropagation(); handleRightDown(e); }} className="absolute top-0 right-0 bottom-0 w-[20px] flex items-center justify-end cursor-col-resize z-20 group">
-              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-[var(--radius)]"></div>
+              <div className="w-[2px] h-[16px] bg-primary opacity-[0.08] group-hover:opacity-100 transition-opacity mr-1 rounded-[var(--radius-sm)]"></div>
             </div>
           </div>
         </div>
@@ -383,21 +383,21 @@ export default function InsightsClient(props: InsightsClientProps) {
           {activeTab === 'overview' ? (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
-                <p className="text-[38px] text-white tracking-clinical leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 500 }}>
+                <p className="text-mercury-body text-foreground mb-2 tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Net cashflow</p>
+                <p className="text-mercury-headline text-white tracking-clinical">
                   {renderMetric(metrics.net, true)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
-                <p className="text-[24px] text-white tracking-clinical leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 500 }}>
+                <p className="text-mercury-body text-foreground mb-[4px] tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Money in</p>
+                <p className="text-mercury-heading text-white tracking-clinical">
                   {renderMetric(metrics.income)}
                 </p>
               </div>
               <div className="flex flex-row flex-1 justify-between items-end md:pb-0.5 pr-12">
                 <div className="flex flex-col">
-                  <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
-                  <p className="text-[24px] text-white tracking-clinical leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 500 }}>
+                  <p className="text-mercury-body text-foreground mb-[4px] tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Money out</p>
+                  <p className="text-mercury-heading text-white tracking-clinical">
                     {renderMetric(-metrics.expense)}
                   </p>
                 </div>
@@ -406,13 +406,13 @@ export default function InsightsClient(props: InsightsClientProps) {
           ) : activeTab === 'money-in' ? (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money in</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Total money in</p>
                 <p className="text-[38px] text-white tracking-[-0.02em] leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(metrics.income)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
                 <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(metrics.avgIncome)}
                 </p>
@@ -422,13 +422,13 @@ export default function InsightsClient(props: InsightsClientProps) {
           ) : (
             <>
               <div className="flex flex-col mr-[144px]">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Total money out</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-2 font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Total money out</p>
                 <p className="text-[38px] text-white tracking-[-0.02em] leading-[42px]" style={{ fontFamily: '"Arcadia Display", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(-metrics.expense)}
                 </p>
               </div>
               <div className="flex flex-col mr-12 md:pb-0.5">
-                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-tight border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
+                <p className="text-[15px] leading-[24px] font-normal text-foreground mb-[4px] font-sans tracking-clinical border-b border-dotted border-white/20 pb-0.5 w-fit">Monthly average</p>
                 <p className="text-[24px] text-white tracking-[-0.01em] leading-[28px]" style={{ fontFamily: '"Arcadia Text", system-ui, sans-serif', fontWeight: 480 }}>
                   {renderMetric(-metrics.avgExpense)}
                 </p>
@@ -438,44 +438,44 @@ export default function InsightsClient(props: InsightsClientProps) {
           )}
 
           <div className="hidden lg:flex items-center gap-3">
-            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[var(--radius)] h-8 items-center relative group">
+            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[var(--radius-sm)] h-8 items-center relative group">
               <Button 
                 type="button" 
                 variant="ghost" 
                 disabled={false}
-                className="flex items-center gap-2 px-3 h-full rounded-[var(--radius)] text-[15px] leading-[24px] font-normal border-none bg-transparent"
+                className="flex items-center gap-2 px-3 h-full rounded-[var(--radius-sm)] text-mercury-body font-normal border-none bg-transparent"
                >
                 {aggregation.charAt(0).toUpperCase() + aggregation.slice(1)} <span className="text-[10px] opacity-70">▼</span>
               </Button>
               {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-[var(--radius)]  invisible group-hover:visible z-50 overflow-hidden">
+              <div className="absolute top-full left-0 mt-1 w-32 bg-popover border border-white/10 rounded-[var(--radius-sm)]  invisible group-hover:visible z-50 overflow-hidden">
                 <div 
                   onClick={() => setAggregation('day')}
-                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5", aggregation === 'day' ? "text-white" : "text-muted-foreground")}
+                  className={cn("px-4 py-2 text-mercury-body cursor-pointer hover:bg-white/5", aggregation === 'day' ? "text-white" : "text-clinical-muted")}
                 >
                   Day
                 </div>
                 <div 
                   onClick={() => setAggregation('month')}
-                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'month' ? "text-white" : "text-muted-foreground")}
+                  className={cn("px-4 py-2 text-mercury-body cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'month' ? "text-white" : "text-clinical-muted")}
                 >
                   Month
                 </div>
                 <div 
                   onClick={() => setAggregation('quarter')}
-                  className={cn("px-4 py-2 text-[14px] cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'quarter' ? "text-white" : "text-muted-foreground")}
+                  className={cn("px-4 py-2 text-mercury-body cursor-pointer hover:bg-white/5 border-t border-white/5", aggregation === 'quarter' ? "text-white" : "text-clinical-muted")}
                 >
                   Quarter
                 </div>
               </div>
             </div>
-            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[var(--radius)] h-8 items-center transition-all">
+            <div className="flex p-1 bg-white/5 border border-white/5 rounded-[var(--radius-sm)] h-8 items-center transition-all">
                <Button 
                 type="button" 
                 variant="ghost"
                 disabled={false}
                 onClick={() => setChartType('area')} 
-                className={cn("h-full px-2.5 transition-all rounded-[var(--radius)] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'area' ? "bg-muted text-white " : "text-muted-foreground hover:text-white")}
+                className={cn("h-full px-2.5 transition-all rounded-[var(--radius-sm)] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'area' ? "bg-muted text-white " : "text-clinical-muted hover:text-white")}
                >
                  📈
                </Button>
@@ -484,7 +484,7 @@ export default function InsightsClient(props: InsightsClientProps) {
                 variant="ghost"
                 disabled={false}
                 onClick={() => setChartType('bar')} 
-                className={cn("h-full px-2.5 transition-all rounded-[var(--radius)] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'bar' ? "bg-muted text-white " : "text-muted-foreground hover:text-white")}
+                className={cn("h-full px-2.5 transition-all rounded-[var(--radius-sm)] flex items-center justify-center p-0 border-none bg-transparent", chartType === 'bar' ? "bg-muted text-white " : "text-clinical-muted hover:text-white")}
                >
                  📊
                </Button>
@@ -502,22 +502,22 @@ export default function InsightsClient(props: InsightsClientProps) {
       {/* ── NARRATIVE TEXT BLOCKS ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-2 mb-16">
         <div className="bg-transparent flex flex-col justify-start">
-          <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
-            <span className="text-mercury-muted">〰</span> Runway and cash position
+          <p className="text-mercury-heading text-foreground mb-3 flex items-center gap-2">
+            <span className="text-clinical-muted">〰</span> Runway and cash position
           </p>
-          <div className="text-[15px] leading-narrative font-normal text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.runway}</div>
+          <div className="text-mercury-body text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.runway}</div>
         </div>
         <div className="bg-transparent flex flex-col justify-start">
-          <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
+          <p className="text-mercury-heading text-foreground mb-3 flex items-center gap-2">
             <span className="text-destructive">▼</span> Money out trends
           </p>
-          <div className="text-[15px] leading-narrative font-normal text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.outflow}</div>
+          <div className="text-mercury-body text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.outflow}</div>
         </div>
         <div className="bg-transparent flex flex-col justify-start">
-          <p className="text-[15px] leading-[24px] font-normal text-foreground mb-3 flex items-center gap-2">
+          <p className="text-mercury-heading text-foreground mb-3 flex items-center gap-2">
              <span className="text-mercury-green">▲</span> Money in trends
           </p>
-          <div className="text-[15px] leading-narrative font-normal text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.income}</div>
+          <div className="text-mercury-body text-foreground/90 h-[4.5em] overflow-hidden">{semanticNodes.income}</div>
         </div>
       </div>
 

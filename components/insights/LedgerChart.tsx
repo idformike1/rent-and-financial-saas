@@ -110,7 +110,7 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
 
     return (
       <div
-        className=" border border-white/[0.1] -[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[var(--radius)] flex flex-col gap-3 z-50 min-w-[220px] "
+        className=" border border-white/[0.1] -[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[var(--radius-sm)] flex flex-col gap-3 z-50 min-w-[220px] "
       >
         <div className="flex flex-col gap-2">
           {showIn && (

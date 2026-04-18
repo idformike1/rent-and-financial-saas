@@ -114,12 +114,12 @@ export default function TransactionFilterBar({
               <Filter size={14} className="opacity-70" />
               <span>Filters</span>
               {(q || minAmount || maxAmount || activePropertyId || activeTenantId || cat !== 'ALL') && (
-                <div className="w-1 h-1 rounded-[var(--radius)] bg-primary" />
+                <div className="w-1 h-1 rounded-[var(--radius-sm)] bg-primary" />
               )}
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-[680px] p-0 rounded-[var(--radius)] overflow-hidden" 
+            className="w-[680px] p-0 rounded-[var(--radius-sm)] overflow-hidden" 
             align="start" 
             side="bottom"
             sideOffset={12}
@@ -132,7 +132,7 @@ export default function TransactionFilterBar({
                   variant="ghost"
                   onClick={() => setActiveTabPanel('properties')}
                   className={cn(
-                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius)] transition-all",
+                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius-sm)] transition-all",
                     activeTabPanel === 'properties' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
                   )}
                 >
@@ -144,7 +144,7 @@ export default function TransactionFilterBar({
                   variant="ghost"
                   onClick={() => setActiveTabPanel('tenants')}
                   className={cn(
-                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius)] transition-all",
+                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius-sm)] transition-all",
                     activeTabPanel === 'tenants' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
                   )}
                 >
@@ -156,7 +156,7 @@ export default function TransactionFilterBar({
                   variant="ghost"
                   onClick={() => setActiveTabPanel('taxonomy')}
                   className={cn(
-                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius)] transition-all",
+                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius-sm)] transition-all",
                     activeTabPanel === 'taxonomy' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
                   )}
                 >
@@ -183,7 +183,7 @@ export default function TransactionFilterBar({
                             variant="ghost"
                             onClick={() => onPropertyChange('')}
                             className={cn(
-                              "w-full h-10 justify-start px-3 py-2.5 text-sm rounded-[var(--radius)] border transition-all",
+                              "w-full h-10 justify-start px-3 py-2.5 text-sm rounded-[var(--radius-sm)] border transition-all",
                               !activePropertyId ? "border-primary/20 bg-primary/5 text-primary" : "border-white/5 text-white/40 hover:text-white/60 hover:bg-white/[0.02]"
                             )}
                           >
@@ -196,14 +196,14 @@ export default function TransactionFilterBar({
                                variant="ghost"
                                onClick={() => onPropertyChange(p.id)}
                                className={cn(
-                                 "flex h-12 items-center justify-between p-3 rounded-[var(--radius)] border transition-all",
+                                 "flex h-12 items-center justify-between p-3 rounded-[var(--radius-sm)] border transition-all",
                                  activePropertyId === p.id 
                                    ? "border-primary/30 bg-primary/5 text-white" 
                                    : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
                                )}
                              >
                                <span className="text-sm">{p.name}</span>
-                               {activePropertyId === p.id && <div className="w-1.5 h-1.5 rounded-[var(--radius)] bg-primary" />}
+                               {activePropertyId === p.id && <div className="w-1.5 h-1.5 rounded-[var(--radius-sm)] bg-primary" />}
                              </Button>
                           ))}
                         </div>
@@ -226,7 +226,7 @@ export default function TransactionFilterBar({
                             variant="ghost"
                             onClick={() => onTenantChange('')}
                             className={cn(
-                              "w-full h-10 justify-start px-3 py-2.5 text-sm rounded-[var(--radius)] border transition-all",
+                              "w-full h-10 justify-start px-3 py-2.5 text-sm rounded-[var(--radius-sm)] border transition-all",
                               !activeTenantId ? "border-primary/20 bg-primary/5 text-primary" : "border-white/5 text-white/40 hover:text-white/60 hover:bg-white/[0.02]"
                             )}
                           >
@@ -239,14 +239,14 @@ export default function TransactionFilterBar({
                                variant="ghost"
                                onClick={() => onTenantChange(t.id)}
                                className={cn(
-                                 "flex h-12 items-center justify-between p-3 rounded-[var(--radius)] border transition-all",
+                                 "flex h-12 items-center justify-between p-3 rounded-[var(--radius-sm)] border transition-all",
                                  activeTenantId === t.id 
                                    ? "border-primary/30 bg-primary/5 text-white" 
                                    : "border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70"
                                )}
                              >
                                <span className="text-sm">{t.name}</span>
-                               {activeTenantId === t.id && <div className="w-1.5 h-1.5 rounded-[var(--radius)] bg-primary" />}
+                               {activeTenantId === t.id && <div className="w-1.5 h-1.5 rounded-[var(--radius-sm)] bg-primary" />}
                              </Button>
                           ))}
                         </div>
@@ -265,7 +265,7 @@ export default function TransactionFilterBar({
                         <label className="text-[11px] uppercase tracking-widest text-white/30 font-semibold">Asset Classes</label>
                         <div className="grid grid-cols-1 gap-2">
                            {['Commercial Core', 'Residential Hub', 'Industrial Estate', 'Mixed Use'].map(cls => (
-                            <div key={cls} className="flex items-center justify-between p-3 rounded-[var(--radius)] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer group">
+                            <div key={cls} className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer group">
                               <span className="text-sm text-white/70">{cls}</span>
                               <ChevronDown size={14} className="opacity-0 group-hover:opacity-40 transition-opacity -rotate-90" />
                             </div>
@@ -338,14 +338,14 @@ export default function TransactionFilterBar({
               Reset Filters
             </Button>
 
-            <div className="flex-1 flex items-center h-8 border border-white/5 rounded-[var(--radius)] px-4 group focus-within:border-white/10 transition-all">
+            <div className="flex-1 flex items-center h-8 border border-white/5 rounded-[var(--radius-sm)] px-4 group focus-within:border-white/10 transition-all">
               <Search size={14} className="text-white/20 group-focus-within:text-white/60 transition-colors mr-3" />
               <input
                 type="text"
                 value={q}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Deep scan keywords..."
-                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/10 w-full font-normal tracking-tight"
+                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/10 w-full font-normal tracking-clinical"
               />
               {q && (
                 <Button type="button" variant="ghost" disabled={false} onClick={() => onSearchChange('')} className="h-auto p-0 text-white/20 hover:text-white hover:bg-transparent transition-colors border-none bg-transparent">
@@ -372,7 +372,7 @@ export default function TransactionFilterBar({
                   type="button"
                   variant="ghost"
                   onClick={() => onExport('csv')}
-                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all"
+                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius-sm)] transition-all"
                 >
                   <FileSpreadsheet size={14} className="text-emerald-500/60" />
                   Export as CSV
@@ -381,7 +381,7 @@ export default function TransactionFilterBar({
                   type="button"
                   variant="ghost"
                   onClick={() => onExport('excel')}
-                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all"
+                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius-sm)] transition-all"
                 >
                   <FileBox size={14} className="text-blue-500/60" />
                   Export as Excel
@@ -390,7 +390,7 @@ export default function TransactionFilterBar({
                   type="button"
                   variant="ghost"
                   onClick={() => onExport('pdf')}
-                  className="w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all"
+                  className="w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius-sm)] transition-all"
                 >
                   <FileText size={14} className="text-rose-500/60" />
                   Export as PDF

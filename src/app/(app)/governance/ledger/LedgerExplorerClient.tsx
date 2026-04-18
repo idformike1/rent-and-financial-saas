@@ -172,7 +172,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
       {/* Header forensic context */}
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <h1 className="text-display font-display tracking-tight text-white">Forensic Ledger</h1>
+          <h1 className="text-display font-display tracking-clinical text-white">Forensic Ledger</h1>
           <p className="text-[#5D71F9] text-sm uppercase tracking-[0.2em] font-medium">Mercury Alpha // Visualizer V.4.1</p>
         </div>
         <div className="flex items-center gap-4">
@@ -191,7 +191,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
       </div>
 
       {/* FILTER STACK */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-center bg-card border rounded-[var(--radius)] p-4">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-center bg-card border rounded-[var(--radius-sm)] p-4">
         <div className="flex flex-wrap items-center gap-3">
           
           {/* PROPERTY */}
@@ -203,9 +203,9 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-1" align="start">
-               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('pid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius)] text-white/60">All Properties</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('pid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius-sm)] text-white/60">All Properties</Button>
                {metadata.properties.map(p => (
-                 <Button type="button" disabled={false} key={p.id} variant="ghost" onClick={() => updateParam('pid', p.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius)]">{p.name}</Button>
+                 <Button type="button" disabled={false} key={p.id} variant="ghost" onClick={() => updateParam('pid', p.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius-sm)]">{p.name}</Button>
                ))}
             </PopoverContent>
           </Popover>
@@ -219,9 +219,9 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-1   border-white/10" align="start">
-               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('tid', null)} className="w-full h-9 justify-start px-3 py-2 text-sm hover:bg-white/5 rounded-[var(--radius)] text-white/60">All Tenants</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('tid', null)} className="w-full h-9 justify-start px-3 py-2 text-sm hover:bg-white/5 rounded-[var(--radius-sm)] text-white/60">All Tenants</Button>
                {metadata.tenants.map(t => (
-                 <Button type="button" key={t.id} variant="ghost" disabled={false} onClick={() => updateParam('tid', t.id)} className="w-full h-9 justify-start px-3 py-2 text-sm hover:bg-white/5 rounded-[var(--radius)]">{t.name}</Button>
+                 <Button type="button" key={t.id} variant="ghost" disabled={false} onClick={() => updateParam('tid', t.id)} className="w-full h-9 justify-start px-3 py-2 text-sm hover:bg-white/5 rounded-[var(--radius-sm)]">{t.name}</Button>
                ))}
             </PopoverContent>
           </Popover>
@@ -235,11 +235,11 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-1   border-white/10" align="start">
-               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('aid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius)] text-white/60">All Accounts</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('aid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius-sm)] text-white/60">All Accounts</Button>
                {metadata.accounts.map(a => (
-                 <Button type="button" key={a.id} variant="ghost" disabled={false} onClick={() => updateParam('aid', a.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius)] flex items-center justify-between">
+                 <Button type="button" key={a.id} variant="ghost" disabled={false} onClick={() => updateParam('aid', a.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius-sm)] flex items-center justify-between">
                     <span>{a.name}</span>
-                    <span className="text-[8px] opacity-40 uppercase tracking-tighter">{a.category}</span>
+                    <span className="text-[8px] opacity-40 uppercase tracking-clinicaler">{a.category}</span>
                  </Button>
                ))}
             </PopoverContent>
@@ -254,15 +254,15 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-1   border-white/10" align="start">
-               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('cid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius)] text-white/60">All Categories</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={() => updateParam('cid', null)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius-sm)] text-white/60">All Categories</Button>
                {metadata.categories.map(c => (
-                 <Button type="button" key={c.id} variant="ghost" disabled={false} onClick={() => updateParam('cid', c.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius)]">{c.name}</Button>
+                 <Button type="button" key={c.id} variant="ghost" disabled={false} onClick={() => updateParam('cid', c.id)} className="w-full h-9 justify-start px-3 py-2 text-[10px] uppercase font-bold tracking-wider hover:bg-white/5 rounded-[var(--radius-sm)]">{c.name}</Button>
                ))}
             </PopoverContent>
           </Popover>
 
           {/* NATURE (INCOME/EXPENSE) */}
-          <div className="flex items-center h-10 bg-white/[0.03] border border-white/5 rounded-[var(--radius)] p-1">
+          <div className="flex items-center h-10 bg-white/[0.03] border border-white/5 rounded-[var(--radius-sm)] p-1">
              <Button 
                 type="button"
                 variant="ghost"
@@ -287,7 +287,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
           </div>
 
           {/* DATE RANGE */}
-          <div className="h-10 border border-white/5 bg-white/[0.01] rounded-[var(--radius)] overflow-hidden flex items-center px-1">
+          <div className="h-10 border border-white/5 bg-white/[0.01] rounded-[var(--radius-sm)] overflow-hidden flex items-center px-1">
              <InsightsDatePicker 
                 date={dateRange} 
                 setDate={(range) => {
@@ -347,7 +347,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                value={searchInput}
                onChange={(e) => setSearchInput(e.target.value)}
                placeholder="Deep scan entries..."
-               className="w-full h-10 bg-white/[0.03] border border-white/5 rounded-[var(--radius)] pl-10 pr-4 text-sm outline-none focus:border-primary/20 focus:bg-white/[0.05] transition-all"
+               className="w-full h-10 bg-white/[0.03] border border-white/5 rounded-[var(--radius-sm)] pl-10 pr-4 text-sm outline-none focus:border-primary/20 focus:bg-white/[0.05] transition-all"
             />
             {searchInput && (
               <Button type="button" variant="ghost" disabled={false} onClick={() => { setSearchInput(''); updateParam('q', null); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white h-auto p-0 bg-transparent hover:bg-transparent border-none">
@@ -360,22 +360,22 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
 
       {/* METRIC RIBBON */}
       <div className="grid grid-cols-3 gap-6">
-        <div className="bg-card border rounded-[var(--radius)] p-6 space-y-2">
-           <p className="text-muted-foreground text-[11px] uppercase tracking-widest font-semibold flex items-center gap-2">
+        <div className="bg-card border rounded-[var(--radius-sm)] p-6 space-y-2">
+           <p className="text-clinical-muted text-[11px] uppercase tracking-widest font-semibold flex items-center gap-2">
              <ArrowUpRight size={12} className="text-mercury-green" />
              Aggregated Income
            </p>
            <p className="text-[32px] font-finance text-white">${summary.income.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
         </div>
-        <div className="bg-card border rounded-[var(--radius)] p-6 space-y-2">
-           <p className="text-muted-foreground text-[11px] uppercase tracking-widest font-semibold flex items-center gap-2">
+        <div className="bg-card border rounded-[var(--radius-sm)] p-6 space-y-2">
+           <p className="text-clinical-muted text-[11px] uppercase tracking-widest font-semibold flex items-center gap-2">
              <ArrowUpRight size={12} className="text-rose-500 rotate-90" />
              Aggregated Outflow
            </p>
            <p className="text-[32px] font-finance text-white">${summary.expense.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
         </div>
-        <div className="bg-card border rounded-[var(--radius)] p-6 space-y-2">
-           <p className="text-muted-foreground text-[11px] uppercase tracking-widest font-semibold">Net Forensic Balance</p>
+        <div className="bg-card border rounded-[var(--radius-sm)] p-6 space-y-2">
+           <p className="text-clinical-muted text-[11px] uppercase tracking-widest font-semibold">Net Forensic Balance</p>
            <p className={cn("text-[32px] font-finance", summary.net >= 0 ? "text-mercury-green" : "text-white")}>
              {summary.net < 0 ? '−' : ''}${Math.abs(summary.net).toLocaleString('en-US', { minimumFractionDigits: 2 })}
            </p>
@@ -409,7 +409,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
                   tx.status === 'VOIDED' && "opacity-40 grayscale"
                 )}
               >
-                <div className="text-xs text-muted-foreground font-mono">{format(new Date(tx.transactionDate), 'yyyy-MM-dd')}</div>
+                <div className="text-xs text-clinical-muted font-mono">{format(new Date(tx.transactionDate), 'yyyy-MM-dd')}</div>
                 <div className="flex items-center gap-3">
                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[10px] text-white/40 shrink-0 uppercase">
                      {(tx.description || tx.payee || 'U')[0]}
@@ -447,7 +447,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
         </AnimatePresence>
 
         {filteredData.length === 0 && (
-           <div className="h-64 flex flex-col items-center justify-center text-white/20 gap-4 border border-dashed border-white/5 rounded-[var(--radius)] mt-4">
+           <div className="h-64 flex flex-col items-center justify-center text-white/20 gap-4 border border-dashed border-white/5 rounded-[var(--radius-sm)] mt-4">
               <Database size={32} />
               <p className="text-xs uppercase tracking-widest font-medium">No records matching clinical parameters</p>
            </div>

@@ -127,11 +127,11 @@ export default function GovernanceRegistryClient({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6 pb-12 border-b border-[var(--border)]">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <div className="flex items-center gap-6 mb-4">
-            <div className="w-16 h-16 rounded-[var(--radius)] bg-brand/10 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-[var(--radius-sm)] bg-brand/10 flex items-center justify-center">
                <span className="text-brand text-2xl font-bold">[G]</span>
             </div>
             <div>
-              <h1 className="text-display font-weight-display text-foreground leading-none">Taxonomy Control</h1>
+              <h1 className="text-mercury-headline text-foreground leading-none">Taxonomy Control</h1>
               <div className="flex items-center gap-3 mt-3">
                  <Badge variant="brand" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Mercury Standard</Badge>
                  <Badge variant="success" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Registry Synchronized</Badge>
@@ -145,7 +145,7 @@ export default function GovernanceRegistryClient({
             type="button"
             variant="secondary"
             disabled={false}
-            className={cn("rounded-[var(--radius)] h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-foreground" : "bg-[var(--card)] text-[var(--foreground)]")} 
+            className={cn("rounded-[var(--radius-sm)] h-14 px-8 transition-all group border border-[var(--border)]", isLedgerEditorVisible ? "bg-[var(--primary)] text-foreground" : "bg-[var(--card)] text-[var(--foreground)]")} 
             onClick={() => {
               setIsLedgerEditorVisible(!isLedgerEditorVisible);
               setIsCommandCenterVisible(false);
@@ -157,7 +157,7 @@ export default function GovernanceRegistryClient({
             type="button"
             variant="primary"
             disabled={false}
-            className="rounded-[var(--radius)] h-14 px-8  bg-[var(--primary)] text-foreground" 
+            className="rounded-[var(--radius-sm)] h-14 px-8  bg-[var(--primary)] text-foreground" 
             onClick={() => {
               setIsCommandCenterVisible(!isCommandCenterVisible);
               setIsLedgerEditorVisible(false);
@@ -171,35 +171,35 @@ export default function GovernanceRegistryClient({
       <AnimatePresence>
         {isLedgerEditorVisible && (
           <motion.div initial={{ opacity: 0, y: -20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -20, scale: 0.98 }}>
-            <Card className="p-6 rounded-[var(--radius)] relative overflow-hidden border border-[var(--border)] bg-[var(--card)]">
+            <Card className="p-6 rounded-[var(--radius-sm)] relative overflow-hidden border border-[var(--border)] bg-[var(--card)]">
                <div className="flex justify-between items-center mb-10 border-b border-[var(--border)] pb-8">
                   <div>
-                    <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
+                    <h3 className="text-mercury-headline text-[var(--foreground)] flex items-center">
                        <span className="text-brand mr-4 text-3xl">⚡</span> Provision Financial Partition
                     </h3>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-3">Level 0: Master Ledger Inode</p>
+                    <p className="text-mercury-label-caps text-clinical-muted mt-3">Level 0: Master Ledger Inode</p>
                   </div>
-                  <Button type="button" variant="ghost" disabled={false} onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-2 h-10 w-10 min-w-0 rounded-[var(--radius)] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10 border-none">
-                    <span className="text-muted-foreground group-hover:text-rose-500 font-bold">[X]</span>
+                  <Button type="button" variant="ghost" disabled={false} onClick={() => setIsLedgerEditorVisible(false)} className="bg-muted p-2 h-10 w-10 min-w-0 rounded-[var(--radius-sm)] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10 border-none">
+                    <span className="text-clinical-muted group-hover:text-rose-500 font-bold">[X]</span>
                   </Button>
                </div>
                <form onSubmit={handleCreateLedger} className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="space-y-4">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Partition Hash</label>
+                    <label className="text-mercury-label-caps text-clinical-muted ml-1">Partition Hash</label>
                     <Input 
                       value={newLedgerName}
                       onChange={(e) => setNewLedgerName(e.target.value)}
                       required 
                       placeholder="e.g. OPERATIONS" 
-                      className="h-16 text-lg  bg-[var(--card)] border-none"
+                      className="h-16 text-mercury-heading bg-[var(--card)] border-none rounded-[var(--radius-sm)]"
                     />
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Classification Logic</label>
+                    <label className="text-mercury-label-caps text-clinical-muted ml-1">Classification Logic</label>
                     <select 
                       value={newLedgerClass}
                       onChange={(e) => setNewLedgerClass(e.target.value)}
-                      className="w-full bg-[var(--card)] border-none rounded-[var(--radius)] px-6 h-16 text-[11px] font-bold uppercase tracking-tight outline-none focus:ring-2 focus:ring-brand/30 appearance-none"
+                      className="w-full bg-[var(--card)] border-none rounded-[var(--radius-sm)] px-6 h-16 text-mercury-label-caps outline-none focus:ring-2 focus:ring-brand/30 appearance-none"
                     >
                       <option value="EXPENSE">EXPENSE STREAM</option>
                       <option value="REVENUE">REVENUE FLOW</option>
@@ -207,7 +207,7 @@ export default function GovernanceRegistryClient({
                     </select>
                   </div>
                   <div className="flex items-end">
-                    <Button type="submit" variant="primary" disabled={false} className="h-16 w-full rounded-[var(--radius)] ">Initialize Nexus</Button>
+                    <Button type="submit" variant="primary" disabled={false} className="h-16 w-full rounded-[var(--radius-sm)] text-mercury-label-caps">Initialize Nexus</Button>
                   </div>
                </form>
             </Card>
@@ -216,37 +216,37 @@ export default function GovernanceRegistryClient({
 
         {isCommandCenterVisible && (
           <motion.div initial={{ opacity: 0, y: -20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -20, scale: 0.98 }}>
-            <Card className="p-6 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] relative overflow-hidden">
+            <Card className="p-6 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--card)] relative overflow-hidden">
                <div className="flex justify-between items-center mb-10 border-b border-[var(--border)] pb-8">
                   <div>
-                    <h3 className="text-2xl  text-[var(--foreground)] flex items-center">
+                    <h3 className="text-mercury-headline text-[var(--foreground)] flex items-center">
                        <span className="text-brand mr-4 text-2xl">[Ξ]</span> Provision Account Node
                     </h3>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-3">Recursive Logic Definition</p>
+                    <p className="text-mercury-label-caps text-clinical-muted mt-3">Recursive Logic Definition</p>
                   </div>
-                  <Button type="button" variant="ghost" disabled={false} onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-2 h-10 w-10 min-w-0 rounded-[var(--radius)] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10 border-none">
-                    <span className="text-muted-foreground group-hover:text-rose-500 font-bold">[X]</span>
+                  <Button type="button" variant="ghost" disabled={false} onClick={() => setIsCommandCenterVisible(false)} className="bg-muted p-2 h-10 w-10 min-w-0 rounded-[var(--radius-sm)] hover:rotate-90 transition-transform duration-500 group hover:bg-rose-500/10 border-none">
+                    <span className="text-clinical-muted group-hover:text-rose-500 font-bold">[X]</span>
                   </Button>
                </div>
                <form ref={formRef} action={handleMaterializeNode} className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-end">
                   <div className="space-y-4 lg:col-span-2">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Node Registry Label</label>
-                      <Input name="name" required placeholder="Marketing Matrix" className="h-16 text-[13px] bg-[var(--card)] border-none px-8" />
+                      <label className="text-mercury-label-caps text-clinical-muted ml-1">Node Registry Label</label>
+                      <Input name="name" required placeholder="Marketing Matrix" className="h-16 text-mercury-body bg-[var(--card)] border-none px-8 rounded-[var(--radius-sm)]" />
                   </div>
                   <div className="space-y-4">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Target Cluster</label>
-                      <select name="ledgerId" value={formLedgerId} onChange={(e) => setFormLedgerId(e.target.value)} className="w-full bg-[var(--card)] border-none rounded-[var(--radius)] px-6 h-16 text-[11px] font-bold uppercase outline-none appearance-none focus:ring-2 focus:ring-brand/30">
+                      <label className="text-mercury-label-caps text-clinical-muted ml-1">Target Cluster</label>
+                      <select name="ledgerId" value={formLedgerId} onChange={(e) => setFormLedgerId(e.target.value)} className="w-full bg-[var(--card)] border-none rounded-[var(--radius-sm)] px-6 h-16 text-mercury-label-caps outline-none appearance-none focus:ring-2 focus:ring-brand/30">
                           {ledgers.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                       </select>
                   </div>
                   <div className="space-y-4">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Inheritance Logic</label>
-                      <select name="parentId" className="w-full bg-[var(--card)] border-none rounded-[var(--radius)] px-6 h-16 text-[11px] font-bold uppercase outline-none appearance-none focus:ring-2 focus:ring-brand/30">
+                      <label className="text-mercury-label-caps text-clinical-muted ml-1">Inheritance Logic</label>
+                      <select name="parentId" className="w-full bg-[var(--card)] border-none rounded-[var(--radius-sm)] px-6 h-16 text-mercury-label-caps outline-none appearance-none focus:ring-2 focus:ring-brand/30">
                           <option value="">[ROOT SEED]</option>
                           {validParentNodes.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
                       </select>
                   </div>
-                  <Button type="submit" variant="primary" disabled={false} className="h-16 rounded-[var(--radius)] ">Commit Trace</Button>
+                  <Button type="submit" variant="primary" disabled={false} className="h-16 rounded-[var(--radius-sm)] text-mercury-label-caps">Commit Trace</Button>
                </form>
             </Card>
           </motion.div>
@@ -261,21 +261,21 @@ export default function GovernanceRegistryClient({
            return (
             <Card 
               key={ledger.id} 
-              className="group min-h-[500px] flex flex-col p-6 bg-[var(--card)] border border-border rounded-[var(--radius)] hover:border-[var(--primary)]/30 transition-all duration-300"
+              className="group min-h-[500px] flex flex-col p-6 bg-[var(--card)] border border-border rounded-[var(--radius-sm)] hover:border-[var(--primary)]/30 transition-all duration-300"
             >
               <div className="flex flex-col items-center text-center mb-10">
-                 <div className="w-20 h-20 rounded-[var(--radius)] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
+                 <div className="w-20 h-20 rounded-[var(--radius-sm)] bg-brand/5 flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500">
                     <span className="text-3xl text-brand font-bold">[L]</span>
                  </div>
-                 <h2 className="text-2xl text-[var(--foreground)] leading-none">{ledger.name}</h2>
-                 <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'brand'} className="mt-4 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest">{ledger.class}</Badge>
+                 <h2 className="text-mercury-headline text-[var(--foreground)] leading-none">{ledger.name}</h2>
+                 <Badge variant={ledger.class === 'REVENUE' ? 'success' : 'brand'} className="mt-4 px-4 py-1.5 text-mercury-label-caps">{ledger.class}</Badge>
               </div>
 
               <div className="flex-1 space-y-4">
                 {scopeRoots.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center border border-dashed border-[var(--primary)]/20 rounded-[var(--radius)] p-6">
+                  <div className="h-full flex flex-col items-center justify-center border border-dashed border-[var(--primary)]/20 rounded-[var(--radius-sm)] p-6">
                      <span className="text-3xl text-foreground mb-4">✧</span>
-                     <p className="text-[10px] text-muted-foreground  text-center leading-relaxed">Available Logic Domain</p>
+                     <p className="text-mercury-label-caps text-clinical-muted text-center">Available Logic Domain</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -299,12 +299,12 @@ export default function GovernanceRegistryClient({
 
               {/* PREDICTIVE MINIMALISM: HOVER REVEAL */}
               <div className="mt-10 pt-8 border-t border-[var(--border)] flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                 <Button type="button" variant="ghost" disabled={false} onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 h-10 rounded-[var(--radius)] bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-[11px] font-bold uppercase tracking-widest border-none">
+                 <Button type="button" variant="ghost" disabled={false} onClick={() => handleVaporizeLedger(ledger.id!)} className="w-full flex items-center justify-center gap-3 py-3 h-10 rounded-[var(--radius-sm)] bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 transition-colors text-mercury-label-caps border-none">
                     ⌫ Vaporize Registry
                  </Button>
                  <div className="flex justify-between items-center px-2">
-                    <span className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground">Hash::{ledger.id!.slice(0,8)}</span>
-                    <span className="text-[10px] font-bold text-muted-foreground">[S]</span>
+                    <span className="text-mercury-label-caps text-clinical-muted">Hash::{ledger.id!.slice(0,8)}</span>
+                    <span className="text-mercury-label-caps text-clinical-muted">[S]</span>
                  </div>
               </div>
             </Card>
@@ -349,13 +349,13 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
   return (
     <div className="group/node animate-in fade-in slide-in-from-left-2 duration-300">
       <div className={cn(
-        "flex items-center justify-between p-3.5 rounded-[var(--radius)] transition-all duration-500",
+        "flex items-center justify-between p-3.5 rounded-[var(--radius-sm)] transition-all duration-500",
         isEditing ? "bg-[var(--primary)]/5 ring-1 ring-[var(--primary)]/20" : "hover:bg-muted"
       )}>
         <div className="flex items-center flex-1 min-w-0">
             <span className={cn(
                "mr-3 h-6 w-6 flex items-center justify-center transition-all duration-300",
-               hasDependencies ? "text-brand" : "text-muted-foreground/30",
+               hasDependencies ? "text-brand" : "text-clinical-low",
                isExpanded && "rotate-90"
             )}>▶</span>
           
@@ -363,25 +363,25 @@ function RecursiveAccountNode({ node, allNodes, setNodes, editingId, setEditingI
             <input 
               value={editName} 
               onChange={(e) => setEditName(e.target.value)} 
-              className="h-14 py-1 px-6 text-[13px] font-medium tracking-tight border-2 border-brand/20 bg-card dark:bg-card rounded-[var(--radius)] outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-foreground" 
+              className="h-14 py-1 px-6 text-mercury-body border-2 border-brand/20 bg-card dark:bg-card rounded-[var(--radius-sm)] outline-none focus:ring-2 focus:ring-brand/30 transition-all flex-1 min-w-0 mx-4 text-foreground dark:text-foreground" 
               autoFocus 
             />
           ) : (
-            <span className="text-[13px] font-medium text-foreground tracking-tight truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
+            <span className="text-mercury-heading text-foreground truncate group-hover/node:translate-x-1 transition-transform">{node.name}</span>
           )}
         </div>
 
         {/* PREDICTIVE MINIMALISM: HOVER REVEAL */}
         <div className="flex items-center gap-2 opacity-0 group-hover/node:opacity-100 transition-opacity duration-300">
            {isEditing ? (
-             <>
-               <Button type="button" variant="primary" disabled={false} onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 h-8 w-8 min-w-0 rounded-[var(--radius)] hover:scale-110 active:scale-95 transition-all">✓</Button>
-               <Button type="button" variant="secondary" disabled={false} onClick={cancelEdit} className="bg-muted text-[var(--muted)] p-2 h-8 w-8 min-w-0 rounded-[var(--radius)] hover:scale-110 active:scale-95 transition-all border-none">[X]</Button>
-             </>
+              <>
+                <Button type="button" variant="primary" disabled={false} onClick={handleUpdate} className="bg-[var(--primary)] text-foreground p-2 h-8 w-8 min-w-0 rounded-[var(--radius-sm)] hover:scale-110 active:scale-95 transition-all">✓</Button>
+                <Button type="button" variant="secondary" disabled={false} onClick={cancelEdit} className="bg-muted text-clinical-muted p-2 h-8 w-8 min-w-0 rounded-[var(--radius-sm)] hover:scale-110 active:scale-95 transition-all border-none">[X]</Button>
+              </>
            ) : (
              <>
-               <Button type="button" variant="ghost" disabled={false} onClick={startEdit} className="w-8 h-8 p-0 min-w-0 rounded-[var(--radius)] bg-muted border-none flex items-center justify-center text-[var(--muted)] hover:text-[var(--primary)] transition-all bg-transparent">✎</Button>
-               <Button type="button" variant="ghost" disabled={false} onClick={handleDelete} className="w-8 h-8 p-0 min-w-0 rounded-[var(--radius)] bg-muted border-none flex items-center justify-center text-[var(--muted)] hover:text-rose-400 transition-all bg-transparent">⌫</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={startEdit} className="w-8 h-8 p-0 min-w-0 rounded-[var(--radius-sm)] bg-muted border-none flex items-center justify-center text-clinical-muted hover:text-[var(--primary)] transition-all bg-transparent">✎</Button>
+               <Button type="button" variant="ghost" disabled={false} onClick={handleDelete} className="w-8 h-8 p-0 min-w-0 rounded-[var(--radius-sm)] bg-muted border-none flex items-center justify-center text-clinical-muted hover:text-rose-400 transition-all bg-transparent">⌫</Button>
              </>
            )}
         </div>

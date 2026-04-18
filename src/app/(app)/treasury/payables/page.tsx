@@ -75,17 +75,17 @@ export default async function ExpenseRegistryPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
         <div className="space-y-1">
-          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
+          <h1 className="text-[28px] font-[380] text-foreground tracking-clinical leading-none">
             Expense Registry
           </h1>
-          <p className="text-[15px] font-[400] text-muted-foreground">
+          <p className="text-[15px] font-[400] text-clinical-muted">
             System audit of operational expenditure and inflow recognized in the portfolio protocol
           </p>
         </div>
         
         <div className="flex gap-4">
           <Link href="/treasury/payables/log">
-            <Button type="button" disabled={false} className="h-10 px-6 bg-primary text-primary-foreground font-bold  tracking-widest text-[10px] flex items-center gap-2 rounded-[var(--radius)]">
+            <Button type="button" disabled={false} className="h-10 px-6 bg-primary text-primary-foreground font-bold  tracking-widest text-[10px] flex items-center gap-2 rounded-[var(--radius-sm)]">
               <Plus className="w-4 h-4" /> Authorize Entry
             </Button>
           </Link>

@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-6 animate-in fade-in duration-1000 selection:bg-primary/10">
-      <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[var(--radius)] animate-in zoom-in-95 duration-700 bg-card">
+      <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[var(--radius-sm)] animate-in zoom-in-95 duration-700 bg-card">
         <div className="space-y-10">
           <div className="text-center space-y-4">
              <div className="w-12 h-12 bg-foreground rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-6 transition-none">

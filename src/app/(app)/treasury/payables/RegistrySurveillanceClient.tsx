@@ -58,19 +58,19 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       {/* GLOBAL TELEMETRY BAR */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-5 space-y-1">
-           <span className="text-[12px] font-bold text-muted-foreground  tracking-widest">Global Net Outflow</span>
+           <span className="text-[12px] font-bold text-clinical-muted  tracking-widest">Global Net Outflow</span>
            <div className={cn("text-[28px] font-[380] font-finance tabular-nums leading-none", netPosition < 0 ? "text-rose-600" : "text-emerald-600")}>
               ${Math.abs(netPosition).toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
         </Card>
         <Card className="p-5 space-y-1 bg-muted/30">
-           <span className="text-[12px] font-bold text-muted-foreground  tracking-widest">Aggregate Inflow</span>
+           <span className="text-[12px] font-bold text-clinical-muted  tracking-widest">Aggregate Inflow</span>
            <div className="text-[20px] font-bold font-finance tabular-nums text-emerald-600">
               +${totalInflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
         </Card>
         <Card className="p-5 space-y-1 bg-muted/30">
-           <span className="text-[12px] font-bold text-muted-foreground  tracking-widest">Aggregate Outflow</span>
+           <span className="text-[12px] font-bold text-clinical-muted  tracking-widest">Aggregate Outflow</span>
            <div className="text-[20px] font-bold font-finance tabular-nums text-rose-600">
               -${totalOutflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}
            </div>
@@ -80,7 +80,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       {/* REGISTRY TERMINAL HEADER */}
       <Card className="p-2 flex items-center gap-2">
         <div className="relative flex-1 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-clinical-muted transition-colors" />
           <input 
             type="text" 
             placeholder="Search registry records..."
@@ -101,7 +101,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
       <Card className="p-0 overflow-hidden border border-border ">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-muted/30 text-[12px] text-muted-foreground font-medium border-b border-border h-[35px]">
+            <thead className="bg-muted/30 text-[12px] text-clinical-muted font-medium border-b border-border h-[35px]">
               <tr>
                 <th className="px-3">Execution date</th>
                 <th className="px-3">Payee / Entity</th>
@@ -115,7 +115,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
               {filtered.map((entry: any) => (
                 <tr key={entry.id} className="hover:bg-muted transition-none h-[38px] group">
                   <td className="px-3">
-                    <span className="text-[12px] text-muted-foreground font-finance tabular-nums">
+                    <span className="text-[12px] text-clinical-muted font-finance tabular-nums">
                       {new Date(entry.transactionDate || entry.date).toISOString().split('T')[0]}
                     </span>
                   </td>
@@ -125,12 +125,12 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
                     </span>
                   </td>
                   <td className="px-3">
-                    <span className="text-[12px] text-muted-foreground truncate max-w-[200px] block">
+                    <span className="text-[12px] text-clinical-muted truncate max-w-[200px] block">
                        {entry.description || "N/A"}
                     </span>
                   </td>
                   <td className="px-3">
-                    <Badge variant="default" className="bg-muted text-muted-foreground border-none font-medium">
+                    <Badge variant="default" className="bg-muted text-clinical-muted border-none font-medium">
                       {entry.expenseCategory?.name || "Unclassified"}
                     </Badge>
                   </td>
@@ -167,7 +167,7 @@ export default function RegistrySurveillanceClient({ entries }: RegistryTablePro
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="py-20 flex flex-col items-center justify-center text-muted-foreground">
+            <div className="py-20 flex flex-col items-center justify-center text-clinical-muted">
                <FileText className="w-12 h-12 mb-4 opacity-20" />
                <span className="text-[12px]  tracking-widest font-bold">No Transaction Data</span>
             </div>

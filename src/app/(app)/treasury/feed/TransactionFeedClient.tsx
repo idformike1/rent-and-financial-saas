@@ -306,7 +306,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
     <div className="min-h-screen font-sans selection:bg-white/10 space-y-[10px] relative">
       {/* Frozen Command Shell */}
       <div className="sticky top-0 z-50 bg-background -mx-8 px-8 pt-0 pb-[10px] space-y-[10px]">
-        <h1 className="text-display font-display text-foreground tracking-tight">
+        <h1 className="text-mercury-headline text-foreground mb-2">
           Transactions
         </h1>
         <TransactionFilterBar
@@ -351,33 +351,33 @@ export default function TransactionFeedClient({ initialData, properties, tenants
       <div className="grid grid-cols-3 gap-0 border-y border-white/[0.05]">
         <div className="py-6 border-r border-white/[0.05] space-y-2 flex flex-col justify-center px-8">
           <div className="space-y-1">
-            <p className="text-[12px] text-muted-foreground font-[400] uppercase tracking-widest">Net change</p>
-            <p className="text-[24px] text-white font-[400]">
+            <p className="text-mercury-label-caps text-clinical-muted">Net change</p>
+            <p className="text-mercury-headline text-white">
               {summary.netChange < 0 ? '−' : ''}${Math.abs(summary.netChange).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
           <div className="flex items-center gap-10 pt-2">
             <div className="space-y-1">
-              <p className="text-[11px] text-muted-foreground font-[400] uppercase tracking-wider">In</p>
-              <p className="text-[16px] text-mercury-green font-[400] tracking-tight">+${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+              <p className="text-mercury-label-caps text-clinical-muted">In</p>
+              <p className="text-mercury-heading text-mercury-green tracking-clinical">+${summary.moneyIn.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-[11px] text-muted-foreground font-[400] uppercase tracking-wider">Out</p>
-              <p className="text-[16px] text-white/40 font-[400] tracking-tight">−${summary.moneyOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+              <p className="text-mercury-label-caps text-clinical-muted">Out</p>
+              <p className="text-mercury-heading text-destructive tracking-clinical">−${summary.moneyOut.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
             </div>
           </div>
         </div>
 
         <div className="py-6 border-r border-white/[0.05] flex flex-col justify-between px-8">
-          <p className="text-[12px] text-muted-foreground uppercase tracking-widest font-medium">Top Counterparties</p>
+          <p className="text-mercury-label-caps text-clinical-muted">Top Counterparties</p>
           <div className="flex-1 mt-4 space-y-0">
             {topEntities.map((entity, i) => (
               <div key={entity.name} className={cn(
                 "grid grid-cols-[1fr_auto] items-center py-2 h-8",
                 i !== topEntities.length - 1 && "border-b border-white/5"
               )}>
-                <span className="text-foreground text-sm font-medium truncate pr-4">{entity.name}</span>
-                <span className="text-muted-foreground font-mono text-xs">${entity.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                <span className="text-mercury-body text-foreground truncate pr-4">{entity.name}</span>
+                <span className="text-clinical-muted font-finance text-mercury-label-caps">${entity.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
               </div>
             ))}
             {topEntities.length === 0 && (
@@ -387,17 +387,17 @@ export default function TransactionFeedClient({ initialData, properties, tenants
         </div>
 
         <div className="py-6 flex flex-col justify-between px-8">
-          <p className="text-[12px] text-muted-foreground uppercase tracking-widest font-medium">Account Exposure</p>
+          <p className="text-mercury-label-caps text-clinical-muted">Account Exposure</p>
           <div className="space-y-4 mt-4 h-full flex flex-col justify-center">
             {accountActivity.slice(0, 3).map(account => (
               <div key={account.name} className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] text-foreground/70 font-medium truncate pr-2 uppercase tracking-wide">{account.name}</span>
-                  <span className="text-[11px] text-muted-foreground font-mono">
+                  <span className="text-mercury-label-caps text-foreground/70 truncate pr-2">{account.name}</span>
+                  <span className="text-mercury-label-caps text-clinical-muted font-finance">
                     ${account.volume.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
                 </div>
-                <div className="h-1.5 rounded-[var(--radius)] w-full bg-muted overflow-hidden">
+                <div className="h-1 rounded-[var(--radius-sm)] w-full bg-muted overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${(account.volume / (totalActivityVolume || 1)) * 100}%` }}
@@ -416,13 +416,13 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       {/* Data Strata */}
       <div className="space-y-0 relative">
-        <div className={cn(GRID_CLASS, "h-9 text-[11px] text-muted-foreground uppercase tracking-[0.1em] border-b border-white/[0.05] sticky top-[108px] z-40 bg-background")}>
+        <div className={cn(GRID_CLASS, "h-9 text-mercury-label-caps text-clinical-muted border-b border-white/[0.05] sticky top-[108px] z-40 bg-background")}>
           <div>Date</div>
           <div>Entity & Description</div>
           <div className="text-right">Amount</div>
           <div className="text-left">Account</div>
           <div className="text-left">Method</div>
-          <div className="text-left">Category</div>
+          <div>Category</div>
         </div>
 
         <AnimatePresence mode="popLayout">
@@ -440,22 +440,22 @@ export default function TransactionFeedClient({ initialData, properties, tenants
                   tx.status === 'VOIDED' && "opacity-40 grayscale"
                 )}
               >
-                <div className="text-[14px] text-muted-foreground">{format(new Date(tx.transactionDate), 'MMM d')}</div>
+                <div className="text-mercury-body text-clinical-muted">{format(new Date(tx.transactionDate), 'MMM d')}</div>
                 <div className="flex items-center gap-4">
-                   <div className="w-7 h-7 rounded-[var(--radius)] bg-white/[0.05] flex items-center justify-center text-[10px] text-white/40 shrink-0">
+                   <div className="w-7 h-7 rounded-[var(--radius-sm)] bg-white/[0.05] flex items-center justify-center text-mercury-label-caps text-clinical-muted shrink-0">
                      {(tx.payee || tx.description || 'U').substring(0, 1).toUpperCase()}
                    </div>
-                   <span className="text-[15px] text-foreground/80 leading-relaxed">{tx.description || tx.payee}</span>
+                   <span className="text-mercury-heading text-foreground/80">{tx.description || tx.payee}</span>
                 </div>
-                <div className={cn("text-[15px] text-right font-finance", isNeg ? "text-white" : "text-mercury-green")}>
-                  {isNeg ? '−' : ''}${whole}<span className="text-[11px] opacity-40 ml-0.5">{cents}</span>
+                <div className={cn("text-mercury-heading text-right text-mercury-finance", isNeg ? "text-white" : "text-mercury-green")}>
+                  {isNeg ? '−' : ''}${whole}<span className="text-mercury-label-caps opacity-40 ml-0.5">{cents}</span>
                 </div>
-                <div className="text-[14px] text-foreground">{tx.account.name}</div>
-                <div className="text-[14px] text-foreground">{tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash'}</div>
-                <div className="text-[14px] text-muted-foreground flex items-center gap-2">
+                <div className="text-mercury-body text-foreground">{tx.account.name}</div>
+                <div className="text-mercury-body text-foreground">{tx.paymentMode === 'BANK' ? 'Transfer' : 'Cash'}</div>
+                <div className="text-mercury-body text-clinical-muted flex items-center gap-2">
                   {tx.expenseCategory?.name || 'Inflow'}
                   {tx.status === 'VOIDED' && (
-                    <span className="text-[10px] font-mono border border-white/20 px-1 rounded-[var(--radius-sm)] text-white/40 uppercase tracking-tighter">
+                    <span className="text-[10px] font-mono border border-white/20 px-1 rounded-[var(--radius-sm)] text-white/40 uppercase tracking-clinicaler">
                       VOID
                     </span>
                   )}
@@ -473,8 +473,8 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
 
       <div className="py-12 border-t border-white/[0.05] flex justify-between items-center px-4">
-        <p className="text-[12px] text-white/20 uppercase tracking-widest font-medium">Volumetric Report: {filteredData.length} entries</p>
-        <Button type="button" variant="ghost" disabled={false} className="h-9 px-8 rounded-[var(--radius)] border border-white/10 text-[12px] text-muted-foreground hover:text-white transition-all bg-transparent">Load Forensic History</Button>
+        <p className="text-mercury-label-caps text-clinical-low">Volumetric Report: {filteredData.length} entries</p>
+        <Button type="button" variant="ghost" disabled={false} className="h-9 px-8 rounded-[var(--radius-sm)] border border-white/10 text-mercury-label-caps text-clinical-muted hover:text-white transition-all bg-transparent">Load Forensic History</Button>
       </div>
     </div>
   )

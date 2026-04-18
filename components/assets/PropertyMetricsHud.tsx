@@ -17,7 +17,7 @@ interface PropertyMetricsHudProps {
 
 export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMetricsHudProps) {
   return (
-    <div className="bg-muted/10 border border-border divide-x divide-border overflow-hidden rounded-[var(--radius)] shadow-2xl backdrop-blur-md">
+    <div className="bg-muted/10 border border-border divide-x divide-border overflow-hidden rounded-[var(--radius-sm)] shadow-2xl backdrop-blur-md">
       
       {/* NOI */}
       <Button 
@@ -30,7 +30,7 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Net Operating Income</span>
            <TrendingUp size={14} className="text-foreground/20 group-hover:text-mercury-green transition-colors" />
         </div>
-        <div className={cn("text-[32px] font-display font-weight-display tracking-tight text-foreground")}>
+        <div className={cn("text-[32px] font-display font-weight-display tracking-clinical text-foreground")}>
            <span className="font-finance">${metrics.noi.toLocaleString()}</span>
         </div>
         <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Verified for FY2026</p>
@@ -47,7 +47,7 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Adjusted NOI</span>
            <Calculator size={14} className="text-foreground/20 group-hover:text-brand transition-colors" />
         </div>
-        <div className="text-[32px] font-display font-weight-display text-foreground tracking-tight">
+        <div className="text-[32px] font-display font-weight-display text-foreground tracking-clinical">
            <span className="font-finance">${metrics.adjustedNoi.toLocaleString()}</span>
         </div>
         <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">OPEX Adjusted Flow</p>
@@ -65,7 +65,7 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
            <AlertCircle size={14} className="text-foreground/20 group-hover:text-amber-500 transition-colors" />
         </div>
         <div className={cn(
-          "text-[32px] font-display font-weight-display tracking-tight", 
+          "text-[32px] font-display font-weight-display tracking-clinical", 
           metrics.revenueLeakage > 15 ? "text-destructive/80" : 
           metrics.revenueLeakage > 8 ? "text-amber-500/80" : "text-foreground"
         )}>
@@ -86,7 +86,7 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
            <CheckCircle2 size={14} className="text-foreground/20 group-hover:text-mercury-green transition-colors" />
         </div>
         <div className={cn(
-          "text-[32px] font-display font-weight-display tracking-tight", 
+          "text-[32px] font-display font-weight-display tracking-clinical", 
           metrics.collectionEfficiency >= 95 ? "text-mercury-green/80" : 
           metrics.collectionEfficiency >= 85 ? "text-amber-500/80" : "text-destructive/80"
         )}>

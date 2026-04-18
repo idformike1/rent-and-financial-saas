@@ -54,7 +54,7 @@ export default function ReportClient({ stats }: ReportClientProps) {
       </div>
 
       {/* BIFURCATION ENGINE */}
-      <div className="border bg-card rounded-[var(--radius)] p-8">
+      <div className="border bg-card rounded-[var(--radius-sm)] p-8">
         <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-10">
           Expense Distribution // Business vs Personal
         </h3>
@@ -66,7 +66,7 @@ export default function ReportClient({ stats }: ReportClientProps) {
               <span className="text-foreground">Business Operations</span>
               <span className="text-foreground/40 tabular-nums">{businessRatio.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full bg-muted rounded-[var(--radius)] overflow-hidden">
+            <div className="h-1.5 w-full bg-muted rounded-[var(--radius-sm)] overflow-hidden">
               <div 
                 className="h-full bg-foreground transition-all duration-1000 ease-out" 
                 style={{ width: `${businessRatio}%` }} 
@@ -79,7 +79,7 @@ export default function ReportClient({ stats }: ReportClientProps) {
               <span className="text-foreground/60">Personal Draw / Non-OPEX</span>
               <span className="text-foreground/40 tabular-nums">{personalRatio.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full bg-muted rounded-[var(--radius)] overflow-hidden">
+            <div className="h-1.5 w-full bg-muted rounded-[var(--radius-sm)] overflow-hidden">
               <div 
                 className="h-full bg-foreground/60 transition-all duration-1000 ease-out" 
                 style={{ width: `${personalRatio}%` }} 
