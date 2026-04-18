@@ -47,21 +47,21 @@ export default function LoginPage() {
                 <span className="text-background font-bold text-xl">M</span>
              </div>
              <div>
-                <h1 className="text-[20px] font-medium tracking-tight text-foreground leading-none">Mercury Alpha</h1>
-                <p className="text-[13px] font-medium text-muted-foreground mt-3 leading-relaxed">System login required for terminal access.</p>
+                <h1 className="text-mercury-heading text-foreground">Mercury Alpha</h1>
+                <p className="text-mercury-body text-clinical-muted mt-2">System login required for terminal access.</p>
              </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
               <div className="space-y-3">
-                <label className="text-[11px] font-medium text-muted-foreground ml-1">Email address</label>
+                <label className="text-mercury-label-caps text-clinical-muted ml-1">Email address</label>
                 <div className="relative group">
                   <Input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-[38px] rounded-[var(--radius)] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted" 
+                    className="h-10 rounded-[var(--radius-sm)] text-mercury-body border-border focus:border-foreground/20 bg-muted" 
                     placeholder="Enter email..."
                     required
                   />
@@ -69,13 +69,13 @@ export default function LoginPage() {
               </div>
               
               <div className="space-y-3">
-                <label className="text-[11px] font-medium text-muted-foreground ml-1">Password</label>
+                <label className="text-mercury-label-caps text-clinical-muted ml-1">Password</label>
                 <div className="relative group">
                   <Input 
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-[38px] rounded-[var(--radius)] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted"
+                    className="h-10 rounded-[var(--radius-sm)] text-mercury-body border-border focus:border-foreground/20 bg-muted"
                     placeholder="••••••••"
                     required
                   />
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-[var(--radius)] border border-red-500/20 text-center text-[11px] font-bold  animate-in shake duration-500">
+              <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-3 rounded-[var(--radius-sm)] border border-red-500/20 text-center text-mercury-label-caps animate-in shake duration-500">
                 {error}
               </div>
             )}
@@ -94,7 +94,7 @@ export default function LoginPage() {
               disabled={isLoading}
               isLoading={isLoading}
               variant="primary"
-              className="w-full h-[38px] rounded-[var(--radius)] text-[13px] font-medium border-none mt-2"
+              className="w-full h-10 rounded-[var(--radius-sm)] text-mercury-body border-none mt-2"
             >
               {isLoading ? "Authenticating..." : "Sign In →"}
             </Button>

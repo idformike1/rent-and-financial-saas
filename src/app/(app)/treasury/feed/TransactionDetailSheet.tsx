@@ -75,7 +75,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                   <SheetTitle className="text-[14px] font-medium text-white">
                     {isVoided ? "Voided Forensic Record" : "Forensic Audit"}
                   </SheetTitle>
-                  <SheetDescription className="text-[10px] text-white/30 uppercase tracking-widest font-bold">
+                  <SheetDescription className="text-[10px] text-mercury-muted uppercase tracking-widest font-bold">
                     TX ID: {transaction.id.substring(0, 8)}
                   </SheetDescription>
                 </div>
@@ -90,17 +90,17 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
               
               {/* Primary Amount Block */}
               <div className="space-y-2">
-                <p className="text-[11px] text-white/30 uppercase tracking-[0.2em] font-bold">Transaction Value</p>
+                <p className="text-[11px] text-mercury-muted uppercase tracking-[0.2em] font-bold">Transaction Value</p>
                 <div className="flex items-baseline gap-2">
                   <span className={cn(
-                    "text-[42px] font-medium tracking-tight font-finance",
+                    "text-[42px] tracking-clinical font-data",
                     isVoided ? "text-white/40" : isNegative ? "text-white" : "text-mercury-green"
                   )}>
                     {isNegative ? '−' : ''}${absAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
-                  <span className="text-white/20 text-[16px] font-normal uppercase">USD</span>
+                  <span className="text-mercury-muted text-[16px] font-normal uppercase">USD</span>
                 </div>
-                <p className="text-[15px] text-white/60 leading-relaxed font-normal">
+                <p className="text-[15px] text-foreground/80 leading-narrative font-normal">
                   {transaction.description || "No description provided"}
                 </p>
               </div>
@@ -142,8 +142,8 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
               {/* Reference Block */}
               {transaction.referenceText && (
                 <div className="space-y-3 pt-4">
-                  <p className="text-[11px] text-white/30 uppercase tracking-[0.2em] font-bold">Reference Notes</p>
-                  <div className="p-4 rounded-[var(--radius)] bg-white/[0.02] border border-white/5 text-[14px] text-white/70 leading-relaxed">
+                  <p className="text-[11px] text-mercury-muted uppercase tracking-[0.2em] font-bold">Reference Notes</p>
+                  <div className="p-4 rounded-[var(--radius)] bg-white/[0.02] border border-white/5 text-[14px] text-foreground/80 leading-narrative">
                     {transaction.referenceText}
                   </div>
                 </div>
@@ -206,11 +206,11 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
 function MetadataItem({ icon, label, value }: { icon: string, label: string, value: string }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 text-white/30 uppercase tracking-widest text-[10px] font-bold">
+      <div className="flex items-center gap-2 text-mercury-muted uppercase tracking-widest text-[10px] font-bold">
         {icon}
         {label}
       </div>
-      <p className="text-[14px] text-white/80 font-normal leading-tight">{value}</p>
+      <p className="text-[14px] text-foreground font-normal leading-tight">{value}</p>
     </div>
   );
 }

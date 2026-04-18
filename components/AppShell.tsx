@@ -97,10 +97,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* Brand bar */}
         <div className="h-14 flex items-center px-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-[20px] h-[20px] bg-foreground rounded-full flex items-center justify-center">
-               <span className="text-[10px] text-background font-bold">M</span>
+            <div className="w-[20px] h-[20px] bg-foreground rounded-[var(--radius-sm)] flex items-center justify-center">
+               <span className="text-mercury-label-caps text-background">M</span>
             </div>
-            <h2 className="text-[14px] font-medium tracking-tight text-foreground">
+            <h2 className="text-mercury-heading text-foreground">
               Mercury
             </h2>
           </div>
@@ -112,10 +112,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div key={section.label} className="space-y-0.5">
               <button
                 onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors tracking-tight"
+                className="w-full flex items-center justify-between px-2 py-1 text-mercury-label-caps text-clinical-muted hover:text-foreground transition-colors"
               >
                 {section.label}
-                <span className={cn("text-[10px] transition-transform duration-200", openSections.includes(section.label) ? 'rotate-180' : '')}>▼</span>
+                <span className={cn("text-mercury-label-caps transition-transform duration-200", openSections.includes(section.label) ? 'rotate-180' : '')}>▼</span>
               </button>
 
               {openSections.includes(section.label) && (
@@ -128,7 +128,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center w-full px-3 h-[36px] text-[15px] font-[380] tracking-normal rounded-[var(--radius)] transition-all duration-150 my-0.5 group",
+                          "flex items-center w-full px-3 h-[36px] text-mercury-body rounded-[var(--radius-sm)] transition-all duration-150 my-0.5 group",
                           isActive
                             ? "text-foreground bg-sidebar-accent border-l-2 border-primary rounded-l-none"
                             : "text-muted-foreground/40 hover:text-foreground hover:bg-sidebar-accent/50"
@@ -152,11 +152,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
         <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card">
-          <div className="w-7 h-7 rounded-[var(--radius)] bg-foreground text-background flex items-center justify-center text-[10px] font-bold shrink-0">
+          <div className="w-7 h-7 rounded-[var(--radius-sm)] bg-foreground text-background flex items-center justify-center text-mercury-label-caps shrink-0">
             {userName.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold text-foreground truncate leading-none tracking-tight">
+            <p className="text-mercury-label-caps text-foreground truncate leading-none">
               {userName}
             </p>
           </div>
@@ -164,7 +164,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             onClick={() => signOut({ callbackUrl: '/login' })}
             className="p-1 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span className="text-[12px] font-bold">➲</span>
+            <span className="text-mercury-body">➲</span>
           </button>
         </div>
       </aside>
@@ -180,8 +180,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             
             <div className="flex items-center gap-4 ml-auto">
-               <div className="w-8 h-8 rounded-[var(--radius)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
-                  <span className="text-[10px] font-bold text-foreground opacity-60">ADMIN</span>
+               <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
+                  <span className="text-mercury-label-caps text-clinical-muted">ADMIN</span>
                </div>
             </div>
           </div>
@@ -208,7 +208,7 @@ function Badge({ children, className, variant = 'default' }: { children: React.R
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0.5 rounded-[var(--radius)] border text-[11px] font-bold leading-none uppercase tracking-tight",
+      "inline-flex items-center px-2 py-0.5 rounded-[var(--radius-sm)] border text-mercury-label-caps leading-none",
       variants[variant],
       className
     )}>

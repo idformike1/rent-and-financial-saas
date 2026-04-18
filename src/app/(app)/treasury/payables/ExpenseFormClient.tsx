@@ -123,10 +123,10 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   }
 
   const inputClass = (error?: any) => cn(
-    "w-full bg-card border-2 rounded-[var(--radius)] px-6 h-16 text-foreground outline-none focus:ring-2 focus:ring-brand/30 transition-all text-[12px]  tracking-tight placeholder-muted-foreground dark:placeholder-muted-foreground",
+    "w-full bg-card border-2 rounded-[var(--radius-sm)] px-6 h-16 text-foreground outline-none focus:ring-2 focus:ring-brand/30 transition-all text-mercury-body placeholder-muted-foreground dark:placeholder-muted-foreground",
     error ? "border-rose-500 bg-rose-50/10" : "border-transparent focus:border-brand/20"
   );
-  const labelClass = "text-[10px] text-muted-foreground  tracking-[0.25rem] mb-3 ml-1 block";
+  const labelClass = "text-mercury-label-caps text-clinical-muted mb-3 ml-1 block";
 
   return (
     <div className="space-y-10">
@@ -140,7 +140,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               <p className=" text-2xl text-foreground leading-none">
                 Entry #{sessionCount}: Materialized
               </p>
-              <p className="text-[10px]   text-[var(--primary)] mt-3 animate-pulse">
+              <p className="text-mercury-label-caps text-[var(--primary)] mt-3 animate-pulse">
                 {lastEntry.payee} — ${parseFloat(lastEntry.amount).toLocaleString(undefined, {minimumFractionDigits: 2})} // AUDITED
               </p>
             </div>
@@ -159,7 +159,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
              <button 
                type="button" 
                onClick={() => setValue('type', 'EXPENSE')}
-               className={cn("py-5 rounded-[var(--radius)]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+               className={cn("py-5 rounded-[var(--radius-sm)] text-mercury-label-caps transition-all duration-500 flex items-center justify-center gap-3",
                  selectedType === 'EXPENSE' ? 'bg-destructive text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
                )}
              >
@@ -168,7 +168,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
              <button 
                type="button" 
                onClick={() => setValue('type', 'REVENUE')}
-               className={cn("py-5 rounded-[var(--radius)]  text-[10px] transition-all duration-500 flex items-center justify-center gap-3",
+               className={cn("py-5 rounded-[var(--radius-sm)] text-mercury-label-caps transition-all duration-500 flex items-center justify-center gap-3",
                  selectedType === 'REVENUE' ? 'bg-[var(--primary)] text-foreground' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-foreground'
                )}
              >
@@ -179,7 +179,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
           <div className="space-y-1">
             <label className={labelClass}>Materialization Date</label>
             <input type="date" {...register('date')} className={inputClass(errors.date)} />
-            {errors.date && <p className="text-[9px]  text-destructive mt-2 ml-1">{errors.date.message}</p>}
+            {errors.date && <p className="text-mercury-label-caps text-destructive mt-2 ml-1">{errors.date.message}</p>}
           </div>
 
           <div className="space-y-1">
@@ -188,7 +188,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
               <span className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
               <input type="text" {...register('amount')} className={cn(inputClass(errors.amount), "pl-12 text-2xl")} placeholder="00.00" />
             </div>
-            {errors.amount && <p className="text-[9px]  text-destructive mt-2 ml-1">{errors.amount.message}</p>}
+            {errors.amount && <p className="text-mercury-label-caps text-destructive mt-2 ml-1">{errors.amount.message}</p>}
           </div>
 
           <div className="space-y-1">

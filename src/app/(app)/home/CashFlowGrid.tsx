@@ -36,12 +36,12 @@ export default function CashFlowGrid() {
   return (
     <div className="mt-10">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-[16px] font-[380] text-foreground tracking-tight">Cash Flow Dynamics</h2>
+        <h2 className="text-mercury-heading text-foreground">Cash Flow Dynamics</h2>
         <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.02] border border-white/[0.08] rounded-[var(--radius)]">
            <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground bg-transparent border-none">
              ◀
            </Button>
-           <span className="text-[12px] font-[400] text-foreground">Apr 2026</span>
+           <span className="text-mercury-body text-foreground">Apr 2026</span>
            <Button type="button" variant="ghost" disabled={false} className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground bg-transparent border-none">
              ▶
            </Button>
@@ -53,29 +53,29 @@ export default function CashFlowGrid() {
         {/* ── CARD A: MONEY IN ────────────────────────────────────────────────── */}
         <div className="mercury-card">
           <div className="space-y-1">
-            <h3 className="text-[15px] font-[400] text-white/50 tracking-tight font-sans">Money in</h3>
-            <p className="text-[28px] leading-[42px] font-[400] text-mercury-green tracking-tight font-sans">$154,609.29</p>
+            <h3 className="text-mercury-body text-clinical-muted">Money in</h3>
+            <p className="text-mercury-headline text-3xl text-mercury-green">$154,609.29</p>
           </div>
 
           <div className="mt-8 flex-1">
-            <h4 className="text-[11px] font-[400] text-muted-foreground tracking-wider mb-4 border-b border-border pb-2">Top sources</h4>
+            <h4 className="text-mercury-label-caps text-clinical-muted mb-4 border-b border-border pb-2">Top sources</h4>
             <div className="space-y-3">
               {moneyInSources.map((source, i) => (
                 <div key={i} className="flex justify-between items-center group">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-[var(--radius)] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
+                    <div className="w-7 h-7 rounded-[var(--radius-sm)] bg-muted flex items-center justify-center text-mercury-label-caps text-clinical-muted">
                        {source.name.charAt(0)}
                     </div>
-                    <span className="text-[15px] font-[400] text-white font-sans">{source.name}</span>
+                    <span className="text-mercury-body text-foreground">{source.name}</span>
                   </div>
-                  <span className="text-[15px] font-[400] text-mercury-green font-sans">${source.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span className="text-mercury-body text-mercury-green">${source.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-            <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average $585K</span>
+            <span className="text-mercury-body text-clinical-low">Last 3 months average $585K</span>
             <div className="w-[80px] h-[30px]">
               {mounted && (
                 <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
@@ -96,24 +96,24 @@ export default function CashFlowGrid() {
         <div className="mercury-card">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5">
-                  <p className="text-[15px] font-[400] text-white/50 tracking-tight font-sans">Money out</p>
-               <span className="text-[10px] text-white/20 font-bold">(i)</span>
+                  <p className="text-mercury-body text-clinical-muted">Money out</p>
+               <span className="text-mercury-label-caps text-clinical-low">(i)</span>
             </div>
-            <p className="text-[28px] leading-[42px] font-[400] text-white tracking-tight font-sans">-$211,661.22</p>
+            <p className="text-mercury-headline text-3xl text-foreground">-$211,661.22</p>
           </div>
 
           <div className="mt-8 flex-1">
-            <h4 className="text-[11px] font-[400] text-muted-foreground tracking-wider mb-4 border-b border-border pb-2">Top spend</h4>
+            <h4 className="text-mercury-label-caps text-clinical-muted mb-4 border-b border-border pb-2">Top spend</h4>
             <div className="space-y-3">
               {moneyOutSources.map((source, i) => (
                 <div key={i} className="flex justify-between items-center group">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-[var(--radius)] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold">
+                    <div className="w-7 h-7 rounded-[var(--radius-sm)] bg-muted flex items-center justify-center text-mercury-label-caps text-clinical-muted">
                        {source.name.charAt(0)}
                     </div>
-                    <span className="text-[15px] font-[400] text-white/80 font-sans">{source.name}</span>
+                    <span className="text-mercury-body text-foreground/80">{source.name}</span>
                   </div>
-                  <span className="text-[15px] font-[400] text-white font-sans">
+                  <span className="text-mercury-body text-foreground">
                      {source.amount < 0 ? '−' : ''}${Math.abs(source.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -122,7 +122,7 @@ export default function CashFlowGrid() {
           </div>
 
           <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
-            <span className="text-[12px] font-[400] text-white/40 font-sans">Last 3 months average -$220K</span>
+            <span className="text-mercury-body text-clinical-low">Last 3 months average -$220K</span>
             <div className="w-[80px] h-[30px]">
               {mounted && (
                 <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>

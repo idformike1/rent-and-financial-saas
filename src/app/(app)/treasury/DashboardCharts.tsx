@@ -46,12 +46,12 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
       >
         <div className="flex items-center justify-between mb-8">
            <div>
-              <h3 className="text-[14px] font-bold text-foreground  tracking-tight leading-none">Historical EGR Velocity</h3>
-              <p className="text-[11px] font-bold text-muted-foreground  mt-2">Gross realization over 6 months</p>
+              <h3 className="text-mercury-heading text-foreground">Historical EGR Velocity</h3>
+              <p className="text-mercury-label-caps text-clinical-muted mt-2">Gross realization over 6 months</p>
            </div>
            <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-[var(--radius)]" style={{ backgroundColor: 'var(--sidebar-primary)' }} />
-              <span className="text-[10px] font-bold text-muted-foreground ">Gross Revenue</span>
+              <span className="text-mercury-label-caps text-clinical-muted">Gross Revenue</span>
            </div>
         </div>
         
@@ -87,8 +87,8 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
                     boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
                     padding: '12px 16px',
                   }} 
-                  itemStyle={{ color: 'var(--foreground)', fontSize: '12px', fontWeight: 700 }}
-                  labelStyle={{ color: 'var(--muted-foreground)', fontSize: '10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                  itemStyle={{ color: 'var(--foreground)', fontSize: '10px', fontWeight: 700 }}
+                  labelStyle={{ color: 'var(--muted-foreground)', fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.15em' }}
                   cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
                 />
                 <Area 
@@ -114,8 +114,8 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
         className="bg-card border border-border rounded-[var(--radius)] p-6 flex flex-col"
       >
         <div className="mb-6">
-           <h3 className="text-[14px] font-bold text-foreground  tracking-tight leading-none">NOI Allocation</h3>
-           <p className="text-[11px] font-bold text-muted-foreground  mt-2">Operating Breakdown</p>
+           <h3 className="text-mercury-heading text-foreground">NOI Allocation</h3>
+           <p className="text-mercury-label-caps text-clinical-muted mt-2">Operating Breakdown</p>
         </div>
         
         <div className="flex-1 relative min-h-[180px]">
@@ -150,8 +150,8 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
             </ResponsiveContainer>
           )}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-             <span className="font-finance text-2xl font-bold text-foreground">84%</span>
-             <span className="text-[9px] font-bold  text-muted-foreground  mt-1">Efficiency</span>
+             <span className="text-mercury-headline text-mercury-finance text-foreground">84%</span>
+             <span className="text-mercury-label-caps text-clinical-muted mt-1">Efficiency</span>
           </div>
         </div>
 
@@ -160,9 +160,9 @@ export default function DashboardCharts({ trendData, recoveryData }: DashboardCh
              <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                    <div className="w-2 h-2 rounded-[var(--radius)] shrink-0" style={{ backgroundColor: CHART_SERIES[idx % CHART_SERIES.length] }} />
-                   <span className="text-[10px] font-bold text-muted-foreground ">{item.name}</span>
+                   <span className="text-mercury-label-caps text-clinical-muted">{item.name}</span>
                 </div>
-                <span className="font-finance text-[12px] font-bold text-foreground">${item.value.toLocaleString()}</span>
+                <span className="text-mercury-body text-mercury-finance text-foreground">${item.value.toLocaleString()}</span>
              </div>
            ))}
         </div>

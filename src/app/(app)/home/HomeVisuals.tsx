@@ -35,19 +35,19 @@ export default function HomeVisuals() {
         
         <div className="flex justify-between items-start relative z-10">
             <div className="space-y-1">
-               <h3 className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em] mb-3">Mercury Liquidity Position</h3>
+               <h3 className="text-mercury-label-caps text-clinical-muted mb-3">Mercury Liquidity Position</h3>
                <div className="flex items-baseline gap-3">
-                  <span className="text-display font-weight-display text-foreground text-4xl leading-none">
+                  <span className="text-mercury-headline text-4xl">
                     $5,216,471.18
                   </span>
-                 <span className="text-[11px] font-bold text-mercury-green uppercase tracking-[0.1em] flex items-center gap-1">
+                 <span className="text-mercury-label-caps text-mercury-green flex items-center gap-1">
                     ↑ $1.8M
                  </span>
               </div>
            </div>
 
            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted border border-border rounded-[var(--radius-sm)] cursor-pointer hover:bg-muted/50 transition-colors">
-              <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">Interval: 30D</span>
+              <span className="text-mercury-label-caps text-clinical-muted">Interval: 30D</span>
            </div>
         </div>
 
@@ -66,15 +66,15 @@ export default function HomeVisuals() {
                    hide={false} 
                    axisLine={false} 
                    tickLine={false} 
-                   tick={{ fill: '#FFFFFF', fontSize: 11, fontWeight: 400 }}
+                   tick={{ fill: 'var(--foreground)', fontSize: 10, fontWeight: 400 }}
                    interval="preserveStartEnd"
                    ticks={['Mar 13', 'Mar 18', 'Mar 23', 'Mar 28', 'Apr 2']}
                    padding={{ left: 0, right: 0 }}
                  />
                  <Tooltip 
-                   contentStyle={{ backgroundColor: '#171721', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}
+                   contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}
                    itemStyle={{ color: 'var(--foreground)' }}
-                   cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 1 }}
+                   cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
                  />
                   <Area 
                     type="monotone" 
@@ -109,13 +109,13 @@ export default function HomeVisuals() {
             {ledgers.map((ledger) => (
                <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-12 px-3 -mx-3 hover:bg-muted/50 rounded-[var(--radius-sm)] transition-all">
                   <div className="flex items-center gap-4">
-                     <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-foreground/40 group-hover:text-foreground transition-colors shrink-0 text-[10px] font-bold">
+                     <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-clinical-muted group-hover:text-foreground transition-colors shrink-0 text-mercury-label-caps">
                         {ledger.name.charAt(0)}
                      </div>
-                     <span className="text-[14px] font-medium text-foreground tracking-tight">{ledger.name}</span>
+                     <span className="text-mercury-body text-foreground">{ledger.name}</span>
                   </div>
                   <span className={cn(
-                    "text-[15px] font-medium font-sans tracking-tight tabular-nums",
+                    "text-mercury-heading text-mercury-finance",
                     ledger.balance < 0 ? "text-destructive/80" : "text-foreground"
                   )}>
                      {ledger.balance < 0 ? '−' : ''}${Math.abs(ledger.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -125,7 +125,7 @@ export default function HomeVisuals() {
          </div>
 
           <div className="mt-8 pt-6 border-t border-border">
-             <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-[10px] font-bold text-foreground/40 hover:text-foreground uppercase tracking-[0.15em] transition-colors bg-transparent hover:bg-transparent border-none">
+             <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-mercury-label-caps text-clinical-muted hover:text-foreground transition-colors bg-transparent hover:bg-transparent border-none">
                 Expand Ledger Registry
              </Button>
           </div>

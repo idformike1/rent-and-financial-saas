@@ -130,4 +130,29 @@
     --radius-lg: 6px !important;
     --radius-xl: 6px !important;
   }
+
+  /* --- MERCURY TYPOGRAPHY ENGINE --- */
+  .text-mercury-headline {
+    @apply text-[20px] font-medium tracking-tight leading-none;
+  }
+  .text-mercury-heading {
+    @apply text-[16px] font-[380] tracking-tight;
+  }
+  .text-mercury-body {
+    @apply text-[13px] font-[400] leading-relaxed;
+  }
+  .text-mercury-label-caps {
+    @apply text-[10px] font-bold uppercase tracking-[var(--tracking-clinical,0.015em)];
+  }
+  .text-mercury-finance {
+    @apply font-finance tracking-tight tabular-nums;
+  }
+
+  /* --- MERCURY COLOR UTILITIES --- */
+  .text-clinical-muted {
+    @apply text-foreground/40;
+  }
+  .text-clinical-low {
+    @apply text-foreground/20;
+  }
 }

@@ -66,15 +66,15 @@ export function Button({
   };
 
   const sizes = {
-    sm:  "px-3 py-1 text-[12px] font-medium h-7",
-    md:  "px-4 py-2 text-[13px] font-medium h-8",
-    lg:  "px-6 py-3 text-[14px] font-medium h-10"
+    sm:  "px-3 py-1 text-mercury-body h-7",
+    md:  "px-4 py-2 text-mercury-body h-8",
+    lg:  "px-6 py-3 text-mercury-heading h-10"
   };
 
   return (
     <motion.button
       className={cn(
-        "inline-flex items-center justify-center transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none leading-none tracking-tight",
+        "inline-flex items-center justify-center transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none leading-none tracking-clinical",
         variants[variant as keyof typeof variants],
         sizes[size as keyof typeof sizes],
         className
@@ -95,7 +95,7 @@ export function Button({
  */
 export function Label({ children, className }: { children: React.ReactNode, className?: string }) {
   return (
-    <label className={cn("text-[12px] font-medium text-muted-foreground block mb-2", className)}>
+    <label className={cn("text-mercury-body text-clinical-muted block mb-2", className)}>
       {children}
     </label>
   )
@@ -124,7 +124,7 @@ export function Badge({
 
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-0 rounded-[var(--radius)] border text-[9px] font-medium leading-none tracking-tight",
+      "inline-flex items-center px-2 py-0 rounded-[var(--radius-sm)] border text-mercury-label-caps",
       variants[variant],
       className
     )}>
@@ -189,7 +189,7 @@ export function TD({
   if (isHeader) {
     return (
       <th className={cn(
-        "px-[10px] text-left text-[12px] font-[400] text-muted-foreground tracking-normal leading-none",
+        "px-[10px] text-left text-mercury-label-caps text-clinical-muted",
         className
       )}>
         {children}
@@ -198,16 +198,16 @@ export function TD({
   }
 
   const variants = {
-    default:  "text-foreground/90 font-[380]",
-    positive: "text-mercury-green font-[380]",
-    negative: "text-foreground font-[380]",
-    date:     "text-muted-foreground/60 font-[380]",
-    large:    "text-[16px] font-[380] text-foreground/90"
+    default:  "text-foreground font-normal",
+    positive: "text-mercury-green font-data",
+    negative: "text-foreground font-data",
+    date:     "text-mercury-muted font-normal",
+    large:    "text-mercury-heading font-normal"
   }
 
   return (
     <td className={cn(
-      "px-[10px] text-[16px] leading-[1.2] whitespace-nowrap",
+      "px-[10px] text-mercury-heading leading-[1.2] whitespace-nowrap",
       variants[variant as keyof typeof variants],
       className
     )}>
@@ -223,7 +223,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground/90 px-3 rounded-[var(--radius)] text-[13px] font-[380] placeholder-muted-foreground/20 focus:outline-none focus:border-white/10 transition-all duration-150",
+        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground px-3 rounded-[var(--radius)] text-[13px] font-normal placeholder:text-mercury-muted focus:outline-none focus:border-white/10 transition-all duration-150",
         className
       )}
       {...props}
@@ -237,7 +237,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
   return (
     <select
       className={cn(
-        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground/90 px-3 rounded-[var(--radius)] text-[13px] font-[380] focus:outline-none focus:border-white/10 transition-all duration-150 appearance-none cursor-pointer",
+        "w-full h-8 bg-white/[0.02] border border-white/[0.08] text-foreground px-3 rounded-[var(--radius)] text-[13px] font-normal focus:outline-none focus:border-white/10 transition-all duration-150 appearance-none cursor-pointer",
         className
       )}
       {...props}
