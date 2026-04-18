@@ -16,10 +16,10 @@ const formatter = new Intl.NumberFormat('en-US', {
 export default function AccountTelemetryHud({ accountId, balance }: AccountTelemetryHudProps) {
   const getIcon = () => {
     switch (accountId) {
-      case 'operating': return <span className="text-[12px] font-bold opacity-60 text-emerald-400">[B]</span>;
-      case 'deposits': return <span className="text-[12px] font-bold opacity-60 text-amber-400">[S]</span>;
-      case 'receivables': return <span className="text-[12px] font-bold opacity-60 text-destructive">[!]</span>;
-      default: return <span className="text-[12px] font-bold opacity-60 text-brand">[A]</span>;
+      case 'operating': return <span className="text-[10px] font-bold text-mercury-green opacity-40">[B]</span>;
+      case 'deposits': return <span className="text-[10px] font-bold text-amber-500 opacity-40">[S]</span>;
+      case 'receivables': return <span className="text-[10px] font-bold text-destructive/80 opacity-40">[!]</span>;
+      default: return <span className="text-[10px] font-bold text-brand opacity-40">[A]</span>;
     }
   };
 
@@ -33,26 +33,26 @@ export default function AccountTelemetryHud({ accountId, balance }: AccountTelem
   };
 
   return (
-    <div className="bg-card border border-[#1F2937] p-8 rounded-[var(--radius)] mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="bg-muted/10 border border-border p-10 rounded-[var(--radius)] mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-2xl backdrop-blur-sm">
       
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-gray-500">
+        <div className="flex items-center gap-3">
           {getIcon()}
-          <span className="text-[11px] font-medium uppercase tracking-wider">{getLabel()}</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40">{getLabel()}</span>
         </div>
-        <div className="font-mono text-[48px] text-[#F9FAFB] tabular-nums tracking-tight leading-none">
+        <div className="text-display font-weight-display text-foreground font-finance tabular-nums tracking-tight leading-none text-4xl md:text-5xl">
           {formatter.format(balance)}
         </div>
       </div>
 
       <div className="flex flex-col gap-2 text-right">
-        <div className="flex justify-end gap-2 text-[11px] font-mono">
-          <span className="text-gray-500 uppercase tracking-widest block">Account:</span>
-          <span className="text-[#E5E7EB] font-bold block">•••• 1038</span>
+        <div className="flex justify-end gap-3 text-[10px] font-bold uppercase tracking-[0.15em]">
+          <span className="text-foreground/20">Account:</span>
+          <span className="text-foreground/60 tabular-nums">•••• 1038</span>
         </div>
-        <div className="flex justify-end gap-2 text-[11px] font-mono">
-          <span className="text-gray-500 uppercase tracking-widest block">Routing:</span>
-          <span className="text-[#E5E7EB] font-bold block">132456789</span>
+        <div className="flex justify-end gap-3 text-[10px] font-bold uppercase tracking-[0.15em]">
+          <span className="text-foreground/20">Routing:</span>
+          <span className="text-foreground/60 tabular-nums">132456789</span>
         </div>
       </div>
       

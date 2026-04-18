@@ -31,28 +31,27 @@ export default function HomeVisuals() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
       
       {/* ── COMPONENT A: TREASURY CHART CARD (2-COLUMN) ────────────────────── */}
-      <Card className="lg:col-span-1 min-h-[380px]">
+      <Card className="lg:col-span-1 min-h-[400px] bg-muted/5 border border-border backdrop-blur-sm shadow-2xl relative overflow-hidden">
         
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start relative z-10">
             <div className="space-y-1">
-               <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Mercury balance</h3>
-               <div className="flex items-baseline gap-3 mt-1">
-                  <span className="text-[28px] leading-[42px] font-[400] text-white tracking-tight font-sans">
+               <h3 className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em] mb-3">Mercury Liquidity Position</h3>
+               <div className="flex items-baseline gap-3">
+                  <span className="text-display font-weight-display text-foreground text-4xl leading-none">
                     $5,216,471.18
                   </span>
-                 <span className="text-[13px] font-[400] text-mercury-green flex items-center gap-1">
+                 <span className="text-[11px] font-bold text-mercury-green uppercase tracking-[0.1em] flex items-center gap-1">
                     ↑ $1.8M
                  </span>
               </div>
            </div>
 
-           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-[var(--radius)] border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
-              <span className="text-[12px] font-[400] text-white/60 tracking-tight font-sans">Last 30 days</span>
-              <span className="text-[11px] opacity-40">✕</span>
+           <div className="flex items-center gap-2 px-3 py-1.5 bg-muted border border-border rounded-[var(--radius-sm)] cursor-pointer hover:bg-muted/50 transition-colors">
+              <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">Interval: 30D</span>
            </div>
         </div>
 
-        <div className="flex-1 mt-8 -mx-6 -mb-6 rounded-b-[12px] overflow-hidden">
+        <div className="flex-1 mt-8 -mx-6 -mb-6 rounded-b-[var(--radius)] overflow-hidden">
           {mounted && (
            <ResponsiveContainer width="100%" height={260} minWidth={0} debounce={50}>
               <AreaChart data={treasuryData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -92,32 +91,32 @@ export default function HomeVisuals() {
       </Card>
 
       {/* ── COMPONENT B: LEDGER BALANCES CARD (1-COLUMN) ───────────────────── */}
-       <div className="lg:col-span-1 mercury-card">
+       <div className="lg:col-span-1 bg-muted/5 border border-border p-8 rounded-[var(--radius)] backdrop-blur-sm shadow-2xl flex flex-col">
           
-          <div className="flex justify-between items-center mb-6">
-             <h3 className="text-[15px] font-[400] text-white tracking-tight font-sans">Accounts</h3>
+          <div className="flex justify-between items-center mb-10">
+             <h3 className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">Registry Node Balances</h3>
             <div className="flex items-center gap-2">
-               <Button type="button" variant="ghost" disabled={false} className="p-1 h-7 w-7 bg-transparent hover:bg-white/5 rounded-[var(--radius)] transition-colors border-none group text-muted-foreground/40 hover:text-white">
+               <Button type="button" variant="ghost" disabled={false} className="p-0 h-8 w-8 bg-muted border border-border rounded-[var(--radius-sm)] transition-colors hover:bg-muted/50 text-foreground/40 hover:text-foreground">
                   +
                </Button>
-               <Button type="button" variant="ghost" disabled={false} className="p-1 h-7 w-7 bg-transparent hover:bg-white/5 rounded-[var(--radius)] transition-colors border-none group text-muted-foreground/40 hover:text-white font-bold">
+               <Button type="button" variant="ghost" disabled={false} className="p-0 h-8 w-8 bg-muted border border-border rounded-[var(--radius-sm)] transition-colors hover:bg-muted/50 text-foreground/40 hover:text-foreground">
                   •••
                </Button>
             </div>
          </div>
 
-         <div className="flex-1 space-y-4">
+         <div className="flex-1 space-y-3">
             {ledgers.map((ledger) => (
-               <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-10 px-2 -mx-2 hover:bg-white/[0.03] rounded-[var(--radius)] transition-all">
-                  <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-[var(--radius)] bg-white/5 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white/60 transition-colors shrink-0 text-[10px] font-bold">
+               <div key={ledger.name} className="flex items-center justify-between group cursor-pointer h-12 px-3 -mx-3 hover:bg-muted/50 rounded-[var(--radius-sm)] transition-all">
+                  <div className="flex items-center gap-4">
+                     <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-foreground/40 group-hover:text-foreground transition-colors shrink-0 text-[10px] font-bold">
                         {ledger.name.charAt(0)}
                      </div>
-                     <span className="text-[15px] font-[400] text-white tracking-tight font-sans">{ledger.name}</span>
+                     <span className="text-[14px] font-medium text-foreground tracking-tight">{ledger.name}</span>
                   </div>
                   <span className={cn(
-                    "text-[14px] font-[400] font-sans tracking-tight",
-                    ledger.balance < 0 ? "text-white/40" : "text-white"
+                    "text-[15px] font-medium font-sans tracking-tight tabular-nums",
+                    ledger.balance < 0 ? "text-destructive/80" : "text-foreground"
                   )}>
                      {ledger.balance < 0 ? '−' : ''}${Math.abs(ledger.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
@@ -125,9 +124,9 @@ export default function HomeVisuals() {
             ))}
          </div>
 
-          <div className="mt-auto pt-4 border-t border-border">
-             <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-[15px] font-[400] text-white/40 hover:text-white transition-colors tracking-tight bg-transparent hover:bg-transparent border-none">
-                View all accounts
+          <div className="mt-8 pt-6 border-t border-border">
+             <Button type="button" variant="ghost" disabled={false} className="h-auto p-0 text-[10px] font-bold text-foreground/40 hover:text-foreground uppercase tracking-[0.15em] transition-colors bg-transparent hover:bg-transparent border-none">
+                Expand Ledger Registry
              </Button>
           </div>
        </div>

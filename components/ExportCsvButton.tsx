@@ -29,7 +29,7 @@ export default function ExportCsvButton({ data }: { data: any[] }) {
   return (
     <button 
       onClick={handleExport}
-      className="inline-flex items-center px-4 py-2 border border-border text-sm font-bold rounded-[8px] text-muted-foreground bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors"
+      className="inline-flex items-center px-4 py-2 border border-border text-sm font-bold rounded-[var(--radius)] text-muted-foreground bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors"
     >
       <Download className="w-4 h-4 mr-2 text-muted-foreground" />
       Export to CSV

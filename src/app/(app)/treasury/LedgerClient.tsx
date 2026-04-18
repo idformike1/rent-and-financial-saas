@@ -88,32 +88,32 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
         <SovereignSheet
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
-          title="Transaction Detail"
+          title="Transaction Intelligence Profile"
           size="md"
         >
           <div className="space-y-12">
             <section>
-              <div className="bg-zinc-900/40 border border-zinc-800/50 p-6 rounded-[var(--radius)]">
-                <div className="text-[10px] uppercase text-zinc-600 mb-1">Total Throughput</div>
+              <div className="bg-muted/20 border border-border p-8 rounded-[var(--radius)] shadow-lg backdrop-blur-sm">
+                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-3">Total Throughput Positioning</div>
                 <div className={cn(
-                  "text-3xl font-semibold tabular-nums tracking-tight",
-                  selectedEntry.status === "VOIDED" ? "text-zinc-600 line-through" : "text-zinc-100"
+                  "text-display font-weight-display tabular-nums tracking-tight text-4xl",
+                  selectedEntry.status === "VOIDED" ? "text-foreground/20 line-through" : "text-foreground"
                 )}>
-                  ${Number(selectedEntry.amount).toFixed(2)}
+                  ${Number(selectedEntry.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
             </section>
 
-            <section className="space-y-4">
-              <div className="flex justify-between items-center py-4 border-b border-zinc-800/30">
-                <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Date</span>
-                <span className="text-[13px] text-zinc-100">{new Date(selectedEntry.date).toLocaleDateString()}</span>
+            <section className="space-y-6">
+              <div className="flex justify-between items-center py-4 border-b border-border">
+                <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">Temporal Node</span>
+                <span className="text-[14px] font-medium text-foreground tracking-tight">{new Date(selectedEntry.date).toLocaleDateString()}</span>
               </div>
-              <div className="flex justify-between items-center py-4 border-b border-zinc-800/30">
-                <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Status</span>
+              <div className="flex justify-between items-center py-4 border-b border-border">
+                <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">Registry Status</span>
                 <span className={cn(
-                  "text-[11px] font-bold uppercase tracking-widest",
-                  selectedEntry.status === "VOIDED" ? "text-red-500" : "text-mercury-green"
+                  "text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1 rounded-[var(--radius-sm)] border",
+                  selectedEntry.status === "VOIDED" ? "bg-destructive/10 border-destructive/20 text-destructive/80" : "bg-mercury-green/10 border-mercury-green/20 text-mercury-green"
                 )}>
                   {selectedEntry.status}
                 </span>
@@ -124,17 +124,17 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
               <button
                 onClick={onToggleClear}
                 disabled={isPending || selectedEntry.status === "VOIDED"}
-                className="w-full h-10 bg-zinc-100 text-zinc-950 text-[11px] uppercase tracking-wider font-bold rounded-[var(--radius)] hover:bg-zinc-300 transition-colors disabled:opacity-30"
+                className="w-full h-12 bg-foreground text-background text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)] hover:bg-foreground/90 transition-all disabled:opacity-30 border-none"
               >
-                {selectedEntry.isCleared ? "Unclear Transaction" : "Mark as Cleared"}
+                {selectedEntry.isCleared ? "Relinquish Clearance" : "Authorize Settlement"}
               </button>
               
               <button
                 onClick={onVoid}
                 disabled={isPending || selectedEntry.status === "VOIDED"}
-                className="w-full h-10 bg-red-950/20 border border-red-900/30 text-red-500 text-[11px] uppercase tracking-wider font-bold rounded-[var(--radius)] hover:bg-red-900/30 transition-colors disabled:opacity-30"
+                className="w-full h-12 bg-destructive/10 border border-destructive/20 text-destructive/80 text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)] hover:bg-destructive/20 transition-all disabled:opacity-30"
               >
-                Void Transaction
+                Void Immutable Entry
               </button>
             </section>
           </div>

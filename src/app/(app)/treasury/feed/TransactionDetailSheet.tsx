@@ -38,13 +38,25 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
       startTransition(async () => {
         const result = await voidTransaction(transaction.id);
         if (result.success) {
-          // Re-sync occurs via revalidatePath, 
-          // but we can close or let the user see the new state
+          import('@/lib/toast').then(({ toast }) => {
+            toast.success("Registry node decommissioned successfully.");
+          });
         } else {
           alert(result.message || "Failed to decommission transaction.");
         }
       });
     }
+  };
+
+  const handleExport = () => {
+    if (!transaction) return;
+    window.location.href = `/api/reports/csv?id=${transaction.id}`;
+  };
+
+  const handleExternalView = () => {
+    import('@/lib/toast').then(({ toast }) => {
+      toast.info("Registry Sync: Source document sequestered in secure archive.");
+    });
   };
 
   return (
@@ -142,7 +154,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center justify-between">
                     <p className="text-[11px] text-white/30 uppercase tracking-[0.2em] font-bold">Audit Evidence</p>
-                    <Button type="button" variant="ghost" disabled={false} className="text-[10px] h-auto p-0 text-white/40 hover:text-white flex items-center gap-1.5 transition-colors bg-transparent border-none">
+                    <Button type="button" variant="ghost" onClick={handleExternalView} className="text-[10px] h-auto p-0 text-white/40 hover:text-white flex items-center gap-1.5 transition-colors bg-transparent border-none">
                       ➲ External View
                     </Button>
                   </div>
@@ -169,7 +181,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                  </div>
                ) : (
                  <div className="w-full flex items-center gap-4">
-                   <Button type="button" disabled={false} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius)]">
+                   <Button type="button" onClick={handleExport} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius)]">
                      Export Forensic Receipt
                    </Button>
                    <Button 

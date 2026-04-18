@@ -44,7 +44,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
             <h2 className="text-lg font-bold text-foreground uppercase">Line-Item Trace: {categoryName}</h2>
             <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Deep Forensic Audit Log</p>
           </div>
-          <Button type="button" variant="ghost" disabled={false} onClick={onClose} className="p-2 border border-border rounded-[8px] hover:bg-muted transition-all text-muted-foreground hover:text-foreground bg-transparent">
+          <Button type="button" variant="ghost" disabled={false} onClick={onClose} className="p-2 border border-border rounded-[var(--radius)] hover:bg-muted transition-all text-muted-foreground hover:text-foreground bg-transparent">
             <X className="w-5 h-5" />
           </Button>
         </div>
@@ -56,13 +56,13 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
               <span className="text-[10px] font-bold uppercase text-muted-foreground">Synchronizing Ledger...</span>
             </div>
           ) : transactions.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-[8px]">
+            <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-[var(--radius)]">
                <span className="text-[10px] font-bold uppercase text-muted-foreground">No linked transactions detected</span>
             </div>
           ) : (
             <div className="space-y-3">
                {transactions.map((t) => (
-                  <div key={t.id} className="p-5 border border-border rounded-[8px] bg-card hover:bg-muted transition-all flex items-center justify-between group">
+                  <div key={t.id} className="p-5 border border-border rounded-[var(--radius)] bg-card hover:bg-muted transition-all flex items-center justify-between group">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="text-[8px] font-bold bg-muted px-2 py-0.5 rounded-[4px] uppercase text-muted-foreground">{t.account?.category || 'ENTRY'}</span>
@@ -83,7 +83,7 @@ export default function DrillDownDrawer({ categoryName, isOpen, onClose }: Drill
         </div>
         
         <div className="p-6 border-t border-border bg-card flex justify-end">
-           <Button type="button" variant="primary" disabled={false} onClick={onClose} className="px-6 py-3 h-10 bg-primary text-primary-foreground text-[10px] font-bold uppercase rounded-[8px] hover:bg-primary/90 transition-colors">
+           <Button type="button" variant="primary" disabled={false} onClick={onClose} className="px-6 py-3 h-10 bg-primary text-primary-foreground text-[10px] font-bold uppercase rounded-[var(--radius)] hover:bg-primary/90 transition-colors">
              Close Audit View
            </Button>
         </div>

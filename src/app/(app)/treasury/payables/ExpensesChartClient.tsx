@@ -43,12 +43,13 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
           contentStyle={{ 
             backgroundColor: 'var(--card)', 
             border: '1px solid var(--border)', 
-            borderRadius: '8px',
-            fontSize: '11px',
+            borderRadius: 'var(--radius)',
+            fontSize: '10px',
             color: 'var(--foreground)',
             fontWeight: '700',
             textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.15em',
+            padding: '8px 12px',
           }} 
           itemStyle={{ color: 'var(--foreground)', fontWeight: 700 }}
           cursor={false} 
@@ -56,7 +57,7 @@ export default function ExpensesChartClient({ data }: { data: any[] }) {
         <Legend 
             verticalAlign="bottom" 
             height={36} 
-            formatter={(value) => <span className="text-[10px] font-bold  text-muted-foreground ml-2">{value}</span>}
+            formatter={(value) => <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em] ml-2">{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>

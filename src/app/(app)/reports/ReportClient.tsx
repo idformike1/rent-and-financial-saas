@@ -66,9 +66,9 @@ export default function ReportClient({ stats }: ReportClientProps) {
               <span className="text-foreground">Business Operations</span>
               <span className="text-foreground/40 tabular-nums">{businessRatio.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full bg-zinc-900 rounded-[var(--radius)] overflow-hidden">
+            <div className="h-1.5 w-full bg-muted rounded-[var(--radius)] overflow-hidden">
               <div 
-                className="h-full bg-zinc-100 transition-all duration-1000 ease-out" 
+                className="h-full bg-foreground transition-all duration-1000 ease-out" 
                 style={{ width: `${businessRatio}%` }} 
               />
             </div>
@@ -79,16 +79,16 @@ export default function ReportClient({ stats }: ReportClientProps) {
               <span className="text-foreground/60">Personal Draw / Non-OPEX</span>
               <span className="text-foreground/40 tabular-nums">{personalRatio.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full bg-zinc-900 rounded-[var(--radius)] overflow-hidden">
+            <div className="h-1.5 w-full bg-muted rounded-[var(--radius)] overflow-hidden">
               <div 
-                className="h-full bg-zinc-600 transition-all duration-1000 ease-out" 
+                className="h-full bg-foreground/60 transition-all duration-1000 ease-out" 
                 style={{ width: `${personalRatio}%` }} 
               />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 mt-12 pt-12 border-t border-zinc-800/30">
+        <div className="grid grid-cols-2 gap-8 mt-12 pt-12 border-t border-border">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-1">Business Aggregate</div>
             <div className="text-[18px] font-medium text-foreground tabular-nums">${stats.businessExpenses.toLocaleString()}</div>

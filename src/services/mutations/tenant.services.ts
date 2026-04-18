@@ -27,23 +27,24 @@ export async function getTenantForensicDossierService(
 ) {
   const db = getSovereignClient(context.operatorId);
 
-  const tenant = await db.tenant.findFirst({
-    where: { id: tenantId, organizationId: context.organizationId },
-    include: {
-      leases: { include: { unit: true }, orderBy: { startDate: 'desc' } },
-      charges: { orderBy: { dueDate: 'desc' } }
-    }
-  });
+  const [tenant, ledgerEntries] = await Promise.all([
+    db.tenant.findFirst({
+      where: { id: tenantId, organizationId: context.organizationId },
+      include: {
+        leases: { include: { unit: true }, orderBy: { startDate: 'desc' } },
+        charges: { orderBy: { dueDate: 'desc' } }
+      }
+    }),
+    db.ledgerEntry.findMany({
+      where: { 
+        tenantId: tenantId,
+        organizationId: context.organizationId
+      },
+      orderBy: { transactionDate: 'desc' }
+    })
+  ]);
 
   if (!tenant) throw new Error("ERR_TENANT_RECORD_ABSENT");
-
-  const ledgerEntries = await db.ledgerEntry.findMany({
-    where: { 
-      tenantId: tenantId,
-      organizationId: context.organizationId
-    },
-    orderBy: { transactionDate: 'desc' }
-  });
 
   // Algorithm Delegation: Integrity Score & Strip Chart
   const integrityScore = calculateTenancyIntegrityScore(tenant.charges, ledgerEntries);

@@ -5,6 +5,7 @@ import { getPropertyAssetPulse } from '@/actions/analytics.actions';
 import PropertySovereignClient from './PropertySovereignClient';
 
 interface SovereignPageProps {
+  /** Geographic and semantic node identifier */
   params: Promise<{ propertyId: string }>;
 }
 

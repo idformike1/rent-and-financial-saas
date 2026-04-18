@@ -270,6 +270,19 @@ export default function InsightsClient(props: InsightsClientProps) {
     );
   };
 
+  const handleDownload = () => {
+    const params = new URLSearchParams();
+    if (dateRange?.from) params.set('startDate', dateRange.from.toISOString());
+    if (dateRange?.to) params.set('endDate', dateRange.to.toISOString());
+    window.location.href = `/api/reports/csv?${params.toString()}`;
+  };
+
+  const handleCompare = () => {
+    import('@/lib/toast').then(({ toast }) => {
+      toast.info("Registry Surveillance: Multi-period comparison engine is under clinical calibration.");
+    });
+  };
+
   return (
     <div className="w-full">
       {/* ── CONTEXT RESTORATION (Page Identity) ── */}
@@ -303,7 +316,12 @@ export default function InsightsClient(props: InsightsClientProps) {
             ))}
           </div>
           <div className="w-[1px] h-3 bg-white/10 mx-0.5"></div>
-          <Button type="button" variant="ghost" disabled={false} className="h-8 w-8 flex items-center justify-center p-0 rounded-[var(--radius)] text-muted-foreground bg-transparent border-none">
+          <Button 
+            type="button" 
+            variant="ghost" 
+            onClick={handleDownload}
+            className="h-8 w-8 flex items-center justify-center p-0 rounded-[var(--radius)] text-muted-foreground bg-transparent border-none"
+          >
             [↓]
           </Button>
         </div>
@@ -313,7 +331,7 @@ export default function InsightsClient(props: InsightsClientProps) {
           <Button 
             type="button" 
             variant="ghost" 
-            disabled={false}
+            onClick={handleCompare}
             className="h-8 px-4 bg-white/[0.03] border border-border rounded-[var(--radius)] text-[15px] leading-[24px] font-normal text-foreground"
           >
             [+] Compare to

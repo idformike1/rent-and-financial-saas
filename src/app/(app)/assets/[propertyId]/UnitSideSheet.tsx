@@ -7,6 +7,7 @@ import UnitConfigForm from './UnitConfigForm';
 import LeaseAssignmentForm from './LeaseAssignmentForm';
 import UnitLedgerTab from './UnitLedgerTab';
 import { X } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface UnitSideSheetProps {
   propertyData: any;
@@ -43,50 +44,52 @@ export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
     <>
       {/* ── BACKDROP ──────────────────────────────────────────────────────── */}
       <div 
-        className="fixed inset-0 z-40 bg-black/40 [2px] transition-opacity"
+        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={closeSheet}
       />
 
       {/* ── SOVEREIGN SIDE SHEET ──────────────────────────────────────────── */}
       <div className={cn(
-        "fixed right-0 top-0 h-screen w-[40vw] min-w-[500px] border-l border-[#1F2937] bg-background z-50 flex flex-col -[var(---mercury-float)]",
-        "animate-in slide-in-from-right-1/2 duration-300"
+        "fixed right-0 top-0 h-screen w-full md:w-[40vw] max-w-[600px] border-l border-border bg-background z-50 flex flex-col shadow-2xl",
+        "animate-in slide-in-from-right duration-500 ease-in-out"
       )}>
         
         {/* HEADER BAR */}
-        <div className="h-14 border-b border-[#1F2937] flex items-center justify-between px-8 shrink-0">
+        <div className="h-16 border-b border-border flex items-center justify-between px-8 shrink-0 bg-muted/10">
            <div className="flex items-center gap-4">
-             <div className="w-2 h-2 rounded-[var(--radius)] bg-brand animate-pulse" />
-             <span className="font-mono text-[13px] font-bold text-[#E5E7EB] uppercase tracking-widest">
-               Subject: {activeUnit?.unitNumber || 'UNKNOWN_NODE'}
-             </span>
+              <div className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+              <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em]">
+                Subject_Identifier // {activeUnit?.unitNumber || 'UNKNOWN_NODE'}
+              </span>
            </div>
            <button 
              onClick={closeSheet}
-             className="text-muted-foreground hover:text-foreground transition-colors"
+             className="w-10 h-10 flex items-center justify-center rounded-[var(--radius-sm)] text-foreground/20 hover:text-foreground hover:bg-muted transition-colors"
            >
-             <X size={16} />
+             <X size={18} />
            </button>
         </div>
 
         {/* TAB MATRIX */}
-        <div className="flex border-b border-[#1F2937] px-8 pt-6 shrink-0 gap-6">
+        <div className="flex border-b border-border px-8 pt-6 shrink-0 gap-8 bg-muted/5">
           {(['CONFIGURATION', 'OCCUPANT', 'LEDGER'] as TabKey[]).map((tab) => {
-            const label = tab.charAt(0) + tab.slice(1).toLowerCase();
             return (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "pb-4 text-[13px] font-medium transition-all relative",
+                  "pb-4 text-[10px] font-bold uppercase tracking-[0.15em] transition-all relative",
                   activeTab === tab 
-                    ? "text-[#E5E7EB]" 
-                    : "text-[#9CA3AF] hover:text-[#E5E7EB]"
+                    ? "text-foreground" 
+                    : "text-foreground/20 hover:text-foreground/40"
                 )}
               >
-                {label}
+                {tab}
                 {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" 
+                  />
                 )}
               </button>
             );
@@ -94,22 +97,22 @@ export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
         </div>
 
         {/* VIEWPORT AREA */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto p-10 space-y-10">
           
           {activeTab === 'CONFIGURATION' && (
-            <div className="animate-in fade-in duration-300">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                <UnitConfigForm activeUnit={activeUnit} />
             </div>
           )}
 
           {activeTab === 'OCCUPANT' && (
-            <div className="animate-in fade-in duration-300">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                <LeaseAssignmentForm activeUnit={activeUnit} />
             </div>
           )}
 
           {activeTab === 'LEDGER' && activeUnit && (
-            <div className="animate-in fade-in duration-300">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                <UnitLedgerTab activeUnit={activeUnit} />
             </div>
           )}

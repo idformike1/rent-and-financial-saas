@@ -23,14 +23,14 @@ export default async function AssetsPage() {
     <div className="max-w-[1440px] mx-auto px-6 py-8 flex flex-col gap-6 w-full">
       <header className="flex justify-between items-end mb-4">
         <div>
-          <h1 className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1">
+          <h1 className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-1">
             Asset Intelligence
           </h1>
-          <h2 className="text-2xl text-foreground font-medium tracking-tight">
+          <h2 className="text-display font-weight-display text-foreground leading-none">
             Property Portfolio
           </h2>
         </div>
-        <div className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest">
+        <div className="text-[10px] font-bold tabular-nums text-foreground/40 uppercase tracking-[0.15em]">
           Nodes_Active: {properties.length}
         </div>
       </header>

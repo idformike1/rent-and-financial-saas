@@ -132,7 +132,7 @@ export default function TransactionFilterBar({
                   variant="ghost"
                   onClick={() => setActiveTabPanel('properties')}
                   className={cn(
-                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md transition-all",
+                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius)] transition-all",
                     activeTabPanel === 'properties' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
                   )}
                 >
@@ -144,7 +144,7 @@ export default function TransactionFilterBar({
                   variant="ghost"
                   onClick={() => setActiveTabPanel('tenants')}
                   className={cn(
-                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md transition-all",
+                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius)] transition-all",
                     activeTabPanel === 'tenants' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
                   )}
                 >
@@ -156,7 +156,7 @@ export default function TransactionFilterBar({
                   variant="ghost"
                   onClick={() => setActiveTabPanel('taxonomy')}
                   className={cn(
-                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md transition-all",
+                    "w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-[var(--radius)] transition-all",
                     activeTabPanel === 'taxonomy' ? "bg-white/5 text-white" : "text-white/40 hover:text-white/60"
                   )}
                 >
@@ -372,7 +372,7 @@ export default function TransactionFilterBar({
                   type="button"
                   variant="ghost"
                   onClick={() => onExport('csv')}
-                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all"
+                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all"
                 >
                   <FileSpreadsheet size={14} className="text-emerald-500/60" />
                   Export as CSV
@@ -381,7 +381,7 @@ export default function TransactionFilterBar({
                   type="button"
                   variant="ghost"
                   onClick={() => onExport('excel')}
-                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all"
+                  className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm h-9 text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all"
                 >
                   <FileBox size={14} className="text-blue-500/60" />
                   Export as Excel
@@ -390,7 +390,7 @@ export default function TransactionFilterBar({
                   type="button"
                   variant="ghost"
                   onClick={() => onExport('pdf')}
-                  className="w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all"
+                  className="w-full h-9 flex items-center justify-start gap-3 px-3 py-2 text-sm text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all"
                 >
                   <FileText size={14} className="text-rose-500/60" />
                   Export as PDF

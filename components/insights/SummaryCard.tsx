@@ -26,7 +26,7 @@ export default function SummaryCard({ entries, title = "Summary" }: SummaryCardP
   }, [entries]);
 
   return (
-    <div className="bg-card border border-white/[0.05] rounded-[12px] p-6 flex flex-col gap-8  relative overflow-hidden">
+    <div className="bg-card border border-white/[0.05] rounded-[var(--radius)] p-6 flex flex-col gap-8  relative overflow-hidden">
       {/* Glossy Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
 

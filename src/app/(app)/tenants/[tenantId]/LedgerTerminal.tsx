@@ -70,33 +70,33 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
   }, [charges, ledgerEntries]);
 
   return (
-    <div className="bg-background border border-border rounded-[var(--radius)] overflow-hidden">
+    <div className="bg-muted/5 border border-border rounded-[var(--radius)] overflow-hidden shadow-2xl backdrop-blur-sm">
       
       {/* TAB NAVIGATION: TACTICAL TOGGLE */}
-      <div className="px-12 py-10 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-card[0.02]">
-        <div className="flex items-center gap-6">
-           <Landmark className="w-8 h-8 text-brand" />
-           <h3 className="text-xl text-foreground leading-none">Forensic Unified Ledger</h3>
+      <div className="px-10 py-8 border-b border-border flex flex-col md:flex-row justify-between items-center gap-6 bg-muted/20">
+        <div className="flex items-center gap-5">
+           <Landmark className="w-6 h-6 text-brand opacity-40" />
+           <h3 className="text-display font-weight-display text-foreground">Forensic Unified Ledger</h3>
         </div>
 
-        <div className="flex p-1.5 bg-card rounded-[var(--radius)] border border-border">
+        <div className="flex p-1 bg-background border border-border rounded-[var(--radius)]">
            <button 
              onClick={() => setActiveTab('timeline')}
              className={cn(
-               "px-8 py-3 rounded-[var(--radius)] text-[10px]  transition-all",
-               activeTab === 'timeline' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
+               "px-6 py-2 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] transition-all",
+               activeTab === 'timeline' ? "bg-muted text-foreground" : "text-foreground/20 hover:text-foreground/40"
              )}
            >
-             [ CHRONOLOGICAL_LEDGER ]
+             Timeline
            </button>
            <button 
              onClick={() => setActiveTab('compliance')}
              className={cn(
-               "px-8 py-3 rounded-[var(--radius)] text-[10px]  transition-all",
-               activeTab === 'compliance' ? "bg-muted text-foreground" : "text-muted-foreground hover:text-muted-foreground"
+               "px-6 py-2 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] transition-all",
+               activeTab === 'compliance' ? "bg-muted text-foreground" : "text-foreground/20 hover:text-foreground/40"
              )}
            >
-             [ COMPLIANCE_MATRIX ]
+             Compliance
            </button>
         </div>
       </div>
@@ -105,44 +105,48 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
         {activeTab === 'timeline' ? (
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-card[0.01]">
-                <th className="px-10 py-6 text-[10px] text-muted-foreground ">Date</th>
-                <th className="px-10 py-6 text-[10px] text-muted-foreground ">Description</th>
-                <th className="px-10 py-6 text-[10px] text-muted-foreground  text-right">Debit (+)</th>
-                <th className="px-10 py-6 text-[10px] text-muted-foreground  text-right">Credit (-)</th>
-                <th className="px-10 py-6 text-[10px] text-muted-foreground  text-right">Net_Balance</th>
+              <tr className="border-b border-border bg-muted/5">
+                <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40">Temporal_Node</th>
+                <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40">Description // Forensic_Tag</th>
+                <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-right">Debit (+)</th>
+                <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-right">Credit (-)</th>
+                <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-right">Net_Position</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {unifiedTimeline.map((row, idx) => (
                 <tr key={idx} className="group hover:bg-card[0.02] transition-colors">
-                  <td className="px-10 py-6 whitespace-nowrap">
-                    <span className="text-[10px] text-muted-foreground ">{row.date.toLocaleDateString()}</span>
+                  <td className="px-10 py-5 whitespace-nowrap">
+                    <span className="text-[10px] font-bold tabular-nums text-foreground/40 uppercase tracking-[0.1em]">{row.date.toLocaleDateString()}</span>
                   </td>
-                  <td className="px-10 py-6">
+                  <td className="px-10 py-5">
                     <div className="flex items-center gap-4">
                        {row.type === 'DEBIT' ? (
-                         <ArrowUpRight className="w-3 h-3 text-rose-500/50" />
+                         <ArrowUpRight className="w-3 h-3 text-destructive/60" />
                        ) : (
-                         <ArrowDownLeft className="w-3 h-3 text-mercury-green/50" />
+                         <ArrowDownLeft className="w-3 h-3 text-mercury-green/60" />
                        )}
-                       <span className="text-xs font-medium text-foreground  tracking-tight truncate max-w-sm">{row.description}</span>
+                       <span className="text-[13px] font-medium text-foreground tracking-tight truncate max-w-sm">{row.description}</span>
                     </div>
                   </td>
-                  <td className="px-10 py-6 text-right">
+                  <td className="px-10 py-5 text-right">
                     {row.debitAmount ? (
-                      <span className="text-sm text-rose-500 font-finance tabular-nums">+${row.debitAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                    ) : '-'}
+                      <span className="text-[14px] text-destructive/80 font-finance tabular-nums">+${row.debitAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    ) : (
+                      <span className="text-foreground/10">-</span>
+                    )}
                   </td>
-                  <td className="px-10 py-6 text-right">
+                  <td className="px-10 py-5 text-right">
                     {row.creditAmount ? (
-                      <span className="text-sm text-mercury-green font-finance tabular-nums">-${row.creditAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                    ) : '-'}
+                      <span className="text-[14px] text-mercury-green font-finance tabular-nums">-${row.creditAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    ) : (
+                      <span className="text-foreground/10">-</span>
+                    )}
                   </td>
-                  <td className="px-10 py-6 text-right">
+                  <td className="px-10 py-5 text-right">
                     <span className={cn(
-                      "text-md font-finance tabular-nums",
-                      row.runningBalance > 0 ? "text-rose-500" : "text-mercury-green"
+                      "text-[15px] font-finance tabular-nums",
+                      row.runningBalance > 0 ? "text-destructive/80" : "text-mercury-green"
                     )}>
                       ${row.runningBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
@@ -154,12 +158,12 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
         ) : (
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-card[0.01]">
-                 <th className="px-10 py-6 text-[10px] text-muted-foreground ">Charge Node</th>
-                 <th className="px-10 py-6 text-[10px] text-muted-foreground  text-center">Due Date</th>
-                 <th className="px-10 py-6 text-[10px] text-muted-foreground  text-center">Payment Date</th>
-                 <th className="px-10 py-6 text-[10px] text-muted-foreground  text-right">Assessment</th>
-                 <th className="px-10 py-6 text-[10px] text-muted-foreground  text-right">Status</th>
+              <tr className="border-b border-border bg-muted/5">
+                 <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40">Charge Node</th>
+                 <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-center">Due_Temporal</th>
+                 <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-center">Settlement_Date</th>
+                 <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-right">Assessment</th>
+                 <th className="px-10 py-5 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 text-right">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -170,44 +174,44 @@ export default function LedgerTerminal({ charges, ledgerEntries }: LedgerTermina
                   const isLate = matchedEntry && new Date(matchedEntry.transactionDate) > new Date(new Date(c.dueDate).getTime() + 5 * 24 * 60 * 60 * 1000);
                   
                   return (
-                    <tr key={c.id} className="group hover:bg-card[0.02] transition-colors">
-                       <td className="px-10 py-8">
-                          <div className="flex items-center gap-6">
-                             <div className="bg-card h-10 w-10 rounded-[var(--radius)] flex items-center justify-center text-brand border border-border">
-                                <DollarSign className="w-4 h-4" />
-                             </div>
-                             <span className="text-foreground text-xs ">{c.type}</span>
-                          </div>
-                       </td>
-                       <td className="px-10 py-8 text-center">
-                          <span className="text-[10px] text-muted-foreground ">{new Date(c.dueDate).toLocaleDateString()}</span>
-                       </td>
-                       <td className="px-10 py-8 text-center">
-                          {(matchedEntry && c.isFullyPaid) ? (
-                            <span className={cn(
-                              "text-[10px] ",
-                              isLate ? "text-amber-500" : "text-mercury-green"
-                            )}>
-                              {new Date(matchedEntry.transactionDate).toLocaleDateString()}
-                            </span>
-                          ) : (
-                            <span className="text-[9px] text-rose-500/40 ">PENDING</span>
-                          )}
-                       </td>
-                       <td className="px-10 py-8 text-right">
-                          <span className="text-lg text-foreground font-finance tabular-nums">
-                             ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </span>
-                       </td>
-                       <td className="px-10 py-8 text-right">
-                          <span className={cn(
-                             "px-4 py-1.5 rounded-[var(--radius)] text-[8px]  border-2",
-                             c.isFullyPaid ? "border-mercury-green/30 text-mercury-green" : "border-rose-500/30 text-rose-500"
-                          )}>
-                             {c.isFullyPaid ? 'SETTLED' : 'OUTSTANDING'}
-                          </span>
-                       </td>
-                    </tr>
+                     <tr key={c.id} className="group hover:bg-muted/5 transition-colors">
+                        <td className="px-10 py-6">
+                           <div className="flex items-center gap-5">
+                              <div className="bg-muted h-9 w-9 rounded-[var(--radius-sm)] flex items-center justify-center text-foreground/40 border border-border">
+                                 <DollarSign className="w-4 h-4" />
+                              </div>
+                              <span className="text-foreground text-[13px] font-medium tracking-tight uppercase tracking-[0.1em]">{c.type}</span>
+                           </div>
+                        </td>
+                        <td className="px-10 py-6 text-center">
+                           <span className="text-[10px] font-bold tabular-nums text-foreground/40 uppercase tracking-[0.1em]">{new Date(c.dueDate).toLocaleDateString()}</span>
+                        </td>
+                        <td className="px-10 py-6 text-center">
+                           {(matchedEntry && c.isFullyPaid) ? (
+                             <span className={cn(
+                               "text-[10px] font-bold tabular-nums uppercase tracking-[0.1em]",
+                               isLate ? "text-amber-500" : "text-mercury-green/60"
+                             )}>
+                               {new Date(matchedEntry.transactionDate).toLocaleDateString()}
+                             </span>
+                           ) : (
+                             <span className="text-[10px] font-bold text-destructive/20 uppercase tracking-[0.15em]">PENDING</span>
+                           )}
+                        </td>
+                        <td className="px-10 py-6 text-right">
+                           <span className="text-[18px] text-foreground font-finance tabular-nums font-medium tracking-tight">
+                              ${Number(c.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                           </span>
+                        </td>
+                        <td className="px-10 py-6 text-right">
+                           <span className={cn(
+                              "px-3 py-1.5 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] border transition-colors",
+                              c.isFullyPaid ? "bg-mercury-green/10 border-mercury-green/20 text-mercury-green" : "bg-destructive/10 border-destructive/20 text-destructive/80"
+                           )}>
+                              {c.isFullyPaid ? 'SETTLED' : 'OUTSTANDING'}
+                           </span>
+                        </td>
+                     </tr>
                   )
                })}
             </tbody>

@@ -92,7 +92,7 @@ export default function InsightsDatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 flex flex-row bg-popover border-white/10   rounded-[6px] overflow-hidden" 
+          className="w-auto p-0 flex flex-row bg-popover border-white/10   rounded-[var(--radius)] overflow-hidden" 
           align="start"
           sideOffset={8}
         >
@@ -109,7 +109,7 @@ export default function InsightsDatePicker({
               <button
                 key={p.id}
                 onClick={() => handlePresetClick(p.id)}
-                className="text-left px-3 py-1.5 text-[12px] text-white/40 hover:text-white hover:bg-white/5 rounded-md transition-all font-medium"
+                className="text-left px-3 py-1.5 text-[12px] text-white/40 hover:text-white hover:bg-white/5 rounded-[var(--radius)] transition-all font-medium"
               >
                 {p.label}
               </button>
@@ -125,10 +125,10 @@ export default function InsightsDatePicker({
             numberOfMonths={1}
             className="bg-transparent text-white p-3"
             classNames={{
-              nav_button: "h-7 w-7 bg-white/5 hover:bg-white/10 text-white rounded-md transition-all",
+              nav_button: "h-7 w-7 bg-white/5 hover:bg-white/10 text-white rounded-[var(--radius)] transition-all",
               caption_label: "text-sm font-semibold tracking-tight text-white",
               head_cell: "text-white/20 font-bold text-[11px] uppercase p-2 w-9",
-              day: "h-9 w-9 text-sm font-medium hover:bg-white/5 rounded-md transition-all transition-colors",
+              day: "h-9 w-9 text-sm font-medium hover:bg-white/5 rounded-[var(--radius)] transition-all transition-colors",
             }}
           />
         </PopoverContent>

@@ -17,23 +17,23 @@ interface PropertyMetricsHudProps {
 
 export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMetricsHudProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-white/5 bg-[#1E1E2A]/40 backdrop-blur-md divide-x divide-white/[0.04] overflow-hidden rounded-[var(--radius)] shadow-2xl">
+    <div className="bg-muted/10 border border-border divide-x divide-border overflow-hidden rounded-[var(--radius)] shadow-2xl backdrop-blur-md">
       
       {/* NOI */}
       <Button 
         type="button"
         variant="ghost"
         onClick={() => onDrillDown('NOI')}
-        className="p-8 text-left hover:bg-white/[0.02] transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
+        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
       >
         <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-none">Net Operating Income</span>
-           <TrendingUp size={14} className="text-white/20 group-hover:text-mercury-green transition-colors" />
+           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Net Operating Income</span>
+           <TrendingUp size={14} className="text-foreground/20 group-hover:text-mercury-green transition-colors" />
         </div>
-        <div className={cn("text-[32px] font-display tracking-tight text-white")}>
+        <div className={cn("text-[32px] font-display font-weight-display tracking-tight text-foreground")}>
            <span className="font-finance">${metrics.noi.toLocaleString()}</span>
         </div>
-        <p className="mt-3 text-[11px] text-white/20 font-medium tracking-tight">Verified for FY2026</p>
+        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Verified for FY2026</p>
       </Button>
 
       {/* ADJUSTED NOI */}
@@ -41,16 +41,16 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
         type="button"
         variant="ghost"
         onClick={() => onDrillDown('ADJ_NOI')}
-        className="p-8 text-left hover:bg-white/[0.02] transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
+        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
       >
         <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-none">Adjusted NOI</span>
-           <Calculator size={14} className="text-white/20 group-hover:text-brand transition-colors" />
+           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Adjusted NOI</span>
+           <Calculator size={14} className="text-foreground/20 group-hover:text-brand transition-colors" />
         </div>
-        <div className="text-[32px] font-display text-white tracking-tight">
+        <div className="text-[32px] font-display font-weight-display text-foreground tracking-tight">
            <span className="font-finance">${metrics.adjustedNoi.toLocaleString()}</span>
         </div>
-        <p className="mt-3 text-[11px] text-white/20 font-medium tracking-tight">OPEX Adjusted Flow</p>
+        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">OPEX Adjusted Flow</p>
       </Button>
 
       {/* REVENUE LEAKAGE */}
@@ -58,20 +58,20 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
         type="button"
         variant="ghost"
         onClick={() => onDrillDown('LEAKAGE')}
-        className="p-8 text-left hover:bg-white/[0.02] transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
+        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
       >
         <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-none">Revenue Leakage</span>
-           <AlertCircle size={14} className="text-white/20 group-hover:text-amber-500 transition-colors" />
+           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Revenue Leakage</span>
+           <AlertCircle size={14} className="text-foreground/20 group-hover:text-amber-500 transition-colors" />
         </div>
         <div className={cn(
-          "text-[32px] font-display tracking-tight", 
-          metrics.revenueLeakage > 15 ? "text-rose-500/80" : 
-          metrics.revenueLeakage > 8 ? "text-amber-500/80" : "text-white"
+          "text-[32px] font-display font-weight-display tracking-tight", 
+          metrics.revenueLeakage > 15 ? "text-destructive/80" : 
+          metrics.revenueLeakage > 8 ? "text-amber-500/80" : "text-foreground"
         )}>
            <span className="font-finance">{metrics.revenueLeakage}%</span>
         </div>
-        <p className="mt-3 text-[11px] text-white/20 font-medium tracking-tight">Market Contract Delta</p>
+        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Market Contract Delta</p>
       </Button>
 
       {/* COLLECTION EFFICIENCY */}
@@ -79,20 +79,20 @@ export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMet
         type="button"
         variant="ghost"
         onClick={() => onDrillDown('COLLECTION')}
-        className="p-8 text-left hover:bg-white/[0.02] transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
+        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
       >
         <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-none">Collection Ratio</span>
-           <CheckCircle2 size={14} className="text-white/20 group-hover:text-mercury-green transition-colors" />
+           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Collection Ratio</span>
+           <CheckCircle2 size={14} className="text-foreground/20 group-hover:text-mercury-green transition-colors" />
         </div>
         <div className={cn(
-          "text-[32px] font-display tracking-tight", 
+          "text-[32px] font-display font-weight-display tracking-tight", 
           metrics.collectionEfficiency >= 95 ? "text-mercury-green/80" : 
-          metrics.collectionEfficiency >= 85 ? "text-amber-500/80" : "text-rose-500/80"
+          metrics.collectionEfficiency >= 85 ? "text-amber-500/80" : "text-destructive/80"
         )}>
            <span className="font-finance">{metrics.collectionEfficiency}%</span>
         </div>
-        <p className="mt-3 text-[11px] text-white/20 font-medium tracking-tight">Current Cycle Inflow</p>
+        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Current Cycle Inflow</p>
       </Button>
 
     </div>

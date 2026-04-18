@@ -455,7 +455,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
                 <div className="text-[14px] text-muted-foreground flex items-center gap-2">
                   {tx.expenseCategory?.name || 'Inflow'}
                   {tx.status === 'VOIDED' && (
-                    <span className="text-[10px] font-mono border border-white/20 px-1 rounded-sm text-white/40 uppercase tracking-tighter">
+                    <span className="text-[10px] font-mono border border-white/20 px-1 rounded-[var(--radius-sm)] text-white/40 uppercase tracking-tighter">
                       VOID
                     </span>
                   )}

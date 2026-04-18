@@ -43,12 +43,12 @@ export default function TenantClient({ initialData }: TenantClientProps) {
       header: "Occupant", 
       accessor: (tenant: Tenant) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-[4px] bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[11px] font-bold text-zinc-500">
+          <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-[10px] font-bold text-foreground/40 uppercase tracking-[0.1em]">
             {tenant.name.charAt(0)}
           </div>
           <div className="flex flex-col">
-            <span className="font-medium text-zinc-100">{tenant.name}</span>
-            <span className="text-[10px] text-zinc-500 font-mono lowercase">{tenant.email || 'no-endpoint'}</span>
+            <span className="font-medium text-foreground tracking-tight">{tenant.name}</span>
+            <span className="text-[10px] text-foreground/40 font-mono lowercase">{tenant.email || 'no-endpoint'}</span>
           </div>
         </div>
       ),
@@ -61,8 +61,8 @@ export default function TenantClient({ initialData }: TenantClientProps) {
         if (!lease) return <span className="text-zinc-700 italic text-[11px]">UNASSIGNED</span>;
         return (
           <div className="flex flex-col">
-            <span className="text-zinc-200 font-medium tracking-tight">{lease.unit.property.name}</span>
-            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Unit {lease.unit.unitNumber}</span>
+            <span className="text-foreground font-medium tracking-tight">{lease.unit.property.name}</span>
+            <span className="text-[10px] text-foreground/40 uppercase tracking-[0.15em] font-bold">Unit {lease.unit.unitNumber}</span>
           </div>
         );
       },
@@ -75,12 +75,12 @@ export default function TenantClient({ initialData }: TenantClientProps) {
         if (!lease) return <Badge variant="default" className="bg-zinc-900/50 text-zinc-500 border-zinc-800">INACTIVE</Badge>;
         return (
           <div className="flex flex-col gap-1">
-             <Badge variant="success" className="w-fit scale-90 origin-left desaturate opacity-80">
-               {lease.status}
-             </Badge>
-             <span className="text-[9px] text-zinc-600 font-mono tracking-tighter">
+              <Badge variant="success" className="w-fit scale-90 origin-left desaturate opacity-60">
+                {lease.status}
+              </Badge>
+              <span className="text-[10px] text-foreground/20 font-mono tracking-tighter">
                 EXP: {new Date(lease.endDate).toLocaleDateString()}
-             </span>
+              </span>
           </div>
         );
       },
@@ -94,11 +94,11 @@ export default function TenantClient({ initialData }: TenantClientProps) {
           <div className="flex flex-col items-end">
             <span className={cn(
               "font-mono font-bold tracking-tight",
-              balance > 0 ? "text-rose-500" : "text-emerald-500"
+              balance > 0 ? "text-destructive/80" : "text-mercury-green"
             )}>
               ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
-            <span className="text-[9px] text-zinc-600 uppercase">Balance Owed</span>
+            <span className="text-[10px] text-foreground/40 uppercase tracking-[0.15em]">Balance Owed</span>
           </div>
         );
       },
@@ -128,7 +128,7 @@ export default function TenantClient({ initialData }: TenantClientProps) {
               e.stopPropagation();
               router.push(`/tenants/${tenant.id}`);
             }}
-            className="h-8 w-8 p-0 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-400 hover:text-zinc-100 border border-zinc-800"
+            className="h-8 w-8 p-0 bg-secondary hover:bg-muted text-foreground/40 hover:text-foreground border border-border"
           >
             <ExternalLink className="w-4 h-4" />
           </Button>

@@ -45,10 +45,10 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
     return (
       <div className="min-h-screen bg-background">
         <TenantProfileView 
-          tenant={JSON.parse(JSON.stringify(tenantDTO || {}))} 
-          activeLeases={JSON.parse(JSON.stringify(activeLeases || []))}
-          charges={JSON.parse(JSON.stringify(tenant.charges || []))}
-          ledgerEntries={JSON.parse(JSON.stringify(tenant.ledgerEntries || []))}
+          tenant={tenantDTO as any}
+          activeLeases={activeLeases as any}
+          charges={tenant.charges.map((c: any) => ({ ...c, amount: Number(c.amount), amountPaid: Number(c.amountPaid), dueDate: c.dueDate.toISOString() }))}
+          ledgerEntries={tenant.ledgerEntries.map((e: any) => ({ ...e, amount: Number(e.amount), transactionDate: e.transactionDate.toISOString() }))}
         />
       </div>
     );

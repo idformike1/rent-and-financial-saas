@@ -31,7 +31,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
   }, [pathname, searchParams, router]);
 
   return (
-    <div className="w-full bg-[#1E1E2A]/20 border border-white/5 rounded-[var(--radius)] overflow-hidden backdrop-blur-sm shadow-xl">
+    <div className="w-full bg-muted/10 border border-border rounded-[var(--radius)] overflow-hidden backdrop-blur-sm shadow-xl">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[20%]" />
@@ -41,15 +41,15 @@ export default function UnitGrid({ units }: UnitGridProps) {
           <col className="w-[10%]" />
         </colgroup>
         <thead>
-          <tr className="bg-white/[0.02] border-b border-white/[0.04]">
-            <th className="text-left px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px]">Identifier</th>
-            <th className="text-left px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px]">Taxonomy</th>
-            <th className="text-left px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px]">Registry Status</th>
-            <th className="text-right px-6 py-4 font-bold text-white/40 uppercase tracking-[0.15em] text-[10px] tabular-nums">Market Value</th>
+          <tr className="bg-muted/30 border-b border-border">
+            <th className="text-left px-6 py-4 font-bold text-foreground/40 uppercase tracking-[0.15em] text-[10px]">Identifier</th>
+            <th className="text-left px-6 py-4 font-bold text-foreground/40 uppercase tracking-[0.15em] text-[10px]">Taxonomy</th>
+            <th className="text-left px-6 py-4 font-bold text-foreground/40 uppercase tracking-[0.15em] text-[10px]">Registry Status</th>
+            <th className="text-right px-6 py-4 font-bold text-foreground/40 uppercase tracking-[0.15em] text-[10px] tabular-nums">Market Value</th>
             <th className="px-6 py-4"></th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.02]">
+        <tbody className="divide-y divide-border/20">
           {units.map((unit) => {
             const isSelected = searchParams.get('unitId') === unit.id;
             
@@ -63,8 +63,8 @@ export default function UnitGrid({ units }: UnitGridProps) {
               dotColor = 'bg-mercury-green';
             } else if (unit.maintenanceStatus === 'DECOMMISSIONED') {
               status = 'CRITICAL';
-              statusColor = 'text-rose-500/80 bg-rose-500/5 border-rose-500/10';
-              dotColor = 'bg-rose-500';
+              statusColor = 'text-destructive/80 bg-destructive/5 border-destructive/10';
+              dotColor = 'bg-destructive/60';
             }
 
             return (
@@ -73,41 +73,41 @@ export default function UnitGrid({ units }: UnitGridProps) {
                 onClick={() => handleRowClick(unit.id)}
                 className={cn(
                   "group cursor-pointer transition-all duration-300",
-                  isSelected ? "bg-white/[0.04]" : "bg-transparent hover:bg-white/[0.02]"
+                  isSelected ? "bg-muted/40" : "bg-transparent hover:bg-muted/20"
                 )}
               >
                 <td className="px-6 py-5">
-                  <span className="font-mono text-white tracking-tight flex items-center gap-2">
-                    <div className={cn("w-1 h-1 rounded-full", dotColor)} />
+                  <span className="font-mono text-foreground tracking-tight flex items-center gap-3">
+                    <div className={cn("w-1.5 h-1.5 rounded-full", dotColor)} />
                     {unit.unitNumber}
                   </span>
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-2">
-                    <span className="text-white/60 font-medium">{unit.category}</span>
-                    <span className="text-white/10">•</span>
-                    <span className="text-white/40 text-[11px] uppercase tracking-wider">{unit.type}</span>
+                    <span className="text-foreground/60 font-medium">{unit.category}</span>
+                    <span className="text-foreground/10">•</span>
+                    <span className="text-foreground/40 text-[10px] font-bold uppercase tracking-[0.1em]">{unit.type}</span>
                   </div>
                 </td>
                 <td className="px-6 py-5">
-                  <span className={cn("px-2.5 py-0.5 border rounded-full text-[9px] font-bold tracking-widest uppercase", statusColor)}>
+                  <span className={cn("px-2.5 py-0.5 border rounded-[var(--radius-sm)] text-[9px] font-bold tracking-[0.15em] uppercase", statusColor)}>
                     {status}
                   </span>
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <span className="font-finance tracking-tight text-white/80 tabular-nums">
+                  <span className="font-finance tracking-tight text-foreground/80 tabular-nums">
                     {formatCurrency(unit.marketRent)}
                   </span>
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <ChevronRight size={14} className="text-white/20 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
+                  <ChevronRight size={14} className="text-foreground/20 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
                 </td>
               </tr>
             );
           })}
           {units.length === 0 && (
             <tr>
-              <td colSpan={5} className="px-6 py-16 text-center text-white/20 uppercase tracking-widest text-[10px]">
+              <td colSpan={5} className="px-6 py-16 text-center text-foreground/20 uppercase tracking-[0.15em] font-bold text-[10px]">
                 No operational units detected in this domain.
               </td>
             </tr>

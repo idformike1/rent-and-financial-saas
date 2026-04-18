@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${ibmPlexMono.variable}`}>
-      <body className="antialiased min-h-screen bg-background text-foreground flex overflow-hidden">
+      <body suppressHydrationWarning className="antialiased min-h-screen bg-background text-foreground flex overflow-hidden">
         <SessionProvider>
           <Toaster />
           <AppShell>

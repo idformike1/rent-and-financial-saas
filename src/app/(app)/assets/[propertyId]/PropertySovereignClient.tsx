@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import UnitGrid from './UnitGrid';
 import UnitSideSheet from './UnitSideSheet';
-import { Building2, Plus, Edit2, Trash2, X, ArrowLeft, Globe } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, X, ArrowLeft, Globe, Receipt, Calendar } from 'lucide-react';
 import { Button, Badge } from '@/components/ui-finova';
 import PropertyMetricsHud from '@/components/assets/PropertyMetricsHud';
 import PropertyWaterfall from '@/components/charts/PropertyWaterfall';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { updateProperty, deleteProperty, createUnit } from '@/actions/asset.actions';
+import { getPropertyLedgerEntries } from '@/actions/analytics.actions';
 import { toast } from '@/lib/toast';
 import { useRouter } from 'next/navigation';
 import DomainSwitcher from '@/components/assets/DomainSwitcher';
@@ -32,6 +33,24 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
   const [editPropName, setEditPropName] = useState(propertyData.name);
   const [editPropAddr, setEditPropAddr] = useState(propertyData.address);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Drill-down Logic
+  const [ledgerEntries, setLedgerEntries] = useState<any[]>([]);
+  const [isLedgerLoading, setIsLedgerLoading] = useState(false);
+
+  useEffect(() => {
+    if (drillDownType) {
+      const fetchLedger = async () => {
+        setIsLedgerLoading(true);
+        const res = await getPropertyLedgerEntries(propertyData.id, drillDownType);
+        setLedgerEntries(res || []);
+        setIsLedgerLoading(false);
+      };
+      fetchLedger();
+    } else {
+      setLedgerEntries([]);
+    }
+  }, [drillDownType, propertyData.id]);
 
   const handleUpdate = async () => {
     setIsUpdating(true);
@@ -56,23 +75,23 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
     <div className="animate-in fade-in duration-700 pb-20">
       
       {/* ── SYSTEM NAVIGATION & METADATA ────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-12 pb-6 border-b border-white/[0.04]">
-        <div className="flex items-center gap-8">
-          <Link href="/assets" className="inline-flex items-center gap-2 text-[10px] font-bold text-white/30 hover:text-white/60 uppercase tracking-[0.2em] transition-colors group">
-            <ArrowLeft size={10} className="group-hover:-translate-x-1 transition-transform" />
-            System Portfolio
+      <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
+        <div className="flex items-center gap-6">
+          <Link href="/assets" className="inline-flex items-center gap-2 text-[10px] font-bold text-foreground/40 hover:text-foreground/60 uppercase tracking-[0.15em] transition-colors group">
+            <ArrowLeft size={10} className="group-hover:-translate-x-1 transition-transform opacity-40 group-hover:opacity-100" />
+            Portfolio Registry
           </Link>
-          <div className="w-[1px] h-4 bg-white/10" />
+          <div className="w-[1px] h-4 bg-border" />
           <DomainSwitcher properties={allProperties} />
         </div>
         
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-1 rounded-full bg-mercury-green animate-pulse" />
-            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Registry ID: {propertyData.id.slice(0, 8)}</span>
+            <div className="w-1 h-1 rounded-full bg-mercury-green/60 animate-pulse" />
+            <span className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Registry_Node: {propertyData.id.slice(0, 8)}</span>
           </div>
-          <Badge variant="default" className="font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 border-white/5 text-white/40 bg-white/[0.02]">
-            Asset_Class: Tier_1
+          <Badge variant="default" className="font-bold text-[9px] uppercase tracking-[0.15em] px-3 py-1 border-border text-foreground/40 bg-muted/20 rounded-[var(--radius-sm)]">
+            Class: Alpha_Tier
           </Badge>
         </div>
       </div>
@@ -80,42 +99,42 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
       {/* ── COMMAND CENTER HEADER ─────────────────────────────────────────── */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 mb-12">
         <div className="space-y-1">
-          <h1 className="text-[44px] leading-tight font-display text-white tracking-tight">
+          <h1 className="text-display font-weight-display text-foreground leading-none">
             {propertyData.name}
           </h1>
-          <div className="flex items-center gap-3 text-white/40">
-            <Building2 className="w-3.5 h-3.5" />
-            <p className="text-[14px] font-medium tracking-wide">
+          <div className="flex items-center gap-2 mt-4 text-foreground/40">
+            <Building2 className="w-3 h-3 opacity-40" />
+            <p className="text-[13px] font-medium tracking-tight">
               {propertyData.address}
             </p>
           </div>
         </div>
         
-        <div className="flex items-center p-1 bg-white/[0.02] border border-white/5 rounded-[var(--radius)] backdrop-blur-sm">
+        <div className="flex items-center p-1 bg-muted border border-border rounded-[var(--radius)] shadow-xl">
           <Button 
             variant="ghost" 
             onClick={() => setIsEditAssetModalOpen(true)}
-            className="h-10 px-5 rounded-[var(--radius)] text-[11px] font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/5 border-none"
+            className="h-8 px-4 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 hover:text-foreground hover:bg-muted/50 transition-colors border-none"
           >
-            <Edit2 className="w-3.5 h-3.5 mr-2 opacity-50" />
-            Edit Profile
+            <Edit2 className="w-3 h-3 mr-2 opacity-40" />
+            Mutation
           </Button>
-          <div className="w-[1px] h-5 bg-white/10 mx-1" />
+          <div className="w-[1px] h-4 bg-border mx-1" />
           <Button 
             variant="ghost" 
-            className="h-10 px-5 rounded-[var(--radius)] text-[11px] font-bold uppercase tracking-wider text-rose-500/50 hover:text-rose-500 hover:bg-rose-500/5 border-none"
+            className="h-8 px-4 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] text-destructive/40 hover:text-destructive hover:bg-destructive/5 transition-colors border-none"
             onClick={() => setIsArchiveModalOpen(true)}
           >
-            <Trash2 className="w-3.5 h-3.5 mr-2 opacity-50" />
-            Archive
+            <Trash2 className="w-3 h-3 mr-2 opacity-40" />
+            Purge
           </Button>
-          <div className="w-[1px] h-5 bg-white/10 mx-1" />
+          <div className="w-[1px] h-4 bg-border mx-1" />
           <Button 
             onClick={() => setIsAddUnitModalOpen(true)}
-            className="h-10 px-6 rounded-[var(--radius)] text-[11px] font-bold bg-brand hover:bg-brand/90 text-white uppercase tracking-wider ml-1 shadow-lg shadow-brand/20"
+            className="h-8 px-5 rounded-[var(--radius-sm)] text-[10px] font-bold bg-brand hover:bg-brand/90 text-white uppercase tracking-[0.15em] ml-1 shadow-lg shadow-brand/10 border-none transition-all"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Provision Unit
+            <Plus className="w-3 h-3 mr-2" />
+            Provision Node
           </Button>
         </div>
       </div>
@@ -138,22 +157,22 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
 
         {/* ── ASSET MATRIX ─────────────────────────────────────────────────── */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-[12px] text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-3">
-               <Building2 className="w-4 h-4" /> Asset Compliance Matrix
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] flex items-center gap-3">
+               <Building2 className="w-4 h-4 opacity-40" /> Asset Compliance Matrix
             </h3>
             <div className="flex gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-mercury-green" />
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Optimized</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-mercury-green/60" />
+                <span className="text-[10px] text-foreground/20 font-bold uppercase tracking-[0.15em]">Optimized</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Surveillance</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500/60" />
+                <span className="text-[10px] text-foreground/20 font-bold uppercase tracking-[0.15em]">Surveillance</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Critical</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-destructive/60" />
+                <span className="text-[10px] text-foreground/20 font-bold uppercase tracking-[0.15em]">Critical</span>
               </div>
             </div>
           </div>
@@ -168,7 +187,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
       {/* EDIT ASSET MODAL */}
       {isEditAssetModalOpen && (
         <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[12px] overflow-hidden shadow-2xl">
+          <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[var(--radius)] overflow-hidden shadow-2xl">
              <div className="p-6 border-b border-white/[0.08] flex justify-between items-center bg-white/[0.02]">
                 <h3 className="text-[12px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
                    <Edit2 className="w-4 h-4 text-brand" /> Edit Asset Intelligence
@@ -195,7 +214,7 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
       {/* ARCHIVE CONFIRMATION */}
       {isArchiveModalOpen && (
         <div className="fixed inset-0 z-[110] bg-black/60 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-           <div className="bg-[#0A0A0F] border border-red-500/20 w-full max-w-sm rounded-[12px] p-10 text-center space-y-8 shadow-2xl">
+           <div className="bg-[#0A0A0F] border border-red-500/20 w-full max-w-sm rounded-[var(--radius)] p-10 text-center space-y-8 shadow-2xl">
               <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
                  <Trash2 className="w-10 h-10 text-red-500" />
               </div>
@@ -243,18 +262,66 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
                       <X className="w-5 h-5 text-white/40" />
                    </button>
                 </div>
-                
-                <div className="flex-1 flex items-center justify-center p-10 border border-dashed border-white/5 m-10 rounded-[12px]">
-                   <div className="text-center space-y-6">
-                      <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-[var(--radius)] flex items-center justify-center mx-auto animate-pulse">
-                         <Globe className="w-10 h-10 text-brand/40" />
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-white/60 font-mono text-[14px] uppercase tracking-[0.3em]">Materializing Drill-Down Buffer</p>
-                        <p className="text-white/20 text-[10px] uppercase font-bold tracking-widest italic">Decrypting granular fiscal records...</p>
-                      </div>
-                   </div>
-                </div>
+
+                 <div className="flex-1 overflow-y-auto p-10">
+                   {isLedgerLoading ? (
+                     <div className="flex items-center justify-center h-full">
+                       <div className="text-center space-y-6">
+                          <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-[var(--radius)] flex items-center justify-center mx-auto animate-pulse">
+                             <Globe className="w-10 h-10 text-brand/40" />
+                          </div>
+                          <div className="space-y-2">
+                             <p className="text-white/60 font-mono text-[14px] uppercase tracking-[0.3em]">Materializing Drill-Down Buffer</p>
+                             <p className="text-white/20 text-[10px] uppercase font-bold tracking-widest italic">Decrypting granular fiscal records...</p>
+                          </div>
+                       </div>
+                     </div>
+                   ) : ledgerEntries.length > 0 ? (
+                     <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-8">
+                           <h3 className="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">Live Transaction Archive</h3>
+                           <Badge variant="brand" className="px-3 py-1">{ledgerEntries.length} Records</Badge>
+                        </div>
+                        <div className="space-y-3">
+                           {ledgerEntries.map((e: any) => (
+                             <div key={e.id} className="group p-5 bg-white/[0.02] border border-white/[0.04] hover:border-white/10 rounded-[var(--radius)] transition-all flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                   <div className="w-10 h-10 rounded-[var(--radius)] bg-white/[0.03] flex items-center justify-center text-white/20 group-hover:text-brand transition-colors">
+                                      <Receipt size={18} />
+                                   </div>
+                                   <div>
+                                      <p className="text-[15px] font-medium text-white tracking-tight">{e.description || e.expenseCategory?.name || 'Uncategorized Entry'}</p>
+                                      <div className="flex items-center gap-3 mt-1 text-[11px] text-white/30 font-bold uppercase tracking-widest">
+                                         <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(e.transactionDate).toLocaleDateString()}</span>
+                                         <span className="w-1 h-1 rounded-full bg-white/10" />
+                                         <span>ID: {e.id.slice(0, 8)}</span>
+                                      </div>
+                                   </div>
+                                </div>
+                                <div className="text-right">
+                                   <p className={cn(
+                                      "text-[18px] font-medium tabular-nums tracking-tight",
+                                      e.amount < 0 ? "text-rose-500/80" : "text-mercury-green"
+                                   )}>
+                                      {e.amount < 0 ? '-' : '+'}${Math.abs(Number(e.amount)).toLocaleString()}
+                                   </p>
+                                   <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest mt-1">Immutable Entry</p>
+                                </div>
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                   ) : (
+                     <div className="flex items-center justify-center h-full grayscale opacity-40">
+                        <div className="text-center space-y-4">
+                           <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-[var(--radius)] flex items-center justify-center mx-auto">
+                              <Receipt className="w-8 h-8" />
+                           </div>
+                           <p className="text-[12px] font-bold uppercase tracking-widest text-white/40">Zero record state detected</p>
+                        </div>
+                     </div>
+                   )}
+                 </div>
              </motion.div>
            </div>
         )}
@@ -294,7 +361,7 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
 
   return (
     <div className="fixed inset-0 z-[120] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
-      <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[12px] overflow-hidden shadow-2xl">
+      <div className="bg-[#0A0A0F] border border-white/10 w-full max-w-md rounded-[var(--radius)] overflow-hidden shadow-2xl">
         <div className="p-6 border-b border-white/[0.08] flex justify-between items-center bg-white/[0.02]">
           <h3 className="text-[12px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
             <Plus className="w-4 h-4 text-brand" /> Provision Asset Unit

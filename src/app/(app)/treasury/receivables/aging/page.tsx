@@ -43,7 +43,7 @@ export default async function DelinquencyReport() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground ">Delinquency Report</h1>
           <p className="text-muted-foreground mt-1 text-sm">Ranking of outstanding balances and aging metrics.</p>
         </div>
-        <div className="bg-card text-destructive font-sans font-[400] px-4 py-2 border border-border rounded-[12px] text-[12px] flex items-center">
+        <div className="bg-card text-destructive font-sans font-[400] px-4 py-2 border border-border rounded-[var(--radius)] text-[12px] flex items-center">
           <AlertTriangle className="w-3.5 h-3.5 mr-2" />
           Severe Delinquencies ({reportData.filter((d: any) => d.isSevere).length})
         </div>

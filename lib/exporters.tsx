@@ -5,6 +5,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import { ReportPDF } from '@/components/ReportPDF'
 
 export interface FilterParams {
+  id?: string;
   searchTerm?: string;
   startDate?: string;
   endDate?: string;
@@ -12,12 +13,16 @@ export interface FilterParams {
 }
 
 async function getFilteredEntries(filters: FilterParams, take?: number) {
-  const { searchTerm, startDate, endDate, category } = filters;
+  const { id, searchTerm, startDate, endDate, category } = filters;
   
   // Construct Prisma where clause
   const where: any = {
     AND: []
   };
+
+  if (id) {
+    where.AND.push({ id });
+  }
 
   if (searchTerm) {
     where.AND.push({

@@ -22,13 +22,13 @@ export default function MasterTable() {
 
       {/* FILTER PILLS */}
     <div className="flex items-center gap-2 mb-6">
-      <Button type="button" variant="secondary" disabled={false} className="bg-muted text-foreground rounded-[6px] px-4 py-1.5 h-8 text-[13px] font-[400] transition-colors border-none">
+      <Button type="button" variant="secondary" disabled={false} className="bg-muted text-foreground rounded-[var(--radius)] px-4 py-1.5 h-8 text-[13px] font-[400] transition-colors border-none">
         Recent
       </Button>
-      <Button type="button" variant="ghost" disabled={false} className="border border-border text-muted-foreground hover:text-foreground rounded-[6px] px-4 py-1.5 h-8 text-[13px] font-[400] transition-colors bg-transparent">
+      <Button type="button" variant="ghost" disabled={false} className="border border-border text-muted-foreground hover:text-foreground rounded-[var(--radius)] px-4 py-1.5 h-8 text-[13px] font-[400] transition-colors bg-transparent">
         My transactions
       </Button>
-      <Button type="button" variant="ghost" disabled={false} className="border border-border text-muted-foreground hover:text-foreground rounded-[6px] px-4 py-1.5 h-8 text-[13px] font-[400] transition-colors mb-0.5 bg-transparent">
+      <Button type="button" variant="ghost" disabled={false} className="border border-border text-muted-foreground hover:text-foreground rounded-[var(--radius)] px-4 py-1.5 h-8 text-[13px] font-[400] transition-colors mb-0.5 bg-transparent">
         Operating expenses
       </Button>
     </div>
@@ -51,7 +51,7 @@ export default function MasterTable() {
                 <TD variant="date" className="w-[100px]">{txn.date}</TD>
                 <TD>
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-[6px] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold shrink-0">
+                    <div className="w-7 h-7 rounded-[var(--radius)] bg-muted flex items-center justify-center text-[10px] text-muted-foreground font-bold shrink-0">
                       {txn.toFrom.charAt(0)}
                     </div>
                     <span className="font-[380] tracking-tight">{txn.toFrom}</span>

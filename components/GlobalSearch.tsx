@@ -17,7 +17,7 @@ export default function GlobalSearch() {
   const pathname = usePathname()
 
   const staticNav = [
-    { title: 'Unified Wealth Ledger', type: 'REPORT', href: '/expenses', icon: FileSpreadsheet },
+    { title: 'Unified Wealth Ledger', type: 'REPORT', href: '/treasury/payables', icon: FileSpreadsheet },
     { title: 'Occupant Registry',     type: 'DIRECT', href: '/tenants',  icon: User },
     { title: 'Governance Schema',     type: 'SYSTEM', href: '/settings/categories', icon: Settings }
   ]
@@ -78,7 +78,7 @@ export default function GlobalSearch() {
     <div className="relative flex-1 max-w-[640px] mx-8" ref={dropdownRef}>
       {/* Search Input Bar */}
       <div className={cn(
-        "flex items-center gap-4 h-[38px] px-4 rounded-[8px] bg-muted border border-border transition-all duration-200",
+        "flex items-center gap-4 h-[38px] px-4 rounded-[var(--radius)] bg-muted border border-border transition-all duration-200",
         isOpen
           ? "bg-background border-foreground/20 ring-4 ring-ring/5"
           : "hover:border-border"
@@ -109,7 +109,7 @@ export default function GlobalSearch() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             transition={{ duration: 0.1, ease: "easeOut" }}
-            className="absolute top-14 left-0 right-0 max-h-[520px] overflow-hidden rounded-[12px] bg-card border border-border z-50 flex flex-col"
+            className="absolute top-14 left-0 right-0 max-h-[520px] overflow-hidden rounded-[var(--radius)] bg-card border border-border z-50 flex flex-col"
           >
             <div className="p-4 overflow-y-auto flex-1 space-y-8 scrollbar-hide">
 
@@ -128,10 +128,10 @@ export default function GlobalSearch() {
                       <Link
                         key={`${r.type}-${r.id}`}
                         href={r.href}
-                        className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-muted transition-none group border border-transparent"
+                        className="flex items-center justify-between px-3 py-2 rounded-[var(--radius)] hover:bg-muted transition-none group border border-transparent"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-10 h-10 rounded-[8px] flex items-center justify-center border transition-none bg-muted text-muted-foreground border-border", getTypeStyle(r.type))}>
+                          <div className={cn("w-10 h-10 rounded-[var(--radius)] flex items-center justify-center border transition-none bg-muted text-muted-foreground border-border", getTypeStyle(r.type))}>
                             {getIcon(r.type)}
                           </div>
                           <div>
@@ -144,7 +144,7 @@ export default function GlobalSearch() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-none">
-                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-[6px] border", getTypeStyle(r.type))}>
+                          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-[var(--radius)] border", getTypeStyle(r.type))}>
                             {r.type}
                           </span>
                           <ArrowRight className="w-4 h-4 text-foreground/40" />
@@ -165,10 +165,10 @@ export default function GlobalSearch() {
                     <Link
                       key={s.title}
                       href={s.href}
-                      className="flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-muted transition-none border border-transparent group"
+                      className="flex items-center justify-between px-3 py-2 rounded-[var(--radius)] hover:bg-muted transition-none border border-transparent group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-[8px] bg-muted flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-none border border-border">
+                        <div className="w-10 h-10 rounded-[var(--radius)] bg-muted flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-none border border-border">
                           <s.icon className="w-4 h-4" />
                         </div>
                         <h4 className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-none">

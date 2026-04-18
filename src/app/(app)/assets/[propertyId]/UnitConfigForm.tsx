@@ -8,7 +8,7 @@ import { MaintenanceStatus } from '@/src/schema/enums';
 
 import { Check, Trash2 } from 'lucide-react';
 
-const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-md h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all";
+const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all";
 const labelClass = "text-[10px] text-[#9CA3AF] uppercase tracking-widest font-bold mb-1 block";
 
 const updateUnitAction = async (prevState: any, formData: FormData) => {

@@ -14,7 +14,7 @@ export default function TransactionsLoading() {
       {/* ── 1. HEADER SKELETON ───────────────────────────────────────────── */}
       <div className="pt-2 pb-6 space-y-8 bg-background">
         <div className="flex items-center justify-between">
-            <div className="h-9 w-64 bg-white/[0.03] rounded-md" />
+            <div className="h-9 w-64 bg-white/[0.03] rounded-[var(--radius)]" />
             <div className="flex items-center gap-3">
                <div className="h-8 w-64 bg-white/[0.03] rounded-[var(--radius)]" />
                <div className="h-8 w-20 bg-white/[0.03] rounded-[var(--radius)]" />
@@ -53,7 +53,7 @@ export default function TransactionsLoading() {
              <div className="h-4 w-[1px] bg-white/[0.05]" />
              <div className="h-4 w-24 bg-white/[0.02] rounded" />
              <div className="h-4 w-[1px] bg-white/[0.05]" />
-             <div className="h-8 w-24 bg-white/[0.03] rounded-md" />
+             <div className="h-8 w-24 bg-white/[0.03] rounded-[var(--radius)]" />
           </div>
       </div>
 

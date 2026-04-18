@@ -176,18 +176,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-40 w-full h-[56px] flex items-center bg-background border-b border-border shrink-0">
           <div className="w-full max-w-[1440px] mx-auto px-8 flex items-center">
             <div className="flex-1 flex items-center justify-center">
-               <div className="w-full max-w-[512px] relative group">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-muted-foreground/40 group-focus-within:text-foreground transition-colors" />
-                  <input 
-                    type="text" 
-                    placeholder="Search for anything" 
-                    className="w-full h-8 bg-card border border-border rounded-[var(--radius)] pl-9 pr-4 text-[13px] text-foreground placeholder-muted-foreground/30 focus:outline-none focus:border-primary/20 transition-all font-[360] tracking-tight"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-40 transition-opacity">
-                     <kbd className="text-[10px] font-sans">⌘</kbd>
-                     <kbd className="text-[10px] font-sans">K</kbd>
-                  </div>
-               </div>
+               <GlobalSearch />
             </div>
             
             <div className="flex items-center gap-4 ml-auto">

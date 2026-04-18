@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-6 animate-in fade-in duration-1000 selection:bg-primary/10">
-      <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[12px] animate-in zoom-in-95 duration-700 bg-card">
+      <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[var(--radius)] animate-in zoom-in-95 duration-700 bg-card">
         <div className="space-y-10">
           <div className="text-center space-y-4">
              <div className="w-12 h-12 bg-foreground rounded-[10px] flex items-center justify-center mx-auto mb-6 transition-none">
@@ -61,7 +61,7 @@ export default function LoginPage() {
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted" 
+                    className="h-[38px] rounded-[var(--radius)] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted" 
                     placeholder="Enter email..."
                     required
                   />
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-[38px] rounded-[8px] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted"
+                    className="h-[38px] rounded-[var(--radius)] text-[13px] font-medium border-border focus:border-foreground/20 bg-muted"
                     placeholder="••••••••"
                     required
                   />
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-[8px] border border-red-500/20 text-center text-[11px] font-bold  animate-in shake duration-500">
+              <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-[var(--radius)] border border-red-500/20 text-center text-[11px] font-bold  animate-in shake duration-500">
                 {error}
               </div>
             )}
@@ -94,7 +94,7 @@ export default function LoginPage() {
               disabled={isLoading}
               isLoading={isLoading}
               variant="primary"
-              className="w-full h-[38px] rounded-[6px] text-[13px] font-medium border-none mt-2"
+              className="w-full h-[38px] rounded-[var(--radius)] text-[13px] font-medium border-none mt-2"
             >
               {isLoading ? "Authenticating..." : "Sign In →"}
             </Button>

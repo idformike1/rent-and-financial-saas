@@ -197,27 +197,27 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
       {/* UNIVERSAL MERCURY HEADER BLOCK */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
         <div className="space-y-1">
-          <h1 className="text-[28px] font-[380] text-foreground tracking-tight leading-none">
+          <h1 className="text-display font-weight-display text-foreground leading-none">
             {tenant.name}
           </h1>
-          <div className="flex flex-wrap gap-3 mt-2">
-            <span className="text-[13px] text-muted-foreground flex items-center bg-muted/30 border border-border px-3 py-1 rounded-[4px]"><Mail className="w-3 h-3 mr-2" /> {tenant.email || 'N/A'}</span>
-            <span className="text-[13px] text-muted-foreground flex items-center bg-muted/30 border border-border px-3 py-1 rounded-[4px]"><Phone className="w-3 h-3 mr-2" /> {tenant.phone || 'N/A'}</span>
-            <Badge variant="default" className="bg-muted/30">ID: {tenant.nationalId || 'UNVERIFIED'}</Badge>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em] flex items-center bg-muted border border-border px-3 py-1.5 rounded-[var(--radius-sm)]"><Mail className="w-3 h-3 mr-2 opacity-40" /> {tenant.email || 'N/A'}</span>
+            <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em] flex items-center bg-muted border border-border px-3 py-1.5 rounded-[var(--radius-sm)]"><Phone className="w-3 h-3 mr-2 opacity-40" /> {tenant.phone || 'N/A'}</span>
+            <Badge variant="default" className="bg-muted border border-border text-foreground/40 text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1.5 rounded-[var(--radius-sm)]">ID: {tenant.nationalId || 'UNVERIFIED'}</Badge>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
            {!tenant.isDeleted && (
              <>
-               <Button type="button" variant="primary" onClick={onReconcileCredits} disabled={isReconciling}>
-                  {isReconciling ? 'RECONCILING...' : 'Settle Balance'}
+               <Button type="button" variant="primary" onClick={onReconcileCredits} disabled={isReconciling} className="h-9 px-6 text-[10px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)]">
+                  {isReconciling ? 'SYNCHRONIZING...' : 'Execute Settlement'}
                </Button>
-               <Button type="button" variant="secondary" disabled={false} onClick={() => setIsDrawerOpen(true)}>
-                  Record Payment
+               <Button type="button" variant="secondary" disabled={false} onClick={() => setIsDrawerOpen(true)} className="h-9 px-6 text-[10px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)] bg-muted border-border hover:bg-muted/50">
+                  Log Entry
                </Button>
-               <Button type="button" variant="ghost" disabled={false} onClick={() => setIsEditModalOpen(true)}>
-                  Edit Profile
+               <Button type="button" variant="ghost" disabled={false} onClick={() => setIsEditModalOpen(true)} className="h-9 px-4 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 hover:text-foreground">
+                  Mutation
                </Button>
              </>
            )}
@@ -225,33 +225,33 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
       </div>
 
       {/* STEP 3.2: THE STRIP-CHART */}
-      <div className="space-y-6">
+      <div className="space-y-6 pt-8">
          <div className="flex justify-between items-end">
-            <h3 className="text-[10px] text-muted-foreground   flex items-center gap-3">
-               <Activity className="w-4 h-4 text-brand" /> 12-Month Behavioral Payment DNA
+            <h3 className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] flex items-center gap-3">
+               <Activity className="w-4 h-4 text-brand opacity-40" /> 12-Month Behavioral Payment DNA
             </h3>
-            <div className="flex gap-4 text-[8px] text-muted-foreground ">
-               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius)] bg-[var(--primary)]" /> Compliant</div>
-               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius)] bg-amber-500" /> Arrears</div>
-               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius)] bg-rose-500" /> Defaults</div>
+            <div className="flex gap-4 text-[9px] text-foreground/20 font-bold uppercase tracking-[0.15em]">
+               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius-sm)] bg-mercury-green" /> Compliant</div>
+               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius-sm)] bg-amber-500" /> Arrears</div>
+               <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-[var(--radius-sm)] bg-destructive/60" /> Defaults</div>
             </div>
          </div>
-         <div className="bg-background border border-border p-6 rounded-[var(--radius)] grid grid-cols-6 lg:grid-cols-12 gap-4">
+         <div className="bg-muted/10 border border-border p-6 rounded-[var(--radius)] grid grid-cols-6 lg:grid-cols-12 gap-4">
             {tenant.stripChart.map((m, idx) => (
                <div key={idx} className="space-y-4 text-center">
                   <div className={cn(
                     "h-20 rounded-[var(--radius)] border transition-all flex items-center justify-center relative overflow-hidden group",
-                    m.status === 'GREEN' ? "bg-[var(--primary)]/10 border-[var(--primary)]/30" :
+                    m.status === 'GREEN' ? "bg-mercury-green/10 border-mercury-green/30" :
                     m.status === 'YELLOW' ? "bg-amber-500/10 border-amber-500/30" :
-                    m.status === 'RED' ? "bg-rose-500/10 border-rose-500/30" :
+                    m.status === 'RED' ? "bg-destructive/10 border-destructive/30" :
                     "bg-muted/50 border-border opacity-20"
                   )}>
-                     {m.status === 'GREEN' && <CheckCircle2 className="w-5 h-5 text-[var(--primary)] opacity-40" />}
+                     {m.status === 'GREEN' && <CheckCircle2 className="w-5 h-5 text-mercury-green opacity-40" />}
                      {m.status === 'YELLOW' && <Activity className="w-5 h-5 text-amber-500 opacity-40" />}
-                     {m.status === 'RED' && <XCircle className="w-5 h-5 text-rose-500 opacity-40" />}
-                     <div className="absolute inset-0 bg-muted/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                     {m.status === 'RED' && <XCircle className="w-5 h-5 text-destructive/60 opacity-40" />}
+                     <div className="absolute inset-0 bg-muted/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground ">{m.label}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-foreground/40">{m.label}</p>
                </div>
             ))}
          </div>
@@ -261,52 +261,52 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
         
         {/* CORE PORTFOLIO */}
         <div className="md:col-span-4 space-y-8">
-           <div className="bg-card border border-border rounded-[var(--radius)] p-6 relative overflow-hidden group">
-              <div className="absolute -right-12 -top-6 w-40 h-40 bg-brand/10 rounded-[var(--radius)] blur-[60px] group-hover:bg-brand/20 transition-all duration-700" />
-              <p className="text-muted-foreground   text-[10px] mb-6">Aggregate Liability</p>
+           <div className="bg-muted/10 border border-border rounded-[var(--radius)] p-6 relative overflow-hidden group">
+              <div className="absolute -right-12 -top-6 w-40 h-40 bg-brand/5 rounded-full blur-[60px] group-hover:bg-brand/10 transition-all duration-700" />
+              <p className="text-foreground/40 font-bold uppercase tracking-[0.15em] text-[10px] mb-6">Aggregate Liability</p>
               <div className="text-display font-weight-display text-foreground font-finance tabular-nums leading-none">
                  ${totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}
               </div>
               <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
-                 <span className="text-muted-foreground text-[10px]  ">System Status</span>
+                 <span className="text-foreground/20 text-[10px] font-bold uppercase tracking-[0.15em]">System Status</span>
                  <span className={cn(
-                   "px-6 py-2 rounded-[var(--radius)] text-[10px]   border transition-colors",
-                   totalBalance > 0 ? "bg-rose-500/10 text-rose-500 border-rose-500/20" : "bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/20"
+                   "px-4 py-1.5 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] border transition-colors",
+                   totalBalance > 0 ? "bg-destructive/10 text-destructive/80 border-destructive/20" : "bg-mercury-green/10 text-mercury-green border-mercury-green/20"
                  )}>
                    {totalBalance > 0 ? 'DELINQUENT_RECAP' : 'FULLY_COLLATERIZED'}
                  </span>
               </div>
            </div>
 
-           <div className="bg-background border border-border rounded-[var(--radius)] p-6">
+           <div className="bg-muted/10 border border-border rounded-[var(--radius)] p-6">
               <div className="flex justify-between items-center mb-10">
-                 <h4 className="text-[10px] text-muted-foreground   flex items-center">
-                    <Layers className="w-4 h-4 mr-4 text-brand" /> Active Assets
+                 <h4 className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] flex items-center">
+                    <Layers className="w-4 h-4 mr-4 text-brand opacity-40" /> Active Assets
                  </h4>
                  {!tenant.isDeleted && (
                     <Button 
                       type="button"
                       variant="ghost" 
                       onClick={() => setIsAddLeaseModalOpen(true)} 
-                      className="p-3 bg-muted/50 border border-border"
+                      className="w-10 h-10 bg-muted border border-border hover:bg-muted/50 rounded-[var(--radius-sm)] flex items-center justify-center p-0"
                     >
-                       <Plus className="w-5 h-5" />
+                       <Plus className="w-5 h-5 opacity-40" />
                     </Button>
                  )}
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                  {activeLeases.length === 0 ? (
-                    <div className="py-12 text-center bg-card[0.02] rounded-[var(--radius)] border border-dashed border-border">
-                       <p className="text-[10px] text-muted-foreground  leading-relaxed px-10">NO OPERATIONAL TENURE DETECTED IN CURRENT REALM</p>
+                    <div className="py-12 text-center bg-muted/20 rounded-[var(--radius-sm)] border border-dashed border-border">
+                       <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em] leading-relaxed px-10">NO OPERATIONAL TENURE DETECTED</p>
                     </div>
                  ) : (
                     activeLeases.map(lease => (
-                       <div key={lease.id} className="p-6 bg-muted/50 rounded-[var(--radius)] border border-border relative group hover:border-brand/40 transition-all">
+                       <div key={lease.id} className="p-6 bg-muted/30 rounded-[var(--radius-sm)] border border-border relative group hover:border-brand/40 transition-all">
                           <div className="flex justify-between items-start mb-6">
                              <div>
-                                <p className="text-2xl text-foreground leading-none">{lease.unitNumber}</p>
-                                <p className="text-[9px] text-muted-foreground  mt-3">
+                                <p className="text-2xl text-foreground font-weight-display leading-none">{lease.unitNumber}</p>
+                                <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em] mt-3">
                                    {lease.isPrimary ? 'PRIMARY_TENURE' : 'EXTENSION_NODE'}
                                 </p>
                              </div>
@@ -315,17 +315,17 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
                                    type="button"
                                    variant="ghost"
                                    onClick={() => setIsMoveOutModalOpen({ leaseId: lease.id, unitId: lease.unitId, unitNumber: lease.unitNumber })}
-                                   className="h-auto p-0 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-rose-500 hover:bg-transparent"
+                                   className="h-auto p-0 opacity-0 group-hover:opacity-100 text-foreground/20 hover:text-destructive transition-colors"
                                 >
                                    <XCircle className="w-5 h-5" />
                                 </Button>
                              )}
                           </div>
                           <div className="flex justify-between items-end">
-                             <p className="text-2xl text-foreground font-finance tabular-nums">${lease.rentAmount.toLocaleString()}<span className="text-[10px] text-muted-foreground lowercase ml-1">/fisc</span></p>
+                             <p className="text-2xl text-foreground font-finance tabular-nums">${lease.rentAmount.toLocaleString()}<span className="text-[10px] text-foreground/20 uppercase font-bold tracking-widest ml-1">/fisc</span></p>
                              <div className="text-right">
-                                <p className="text-[8px] text-muted-foreground ">Expiry_Window</p>
-                                <p className="text-[9px] text-foreground  mt-1">{new Date(lease.endDate).toLocaleDateString()}</p>
+                                <p className="text-[9px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Expiry_Window</p>
+                                <p className="text-[10px] font-mono text-foreground/60 mt-1">{new Date(lease.endDate).toLocaleDateString()}</p>
                              </div>
                           </div>
                        </div>
@@ -344,50 +344,48 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
       {/* Protocols (Modals) */}
       
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div className="bg-card rounded-[var(--radius)] w-full max-w-xl overflow-hidden border border-border relative">
-               <Button 
-                 type="button"
-                 variant="ghost"
+        <div className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300 backdrop-blur-sm">
+            <div className="bg-background rounded-[var(--radius)] w-full max-w-xl overflow-hidden border border-border relative shadow-2xl">
+               <button 
                  onClick={() => setIsEditModalOpen(false)} 
-                 className="absolute top-6 right-12 text-muted-foreground hover:text-foreground h-10 w-10 p-0"
+                 className="absolute top-6 right-6 text-foreground/20 hover:text-foreground h-10 w-10 flex items-center justify-center transition-colors"
                >
-                 <XCircle className="w-10 h-10" />
-               </Button>
-              <div className="p-6 border-b border-border bg-card[0.02]">
-                  <h2 className="text-display font-weight-display text-foreground  underline decoration-brand/50 decoration-4 underline-offset-8">Override Identity</h2>
-                  <p className="text-[11px] text-muted-foreground   mt-6">Master Registry Forensic Mutation</p>
+                 <XCircle className="w-6 h-6" />
+               </button>
+              <div className="p-8 border-b border-border bg-muted/20">
+                  <h2 className="text-display font-weight-display text-foreground">Mutation // Identity</h2>
+                  <p className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.15em] mt-6">Master Registry Forensic Override</p>
               </div>
-              <form onSubmit={handleSubmit(onEditTenant)} className="p-6 space-y-10">
-                 <div className="space-y-8">
+              <form onSubmit={handleSubmit(onEditTenant)} className="p-10 space-y-8">
+                 <div className="space-y-6">
                    <div>
-                     <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Legal Aggregate Name</label>
-                     <input {...register('name')} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-2xl outline-none focus:border-brand transition-all text-foreground" />
+                     <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Legal Identifier</label>
+                     <input {...register('name')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-xl outline-none focus:border-brand/40 transition-all text-foreground" />
                    </div>
-                   <div className="grid grid-cols-2 gap-8">
+                   <div className="grid grid-cols-2 gap-6">
                      <div>
-                       <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Electronic Mail</label>
-                       <input {...register('email')} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-sm font-bold outline-none focus:border-brand transition-all text-foreground" />
+                       <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Electronic Endpoint</label>
+                       <input {...register('email')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-sm font-medium outline-none focus:border-brand/40 transition-all text-foreground" />
                      </div>
                      <div>
-                       <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Telephonic Line</label>
-                       <input {...register('phone')} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-sm font-bold outline-none focus:border-brand transition-all text-foreground" />
+                       <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Telephonic Line</label>
+                       <input {...register('phone')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-sm font-medium outline-none focus:border-brand/40 transition-all text-foreground" />
                      </div>
                    </div>
                    <div>
-                     <label className="text-[10px] text-muted-foreground   block mb-4 ml-6">Structural Verification ID (SSN/Gov)</label>
-                     <input {...register('nationalId')} className="w-full bg-background border border-border rounded-[var(--radius)] p-6 text-xl outline-none focus:border-brand transition-all text-foreground " />
+                     <label className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] block mb-2 ml-1">Structural Verification (ID/SSN)</label>
+                     <input {...register('nationalId')} className="w-full bg-muted/30 border border-border rounded-[var(--radius)] h-12 px-6 text-xl outline-none focus:border-brand/40 transition-all text-foreground " />
                    </div>
                  </div>
                   <Button 
                     type="submit" 
                     isLoading={isSubmitting}
-                    className="w-full h-24 bg-brand text-foreground text-[12px]"
+                    className="w-full h-12 bg-brand text-white text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius)] hover:bg-brand/90 transition-all border-none"
                   >
-                     Commit Protocol Changes
+                     Commit Logic Changes
                   </Button>
               </form>
-           </div>
+            </div>
         </div>
       )}
 
@@ -520,10 +518,3 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
   );
 }
 
-function ForensicBadge({ children, className }: { children: React.ReactNode, className?: string }) {
-  return (
-    <span className={cn("px-4 py-1.5 rounded-[6px] text-[10px]  border-2", className)}>
-      {children}
-    </span>
-  )
-}

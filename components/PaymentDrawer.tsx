@@ -116,7 +116,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
           
           {/* Target Identity Context */}
-          <div className="bg-muted/50 border border-border rounded-[8px] p-4 flex flex-col">
+          <div className="bg-muted/50 border border-border rounded-[var(--radius)] p-4 flex flex-col">
             <label className="text-[10px] font-bold text-muted-foreground uppercase  mb-2">Posting To</label>
             <p className="text-xl font-bold text-foreground tracking-tight">{tenant.name}</p>
           </div>
@@ -168,7 +168,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 {...register('referenceText')}
                 rows={2}
                 placeholder="Reference for audit trail..."
-                className="w-full bg-muted/30 border border-border rounded-[8px] p-3 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none resize-none placeholder:text-muted-foreground/50 font-bold"
+                className="w-full bg-muted/30 border border-border rounded-[var(--radius)] p-3 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none resize-none placeholder:text-muted-foreground/50 font-bold"
               />
               {errors.referenceText && <p className="text-destructive text-[10px] uppercase font-bold">{errors.referenceText.message}</p>}
             </div>
@@ -178,7 +178,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
               <h4 className="text-[11px] font-bold text-muted-foreground uppercase mb-4">Allocation Preview (Waterfall)</h4>
               <div className="space-y-0.5">
                 {previewData.length === 0 ? (
-                  <div className="p-6 border border-dashed border-border rounded-[8px] text-center">
+                  <div className="p-6 border border-dashed border-border rounded-[var(--radius)] text-center">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">No outstanding liabilities available for liquidation.</p>
                   </div>
                 ) : (
@@ -201,7 +201,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 )}
 
                 {overpayment > 0 && (
-                  <div className="flex justify-between items-center py-4 bg-mercury-green/5 px-3 rounded-[6px] mt-2 border border-mercury-green/10">
+                  <div className="flex justify-between items-center py-4 bg-mercury-green/5 px-3 rounded-[var(--radius)] mt-2 border border-mercury-green/10">
                     <div>
                       <p className="text-[11px] font-bold text-mercury-green uppercase">Automatic Credit</p>
                       <p className="text-[9px] text-mercury-green/60 dark:text-mercury-green/60 uppercase">Unapplied surplus materialized</p>

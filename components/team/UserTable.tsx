@@ -59,7 +59,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
 
   return (
     <div className="w-full relative">
-      <div className="w-full overflow-x-auto border border-border rounded-[8px] bg-card">
+      <div className="w-full overflow-x-auto border border-border rounded-[var(--radius)] bg-card">
         <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
@@ -97,7 +97,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                   <button 
                     onClick={() => handleToggleEdit(user.id, user.canEdit)}
                     className={cn(
-                      "p-1.5 rounded-[6px] border transition-none",
+                      "p-1.5 rounded-[var(--radius)] border transition-none",
                       user.canEdit 
                         ? "border-mercury-green/20 bg-mercury-green/10 text-mercury-green" 
                         : "border-border bg-muted/50 text-muted-foreground"
@@ -124,7 +124,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                   <button 
                     disabled={user.id === currentUserId}
                     onClick={() => setDeleteModal({ open: true, user })}
-                    className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[6px] transition-none disabled:opacity-10"
+                    className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[var(--radius)] transition-none disabled:opacity-10"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -139,7 +139,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
       {deleteModal.open && deleteModal.user && (
         <>
           <div className="fixed inset-0 z-50 " />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[12px] p-6 flex flex-col">
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-card border border-border rounded-[var(--radius)] p-6 flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-[11px] font-bold text-foreground uppercase tracking-widest">Authorize Nuclear Purge</h2>
               <button 
@@ -150,7 +150,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
               </button>
             </div>
             
-            <div className="bg-destructive/10 border border-destructive/20 p-4 mb-8 rounded-[8px] flex items-start gap-4">
+            <div className="bg-destructive/10 border border-destructive/20 p-4 mb-8 rounded-[var(--radius)] flex items-start gap-4">
               <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p className="text-[13px] font-bold text-foreground leading-tight">Vaporizing identity: {deleteModal.user.email}</p>
@@ -176,7 +176,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 variant="primary"
                 disabled={confirmEmail !== 'CONFIRM'}
                 onClick={handleDelete}
-                className="w-full bg-destructive hover:bg-destructive/90 text-white h-12 rounded-[8px] text-[11px] font-bold uppercase tracking-widest"
+                className="w-full bg-destructive hover:bg-destructive/90 text-white h-12 rounded-[var(--radius)] text-[11px] font-bold uppercase tracking-widest"
               >
                 EXECUTE PURGE
               </Button>

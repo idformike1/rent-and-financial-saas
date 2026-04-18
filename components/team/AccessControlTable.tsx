@@ -41,7 +41,7 @@ export default function AccessControlTable({
   }
 
   return (
-    <div className="w-full overflow-x-auto relative bg-card rounded-[8px] border border-border">
+    <div className="w-full overflow-x-auto relative bg-card rounded-[var(--radius)] border border-border">
       <table className="w-full text-sm text-left whitespace-nowrap border-collapse">
         <thead className="bg-muted/50 border-b border-border">
           <tr>
@@ -80,7 +80,7 @@ export default function AccessControlTable({
                   value={member.role}
                   onChange={(e) => handleAction(() => updateUserRole(member.id, e.target.value), "Role recalibrated")}
                   disabled={member.id === currentUserId}
-                  className="bg-card border border-border text-[11px] font-bold text-foreground px-2 py-1 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none disabled:opacity-30 appearance-none"
+                  className="bg-card border border-border text-[11px] font-bold text-foreground px-2 py-1 rounded-[var(--radius)] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none disabled:opacity-30 appearance-none"
                 >
                   <option value="OWNER">OWNER</option>
                   <option value="MANAGER">MANAGER</option>
@@ -98,7 +98,7 @@ export default function AccessControlTable({
                     handleAction(() => toggleUserEditPermission(member.id, !member.canEdit), member.canEdit ? "Muzzled" : "Unmuzzled")
                   }}
                   className={cn(
-                    "p-1.5 rounded-[6px] border transition-none h-auto min-w-[32px]",
+                    "p-1.5 rounded-[var(--radius)] border transition-none h-auto min-w-[32px]",
                     member.canEdit 
                       ? "border-mercury-green/20 bg-mercury-green/10 text-mercury-green" 
                       : "border-border bg-muted/50 text-muted-foreground"
@@ -139,7 +139,7 @@ export default function AccessControlTable({
                     }
                   }}
                   disabled={member.id === currentUserId}
-                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[6px] transition-none disabled:opacity-10 h-auto"
+                  className="p-1.5 text-destructive hover:bg-destructive/10 rounded-[var(--radius)] transition-none disabled:opacity-10 h-auto"
                 >
                   [⌫]
                 </Button>

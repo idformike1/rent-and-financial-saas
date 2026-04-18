@@ -27,7 +27,7 @@ export default function DomainSwitcher({ properties }: DomainSwitcherProps) {
     <div className="relative">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-3 py-1.5 rounded-[6px] hover:bg-white/[0.04] transition-all group border border-transparent hover:border-white/5"
+        className="flex items-center gap-3 px-3 py-1.5 rounded-[var(--radius)] hover:bg-white/[0.04] transition-all group border border-transparent hover:border-white/5"
       >
         <div className="w-8 h-8 rounded-[4px] bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
           <Globe size={16} />
@@ -49,7 +49,7 @@ export default function DomainSwitcher({ properties }: DomainSwitcherProps) {
             className="fixed inset-0 z-[100]" 
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 mt-2 w-[280px] bg-[#0A0A0F] border border-white/10 rounded-[12px] shadow-2xl z-[101] overflow-hidden animate-in fade-in zoom-in-95 duration-200 backdrop-blur-xl">
+          <div className="absolute top-full left-0 mt-2 w-[280px] bg-[#0A0A0F] border border-white/10 rounded-[var(--radius)] shadow-2xl z-[101] overflow-hidden animate-in fade-in zoom-in-95 duration-200 backdrop-blur-xl">
             <div className="p-3 border-b border-white/[0.04] bg-white/[0.02]">
               <div className="flex items-center justify-between px-2 py-1">
                 <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Portfolio Matrix</span>
@@ -69,7 +69,7 @@ export default function DomainSwitcher({ properties }: DomainSwitcherProps) {
                   href={`/assets/${p.id}`}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all group",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius)] transition-all group",
                     p.id === propertyId 
                       ? "bg-brand/10 text-brand border border-brand/10" 
                       : "text-white/60 hover:text-white hover:bg-white/[0.04] border border-transparent"

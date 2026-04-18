@@ -35,7 +35,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
       </div>
 
       {/* CORE REGISTRY TABLE */}
-      <div className="bg-card border border-border rounded-[8px] overflow-hidden">
+      <div className="bg-card border border-border rounded-[var(--radius)] overflow-hidden">
         {filteredTenants.length === 0 ? (
           <div className="p-20 text-center space-y-4 bg-card">
             <User className="w-10 h-10 text-border mx-auto" />
@@ -64,7 +64,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                     <tr key={tenant.id} className="h-[64px] hover:bg-foreground/[0.02] group transition-none cursor-pointer">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-[6px] bg-muted border border-border text-foreground flex items-center justify-center font-bold text-sm">
+                          <div className="h-10 w-10 rounded-[var(--radius)] bg-muted border border-border text-foreground flex items-center justify-center font-bold text-sm">
                             {tenant.name.charAt(0)}
                           </div>
                           <div className="flex flex-col">
@@ -89,7 +89,7 @@ export default function OccupantDirectory({ initialTenants }: { initialTenants: 
                       </td>
                       <td className="px-4 py-3 text-right">
                         <Link href={`/tenants/${tenant.id}`} onClick={(e) => e.stopPropagation()}>
-                           <Button type="button" variant="secondary" disabled={false} className="h-9 w-9 p-0 rounded-[8px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-none">
+                           <Button type="button" variant="secondary" disabled={false} className="h-9 w-9 p-0 rounded-[var(--radius)] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-none">
                               <ArrowRight className="w-4 h-4" />
                            </Button>
                         </Link>
