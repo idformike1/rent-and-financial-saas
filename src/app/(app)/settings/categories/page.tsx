@@ -7,7 +7,7 @@ import { Card } from '@/components/ui-finova'
 
 export default async function CategoriesManagementPage() {
   const session = await getCurrentSession();
-  if (!session) redirect('/auth/signin');
+  if (!session) return null;
 
   const allLedgers = await prisma.financialLedger.findMany({
     where: { organizationId: session.organizationId },
