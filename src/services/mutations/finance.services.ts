@@ -152,7 +152,7 @@ export async function processPaymentService(
     const amountToApply = new Prisma.Decimal(payload.amountPaid);
     if (amountToApply.lte(0)) throw new Error("ERR_FISCAL_BREACH: Payment amount must be absolute positive.");
 
-    const tenant = await tx.tenant.findUnique({
+    const tenant = await tx.tenant.findFirst({
       where: { id: payload.tenantId, organizationId: context.organizationId },
       include: {
         charges: {
@@ -167,7 +167,7 @@ export async function processPaymentService(
     const { distributions, remainingCredit } = calculateWaterfallDistribution(amountToApply, tenant.charges);
 
     for (const distro of distributions) {
-      await tx.charge.update({
+      await tx.charge.updateMany({
         where: { id: distro.id, organizationId: context.organizationId },
         data: {
           amountPaid: { increment: distro.amountToApply },
@@ -321,14 +321,14 @@ export async function waiveChargeService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const charge = await tx.charge.findUnique({ where: { id: chargeId, organizationId: context.organizationId } });
+    const charge = await tx.charge.findFirst({ where: { id: chargeId, organizationId: context.organizationId } });
     if (!charge) throw new Error("ERR_CHARGE_ABSENT");
     
     const balance = charge.amount.minus(charge.amountPaid);
     if (balance.lte(0)) throw new Error("ERR_FISCAL_CONFLICT: Charge already satisfied.");
 
-    await tx.charge.update({
-      where: { id: chargeId },
+    await tx.charge.updateMany({
+      where: { id: chargeId, organizationId: context.organizationId },
       data: { amountPaid: charge.amount, isFullyPaid: true }
     });
 
@@ -409,7 +409,7 @@ export async function voidLedgerEntryService(
 
   return await db.$transaction(async (tx: any) => {
     // 1. Fetch record for forensic snapshot
-    const entry = await tx.ledgerEntry.findUnique({
+    const entry = await tx.ledgerEntry.findFirst({
       where: { id: entryId, organizationId: context.organizationId }
     });
 
@@ -417,8 +417,8 @@ export async function voidLedgerEntryService(
     if (entry.status === 'VOIDED') throw new Error("ERR_STATE_CONFLICT: Record already decommissioned.");
 
     // 2. Execute Voiding
-    const updated = await tx.ledgerEntry.update({
-      where: { id: entryId },
+    await tx.ledgerEntry.updateMany({
+      where: { id: entryId, organizationId: context.organizationId },
       data: { status: 'VOIDED' }
     });
 
@@ -437,6 +437,6 @@ export async function voidLedgerEntryService(
       tx: tx as any
     });
 
-    return updated;
+    return { ...entry, status: 'VOIDED' };
   });
 }

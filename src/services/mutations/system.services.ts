@@ -34,7 +34,10 @@ export async function executeRevenueSyncService(context: { operatorId: string, o
 
     let updatedCount = 0;
     for (const ledger of misclassified) {
-      await tx.financialLedger.update({ where: { id: ledger.id }, data: { class: 'REVENUE' } });
+      await tx.financialLedger.updateMany({ 
+        where: { id: ledger.id, organizationId: context.organizationId }, 
+        data: { class: 'REVENUE' } 
+      });
       updatedCount++;
 
       const account = await tx.account.findFirst({
@@ -46,7 +49,10 @@ export async function executeRevenueSyncService(context: { operatorId: string, o
           data: { name: ledger.name, category: AccountCategory.INCOME, organizationId: context.organizationId }
         });
       } else if (account.category !== AccountCategory.INCOME) {
-        await tx.account.update({ where: { id: account.id }, data: { category: AccountCategory.INCOME } });
+        await tx.account.updateMany({ 
+          where: { id: account.id, organizationId: context.organizationId }, 
+          data: { category: AccountCategory.INCOME } 
+        });
       }
     }
 
@@ -125,7 +131,11 @@ export async function deleteLedgerService(
 
     if (childrenCount > 0) throw new Error("ERR_ENTITY_LOCKED: Ledger contains active taxonomy branches.");
 
-    await tx.financialLedger.delete({ where: { id: ledgerId, organizationId: context.organizationId } });
+    const result = await tx.financialLedger.deleteMany({ 
+      where: { id: ledgerId, organizationId: context.organizationId } 
+    });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Ledger not found or access denied.");
 
     await recordAuditLog({
       action: 'DELETE', entityType: 'LEDGER', entityId: ledgerId, tx: tx as any
@@ -192,17 +202,19 @@ export async function updateLedgerService(
   const normalized = name.trim().toUpperCase();
 
   return await db.$transaction(async (tx: any) => {
-    const updated = await tx.financialLedger.update({
+    const result = await tx.financialLedger.updateMany({
       where: { id, organizationId: context.organizationId },
       data: { name: normalized }
     });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Ledger not found or access denied.");
 
     await recordAuditLog({
       action: 'UPDATE', entityType: 'LEDGER', entityId: id,
       metadata: { newName: normalized }, tx: tx as any
     });
 
-    return updated;
+    return { id, name: normalized };
   });
 }
 
@@ -218,17 +230,19 @@ export async function updateAccountNodeService(
   const normalized = label.trim();
 
   return await db.$transaction(async (tx: any) => {
-    const updated = await tx.expenseCategory.update({
+    const result = await tx.expenseCategory.updateMany({
       where: { id, organizationId: context.organizationId },
       data: { name: normalized }
     });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Category not found or access denied.");
 
     await recordAuditLog({
       action: 'UPDATE', entityType: 'CATEGORY', entityId: id,
       metadata: { newLabel: normalized }, tx: tx as any
     });
 
-    return updated;
+    return { id, name: normalized };
   });
 }
 
@@ -254,9 +268,11 @@ export async function deleteAccountNodeService(
 
     if (entriesCount > 0) throw new Error("ERR_ENTITY_LOCKED: Node associated with active ledger entries.");
 
-    const result = await tx.expenseCategory.delete({
+    const result = await tx.expenseCategory.deleteMany({
       where: { id, organizationId: context.organizationId }
     });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Category not found or access denied.");
 
     await recordAuditLog({
       action: 'DELETE', entityType: 'CATEGORY', entityId: id, tx: tx as any

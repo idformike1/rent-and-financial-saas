@@ -8,9 +8,11 @@ import {
   deleteUserService,
   toggleUserActivationService,
   toggleUserEditPermissionService,
-  consumeInvitationService
+  consumeInvitationService,
+  updateProfileService
 } from "@/src/services/mutations/team.services"
 import { getTeamMembersService } from "@/src/services/queries/team.services"
+import { UpdateProfileSchema } from "@/src/lib/validations/user.schema"
 
 /**
  * TEAM REGISTRY ACCESS (GATEKEEPER)
@@ -144,4 +146,32 @@ export async function consumeInvitation(token: string, passwordPlain: string) {
     console.error('[ONBOARDING_CONSUMPTION_FATAL]', e);
     return { success: false, error: e.message || "Failed to consume invitation." };
   }
+}
+
+/**
+ * PROFILE HARDENING: Update current user profile
+ */
+export async function updateProfile(data: any) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      // 1. Validate incoming data against strict Zod schema (Anti-Mass Assignment)
+      const parsedData = UpdateProfileSchema.parse(data);
+
+      // 2. Execute update via service layer
+      await updateProfileService(
+        session.userId,
+        parsedData,
+        {
+          operatorId: session.userId,
+          organizationId: session.organizationId
+        }
+      );
+
+      revalidatePath('/home');
+      return { success: true };
+    } catch (e: any) {
+      console.error('[PROFILE_UPDATE_FATAL]', e);
+      return { success: false, error: e.message || "Failed to update profile." };
+    }
+  });
 }

@@ -50,13 +50,15 @@ export async function updatePropertyService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const property = await tx.property.update({
+    const result = await tx.property.updateMany({
       where: { id: propertyId, organizationId: context.organizationId },
       data: {
         name: payload.name,
         address: payload.address
       }
     });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Property not found or access denied.");
 
     await recordAuditLog({
       action: 'UPDATE',
@@ -66,7 +68,7 @@ export async function updatePropertyService(
       tx: tx as any
     });
 
-    return property;
+    return { id: propertyId, ...payload };
   });
 }
 
@@ -85,9 +87,11 @@ export async function deletePropertyService(
       throw new Error("ERR_ENTITY_LOCKED: Cannot vaporize property with active units registry.");
     }
 
-    await tx.property.delete({
+    const result = await tx.property.deleteMany({
       where: { id: propertyId, organizationId: context.organizationId }
     });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Property not found or access denied.");
 
     await recordAuditLog({
       action: 'DELETE',
@@ -152,7 +156,7 @@ export async function updateUnitService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const unit = await tx.unit.update({
+    const result = await tx.unit.updateMany({
       where: { id: unitId, organizationId: context.organizationId },
       data: {
         maintenanceStatus: payload.maintenanceStatus,
@@ -163,6 +167,8 @@ export async function updateUnitService(
       }
     });
 
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Unit not found or access denied.");
+
     await recordAuditLog({
       action: 'UPDATE',
       entityType: 'UNIT',
@@ -171,6 +177,6 @@ export async function updateUnitService(
       tx: tx as any
     });
 
-    return unit;
+    return { id: unitId, ...payload };
   });
 }

@@ -139,7 +139,7 @@ export async function updateUserRoleService(
   }
 
   return await db.$transaction(async (tx: any) => {
-    await tx.user.update({
+    await tx.user.updateMany({
       where: { id: userId, organizationId: context.organizationId },
       data: { role: newRole }
     });
@@ -164,7 +164,7 @@ export async function deleteUserService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const target = await tx.user.findUnique({ 
+    const target = await tx.user.findFirst({ 
       where: { id: userId, organizationId: context.organizationId } 
     });
     
@@ -186,9 +186,11 @@ export async function deleteUserService(
 
     if (!safety.safe) throw new Error(`ERR_TERMINATION_PROTOCOL_BLOCKED: ${safety.reason}`);
 
-    await tx.user.delete({
-      where: { id: userId }
+    const result = await tx.user.deleteMany({
+      where: { id: userId, organizationId: context.organizationId }
     });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: User not found or access denied.");
 
     await recordAuditLog({
       action: 'DELETE',
@@ -210,7 +212,7 @@ export async function toggleUserActivationService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    await tx.user.update({
+    await tx.user.updateMany({
       where: { id: userId, organizationId: context.organizationId },
       data: { isActive }
     });
@@ -235,7 +237,7 @@ export async function toggleUserEditPermissionService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    await tx.user.update({
+    await tx.user.updateMany({
       where: { id: userId, organizationId: context.organizationId },
       data: { canEdit }
     });
@@ -246,5 +248,42 @@ export async function toggleUserEditPermissionService(
       entityId: userId,
       tx: tx as any
     });
+  });
+}
+
+/**
+ * Updates a user's safe profile attributes.
+ * Prevents Mass Assignment by explicitly mapping safe fields only.
+ */
+export async function updateProfileService(
+  userId: string,
+  data: { firstName?: string; lastName?: string; name?: string; phone?: string | null },
+  context: { operatorId: string; organizationId: string }
+) {
+  const db = getSovereignClient(context.operatorId);
+
+  return await db.$transaction(async (tx: any) => {
+    // SECURITY: Explicit mapping. Do NOT use spread operators here.
+    const result = await tx.user.updateMany({
+      where: { id: userId, organizationId: context.organizationId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        name: data.name,
+        phone: data.phone,
+      }
+    });
+
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: User not found or access denied.");
+
+    await recordAuditLog({
+      action: 'UPDATE',
+      entityType: 'USER',
+      entityId: userId,
+      metadata: { attributes: Object.keys(data) },
+      tx: tx as any
+    });
+
+    return { id: userId, ...data };
   });
 }

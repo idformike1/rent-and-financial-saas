@@ -152,7 +152,7 @@ export async function getPropertySovereignViewService(propertyId: string, contex
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-  const property = await db.property.findUnique({
+  const property = await db.property.findFirst({
     where: { id: propertyId, organizationId: context.organizationId },
     include: {
       units: {
@@ -222,7 +222,7 @@ export async function getUnitLedgerFeedService(unitId: string, context: { operat
   const db = getSovereignClient(context.operatorId);
   
   // Resolve all historic and active tenant occupancies for this specific unit
-  const unit = await db.unit.findUnique({
+  const unit = await db.unit.findFirst({
     where: { id: unitId, organizationId: context.organizationId },
     include: { leases: { select: { tenantId: true } } }
   });

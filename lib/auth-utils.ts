@@ -27,6 +27,20 @@ export async function getCurrentSession(): Promise<SessionContext | null> {
 }
 
 /**
+ * MANDATORY: Retrieves the active tenant session.
+ * Used to enforce Tenant Boundaries at the edge of the data layer.
+ */
+export async function getTenantSession(): Promise<SessionContext> {
+  const session = await getCurrentSession();
+  
+  if (!session || !session.organizationId) {
+    throw new Error('UNAUTHORIZED_PROTOCOL: Secure tenant context required.');
+  }
+
+  return session;
+}
+
+/**
  * Verify if the active user role meets the required role hierarchy.
  */
 export async function verifyRole(requiredRole: UserRole, currentRole: UserRole): Promise<boolean> {

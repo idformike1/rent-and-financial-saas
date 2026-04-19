@@ -70,15 +70,15 @@ export async function liquidateTenantDebtService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const tenant = await tx.tenant.findUnique({
+    const tenant = await tx.tenant.findFirst({
       where: { id: tenantId, organizationId: context.organizationId },
       include: {
         charges: { 
-          where: { isFullyPaid: false, amount: { gt: 0 } },
+          where: { isFullyPaid: false, amount: { gt: 0 }, organizationId: context.organizationId },
           orderBy: { dueDate: 'asc' } 
         },
         ledgerEntries: { 
-          where: { account: { category: 'INCOME' } } 
+          where: { account: { category: 'INCOME' }, organizationId: context.organizationId } 
         }
       }
     });
@@ -103,8 +103,8 @@ export async function liquidateTenantDebtService(
 
     // Commit Redistribution: Parallelized to avoid sequential N+1 round-trips
     await Promise.all(updates.map(update => 
-      tx.charge.update({
-        where: { id: update.id },
+      tx.charge.updateMany({
+        where: { id: update.id, organizationId: context.organizationId },
         data: {
           amountPaid: { increment: update.amountToApply },
           isFullyPaid: update.isFullyPaid
@@ -135,13 +135,13 @@ export async function processMoveOutService(
 
   return await db.$transaction(async (tx: any) => {
     // 1. Archive Lease
-    await tx.lease.update({
+    await tx.lease.updateMany({
       where: { id: payload.leaseId, organizationId: context.organizationId },
       data: { isActive: false, endDate: new Date() }
     });
 
     // 2. Unit Maintenance Reset
-    await tx.unit.update({
+    await tx.unit.updateMany({
       where: { id: payload.unitId, organizationId: context.organizationId },
       data: { maintenanceStatus: 'OPERATIONAL' }
     });
@@ -277,8 +277,8 @@ export async function submitOnboardingService(
       ]
     });
 
-    await tx.unit.update({
-      where: { id: payload.unitId },
+    await tx.unit.updateMany({
+      where: { id: payload.unitId, organizationId: context.organizationId },
       data: { maintenanceStatus: 'OPERATIONAL' }
     });
 
@@ -329,7 +329,7 @@ export async function updateTenantDetailsService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const tenant = await tx.tenant.update({
+    const result = await tx.tenant.updateMany({
       where: { id: tenantId, organizationId: context.organizationId },
       data: { 
         name: data.name,
@@ -339,6 +339,8 @@ export async function updateTenantDetailsService(
       }
     });
 
+    if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Tenant not found or access denied.");
+
     await recordAuditLog({
       action: 'UPDATE',
       entityType: 'TENANT',
@@ -347,7 +349,7 @@ export async function updateTenantDetailsService(
       tx: tx as any
     });
 
-    return tenant;
+    return { id: tenantId, ...data };
   });
 }
 
@@ -362,7 +364,7 @@ export async function softDeleteTenantService(
 
   return await db.$transaction(async (tx: any) => {
     // 1. ARCHIVE IDENTITY
-    await tx.tenant.update({
+    await tx.tenant.updateMany({
       where: { id: tenantId, organizationId: context.organizationId },
       data: { isDeleted: true }
     });
@@ -399,7 +401,7 @@ export async function addAdditionalLeaseService(
   const db = getSovereignClient(context.operatorId);
 
   return await db.$transaction(async (tx: any) => {
-    const unit = await tx.unit.findUnique({ 
+    const unit = await tx.unit.findFirst({ 
       where: { id: data.unitId, organizationId: context.organizationId } 
     });
     
@@ -426,7 +428,7 @@ export async function addAdditionalLeaseService(
       }
     });
 
-    await tx.unit.update({
+    await tx.unit.updateMany({
       where: { id: data.unitId, organizationId: context.organizationId },
       data: { maintenanceStatus: 'OPERATIONAL' }
     });
