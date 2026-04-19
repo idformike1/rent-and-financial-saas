@@ -1,8 +1,7 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useOptimistic } from 'react';
 import { getUnitLedgerFeed } from '@/actions/asset.actions';
 import { cn } from '@/lib/utils';
+import { LedgerSkeleton } from '@/components/ui/SovereignSkeleton';
 
 interface LedgerEntryRow {
   id: string;
@@ -12,6 +11,7 @@ interface LedgerEntryRow {
   paymentMode: string;
   status: 'ACTIVE' | 'VOIDED';
   account: { category: string };
+  isOptimistic?: boolean;
 }
 
 const formatValue = (amount: number | string, category: string) => {
@@ -34,10 +34,17 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
   const [feed, setFeed] = useState<LedgerEntryRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // 1. OPTIMISTIC STRATUM
+  const [optimisticFeed, addOptimisticEntry] = useOptimistic(
+    feed,
+    (state: LedgerEntryRow[], newEntry: LedgerEntryRow) => [newEntry, ...state]
+  );
+
   useEffect(() => {
     let active = true;
     if (!unitId) return;
     
+    setIsLoading(true);
     getUnitLedgerFeed(unitId).then(data => {
       if (active && data) {
         setFeed(data);
@@ -46,6 +53,10 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
     });
     return () => { active = false; };
   }, [unitId]);
+
+  if (isLoading) {
+    return <LedgerSkeleton />;
+  }
 
   if (isLoading) {
     return (
@@ -57,11 +68,30 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
     );
   }
 
+  const handleOptimisticInjection = async (entry: LedgerEntryRow) => {
+    addOptimisticEntry(entry);
+  };
+
+  const refreshFeed = () => {
+    if (!unitId) return;
+    setIsLoading(true);
+    getUnitLedgerFeed(unitId).then(data => {
+      if (data) {
+        setFeed(data);
+      }
+      setIsLoading(false);
+    });
+  };
+
   return (
     <div className="animate-in fade-in duration-300">
-      <LedgerInjectionForm activeUnit={activeUnit} />
+      <LedgerInjectionForm 
+        activeUnit={activeUnit} 
+        onOptimisticEntry={handleOptimisticInjection} 
+        onSuccess={refreshFeed}
+      />
 
-      {feed.length === 0 ? (
+      {optimisticFeed.length === 0 ? (
         <div className="w-full h-32 border border-dashed border-[#1F2937] flex items-center justify-center">
           <span className="font-mono text-[11px] text-[#9CA3AF] uppercase tracking-widest">
             NO LEDGER ARTIFACTS DETECTED
@@ -79,25 +109,33 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-[#1F2937]/50 text-[13px] font-mono">
-          {feed.map(entry => {
+          {optimisticFeed.map((entry, idx) => {
             const isVoided = entry.status === 'VOIDED';
             const isExpense = entry.account?.category === 'EXPENSE';
+            const isPending = entry.isOptimistic;
             
             return (
               <tr 
-                key={entry.id} 
+                key={entry.id || idx} 
                 className={cn(
                   "hover:bg-white/[0.02] transition-colors",
-                  isVoided && "opacity-40 grayscale"
+                  isVoided && "opacity-40 grayscale",
+                  isPending && "opacity-60 italic animate-pulse"
                 )}
               >
                 <td className="px-4 py-3 text-[#E5E7EB] whitespace-nowrap">
                   {entry.transactionDate && !isNaN(new Date(entry.transactionDate).getTime())
                     ? new Date(entry.transactionDate).toISOString().split('T')[0]
-                    : "ERR_DATE"}
+                    : "PENDING"}
                 </td>
                 <td className="px-4 py-3 text-[#9CA3AF] truncate max-w-[150px]">
-                  {entry.description || 'System Entry'}
+                  {entry.description || 'Optimistic Entry'}
+                  {isPending && (
+                    <span className="ml-2 inline-flex items-center gap-1.5 text-[10px] text-blue-400 font-bold tracking-widest animate-in fade-in slide-in-from-left-2 duration-500">
+                      <div className="w-1 h-1 rounded-full bg-blue-400 animate-pulse" />
+                      PENDING
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-[#E5E7EB]">
                   {entry.paymentMode}

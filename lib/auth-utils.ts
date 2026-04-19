@@ -64,14 +64,22 @@ export async function runSecureServerAction<T>(
   /**
    * SOVEREIGN AUTO-HEAL: ORPHANED IDENTITY RECOVERY
    * Verify that the organizationId AND userId from the session actually exist in the persistence layer.
-   * If missing (e.g., after a DB re-seed), we automatically RECONSTRUCT them to preserve the session.
+   * If missing (e.g., after a DB re-seed), we automatically RECONSTRUCT them to preserve the session 
+   * ONLY in non-production environments.
    */
   let [orgExists, userExists] = await Promise.all([
     prisma.organization.count({ where: { id: session.organizationId } }),
     prisma.user.count({ where: { id: session.userId } })
   ]);
 
+  const isProduction = process.env.NODE_ENV === 'production';
+
   if (orgExists === 0) {
+    if (isProduction) {
+      console.error(`[SECURITY_FATAL] Production Organization Missing: ${session.organizationId}`);
+      throw new Error(`SECURITY_ERROR: Access denied. Organization record not found.`);
+    }
+    
     console.warn(`[SECURITY_HEAL] Reconstructing missing Organization: ${session.organizationId}`);
     await prisma.organization.create({
       data: {
@@ -79,10 +87,14 @@ export async function runSecureServerAction<T>(
         name: session.organizationName || "Recovered Entity",
       }
     });
-    orgExists = 1;
   }
 
   if (userExists === 0) {
+    if (isProduction) {
+      console.error(`[SECURITY_FATAL] Production User Missing: ${session.userId}`);
+      throw new Error(`SECURITY_ERROR: Access denied. User record not found.`);
+    }
+
     console.warn(`[SECURITY_HEAL] Reconstructing missing User: ${session.userId}`);
     await prisma.user.create({
       data: {
@@ -94,8 +106,48 @@ export async function runSecureServerAction<T>(
         organizationId: session.organizationId
       }
     });
-    userExists = 1;
   }
 
   return action(session);
+}
+
+/**
+ * IDEMPOTENT MUTATION WRAPPER
+ * 
+ * Prevents double-execution of high-value mutations using a client-provided key.
+ */
+export async function runIdempotentAction<T>(
+  key: string,
+  requiredRole: UserRole,
+  action: (session: SessionContext) => Promise<T>
+): Promise<T> {
+  return runSecureServerAction(requiredRole, async (session) => {
+    if (!key || key.length < 8) {
+      throw new Error("ERR_PROTOCOL_VIOLATION: Valid idempotencyKey required.");
+    }
+
+    // 1. Check for existing record
+    const existing = await prisma.idempotencyRecord.findUnique({
+      where: { key, organizationId: session.organizationId }
+    });
+
+    if (existing) {
+      console.log(`[IDEMPOTENCY_HIT] Key detected: ${key}. Returning cached response.`);
+      return existing.result as T;
+    }
+
+    // 2. Execute Action
+    const result = await action(session);
+
+    // 3. Cache Result (Non-blocking or atomic if possible, here we ensure it's saved)
+    await prisma.idempotencyRecord.create({
+      data: {
+        key,
+        organizationId: session.organizationId,
+        result: result as any
+      }
+    });
+
+    return result;
+  });
 }

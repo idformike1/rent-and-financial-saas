@@ -19,6 +19,7 @@ export interface PaymentSubmissionPayload {
   transactionDate: string; // ISO date
   paymentMode: 'CASH' | 'BANK';
   referenceText: string;
+  idempotencyKey?: string;
 }
 
 // ----------------------------------------------------------------------------

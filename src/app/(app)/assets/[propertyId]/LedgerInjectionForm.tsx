@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
+import React, { useActionState, useEffect, useState } from "react";
 import { logExpense, processPayment } from '@/actions/finance.actions';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
@@ -13,54 +13,83 @@ const submitLedgerArtifact = async (prevState: any, formData: FormData) => {
   const amount = Number(formData.get('amount'));
   const transactionDate = formData.get('date') as string;
   const paymentMode = formData.get('mode') as 'CASH' | 'BANK';
+  const idempotencyKey = formData.get('idempotencyKey') as string;
   
   const propertyId = formData.get('propertyId') as string;
   const tenantId = formData.get('tenantId') as string;
-  // unitId is not required by processPayment, but we might pass it as reference text
 
   try {
-    if (type === 'REVENUE' && tenantId) {
-      // TENANT-DIRECT FLOW: Maps to tenant credit waterfall
-      const res = await processPayment({
-        tenantId,
-        amountPaid: amount,
-        transactionDate,
-        paymentMode,
-        referenceText: `DIRECT_INJECTION: ${propertyId}`
-      });
-      return { success: res.success, message: res.message, ts: Date.now() };
-    } else {
-      // ANONYMOUS/OFF-LEASE FLOW: Routes through unified ingestion
-      const expenseData = new FormData();
-      expenseData.append('amount', String(amount));
-      expenseData.append('payee', tenantId ? 'ACTIVE_OCCUPANT' : 'VACANT_NODE_INJECTION');
-      expenseData.append('description', type === 'REVENUE' ? 'VACANT_REVENUE_ARTIFACT' : 'DIRECT_EXPENSE_ARTIFACT');
-      expenseData.append('scope', 'PROPERTY');
-      expenseData.append('propertyId', propertyId);
-      expenseData.append('type', type === 'REVENUE' ? 'INCOME' : 'EXPENSE');
-      expenseData.append('paymentMode', paymentMode);
-      expenseData.append('date', transactionDate);
+    const res: any = type === 'REVENUE' && tenantId 
+      ? await processPayment({
+          tenantId,
+          amountPaid: amount,
+          transactionDate,
+          paymentMode,
+          referenceText: `DIRECT_INJECTION: ${propertyId}`,
+          idempotencyKey
+        })
+      : await (async () => {
+          const expenseData = new FormData();
+          expenseData.append('amount', String(amount));
+          expenseData.append('payee', tenantId ? 'ACTIVE_OCCUPANT' : 'VACANT_NODE_INJECTION');
+          expenseData.append('description', type === 'REVENUE' ? 'VACANT_REVENUE_ARTIFACT' : 'DIRECT_EXPENSE_ARTIFACT');
+          expenseData.append('scope', 'PROPERTY');
+          expenseData.append('propertyId', propertyId);
+          expenseData.append('type', type === 'REVENUE' ? 'INCOME' : 'EXPENSE');
+          expenseData.append('paymentMode', paymentMode);
+          expenseData.append('date', transactionDate);
+          expenseData.append('idempotencyKey', idempotencyKey);
+          return await logExpense(expenseData);
+        })();
 
-      const res = await logExpense(expenseData);
-      return { success: res?.success !== false, message: "Fiscal artifact synchronized.", ts: Date.now() };
-    }
+    // Robust success normalization for inconsistent action APIs
+    const isSuccess = res.success === true || (res.data && !res.error && !res.message?.includes('failure'));
+    const message = res.message || res.error || (isSuccess ? "Fiscal artifact synchronized." : "Injection failure.");
+    
+    return { success: isSuccess, message, ts: Date.now() };
   } catch (e: any) {
     return { success: false, message: e.message || 'Injection failure.', ts: Date.now() };
   }
 };
 
-export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any }) {
+export default function LedgerInjectionForm({ 
+  activeUnit, 
+  onOptimisticEntry,
+  onSuccess 
+}: { 
+  activeUnit: any, 
+  onOptimisticEntry?: (entry: any) => void,
+  onSuccess?: () => void
+}) {
   const [state, formAction, isPending] = useActionState(submitLedgerArtifact, null);
+  const [idempotencyKey, setIdempotencyKey] = useState(crypto.randomUUID());
 
   const activeLease = activeUnit?.leases?.[0];
   const tenantId = activeLease?.tenantId || '';
   const propertyId = activeUnit?.propertyId || '';
 
+  const handleAction = async (formData: FormData) => {
+    if (onOptimisticEntry) {
+      onOptimisticEntry({
+        id: `opt-${Date.now()}`,
+        transactionDate: formData.get('date') as string,
+        description: formData.get('type') === 'REVENUE' ? 'Optimistic Payment' : 'Optimistic Expense',
+        amount: formData.get('amount') as string,
+        paymentMode: formData.get('mode') as string,
+        status: 'ACTIVE',
+        account: { category: formData.get('type') === 'REVENUE' ? 'INCOME' : 'EXPENSE' },
+        isOptimistic: true
+      });
+    }
+    return formAction(formData);
+  };
+
   useEffect(() => {
     if (state?.ts) {
       if (state.success) {
-        toast.success("Fiscal artifact locally synchronized.");
-        // We do not have direct access to reset the form easily without ref, but typical useActionState forces a re-render
+        toast.success(state.message);
+        setIdempotencyKey(crypto.randomUUID());
+        if (onSuccess) onSuccess();
       } else {
         toast.error(state.message);
       }
@@ -68,9 +97,10 @@ export default function LedgerInjectionForm({ activeUnit }: { activeUnit: any })
   }, [state?.ts]);
 
   return (
-    <form action={formAction} className="w-full flex items-center gap-4 border-b border-[#1F2937] pb-6 mb-6">
+    <form action={handleAction} className="w-full flex items-center gap-4 border-b border-[#1F2937] pb-6 mb-6">
       <input type="hidden" name="propertyId" value={propertyId} />
       <input type="hidden" name="tenantId" value={tenantId} />
+      <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
 
       <div className="flex-1">
         <input 

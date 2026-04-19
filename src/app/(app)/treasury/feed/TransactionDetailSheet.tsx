@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useTransition } from 'react';
+import React, { useTransition, useMemo } from 'react';
 
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,9 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
   const absAmount = transaction ? Math.abs(Number(transaction.amount)) : 0;
   const isVoided = transaction?.status === 'VOIDED';
 
+  // Stable Idempotency Key generated once per selection event
+  const idempotencyKey = useMemo(() => crypto.randomUUID(), [transaction?.id]);
+
   const handleVoid = () => {
     if (!transaction) return;
     
@@ -36,7 +39,7 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
 
     if (confirmed) {
       startTransition(async () => {
-        const result = await voidTransaction(transaction.id);
+        const result = await voidTransaction(transaction.id, idempotencyKey);
         if (result.success) {
           import('@/lib/toast').then(({ toast }) => {
             toast.success("Registry node decommissioned successfully.");

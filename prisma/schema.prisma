@@ -167,6 +167,7 @@ model Organization {
   charges             Charge[]
   expenseCategories   ExpenseCategory[]
   financialLedgers    FinancialLedger[]
+  idempotencyRecords  IdempotencyRecord[]
   leases              Lease[]
   ledgerEntries       LedgerEntry[]
   properties          Property[]
@@ -206,6 +207,17 @@ model User {
   createdAt      DateTime     @default(now())
   auditLogs      AuditLog[]
   organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model IdempotencyRecord {
+  id             String       @id @default(uuid())
+  key            String       @unique
+  result         Json?
+  createdAt      DateTime     @default(now())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([key, organizationId])
 }
 
 enum MaintenanceStatus {

@@ -15,8 +15,13 @@ export async function GET(req: NextRequest) {
 
   // 2. Execution: Core Batch Protocol
   try {
-    const today = new Date().toISOString();
-    const result: any = await runMonthlyBillingCycle(today);
+    const now = new Date();
+    const today = now.toISOString();
+    
+    // Deterministic key for cron: Prevents double-execution within the same month context
+    const idempotencyKey = `CRON_BILLING_${now.getFullYear()}_${now.getUTCMonth() + 1}`;
+    
+    const result: any = await runMonthlyBillingCycle(today, idempotencyKey);
 
     if (result.success) {
       return NextResponse.json({

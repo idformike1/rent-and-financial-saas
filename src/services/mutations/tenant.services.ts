@@ -101,16 +101,16 @@ export async function liquidateTenantDebtService(
       tenant.charges
     );
 
-    // Commit Redistribution
-    for (const update of updates) {
-      await tx.charge.update({
+    // Commit Redistribution: Parallelized to avoid sequential N+1 round-trips
+    await Promise.all(updates.map(update => 
+      tx.charge.update({
         where: { id: update.id },
         data: {
           amountPaid: { increment: update.amountToApply },
           isFullyPaid: update.isFullyPaid
         }
-      });
-    }
+      })
+    ));
 
     await recordAuditLog({
       action: 'UPDATE',
@@ -251,30 +251,30 @@ export async function submitOnboardingService(
     });
 
     // 4. FINANCIAL INITIALIZATION (ENTROPY DEPOSIT + PRORATED RENT)
-    await tx.charge.create({
-      data: {
-        organizationId: context.organizationId,
-        tenantId: tenant.id,
-        leaseId: lease.id,
-        type: 'RENT', 
-        amount: secDep,
-        amountPaid: 0,
-        dueDate: moveIn,
-        isFullyPaid: false,
-      }
-    });
-
-    await tx.charge.create({
-      data: {
-        organizationId: context.organizationId,
-        tenantId: tenant.id,
-        leaseId: lease.id,
-        type: 'RENT', 
-        amount: proratedRent,
-        amountPaid: 0,
-        dueDate: moveIn,
-        isFullyPaid: false,
-      }
+    // Batched creation via createMany to avoid multiple round-trips in sequence
+    await tx.charge.createMany({
+      data: [
+        {
+          organizationId: context.organizationId,
+          tenantId: tenant.id,
+          leaseId: lease.id,
+          type: 'RENT', 
+          amount: secDep,
+          amountPaid: 0,
+          dueDate: moveIn,
+          isFullyPaid: false,
+        },
+        {
+          organizationId: context.organizationId,
+          tenantId: tenant.id,
+          leaseId: lease.id,
+          type: 'RENT', 
+          amount: proratedRent,
+          amountPaid: 0,
+          dueDate: moveIn,
+          isFullyPaid: false,
+        }
+      ]
     });
 
     await tx.unit.update({

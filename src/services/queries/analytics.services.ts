@@ -25,21 +25,12 @@ export async function getGlobalPortfolioTelemetryService(context: { operatorId: 
   const sixtyDaysAgo = new Date(now.getTime() - (FINANCIAL_PERIODS.TRAILING_MONTH * 2) * 24 * 60 * 60 * 1000);
 
   const fetchMetrics = async (start: Date, end: Date) => {
-    const [revAgg, opexAgg, arrearsAgg, count, occupiedCount] = await Promise.all([
-      db.ledgerEntry.aggregate({
+    const [ledgersAgg, arrearsAgg, unitStats] = await Promise.all([
+      db.ledgerEntry.groupBy({
+        by: ['accountId'], // We'll map back to category or use a more specific filter
         _sum: { amount: true },
         where: {
           organizationId: context.organizationId,
-          account: { category: AccountCategory.INCOME },
-          transactionDate: { gte: start, lte: end },
-          AND: REVENUE_FILTER_CONTEXT
-        }
-      }),
-      db.ledgerEntry.aggregate({
-        _sum: { amount: true },
-        where: {
-          organizationId: context.organizationId,
-          account: { category: AccountCategory.EXPENSE },
           transactionDate: { gte: start, lte: end },
           AND: REVENUE_FILTER_CONTEXT
         }
@@ -48,17 +39,39 @@ export async function getGlobalPortfolioTelemetryService(context: { operatorId: 
         _sum: { amount: true, amountPaid: true },
         where: { organizationId: context.organizationId, isFullyPaid: false, dueDate: { lte: end } }
       }),
-      db.unit.count({ where: { organizationId: context.organizationId } }),
-      db.unit.count({ where: { organizationId: context.organizationId, leases: { some: { isActive: true } } } })
+      // Unified query for unit counts
+      db.unit.findMany({
+        where: { organizationId: context.organizationId },
+        select: { id: true, leases: { where: { isActive: true }, select: { id: true } } }
+      })
     ]);
 
-    const rev = revAgg._sum.amount ? new Prisma.Decimal(revAgg._sum.amount).abs().toNumber() : 0;
-    const opex = opexAgg._sum.amount ? new Prisma.Decimal(opexAgg._sum.amount).toNumber() : 0;
+    // Manual aggregation of ledger sums to handle the category split in one pass
+    // For more precision, we'd join Account, but findMany + include is better if categories are few
+    const accountIds = ledgersAgg.map(a => a.accountId).filter(Boolean) as string[];
+    const accounts = await db.account.findMany({
+      where: { id: { in: accountIds } },
+      select: { id: true, category: true }
+    });
+    const accountMap = new Map(accounts.map(a => [a.id, a.category]));
+
+    let rev = 0;
+    let opex = 0;
+    ledgersAgg.forEach(agg => {
+      const cat = accountMap.get(agg.accountId || '');
+      const amt = agg._sum.amount ? new Prisma.Decimal(agg._sum.amount).abs().toNumber() : 0;
+      if (cat === AccountCategory.INCOME) rev += amt;
+      if (cat === AccountCategory.EXPENSE) opex += amt;
+    });
+
     const debt = (arrearsAgg._sum.amount ? new Prisma.Decimal(arrearsAgg._sum.amount) : new Prisma.Decimal(0))
       .minus(arrearsAgg._sum.amountPaid ? new Prisma.Decimal(arrearsAgg._sum.amountPaid) : new Prisma.Decimal(0))
       .toNumber();
+    
+    const count = unitStats.length;
+    const occupiedCount = unitStats.filter(u => u.leases.length > 0).length;
     const yieldRate = count > 0 ? (occupiedCount / count) * 100 : 0;
-
+    
     return { revenue: rev, opex, debt, yieldRate };
   };
 
@@ -314,7 +327,9 @@ export async function getTaxPrepService(
   const start = new Date(Date.UTC(year, 0, 1));
   const end = new Date(Date.UTC(year, 11, 31, 23, 59, 59));
 
-  const entries = await db.ledgerEntry.findMany({
+  const aggregations = await db.ledgerEntry.groupBy({
+    by: ['expenseCategoryId'],
+    _sum: { amount: true },
     where: {
       organizationId: context.organizationId,
       propertyId: propertyId || undefined,
@@ -323,17 +338,22 @@ export async function getTaxPrepService(
         { account: { category: AccountCategory.EXPENSE } },
         { expenseCategoryId: { not: null } }
       ]
-    },
-    include: { expenseCategory: true }
+    }
   });
 
-  const groupMap = new Map<string, number>();
-  entries.forEach((e: any) => {
-    const cat = e.expenseCategory?.name || 'Uncategorized Operations';
-    groupMap.set(cat, (groupMap.get(cat) || 0) + Number(e.amount));
+  // Resolve category names in a single batch to avoid N+1 name lookups
+  const categoryIds = aggregations.map(a => a.expenseCategoryId).filter(Boolean) as string[];
+  const categories = await db.expenseCategory.findMany({
+    where: { id: { in: categoryIds } },
+    select: { id: true, name: true }
   });
 
-  return Array.from(groupMap.entries()).map(([category, amount]) => ({ category, amount }));
+  const categoryMap = new Map(categories.map(c => [c.id, c.name]));
+
+  return aggregations.map(a => ({
+    category: a.expenseCategoryId ? (categoryMap.get(a.expenseCategoryId) || 'Uncategorized Operations') : 'Uncategorized Operations',
+    amount: Number(a._sum.amount || 0)
+  }));
 }
 
 /**

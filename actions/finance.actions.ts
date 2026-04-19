@@ -1,6 +1,6 @@
 'use server'
 
-import { runSecureServerAction } from '@/lib/auth-utils'
+import { runSecureServerAction, runIdempotentAction } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { PaymentMode } from '@/src/schema/enums'
@@ -24,8 +24,8 @@ import { PaymentSubmissionPayload, SystemResponse } from '@/types'
 
 /* ── 1. BILLING & AUTOMATION ─────────────────────────────────────────────── */
 
-export async function runMonthlyBillingCycle(targetDate: string) {
-  return runSecureServerAction('MANAGER', async (session) => {
+export async function runMonthlyBillingCycle(targetDate: string, idempotencyKey: string) {
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const result = await runMonthlyBillingCycleService(
         targetDate,
@@ -52,8 +52,8 @@ export async function runMonthlyBillingCycle(targetDate: string) {
 
 /* ── 2. CREDIT & WAIVERS ─────────────────────────────────────────────────── */
 
-export async function waiveCharge(chargeId: string, reasonText: string) {
-  return runSecureServerAction('MANAGER', async (session) => {
+export async function waiveCharge(chargeId: string, reasonText: string, idempotencyKey: string) {
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       if (!reasonText || reasonText.length < 10) {
         return { success: false, message: "ERR_PROTOCOL_VIOLATION: Waive-off justification must be at least 10 chars." };
@@ -85,7 +85,9 @@ export async function waiveCharge(chargeId: string, reasonText: string) {
 /* ── 3. EXPENSE LOGGING ─────────────────────────────────────────────────── */
 
 export async function logExpense(formData: FormData) {
-  return runSecureServerAction('MANAGER', async (session) => {
+  const idempotencyKey = formData.get('idempotencyKey') as string;
+  
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const rawAmount = parseFloat(formData.get('amount') as string);
       const payee = formData.get('payee') as string;
@@ -167,8 +169,8 @@ const BulkExpenseSchema = z.object({
 
 const IngestionPayload = z.array(BulkExpenseSchema);
 
-export async function ingestBulkExpenses(data: any[]) {
-  return runSecureServerAction('MANAGER', async (session) => {
+export async function ingestBulkExpenses(data: any[], idempotencyKey: string) {
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const normalizedData = data.map(row => {
          const getVal = (key: string) => {
@@ -220,7 +222,9 @@ export async function ingestBulkExpenses(data: any[]) {
 /* ── 5. LEDGER & PAYMENTS ───────────────────────────────────────────────── */
 
 export async function processPayment(payload: PaymentSubmissionPayload): Promise<SystemResponse> {
-  return runSecureServerAction('MANAGER', async (session) => {
+  const idempotencyKey = payload.idempotencyKey || `PAYMENT_${payload.tenantId}_${payload.amountPaid}_${payload.transactionDate}`;
+  
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const result = await processPaymentService(
         {
@@ -276,8 +280,8 @@ export async function reconcileUtilities(propertyId: string, startDate: Date, en
   });
 }
 
-export async function voidTransaction(transactionId: string) {
-  return runSecureServerAction('MANAGER', async (session) => {
+export async function voidTransaction(transactionId: string, idempotencyKey: string) {
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       await voidLedgerEntryService(
         transactionId,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { SovereignTable } from "@/src/components/ui/SovereignTable";
 import { SovereignSheet } from "@/src/components/ui/SovereignSheet";
 import { voidTransaction, clearTransaction } from "@/actions/finance.actions";
@@ -57,13 +57,18 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
     setIsSheetOpen(true);
   };
 
+  const idempotencyKey = useMemo(() => crypto.randomUUID(), [selectedEntry?.id]);
+
   const onVoid = async () => {
     if (!selectedEntry) return;
     if (confirm("This action is immutable. A corrective entry will be required.")) {
       setIsPending(true);
-      await voidTransaction(selectedEntry.id);
-      setIsSheetOpen(false);
-      setIsPending(false);
+      try {
+        await voidTransaction(selectedEntry.id, idempotencyKey);
+        setIsSheetOpen(false);
+      } finally {
+        setIsPending(false);
+      }
     }
   };
 

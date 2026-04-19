@@ -42,6 +42,7 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
   const [lastEntry, setLastEntry] = useState<{ payee: string; amount: string; type: string } | null>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState(crypto.randomUUID());
 
   const { register, handleSubmit, watch, setValue, formState: { errors }, reset } = useForm<TreasuryFormData>({
     resolver: zodResolver(treasurySchema),
@@ -98,12 +99,14 @@ export default function ExpenseFormClient({ properties, allCategories, allLedger
       Object.entries(data).forEach(([key, value]) => {
         if (value) formData.append(key, value);
       });
+      formData.append('idempotencyKey', idempotencyKey);
 
       const result = await logExpense(formData);
       if (result.success) {
         setLastEntry({ payee: data.payee, amount: data.amount, type: data.type });
         setSessionCount(prev => prev + 1);
         toast.success(`✓ ${data.type} Materialized`);
+        setIdempotencyKey(crypto.randomUUID());
         reset({
           ...DEFAULT_VALUES,
           date: data.date,

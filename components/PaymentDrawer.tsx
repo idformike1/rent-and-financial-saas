@@ -31,6 +31,9 @@ type PaymentForm = z.infer<typeof paymentSchema>
 
 export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, onSuccess }: PaymentDrawerProps) {
   const [isPending, startTransition] = useTransition()
+  
+  // Stable Idempotency Key generated once per drawer session
+  const idempotencyKey = useMemo(() => crypto.randomUUID(), [isOpen, tenant.id]);
 
   const { register, handleSubmit, control, formState: { errors, isSubmitting }, reset, watch } = useForm<PaymentForm>({
     resolver: zodResolver(paymentSchema),
@@ -72,7 +75,8 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
           amountPaid: data.amountPaid,
           transactionDate: data.transactionDate,
           paymentMode: data.paymentMode,
-          referenceText: data.referenceText
+          referenceText: data.referenceText,
+          idempotencyKey
         })
         if (response.success) {
           toast.success("Liquid Expenditure Successfully Materialized");
@@ -223,6 +227,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             type="submit" 
             form="payment-form"
             isLoading={isPending || isSubmitting}
+            disabled={isPending || isSubmitting}
             className="w-full h-12 uppercase  font-bold"
           >
             Liquidate Liability
