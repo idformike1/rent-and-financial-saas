@@ -7,7 +7,8 @@ import {
   updateUserRoleService, 
   deleteUserService,
   toggleUserActivationService,
-  toggleUserEditPermissionService
+  toggleUserEditPermissionService,
+  consumeInvitationService
 } from "@/src/services/mutations/team.services"
 import { getTeamMembersService } from "@/src/services/queries/team.services"
 
@@ -111,7 +112,7 @@ export async function deleteUserForever(userId: string) {
 export async function inviteMember(email: string, name: string) {
   return runSecureServerAction('OWNER', async (session) => {
     try {
-      const newUser = await inviteTeamMemberService(
+      const result = await inviteTeamMemberService(
         { email, name },
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
@@ -120,10 +121,27 @@ export async function inviteMember(email: string, name: string) {
       );
 
       revalidatePath('/settings/team');
-      return { success: true, user: newUser };
+      
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      const inviteUrl = `${baseUrl}/onboarding?token=${result.rawToken}`;
+
+      return { success: true, inviteUrl, email: result.email };
     } catch (e: any) {
       console.error('[TEAM_INVITATION_FATAL]', e);
       throw e;
     }
   });
+}
+
+/**
+ * PUBLIC: Consume invitation and create account
+ */
+export async function consumeInvitation(token: string, passwordPlain: string) {
+  try {
+    await consumeInvitationService({ token, passwordPlain });
+    return { success: true };
+  } catch (e: any) {
+    console.error('[ONBOARDING_CONSUMPTION_FATAL]', e);
+    return { success: false, error: e.message || "Failed to consume invitation." };
+  }
 }

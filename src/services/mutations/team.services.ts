@@ -2,6 +2,7 @@ import { getSovereignClient } from "@/src/lib/db";
 import { recordAuditLog } from "@/lib/audit-logger";
 import { resolveTerminationSafety } from "@/src/core/algorithms/governance";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 /**
  * TEAM SERVICE (SOVEREIGN EDITION)
@@ -24,33 +25,98 @@ export async function inviteTeamMemberService(
 ) {
   const db = getSovereignClient(context.operatorId);
 
-  const existing = await db.user.findUnique({
+  // Check for existing user
+  const existingUser = await db.user.findUnique({
     where: { email: payload.email }
   });
+  if (existingUser) throw new Error("ERR_IDENTITY_CONFLICT: User already exists.");
 
-  if (existing) throw new Error("ERR_IDENTITY_CONFLICT: Email already registered in the system.");
-
-  const defaultPassword = "password123"; 
-  const passwordHash = await bcrypt.hash(defaultPassword, 10);
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  // SECURE: Use SHA-256 (deterministic) for indexing while keeping rawToken for the user.
+  const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
 
   return await db.$transaction(async (tx: any) => {
-    const user = await tx.user.create({
+    const invitation = await tx.invitation.create({
       data: {
         email: payload.email,
-        name: payload.name,
-        passwordHash,
+        token: hashedToken,
         role: payload.role || 'MANAGER',
         organizationId: context.organizationId,
-        isActive: true,
-        canEdit: true,
+        status: 'PENDING'
       }
     });
 
     await recordAuditLog({
       action: 'INVITE',
+      entityType: 'INVITATION',
+      entityId: invitation.id,
+      metadata: { email: payload.email, role: payload.role },
+      tx: tx as any
+    });
+
+    return { 
+      id: invitation.id, 
+      email: invitation.email, 
+      rawToken 
+    };
+  });
+}
+
+/**
+ * Consumes an invitation token and materializes the user account.
+ */
+export async function consumeInvitationService(
+  payload: { token: string; passwordPlain: string }
+) {
+  const db = getSovereignClient("OP_SYSTEM_ONBOARDING");
+
+  // 1. Identify invitation by hashed token
+  const hashedToken = crypto.createHash('sha256').update(payload.token).digest('hex');
+  const invitation = await db.invitation.findUnique({
+    where: { token: hashedToken },
+    include: { organization: true }
+  });
+
+  if (!invitation) {
+    throw new Error("ERR_INVITATION_NOT_FOUND: The provided token is invalid.");
+  }
+
+  // 2. Validate state and expiry (24 hours)
+  if (invitation.status !== 'PENDING') {
+    throw new Error("ERR_INVITATION_EXPIRED: Token has already been consumed.");
+  }
+
+  const expiryLimit = 24 * 60 * 60 * 1000; // 24 Hours
+  const isExpired = Date.now() - invitation.createdAt.getTime() > expiryLimit;
+  if (isExpired) {
+    throw new Error("ERR_INVITATION_EXPIRED: The invitation has expired.");
+  }
+
+  // 3. Materialize User and update Invitation status
+  const passwordHash = await bcrypt.hash(payload.passwordPlain, 12);
+
+  return await db.$transaction(async (tx: any) => {
+    const user = await tx.user.create({
+      data: {
+        email: invitation.email,
+        passwordHash: passwordHash,
+        role: invitation.role,
+        organizationId: invitation.organizationId,
+        isActive: true,
+        canEdit: true
+      }
+    });
+
+    await tx.invitation.update({
+      where: { id: invitation.id },
+      data: { status: 'ACCEPTED' }
+    });
+
+    await recordAuditLog({
+      action: 'CREATE',
       entityType: 'USER',
       entityId: user.id,
-      metadata: { email: payload.email },
+      metadata: { email: user.email, organizationId: user.organizationId },
       tx: tx as any
     });
 

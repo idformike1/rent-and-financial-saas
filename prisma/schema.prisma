@@ -175,6 +175,7 @@ model Organization {
   tenants             Tenant[]
   units               Unit[]
   users               User[]
+  invitations         Invitation[]
 }
 
 model ReportSnapshot {
@@ -218,6 +219,24 @@ model IdempotencyRecord {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   @@index([key, organizationId])
+}
+
+model Invitation {
+  id             String           @id @default(uuid())
+  token          String           @unique
+  email          String
+  role           String
+  organizationId String
+  status         InvitationStatus @default(PENDING)
+  createdAt      DateTime         @default(now())
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
 }
 
 enum MaintenanceStatus {

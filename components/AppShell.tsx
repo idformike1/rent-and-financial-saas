@@ -32,7 +32,7 @@ const navigationSections = [
       { name: 'Transactions',      href: '/treasury/feed',      icon: List },
       { name: 'Properties',        href: '/assets',             icon: Building2 },
       { name: 'Tenants',           href: '/tenants',            icon: Users },
-      { name: 'Onboarding',        href: '/onboarding',         icon: Zap },
+      { name: 'Tenant Registry',   href: '/tenant-register',    icon: Zap },
       { name: 'Expense Registry',  href: '/treasury/payables',  icon: Tag },
       { name: 'Treasury',          href: '/treasury',           icon: Wallet },
     ]
@@ -83,7 +83,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   // If the current path is /login, we bypass the shell to prevent 
   // UI overlap. We wrap in a w-full container to maintain centering
   // within the RootLayout's flex body.
-  if (pathname === '/login') return <div className="w-full h-screen">{children}</div>;
+  if (pathname === '/login' || pathname === '/onboarding') return <div className="w-full h-screen">{children}</div>;
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden font-sans selection:bg-primary/10 text-foreground">
