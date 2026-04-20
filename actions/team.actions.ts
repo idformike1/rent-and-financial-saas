@@ -18,12 +18,12 @@ import { UpdateProfileSchema } from "@/src/lib/validations/user.schema"
  * TEAM REGISTRY ACCESS (GATEKEEPER)
  */
 export async function fetchTeamMembers() {
-  return runSecureServerAction('OWNER', async (session) => {
+  return runSecureServerAction('VIEWER', async (session) => {
     return await getTeamMembersService({
       operatorId: session.userId,
       organizationId: session.organizationId
     });
-  });
+  }, false);
 }
 
 /**
@@ -111,11 +111,16 @@ export async function deleteUserForever(userId: string) {
 /**
  * INVITATION GATEKEEPER
  */
-export async function inviteMember(email: string, name: string) {
+export async function inviteMember(email: string, name: string, role: string = 'MANAGER') {
   return runSecureServerAction('OWNER', async (session) => {
     try {
+      const nameString = name || "";
+      const nameParts = nameString.trim().split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
       const result = await inviteTeamMemberService(
-        { email, name },
+        { email, name, role, firstName, lastName },
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
           organizationId: session.organizationId

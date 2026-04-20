@@ -18,5 +18,5 @@ export default async function AssetGrid() {
     },
   });
 
-  return <AssetClient initialData={JSON.parse(JSON.stringify(properties))} />;
+  return <AssetClient initialData={JSON.parse(JSON.stringify(properties))} role={session.role} />;
 }

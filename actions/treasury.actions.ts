@@ -13,7 +13,7 @@ import { AccountCategory, Charge, LedgerEntry, Prisma } from '@prisma/client';
  */
 
 export async function getAccountLedger(accountId: string) {
-  return runSecureServerAction('MANAGER', async (session) => {
+  return runSecureServerAction('VIEWER', async (session) => {
     try {
       let balance = 0;
       let entries: any[] = [];
@@ -121,5 +121,5 @@ export async function getAccountLedger(accountId: string) {
         message: e.message || "System reconciliation failure. Contact Axiom DevOps." 
       };
     }
-  });
+  }, false);
 }

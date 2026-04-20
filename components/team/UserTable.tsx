@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 interface User {
   id: string
   name: string | null
+  firstName: string | null
+  lastName: string | null
   email: string
   role: string
   isActive: boolean
@@ -76,7 +78,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                 <td className="px-4 py-3">
                   <div className="flex flex-col">
                     <span className="text-mercury-heading text-foreground">
-                      {user.name || 'UNNAMED OPERATOR'}
+                      {[user.firstName, user.lastName].filter(Boolean).join(" ") || user.name || 'UNNAMED OPERATOR'}
                     </span>
                     <span className="text-mercury-label-caps text-clinical-muted">{user.email}</span>
                   </div>
@@ -91,6 +93,7 @@ export default function UserTable({ users, currentUserId }: { users: User[], cur
                     <option value="OWNER">OWNER</option>
                     <option value="ADMIN">ADMIN</option>
                     <option value="MANAGER">MANAGER</option>
+                    <option value="VIEWER">VIEWER</option>
                   </Select>
                 </td>
                 <td className="px-4 py-3 text-center">

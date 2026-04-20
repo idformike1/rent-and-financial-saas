@@ -141,13 +141,13 @@ export async function updateUnitStatus(unitId: string, status: MaintenanceStatus
 
 export async function getAvailableUnits() {
   try {
-    return await runSecureServerAction('MANAGER', async (session) => {
+    return await runSecureServerAction('VIEWER', async (session) => {
       const units = await getAvailableUnitsService({
         operatorId: session.userId || "OP_SYSTEM_ADMIN",
         organizationId: session.organizationId
       });
       return JSON.parse(JSON.stringify(units || []));
-    });
+    }, false);
   } catch (e) {
     console.error('[ASSET_INVENTORY_SCAN_FATAL]', e);
     return [];
@@ -156,7 +156,7 @@ export async function getAvailableUnits() {
 
 export async function getUnitLedgerFeed(unitId: string) {
   try {
-    return await runSecureServerAction('MANAGER', async (session) => {
+    return await runSecureServerAction('VIEWER', async (session) => {
       // Lazy import to prevent circular dependencies if any
       const { getUnitLedgerFeedService } = await import('@/src/services/queries/assets.services');
       const feed = await getUnitLedgerFeedService(unitId, {
@@ -164,7 +164,7 @@ export async function getUnitLedgerFeed(unitId: string) {
         organizationId: session.organizationId
       });
       return JSON.parse(JSON.stringify(feed || []));
-    });
+    }, false);
   } catch (e) {
     console.error('[ASSET_LEDGER_FEED_FATAL]', e);
     return [];

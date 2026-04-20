@@ -20,7 +20,7 @@ import crypto from "crypto";
  * Materializes a new team member with a non-repudiable invitation trace.
  */
 export async function inviteTeamMemberService(
-  payload: { email: string, name: string, role?: string },
+  payload: { email: string, name: string, role?: string, firstName?: string, lastName?: string },
   context: { operatorId: string, organizationId: string }
 ) {
   const db = getSovereignClient(context.operatorId);
@@ -40,6 +40,8 @@ export async function inviteTeamMemberService(
       data: {
         email: payload.email,
         token: hashedToken,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
         role: payload.role || 'MANAGER',
         organizationId: context.organizationId,
         status: 'PENDING'
@@ -100,6 +102,8 @@ export async function consumeInvitationService(
       data: {
         email: invitation.email,
         passwordHash: passwordHash,
+        firstName: invitation.firstName,
+        lastName: invitation.lastName,
         role: invitation.role,
         organizationId: invitation.organizationId,
         isActive: true,

@@ -32,9 +32,10 @@ interface Tenant {
 
 interface TenantClientProps {
   initialData: Tenant[];
+  role?: string;
 }
 
-export default function TenantClient({ initialData }: TenantClientProps) {
+export default function TenantClient({ initialData, role }: TenantClientProps) {
   const router = useRouter();
   const [selectedTenantForPayment, setSelectedTenantForPayment] = useState<Tenant | null>(null);
 
@@ -108,18 +109,20 @@ export default function TenantClient({ initialData }: TenantClientProps) {
       header: "Protocol",
       accessor: (tenant: Tenant) => (
         <div className="flex items-center justify-end gap-2">
-           <Button 
-            type="button" 
-            variant="ghost" 
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedTenantForPayment(tenant);
-            }}
-            className="h-8 w-8 p-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20"
-          >
-            <DollarSign className="w-4 h-4" />
-          </Button>
+           {role !== 'VIEWER' && (
+             <Button 
+              type="button" 
+              variant="ghost" 
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedTenantForPayment(tenant);
+              }}
+              className="h-8 w-8 p-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20"
+            >
+              <DollarSign className="w-4 h-4" />
+            </Button>
+           )}
           <Button 
             type="button" 
             variant="ghost" 

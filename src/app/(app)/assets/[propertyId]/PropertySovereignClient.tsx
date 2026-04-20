@@ -20,9 +20,10 @@ interface PropertySovereignClientProps {
   propertyData: any;
   pulseData: any;
   allProperties: any[];
+  role?: string;
 }
 
-export default function PropertySovereignClient({ propertyData, pulseData, allProperties }: PropertySovereignClientProps) {
+export default function PropertySovereignClient({ propertyData, pulseData, allProperties, role }: PropertySovereignClientProps) {
   const router = useRouter();
   const [drillDownType, setDrillDownType] = useState<string | null>(null);
   const [isAddUnitModalOpen, setIsAddUnitModalOpen] = useState(false);
@@ -110,33 +111,35 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
           </div>
         </div>
         
-        <div className="flex items-center p-1 bg-muted border border-border rounded-[var(--radius-sm)] shadow-xl">
-          <Button 
-            variant="ghost" 
-            onClick={() => setIsEditAssetModalOpen(true)}
-            className="h-8 px-4 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 hover:text-foreground hover:bg-muted/50 transition-colors border-none"
-          >
-            <Edit2 className="w-3 h-3 mr-2 opacity-40" />
-            Mutation
-          </Button>
-          <div className="w-[1px] h-4 bg-border mx-1" />
-          <Button 
-            variant="ghost" 
-            className="h-8 px-4 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] text-destructive/40 hover:text-destructive hover:bg-destructive/5 transition-colors border-none"
-            onClick={() => setIsArchiveModalOpen(true)}
-          >
-            <Trash2 className="w-3 h-3 mr-2 opacity-40" />
-            Purge
-          </Button>
-          <div className="w-[1px] h-4 bg-border mx-1" />
-          <Button 
-            onClick={() => setIsAddUnitModalOpen(true)}
-            className="h-8 px-5 rounded-[var(--radius-sm)] text-[10px] font-bold bg-brand hover:bg-brand/90 text-white uppercase tracking-[0.15em] ml-1 shadow-lg shadow-brand/10 border-none transition-all"
-          >
-            <Plus className="w-3 h-3 mr-2" />
-            Provision Node
-          </Button>
-        </div>
+        {role !== 'VIEWER' && (
+          <div className="flex items-center p-1 bg-muted border border-border rounded-[var(--radius-sm)] shadow-xl">
+            <Button 
+              variant="ghost" 
+              onClick={() => setIsEditAssetModalOpen(true)}
+              className="h-8 px-4 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 hover:text-foreground hover:bg-muted/50 transition-colors border-none"
+            >
+              <Edit2 className="w-3 h-3 mr-2 opacity-40" />
+              Mutation
+            </Button>
+            <div className="w-[1px] h-4 bg-border mx-1" />
+            <Button 
+              variant="ghost" 
+              className="h-8 px-4 rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.15em] text-destructive/40 hover:text-destructive hover:bg-destructive/5 transition-colors border-none"
+              onClick={() => setIsArchiveModalOpen(true)}
+            >
+              <Trash2 className="w-3 h-3 mr-2 opacity-40" />
+              Purge
+            </Button>
+            <div className="w-[1px] h-4 bg-border mx-1" />
+            <Button 
+              onClick={() => setIsAddUnitModalOpen(true)}
+              className="h-8 px-5 rounded-[var(--radius-sm)] text-[10px] font-bold bg-brand hover:bg-brand/90 text-white uppercase tracking-[0.15em] ml-1 shadow-lg shadow-brand/10 border-none transition-all"
+            >
+              <Plus className="w-3 h-3 mr-2" />
+              Provision Node
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* ── FISCAL TELEMETRY HUD ───────────────────────────────────────────── */}

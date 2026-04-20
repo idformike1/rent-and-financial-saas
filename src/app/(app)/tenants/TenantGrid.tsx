@@ -35,5 +35,5 @@ export default async function TenantGrid() {
     },
   });
 
-  return <TenantClient initialData={JSON.parse(JSON.stringify(tenants))} />;
+  return <TenantClient initialData={JSON.parse(JSON.stringify(tenants))} role={session.role} />;
 }

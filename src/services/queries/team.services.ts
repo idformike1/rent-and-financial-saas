@@ -17,6 +17,8 @@ export async function getTeamMembersService(context: { operatorId: string, organ
     select: {
       id: true,
       name: true,
+      firstName: true,
+      lastName: true,
       email: true,
       role: true,
       isActive: true,

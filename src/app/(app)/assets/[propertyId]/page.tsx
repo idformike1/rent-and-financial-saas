@@ -44,6 +44,7 @@ export default async function SovereignViewport({ params }: SovereignPageProps) 
       propertyData={propertyData} 
       pulseData={pulseData.success ? pulseData.data : null} 
       allProperties={allProperties}
+      role={session.role}
     />
   );
 }

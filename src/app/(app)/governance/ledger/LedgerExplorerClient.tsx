@@ -42,11 +42,12 @@ interface Metadata {
 interface Props {
   initialData: Transaction[]
   metadata: Metadata
+  role?: string
 }
 
 const GRID_CLASS = "grid grid-cols-[100px_1fr_120px_150px_150px_150px_150px] gap-4 items-center px-4"
 
-export default function LedgerExplorerClient({ initialData, metadata }: Props) {
+export default function LedgerExplorerClient({ initialData, metadata, role }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -461,6 +462,7 @@ export default function LedgerExplorerClient({ initialData, metadata }: Props) {
       <TransactionDetailSheet 
         transaction={selectedTransaction as any}
         onClose={() => setTxid('')}
+        role={role}
       />
     </div>
   )

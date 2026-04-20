@@ -19,9 +19,10 @@ import { Transaction } from './types'
 interface TransactionDetailSheetProps {
   transaction: Transaction | null;
   onClose: () => void;
+  role?: string;
 }
 
-export default function TransactionDetailSheet({ transaction, onClose }: TransactionDetailSheetProps) {
+export default function TransactionDetailSheet({ transaction, onClose, role }: TransactionDetailSheetProps) {
   const [isPending, startTransition] = useTransition();
   const isNegative = transaction ? Number(transaction.amount) < 0 : false;
   const absAmount = transaction ? Math.abs(Number(transaction.amount)) : 0;
@@ -184,19 +185,21 @@ export default function TransactionDetailSheet({ transaction, onClose }: Transac
                  </div>
                ) : (
                  <div className="w-full flex items-center gap-4">
-                   <Button type="button" onClick={handleExport} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius-sm)]">
-                     Export Forensic Receipt
-                   </Button>
-                   <Button 
-                    type="button"
-                    variant="ghost" 
-                    onClick={handleVoid}
-                    disabled={isPending}
-                    className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-[var(--radius-sm)] text-white/40 hover:text-destructive transition-colors"
-                   >
-                     {isPending ? "Voiding..." : "Void Activity"}
-                   </Button>
-                 </div>
+                    <Button type="button" onClick={handleExport} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[13px] font-medium rounded-[var(--radius-sm)]">
+                      Export Forensic Receipt
+                    </Button>
+                    {role !== 'VIEWER' && (
+                      <Button 
+                       type="button"
+                       variant="ghost" 
+                       onClick={handleVoid}
+                       disabled={isPending}
+                       className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[13px] font-medium rounded-[var(--radius-sm)] text-white/40 hover:text-destructive transition-colors"
+                      >
+                        {isPending ? "Voiding..." : "Void Activity"}
+                      </Button>
+                    )}
+                  </div>
                )}
             </div>
           </>

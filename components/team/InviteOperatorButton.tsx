@@ -10,6 +10,7 @@ export default function InviteOperatorButton() {
   const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
+  const [role, setRole] = useState('MANAGER')
   const [isPending, setIsPending] = useState(false)
   const [inviteUrl, setInviteUrl] = useState<string | null>(null)
   const [isCopied, setIsCopied] = useState(false)
@@ -21,6 +22,7 @@ export default function InviteOperatorButton() {
     setInviteUrl(null)
     setEmail('')
     setName('')
+    setRole('MANAGER')
     setIsCopied(false)
   }
 
@@ -28,7 +30,7 @@ export default function InviteOperatorButton() {
     e.preventDefault()
     setIsPending(true)
     try {
-      const res = await inviteMember(email, name)
+      const res = await inviteMember(email, name, role)
       if (res.success && res.inviteUrl) {
         setInviteUrl(res.inviteUrl)
         toast.success("Security token generated.")
@@ -102,6 +104,19 @@ export default function InviteOperatorButton() {
                       className="w-full bg-white/5 border border-white/10 rounded-[var(--radius-sm)] p-4 font-bold text-sm outline-none focus:border-[var(--primary)] transition-all placeholder:text-foreground/20"
                       placeholder="name@nexus.com"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase font-bold tracking-[0.15em] block text-foreground/40">Assigned Role Protection Level</label>
+                    <select
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                      className="w-full bg-[#0F0F15] border border-white/10 rounded-[var(--radius-sm)] p-4 font-bold text-sm outline-none focus:border-[var(--primary)] transition-all text-foreground"
+                    >
+                      <option value="ADMIN">ADMIN (High Privilege)</option>
+                      <option value="MANAGER">MANAGER (Standard Ops)</option>
+                      <option value="VIEWER">VIEWER (Read-Only)</option>
+                    </select>
                   </div>
 
                   <button

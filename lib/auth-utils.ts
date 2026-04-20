@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN';
+export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN' | 'VIEWER';
 
 export interface SessionContext {
   userId: string;
@@ -47,7 +47,8 @@ export async function verifyRole(requiredRole: UserRole, currentRole: UserRole):
   const roleHierarchy: Record<UserRole, number> = {
     'OWNER': 1,
     'MANAGER': 2,
-    'ADMIN': 3
+    'ADMIN': 3,
+    'VIEWER': 4
   };
   
   return roleHierarchy[currentRole] <= roleHierarchy[requiredRole];
@@ -62,12 +63,42 @@ export async function verifyRole(requiredRole: UserRole, currentRole: UserRole):
  */
 export async function runSecureServerAction<T>(
   requiredRole: UserRole, 
-  action: (session: SessionContext) => Promise<T>
+  action: (session: SessionContext) => Promise<T>,
+  isMutation: boolean = true
 ): Promise<T> {
   const session = await getCurrentSession();
   
   if (!session) {
     throw new Error('UNAUTHORIZED: No active session found.');
+  }
+
+  // ── MUTATION LOCK: READ-ONLY PROTOCOL ─────────────────────────
+  if (isMutation && session.role === 'VIEWER') {
+    console.error(`[SECURITY_BLOCKED] VIEWER role attempted mutation in runSecureServerAction.`);
+    throw new Error('UNAUTHORIZED: Read-Only Access. Mutation protocols are restricted for this role.');
+  }
+
+  // ── LIVE STATUS CHECK: DATABASE GATEKEEPER ─────────────────
+  try {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { isActive: true, role: true }
+    });
+
+    if (!dbUser || !dbUser.isActive) {
+      console.error(`[SECURITY_CRITICAL] Session Revoked for User: ${session.userId}. Operation Aborted.`);
+      throw new Error('ERR_SESSION_REVOKED: Your clearance has been withdrawn. Access terminated.');
+    }
+
+    // Real-time role synchronization
+    if (dbUser.role !== session.role) {
+      console.warn(`[SECURITY_SYNC] Role shift detected for ${session.userId}: ${session.role} -> ${dbUser.role}`);
+      session.role = dbUser.role as UserRole;
+    }
+  } catch (dbError: any) {
+    if (dbError.message.startsWith('ERR_SESSION_REVOKED')) throw dbError;
+    console.error('[SECURITY_FATAL] Database layer unreachable during session validation. Failing closed.', dbError);
+    throw new Error('SECURITY_ERROR: Integrity check failed. Operational shutdown initiated.');
   }
 
   const isAuthorized = await verifyRole(requiredRole, session.role);
@@ -77,15 +108,8 @@ export async function runSecureServerAction<T>(
 
   /**
    * SOVEREIGN AUTO-HEAL: ORPHANED IDENTITY RECOVERY
-   * Verify that the organizationId AND userId from the session actually exist in the persistence layer.
-   * If missing (e.g., after a DB re-seed), we automatically RECONSTRUCT them to preserve the session 
-   * ONLY in non-production environments.
    */
-  let [orgExists, userExists] = await Promise.all([
-    prisma.organization.count({ where: { id: session.organizationId } }),
-    prisma.user.count({ where: { id: session.userId } })
-  ]);
-
+  let orgExists = await prisma.organization.count({ where: { id: session.organizationId } });
   const isProduction = process.env.NODE_ENV === 'production';
 
   if (orgExists === 0) {
@@ -99,25 +123,6 @@ export async function runSecureServerAction<T>(
       data: {
         id: session.organizationId,
         name: session.organizationName || "Recovered Entity",
-      }
-    });
-  }
-
-  if (userExists === 0) {
-    if (isProduction) {
-      console.error(`[SECURITY_FATAL] Production User Missing: ${session.userId}`);
-      throw new Error(`SECURITY_ERROR: Access denied. User record not found.`);
-    }
-
-    console.warn(`[SECURITY_HEAL] Reconstructing missing User: ${session.userId}`);
-    await prisma.user.create({
-      data: {
-        id: session.userId,
-        email: session.userId + "@auto-heal.axiom", // Surrogate email
-        passwordHash: "PH_VOID", // System-locked
-        name: session.userId.slice(0, 8),
-        role: session.role,
-        organizationId: session.organizationId
       }
     });
   }

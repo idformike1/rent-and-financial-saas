@@ -78,6 +78,7 @@ export default async function LedgerExplorerPage({
         <LedgerExplorerClient 
           initialData={serializedLedger as any} 
           metadata={metadata as any}
+          role={session.user.role}
         />
       </Suspense>
     </div>

@@ -74,10 +74,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     )
   }
 
-  const filteredSections = navigationSections.filter(section => {
-    if (section.label === 'Governance control' && userRole === 'MANAGER') return false
-    return true
-  })
+  const filteredSections = navigationSections.map(section => ({
+    ...section,
+    items: section.items.filter(item => {
+      // Rule 1: VIEWER Restriction Matrix
+      if (userRole === 'VIEWER') {
+        const forbidden = ['/governance', '/settings', '/treasury/payables', '/tenant-register'];
+        if (forbidden.some(path => item.href.startsWith(path))) return false;
+      }
+      return true;
+    })
+  })).filter(section => {
+    // Rule 2: Section-level clearance guards
+    if (section.items.length === 0) return false;
+    if (section.label === 'Governance control' && (userRole === 'MANAGER' || userRole === 'VIEWER')) return false;
+    return true;
+  });
 
   // ── AUTH ISOLATION GUARD ─────────────────────────────────────────────
   // If the current path is /login, we bypass the shell to prevent 
@@ -180,8 +192,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             
             <div className="flex items-center gap-4 ml-auto">
-               <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
-                  <span className="text-mercury-label-caps text-clinical-muted">ADMIN</span>
+               <div className="px-3 py-1 rounded-[var(--radius-sm)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
+                  <span className="text-mercury-label-caps text-clinical-muted">{userRole}</span>
                </div>
             </div>
           </div>

@@ -25,9 +25,10 @@ interface Property {
 
 interface AssetClientProps {
   initialData: Property[];
+  role?: string;
 }
 
-export default function AssetClient({ initialData }: AssetClientProps) {
+export default function AssetClient({ initialData, role }: AssetClientProps) {
   const router = useRouter();
   const [isAddPropertyOpen, setIsAddPropertyOpen] = useState(false);
   const [newPropData, setNewPropData] = useState({ name: '', address: '' });
@@ -98,15 +99,17 @@ export default function AssetClient({ initialData }: AssetClientProps) {
 
   return (
     <div className="animate-in fade-in duration-700">
-      <div className="flex justify-end mb-10">
-        <Button 
-          onClick={() => setIsAddPropertyOpen(true)}
-          className="h-9 bg-brand hover:bg-brand/90 text-white rounded-[var(--radius-sm)] text-[11px] font-bold px-5 shadow-xl shadow-brand/10 uppercase tracking-[0.15em] border-none"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Deploy New Asset
-        </Button>
-      </div>
+      {role !== 'VIEWER' && (
+        <div className="flex justify-end mb-10">
+          <Button 
+            onClick={() => setIsAddPropertyOpen(true)}
+            className="h-9 bg-brand hover:bg-brand/90 text-white rounded-[var(--radius-sm)] text-[11px] font-bold px-5 shadow-xl shadow-brand/10 uppercase tracking-[0.15em] border-none"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Deploy New Asset
+          </Button>
+        </div>
+      )}
 
       <SovereignTable
         data={initialData}
