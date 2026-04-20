@@ -54,21 +54,35 @@ export default function PropertySovereignClient({ propertyData, pulseData, allPr
   }, [drillDownType, propertyData.id]);
 
   const handleUpdate = async () => {
-    setIsUpdating(true);
-    const res = await updateProperty(propertyData.id, { name: editPropName, address: editPropAddr });
-    if (res.success) toast.success("Asset intelligence updated.");
-    else toast.error("Update failed.");
-    setIsUpdating(false);
-    setIsEditAssetModalOpen(false);
+    try {
+      setIsUpdating(true);
+      const res = await updateProperty(propertyData.id, { name: editPropName, address: editPropAddr });
+      if (res.success) {
+        toast.success("Asset intelligence updated.");
+        setIsEditAssetModalOpen(false);
+      } else {
+        toast.error(res.message || "Update protocol failed.");
+      }
+    } catch (error: any) {
+      console.error('[PROPERTY_UPDATE_CRASH_GUARD]', error);
+      toast.error(error.message || "Execution layer failure.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleArchive = async () => {
-    const res = await deleteProperty(propertyData.id);
-    if (res.success) {
-      toast.success("Asset decommissioned.");
-      router.push('/assets');
-    } else {
-      toast.error("Decommission protocol failed.");
+    try {
+      const res = await deleteProperty(propertyData.id);
+      if (res.success) {
+        toast.success("Asset decommissioned.");
+        router.push('/assets');
+      } else {
+        toast.error(res.message || "Decommission protocol failed.");
+      }
+    } catch (error: any) {
+      console.error('[PROPERTY_DELETE_CRASH_GUARD]', error);
+      toast.error(error.message || "Execution layer failure.");
     }
   };
 
@@ -342,22 +356,28 @@ function AddUnitModal({ isOpen, onClose, propertyId }: { isOpen: boolean, onClos
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsPending(true);
-    const res = await createUnit({
-      unitNumber,
-      type,
-      category,
-      propertyId,
-      marketRent: Number(marketRent) || 0
-    });
-    
-    if (res.success) {
-      toast.success("Unit provisioned successfully.");
-      onClose();
-    } else {
-      toast.error(res.message || "Failed to provision unit.");
+    try {
+      setIsPending(true);
+      const res = await createUnit({
+        unitNumber,
+        type,
+        category,
+        propertyId,
+        marketRent: Number(marketRent) || 0
+      });
+      
+      if (res.success) {
+        toast.success("Unit provisioned successfully.");
+        onClose();
+      } else {
+        toast.error(res.message || "Failed to provision unit.");
+      }
+    } catch (error: any) {
+      console.error('[UNIT_PROVISION_CRASH_GUARD]', error);
+      toast.error(error.message || "Execution layer failure.");
+    } finally {
+      setIsPending(false);
     }
-    setIsPending(false);
   };
 
   if (!isOpen) return null;

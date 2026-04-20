@@ -25,7 +25,7 @@ export async function getTenantForensicDossierService(
   tenantId: string, 
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const [tenant, ledgerEntries] = await Promise.all([
     db.tenant.findFirst({
@@ -67,7 +67,7 @@ export async function liquidateTenantDebtService(
   tenantId: string, 
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const tenant = await tx.tenant.findFirst({
@@ -131,7 +131,7 @@ export async function processMoveOutService(
   payload: { tenantId: string, leaseId: string, unitId: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     // 1. Archive Lease
@@ -187,7 +187,7 @@ export async function submitOnboardingService(
   },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const { calculateProratedRent } = await import("@/src/core/algorithms/tenancy");
 
   return await db.$transaction(async (tx: any) => {
@@ -301,7 +301,7 @@ export async function checkTenantExistenceService(
   query: { name: string, email?: string, phone?: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const nameMatch = await db.tenant.findFirst({
     where: { organizationId: context.organizationId, name: { equals: query.name, mode: 'insensitive' }, isDeleted: false }
@@ -326,7 +326,7 @@ export async function updateTenantDetailsService(
   data: { name: string, email?: string, phone?: string, nationalId?: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const result = await tx.tenant.updateMany({
@@ -360,7 +360,7 @@ export async function softDeleteTenantService(
   tenantId: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     // 1. ARCHIVE IDENTITY
@@ -398,7 +398,7 @@ export async function addAdditionalLeaseService(
   },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const unit = await tx.unit.findFirst({ 

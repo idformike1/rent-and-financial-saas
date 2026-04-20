@@ -17,7 +17,7 @@ import { AccountCategory } from "@prisma/client";
  * Executes a Revenue Synchronization protocol to repair misclassified ledgers.
  */
 export async function executeRevenueSyncService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const misclassified = await tx.financialLedger.findMany({
@@ -92,7 +92,7 @@ export async function createLedgerService(
   payload: { name: string, class: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const normalized = payload.name.trim().toUpperCase();
 
   const existing = await db.financialLedger.findFirst({
@@ -122,7 +122,7 @@ export async function deleteLedgerService(
   ledgerId: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const childrenCount = await tx.expenseCategory.count({
@@ -150,7 +150,7 @@ export async function createAccountNodeService(
   payload: { name: string, ledgerId: string, parentId?: string | null },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     if (payload.parentId) {
@@ -198,7 +198,7 @@ export async function updateLedgerService(
   name: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const normalized = name.trim().toUpperCase();
 
   return await db.$transaction(async (tx: any) => {
@@ -226,7 +226,7 @@ export async function updateAccountNodeService(
   label: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const normalized = label.trim();
 
   return await db.$transaction(async (tx: any) => {
@@ -253,7 +253,7 @@ export async function deleteAccountNodeService(
   id: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const childrenCount = await tx.expenseCategory.count({

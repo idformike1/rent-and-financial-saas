@@ -23,7 +23,7 @@ export async function inviteTeamMemberService(
   payload: { email: string, name: string, role?: string, firstName?: string, lastName?: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   // Check for existing user
   const existingUser = await db.user.findUnique({
@@ -136,7 +136,7 @@ export async function updateUserRoleService(
   newRole: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   if (userId === context.operatorId && newRole !== 'OWNER') {
     throw new Error("ERR_GRAVITY_VIOLATION: Self-demotion protocol blocked.");
@@ -165,7 +165,7 @@ export async function deleteUserService(
   userId: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const target = await tx.user.findFirst({ 
@@ -213,7 +213,7 @@ export async function toggleUserActivationService(
   isActive: boolean,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     await tx.user.updateMany({
@@ -238,7 +238,7 @@ export async function toggleUserEditPermissionService(
   canEdit: boolean,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     await tx.user.updateMany({
@@ -264,7 +264,7 @@ export async function updateProfileService(
   data: { firstName?: string; lastName?: string; name?: string; phone?: string | null },
   context: { operatorId: string; organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     // SECURITY: Explicit mapping. Do NOT use spread operators here.

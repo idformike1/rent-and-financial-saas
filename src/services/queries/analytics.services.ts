@@ -18,7 +18,7 @@ import { AccountCategory, Prisma } from "@prisma/client";
  * Executes the Global Portfolio Telemetry engine with time-series comparison.
  */
 export async function getGlobalPortfolioTelemetryService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const now = new Date();
 
   const thirtyDaysAgo = new Date(now.getTime() - FINANCIAL_PERIODS.TRAILING_MONTH * 24 * 60 * 60 * 1000);
@@ -97,7 +97,7 @@ export async function getGlobalPortfolioTelemetryService(context: { operatorId: 
  * Materializes the Detailed Structural Ontology for the organization.
  */
 export async function getDetailedOntologyService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const buildings = await db.property.findMany({
     where: { organizationId: context.organizationId },
@@ -162,7 +162,7 @@ export async function getDetailedOntologyService(context: { operatorId: string, 
  * Materializes data for the Waterfall (Sankey) visualization.
  */
 export async function getWaterfallDataService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const ledgers = await db.financialLedger.findMany({
     where: { organizationId: context.organizationId },
@@ -241,7 +241,7 @@ export async function getProfitAndLossService(
   propertyId: string | undefined,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const entries = await db.ledgerEntry.findMany({
     where: {
@@ -292,7 +292,7 @@ export async function getRentRollService(
   propertyId: string | undefined,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const units = await db.unit.findMany({
     where: {
@@ -323,7 +323,7 @@ export async function getTaxPrepService(
   propertyId: string | undefined,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const start = new Date(Date.UTC(year, 0, 1));
   const end = new Date(Date.UTC(year, 11, 31, 23, 59, 59));
 
@@ -376,7 +376,7 @@ export async function getPropertyAssetPulseService(
   propertyId: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const [property, units, revenueAgg, opexAgg] = await Promise.all([
     db.property.findUnique({ where: { id: propertyId, organizationId: context.organizationId } }),
@@ -427,7 +427,7 @@ export async function getPropertyLedgerEntriesService(
   type: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.ledgerEntry.findMany({
     where: {
@@ -464,7 +464,7 @@ export async function getMasterLedgerService(
     take?: number;
   }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const { query, startDate, endDate, category, propertyId, tenantId, accountId, categoryId, minAmount, maxAmount, skip = 0, take = 100 } = filters || {};
 
   const where: Prisma.LedgerEntryWhereInput = {

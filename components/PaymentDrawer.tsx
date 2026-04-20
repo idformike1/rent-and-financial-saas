@@ -30,7 +30,9 @@ const paymentSchema = z.object({
 type PaymentForm = z.infer<typeof paymentSchema>
 
 export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, onSuccess }: PaymentDrawerProps) {
-  const [isPending, startTransition] = useTransition()
+  const { data: session } = useSession();
+  const isViewer = session?.user?.role === 'VIEWER';
+  const [isPending, startTransition] = useTransition();
   
   // Stable Idempotency Key generated once per drawer session
   const idempotencyKey = useMemo(() => crypto.randomUUID(), [isOpen, tenant.id]);
@@ -68,6 +70,10 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   }, [amountPaid, activeCharges])
 
   const onSubmit = (data: PaymentForm) => {
+    if (isViewer) {
+      toast.error("Operation Denied: VIEWER role restricted.");
+      return;
+    }
     startTransition(async () => {
       try {
         const response = await processPayment({
@@ -91,6 +97,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
           }
         }
       } catch (error: any) {
+        console.error('[PAYMENT_PROCESS_CRASH_GUARD]', error);
         toast.error("Network synchronization failure.");
       }
     })
@@ -134,8 +141,9 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 <Input 
                   type="number" 
                   step="0.01"
+                  disabled={isViewer}
                   {...register('amountPaid', { valueAsNumber: true })} 
-                  className="pl-4 pr-4 py-6 text-display font-weight-display font-finance tracking-clinical h-16 border-border bg-muted/30" 
+                  className="pl-4 pr-4 py-6 text-display font-weight-display font-finance tracking-clinical h-16 border-border bg-muted/30 disabled:opacity-30" 
                   placeholder="0.00"
                 />
               </div>
@@ -146,7 +154,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
               <div className="space-y-2">
                 <label className="text-[11px] font-bold text-clinical-muted uppercase block">Fiscal Mode</label>
                 <div className="relative">
-                  <Select {...register('paymentMode')} className="pl-9 h-11">
+                  <Select {...register('paymentMode')} disabled={isViewer} className="pl-9 h-11 disabled:opacity-30">
                     <option value="CASH">CASH</option>
                     <option value="BANK">WIRE/EFT</option>
                   </Select>
@@ -160,8 +168,9 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 <label className="text-[11px] font-bold text-clinical-muted uppercase block">Value Date</label>
                 <Input 
                   type="date"
+                  disabled={isViewer}
                   {...register('transactionDate')}
-                  className="h-11 border-border bg-muted/30"
+                  className="h-11 border-border bg-muted/30 disabled:opacity-30"
                 />
               </div>
             </div>
@@ -170,9 +179,10 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
               <label className="text-[11px] font-bold text-clinical-muted uppercase block">Audit Reference</label>
               <textarea 
                 {...register('referenceText')}
+                disabled={isViewer}
                 rows={2}
                 placeholder="Reference for audit trail..."
-                className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] p-3 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none resize-none placeholder:text-clinical-muted/50 font-bold"
+                className="w-full bg-muted/30 border border-border rounded-[var(--radius-sm)] p-3 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-none resize-none placeholder:text-clinical-muted/50 font-bold disabled:opacity-30"
               />
               {errors.referenceText && <p className="text-destructive text-[10px] uppercase font-bold">{errors.referenceText.message}</p>}
             </div>
@@ -227,11 +237,14 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
             type="submit" 
             form="payment-form"
             isLoading={isPending || isSubmitting}
-            disabled={isPending || isSubmitting}
-            className="w-full h-12 uppercase  font-bold"
+            disabled={isPending || isSubmitting || isViewer}
+            className="w-full h-12 uppercase font-bold disabled:opacity-50 disabled:grayscale"
           >
-            Liquidate Liability
+            {isViewer ? 'Read-Only Locked' : 'Liquidate Liability'}
           </Button>
+          {isViewer && (
+            <p className="text-[9px] text-destructive/40 font-bold uppercase tracking-widest text-center mt-2 italic">Security Block: Viewer Restricted</p>
+          )}
         </div>
       </div>
     </>

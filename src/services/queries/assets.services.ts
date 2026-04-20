@@ -38,7 +38,7 @@ export interface PortfolioSummary {
 }
 
 export async function getPortfolioSummaryService(context: { operatorId: string, organizationId: string }): Promise<PortfolioSummary> {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
@@ -135,7 +135,7 @@ export async function getPortfolioSummaryService(context: { operatorId: string, 
  * SIDEBAR HYDRATION
  */
 export async function getSidebarPropertiesService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   return db.property.findMany({
     where: { organizationId: context.organizationId },
     select: { id: true, name: true },
@@ -147,7 +147,7 @@ export async function getSidebarPropertiesService(context: { operatorId: string,
  * SOVEREIGN VIEWPORT HYDRATION
  */
 export async function getPropertySovereignViewService(propertyId: string, context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
@@ -219,7 +219,7 @@ export async function getPropertySovereignViewService(propertyId: string, contex
  * UNIT FORENSIC LEDGER SYNC
  */
 export async function getUnitLedgerFeedService(unitId: string, context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   
   // Resolve all historic and active tenant occupancies for this specific unit
   const unit = await db.unit.findFirst({

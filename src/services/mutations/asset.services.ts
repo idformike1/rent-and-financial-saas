@@ -19,7 +19,7 @@ export async function createPropertyService(
   payload: { name: string, address: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const property = await tx.property.create({
@@ -47,7 +47,7 @@ export async function updatePropertyService(
   payload: { name?: string, address?: string },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const result = await tx.property.updateMany({
@@ -76,7 +76,7 @@ export async function deletePropertyService(
   propertyId: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const unitsCount = await tx.unit.count({ 
@@ -114,7 +114,7 @@ export async function createUnitService(
   },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const unit = await tx.unit.create({
@@ -153,7 +153,7 @@ export async function updateUnitService(
   },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const result = await tx.unit.updateMany({

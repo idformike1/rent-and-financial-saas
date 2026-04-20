@@ -8,7 +8,7 @@ import { getSovereignClient } from "@/src/lib/db";
  */
 
 export async function getLedgerFilterMetadataService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const [properties, tenants, accounts, categories] = await Promise.all([
     db.property.findMany({

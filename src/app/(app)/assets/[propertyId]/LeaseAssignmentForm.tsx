@@ -5,19 +5,20 @@ import { submitOnboarding, addAdditionalLease, processMoveOut, getActiveTenants 
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
 import { Check, Trash2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
-const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius-sm)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500";
+const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius-sm)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500 disabled:opacity-30";
 const labelClass = "text-[10px] text-[#9CA3AF] uppercase tracking-widest font-bold mb-1 block";
 
 const submitAction = async (prevState: any, formData: FormData) => {
-  const isExisting = formData.get('flowType') === 'EXISTING';
-  const unitId = formData.get('unitId') as string;
-  
-  const rentAmount = Number(formData.get('rentAmount'));
-  const depositAmount = Number(formData.get('depositAmount'));
-  const startDate = formData.get('startDate') as string;
-  
   try {
+    const isExisting = formData.get('flowType') === 'EXISTING';
+    const unitId = formData.get('unitId') as string;
+    
+    const rentAmount = Number(formData.get('rentAmount'));
+    const depositAmount = Number(formData.get('depositAmount'));
+    const startDate = formData.get('startDate') as string;
+    
     if (isExisting) {
       const tenantId = formData.get('tenantId') as string;
       const res = await addAdditionalLease({ tenantId, unitId, rentAmount, depositAmount, startDate });
@@ -32,20 +33,29 @@ const submitAction = async (prevState: any, formData: FormData) => {
       });
       return { success: res.success, message: res.message, ts: Date.now() };
     }
-  } catch (e: any) {
-    return { success: false, message: e.message || "Unknown error", ts: Date.now() };
+  } catch (error: any) {
+    console.error('[LEASE_SUBMIT_CRASH_GUARD]', error);
+    return { success: false, message: error.message || "Failed to commit occupant data.", ts: Date.now() };
   }
 };
 
 const moveOutAction = async (prevState: any, formData: FormData) => {
-  const unitId = formData.get('unitId') as string;
-  const leaseId = formData.get('leaseId') as string;
-  const tenantId = formData.get('tenantId') as string;
-  const res = await processMoveOut(tenantId, leaseId, unitId);
-  return { success: res.success, message: res.message, ts: Date.now() };
+  try {
+    const unitId = formData.get('unitId') as string;
+    const leaseId = formData.get('leaseId') as string;
+    const tenantId = formData.get('tenantId') as string;
+    const res = await processMoveOut(tenantId, leaseId, unitId);
+    return { success: res.success, message: res.message, ts: Date.now() };
+  } catch (error: any) {
+    console.error('[LEASE_ANUL_CRASH_GUARD]', error);
+    return { success: false, message: error.message || "Failed to annul lease record.", ts: Date.now() };
+  }
 }
 
 export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any }) {
+  const { data: session } = useSession();
+  const isViewer = session?.user?.role === 'VIEWER';
+
   const [state, formAction, isPending] = useActionState(submitAction, null);
   const [moveOutState, moveOutFormAction, isMoveOutPending] = useActionState(moveOutAction, null);
   
@@ -107,12 +117,15 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <p className="text-[11px] text-destructive font-mono mb-4 opacity-50">// CRITICAL OPERATION</p>
           <button 
             type="submit"
-            disabled={isMoveOutPending}
-            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-50"
+            disabled={isMoveOutPending || isViewer}
+            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
           >
             <Trash2 size={14} />
             {isMoveOutPending ? 'Executing...' : 'Annul Lease'}
           </button>
+          {isViewer && (
+            <p className="text-[9px] text-destructive/40 text-center font-bold uppercase tracking-widest mt-2 italic">Read-Only clearance: Lease mutation restricted.</p>
+          )}
         </form>
       </div>
     );
@@ -149,7 +162,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
         {flowType === 'EXISTING' ? (
           <div className="space-y-1">
             <label className={labelClass}>Registry Select</label>
-            <select name="tenantId" required className={cn(inputClass, "appearance-none cursor-pointer")}>
+            <select name="tenantId" required disabled={isViewer} className={cn(inputClass, "appearance-none cursor-pointer disabled:opacity-30")}>
               <option value="">SELECT OCCUPANT</option>
               {tenants.map(t => (
                 <option key={t.id} value={t.id} className="bg-[#12121A] text-white">
@@ -162,21 +175,21 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <>
             <div className="space-y-1">
               <label className={labelClass}>Legal Entity Name</label>
-              <input name="tenantName" required disabled={isPending} className={inputClass} placeholder="JOHN DOE" />
+              <input name="tenantName" required disabled={isPending || isViewer} className={inputClass} placeholder="JOHN DOE" />
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-1">
                 <label className={labelClass}>Electronic Mail</label>
-                <input name="email" type="email" disabled={isPending} className={inputClass} placeholder="JD@DOMAIN.COM" />
+                <input name="email" type="email" disabled={isPending || isViewer} className={inputClass} placeholder="JD@DOMAIN.COM" />
               </div>
               <div className="space-y-1">
                 <label className={labelClass}>Telephone Line</label>
-                <input name="phone" disabled={isPending} className={inputClass} placeholder="000-000-0000" />
+                <input name="phone" disabled={isPending || isViewer} className={inputClass} placeholder="000-000-0000" />
               </div>
             </div>
             <div className="space-y-1">
               <label className={labelClass}>State Identifier (SSN/ID)</label>
-              <input name="nationalId" required disabled={isPending} className={inputClass} placeholder="000-00-0000" />
+              <input name="nationalId" required disabled={isPending || isViewer} className={inputClass} placeholder="000-00-0000" />
             </div>
           </>
         )}
@@ -189,7 +202,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
               type="number" 
               required 
               defaultValue={Number(activeUnit.marketRent || 0)} 
-              disabled={isPending}
+              disabled={isPending || isViewer}
               className={cn(inputClass, "tabular-nums")} 
             />
           </div>
@@ -200,7 +213,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
               type="number" 
               required 
               defaultValue={0} 
-              disabled={isPending}
+              disabled={isPending || isViewer}
               className={cn(inputClass, "tabular-nums")} 
             />
           </div>
@@ -213,7 +226,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
             type="date" 
             required 
             defaultValue={new Date().toISOString().split('T')[0]} 
-            disabled={isPending}
+            disabled={isPending || isViewer}
             className={cn(inputClass, "uppercase [color-scheme:dark]")} 
           />
         </div>
@@ -221,12 +234,15 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
         <div className="pt-8 flex flex-col gap-4">
           <button 
             type="submit" 
-            disabled={isPending}
-            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-50 "
+            disabled={isPending || isViewer}
+            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
           >
             <Check size={14} />
             {isPending ? 'Processing Ingestion...' : 'Execute Ingestion'}
           </button>
+          {isViewer && (
+            <p className="text-[9px] text-destructive/40 text-center font-bold uppercase tracking-widest mt-2 italic">Read-Only clearance: Occupant ingestion restricted.</p>
+          )}
         </div>
       </form>
     </div>

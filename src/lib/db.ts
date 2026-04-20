@@ -7,37 +7,25 @@ import { prisma } from "@/lib/prisma";
  * Automatically intercepts and logs all mutations (create, update, delete) 
  * to provide a non-repudiable audit trail of operator actions.
  */
-export const getSovereignClient = (operatorId: string) => {
+/**
+ * THE RLS-AWARE SOVEREIGN CLIENT (KERNEL EDITION)
+ * 
+ * Factory function to wrap the raw Prisma client in a security-extended shell
+ * that enforces PostgreSQL Row Level Security (RLS).
+ * 
+ * To survive PgBouncer transaction-mode pooling, each operation is wrapped 
+ * in a transaction where the local tenant context is established.
+ */
+export const getSovereignClient = (organizationId: string) => {
   return prisma.$extends({
     query: {
       $allModels: {
-        async create({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
-        },
-        async update({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
-        },
-        async delete({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
-        },
-        async upsert({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
-        },
-        async createMany({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
-        },
-        async updateMany({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
-        },
-        async deleteMany({ model, operation, args, query }: any) {
-          console.log(`[SOVEREIGN AUDIT] Operator: ${operatorId} | Action: ${operation} | Model: ${model}`);
-          return query(args);
+        async $allOperations({ args, query }) {
+          return prisma.$transaction(async (tx) => {
+            // The 'true' flag ensures this variable evaporates when the transaction ends
+            await tx.$executeRawUnsafe(`SELECT set_config('app.current_tenant_id', '${organizationId}', true)`);
+            return query(args);
+          });
         },
       },
     },

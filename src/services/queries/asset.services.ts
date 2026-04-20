@@ -12,7 +12,7 @@ import { getSovereignClient } from "@/src/lib/db";
  * Retrieves all OPERATIONAL units that do not have an active lease.
  */
 export async function getAvailableUnitsService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const units = await db.unit.findMany({
     where: {

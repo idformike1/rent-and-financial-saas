@@ -40,13 +40,19 @@ export default function TransactionDetailSheet({ transaction, onClose, role }: T
 
     if (confirmed) {
       startTransition(async () => {
-        const result = await voidTransaction(transaction.id, idempotencyKey);
-        if (result.success) {
-          import('@/lib/toast').then(({ toast }) => {
-            toast.success("Registry node decommissioned successfully.");
-          });
-        } else {
-          alert(result.message || "Failed to decommission transaction.");
+        try {
+          const result = await voidTransaction(transaction.id, idempotencyKey);
+          if (result.success) {
+            import('@/lib/toast').then(({ toast }) => {
+              toast.success("Registry node decommissioned successfully.");
+            });
+            onClose(); // Close on success
+          } else {
+            alert(result.message || "Failed to decommission transaction.");
+          }
+        } catch (error: any) {
+          console.error('[VOID_TRANSACTION_CRASH_GUARD]', error);
+          alert(error.message || "Execution layer failure.");
         }
       });
     }

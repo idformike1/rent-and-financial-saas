@@ -14,7 +14,7 @@ export async function deepScanSystemService(
   query: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   if (!query || query.length < 2) return [];
 

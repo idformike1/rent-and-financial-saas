@@ -68,14 +68,20 @@ export async function runSecureServerAction<T>(
 ): Promise<T> {
   const session = await getCurrentSession();
   
+  // ── AUTHENTICATION GATEKEEPER ─────────────────────────────
   if (!session) {
-    throw new Error('UNAUTHORIZED: No active session found.');
+    const errorMsg = 'UNAUTHORIZED: No active session found. Operational sequence aborted.';
+    if (isMutation) {
+      return { success: false, message: errorMsg } as unknown as T;
+    }
+    throw new Error(errorMsg);
   }
 
   // ── MUTATION LOCK: READ-ONLY PROTOCOL ─────────────────────────
   if (isMutation && session.role === 'VIEWER') {
-    console.error(`[SECURITY_BLOCKED] VIEWER role attempted mutation in runSecureServerAction.`);
-    throw new Error('UNAUTHORIZED: Read-Only Access. Mutation protocols are restricted for this role.');
+    const errorMsg = '[SECURITY_BLOCKED] Read-Only Access. Mutation protocols are restricted for this role.';
+    console.error(errorMsg);
+    return { success: false, message: errorMsg, error: errorMsg } as unknown as T;
   }
 
   // ── LIVE STATUS CHECK: DATABASE GATEKEEPER ─────────────────
@@ -86,8 +92,10 @@ export async function runSecureServerAction<T>(
     });
 
     if (!dbUser || !dbUser.isActive) {
-      console.error(`[SECURITY_CRITICAL] Session Revoked for User: ${session.userId}. Operation Aborted.`);
-      throw new Error('ERR_SESSION_REVOKED: Your clearance has been withdrawn. Access terminated.');
+      const errorMsg = 'ERR_SESSION_REVOKED: Your clearance has been withdrawn. Access terminated.';
+      console.error(`[SECURITY_CRITICAL] Session Revoked for User: ${session.userId}.`);
+      if (isMutation) return { success: false, message: errorMsg } as unknown as T;
+      throw new Error(errorMsg);
     }
 
     // Real-time role synchronization
@@ -96,38 +104,58 @@ export async function runSecureServerAction<T>(
       session.role = dbUser.role as UserRole;
     }
   } catch (dbError: any) {
-    if (dbError.message.startsWith('ERR_SESSION_REVOKED')) throw dbError;
-    console.error('[SECURITY_FATAL] Database layer unreachable during session validation. Failing closed.', dbError);
-    throw new Error('SECURITY_ERROR: Integrity check failed. Operational shutdown initiated.');
+    if (dbError.message.startsWith('ERR_SESSION_REVOKED')) {
+      if (isMutation) return { success: false, message: dbError.message } as unknown as T;
+      throw dbError;
+    }
+    console.error('[SECURITY_FATAL] Database layer unreachable during session validation.', dbError);
+    const fatalMsg = 'SECURITY_ERROR: Integrity check failed. Operational shutdown initiated.';
+    if (isMutation) return { success: false, message: fatalMsg } as unknown as T;
+    throw new Error(fatalMsg);
   }
 
   const isAuthorized = await verifyRole(requiredRole, session.role);
   if (!isAuthorized) {
-    throw new Error(`FORBIDDEN: Requires ${requiredRole} access level.`);
+    const forbiddenMsg = `FORBIDDEN: Requires ${requiredRole} access level. Current: ${session.role}`;
+    if (isMutation) return { success: false, message: forbiddenMsg } as unknown as T;
+    throw new Error(forbiddenMsg);
   }
 
   /**
    * SOVEREIGN AUTO-HEAL: ORPHANED IDENTITY RECOVERY
    */
-  let orgExists = await prisma.organization.count({ where: { id: session.organizationId } });
-  const isProduction = process.env.NODE_ENV === 'production';
+  try {
+    let orgExists = await prisma.organization.count({ where: { id: session.organizationId } });
+    const isProduction = process.env.NODE_ENV === 'production';
 
-  if (orgExists === 0) {
-    if (isProduction) {
-      console.error(`[SECURITY_FATAL] Production Organization Missing: ${session.organizationId}`);
-      throw new Error(`SECURITY_ERROR: Access denied. Organization record not found.`);
-    }
-    
-    console.warn(`[SECURITY_HEAL] Reconstructing missing Organization: ${session.organizationId}`);
-    await prisma.organization.create({
-      data: {
-        id: session.organizationId,
-        name: session.organizationName || "Recovered Entity",
+    if (orgExists === 0) {
+      if (isProduction) {
+        throw new Error(`SECURITY_ERROR: Access denied. Organization record missing.`);
       }
-    });
-  }
+      
+      console.warn(`[SECURITY_HEAL] Reconstructing missing Organization: ${session.organizationId}`);
+      await prisma.organization.create({
+        data: {
+          id: session.organizationId,
+          name: session.organizationName || "Recovered Entity",
+        }
+      });
+    }
 
-  return action(session);
+    // EXECUTE PROTECTED ACTION
+    return await action(session);
+
+  } catch (actionError: any) {
+    console.error('[SECURE_ACTION_EXECUTION_FATAL]', actionError);
+    if (isMutation) {
+      return { 
+        success: false, 
+        message: actionError.message || "ERR_OPERATIONAL_FAILURE",
+        error: actionError.message 
+      } as unknown as T;
+    }
+    throw actionError;
+  }
 }
 
 /**

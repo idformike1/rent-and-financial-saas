@@ -10,7 +10,7 @@ import { getSovereignClient } from "@/src/lib/db";
  * Retrieves all members associated with the organization.
  */
 export async function getTeamMembersService(context: { operatorId: string, organizationId: string }) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const members = await db.user.findMany({
     where: { organizationId: context.organizationId },

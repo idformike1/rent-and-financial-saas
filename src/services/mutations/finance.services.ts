@@ -23,7 +23,7 @@ export async function runMonthlyBillingCycleService(
   targetDate: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const targetTime = new Date(targetDate);
   const startOfMonth = new Date(targetTime.getFullYear(), targetTime.getMonth(), 1);
   const endOfMonth = new Date(targetTime.getFullYear(), targetTime.getMonth() + 1, 0);
@@ -90,7 +90,7 @@ export async function ingestLedgerService(
   records: any[], 
   context: { operatorId: string; organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const totalVolume = records.reduce((sum, r) => sum + Math.abs(r.amount), 0);
 
   return await db.$transaction(async (tx: any) => {
@@ -146,7 +146,7 @@ export async function processPaymentService(
   },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const amountToApply = new Prisma.Decimal(payload.amountPaid);
@@ -268,7 +268,7 @@ export async function logExpenseService(
   },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
   const transactionId = randomUUID();
   const date = new Date();
 
@@ -318,7 +318,7 @@ export async function waiveChargeService(
   reasonText: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     const charge = await tx.charge.findFirst({ where: { id: chargeId, organizationId: context.organizationId } });
@@ -351,7 +351,7 @@ export async function reconcileUtilitiesService(
   dateRange: { start: Date, end: Date },
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   const expenseAccounts = await db.account.findMany({
     where: { category: AccountCategory.EXPENSE, name: { contains: 'Master' }, organizationId: context.organizationId }
@@ -405,7 +405,7 @@ export async function voidLedgerEntryService(
   entryId: string,
   context: { operatorId: string, organizationId: string }
 ) {
-  const db = getSovereignClient(context.operatorId);
+  const db = getSovereignClient(context.organizationId);
 
   return await db.$transaction(async (tx: any) => {
     // 1. Fetch record for forensic snapshot
