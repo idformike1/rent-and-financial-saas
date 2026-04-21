@@ -25,6 +25,11 @@ export enum EntryStatus {
   VOIDED = 'VOIDED'
 }
 
+export enum EntryType {
+  DEBIT = 'DEBIT',
+  CREDIT = 'CREDIT'
+}
+
 export enum AccountCategory {
   ASSET = 'ASSET',
   LIABILITY = 'LIABILITY',

@@ -179,19 +179,20 @@ export function TD({
   children, 
   className, 
   isHeader = false,
-  variant = 'default' 
+  variant = 'default',
+  ...props
 }: { 
   children: React.ReactNode, 
   className?: string, 
   isHeader?: boolean,
   variant?: 'default' | 'positive' | 'negative' | 'date' | 'large'
-}) {
+} & React.TdHTMLAttributes<HTMLTableCellElement> & React.ThHTMLAttributes<HTMLTableCellElement>) {
   if (isHeader) {
     return (
       <th className={cn(
         "px-[10px] text-left text-mercury-label-caps text-clinical-muted",
         className
-      )}>
+      )} {...props}>
         {children}
       </th>
     )
@@ -210,7 +211,7 @@ export function TD({
       "px-[10px] text-mercury-heading leading-[1.2] whitespace-nowrap",
       variants[variant as keyof typeof variants],
       className
-    )}>
+    )} {...props}>
       {children}
     </td>
   )

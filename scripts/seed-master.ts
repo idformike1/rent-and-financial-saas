@@ -93,6 +93,19 @@ async function main() {
     data: { organizationId: orgId, name: "Operating Account", category: AccountCategory.ASSET }
   });
 
+  const accountIncome = await prisma.account.create({
+    data: { organizationId: orgId, name: "Rental Income", category: AccountCategory.INCOME }
+  });
+
+  await prisma.transaction.createMany({
+    data: [
+      { id: "TX-ALPHA-001", organizationId: orgId, description: "Jan Rent - Unit 101" },
+      { id: "TX-ALPHA-002", organizationId: orgId, description: "Feb Rent - Unit 102" },
+      { id: "TX-BETA-001",  organizationId: orgId, description: "HVAC Filter Replacement" },
+      { id: "TX-GAMMA-001", organizationId: orgId, description: "Q1 Distribution" }
+    ]
+  });
+
   await prisma.ledgerEntry.createMany({
     data: [
       { 
@@ -100,6 +113,20 @@ async function main() {
         transactionId: "TX-ALPHA-001",
         accountId: account.id,
         amount: 2500.00, 
+        type: 'DEBIT',
+        description: "Jan Rent - Unit 101", 
+        expenseCategoryId: rentCat.id, 
+        propertyId: property.id, 
+        tenantId: tenants[0].id,
+        status: EntryStatus.ACTIVE,
+        paymentMode: PaymentMode.BANK
+      },
+      { 
+        organizationId: orgId,
+        transactionId: "TX-ALPHA-001",
+        accountId: accountIncome.id,
+        amount: 2500.00, 
+        type: 'CREDIT',
         description: "Jan Rent - Unit 101", 
         expenseCategoryId: rentCat.id, 
         propertyId: property.id, 
@@ -112,6 +139,20 @@ async function main() {
         transactionId: "TX-ALPHA-002",
         accountId: account.id,
         amount: 2500.00, 
+        type: 'DEBIT',
+        description: "Feb Rent - Unit 102", 
+        expenseCategoryId: rentCat.id, 
+        propertyId: property.id, 
+        tenantId: tenants[1].id,
+        status: EntryStatus.ACTIVE,
+        paymentMode: PaymentMode.BANK
+      },
+      { 
+        organizationId: orgId,
+        transactionId: "TX-ALPHA-002",
+        accountId: accountIncome.id,
+        amount: 2500.00, 
+        type: 'CREDIT',
         description: "Feb Rent - Unit 102", 
         expenseCategoryId: rentCat.id, 
         propertyId: property.id, 
@@ -123,7 +164,20 @@ async function main() {
         organizationId: orgId,
         transactionId: "TX-BETA-001",
         accountId: account.id,
-        amount: -450.00, 
+        amount: 450.00, 
+        type: 'CREDIT',
+        description: "HVAC Filter Replacement", 
+        expenseCategoryId: maintCat.id, 
+        propertyId: property.id,
+        status: EntryStatus.ACTIVE,
+        paymentMode: PaymentMode.CASH
+      },
+      { 
+        organizationId: orgId,
+        transactionId: "TX-BETA-001",
+        accountId: account.id, // Expense account conceptually
+        amount: 450.00, 
+        type: 'DEBIT',
         description: "HVAC Filter Replacement", 
         expenseCategoryId: maintCat.id, 
         propertyId: property.id,
@@ -134,7 +188,19 @@ async function main() {
         organizationId: orgId,
         transactionId: "TX-GAMMA-001",
         accountId: account.id,
-        amount: -2000.00, 
+        amount: 2000.00, 
+        type: 'CREDIT',
+        description: "Q1 Distribution", 
+        expenseCategoryId: drawCat.id,
+        status: EntryStatus.ACTIVE,
+        paymentMode: PaymentMode.BANK
+      },
+      { 
+        organizationId: orgId,
+        transactionId: "TX-GAMMA-001",
+        accountId: account.id, // Equity draw technically
+        amount: 2000.00, 
+        type: 'DEBIT',
         description: "Q1 Distribution", 
         expenseCategoryId: drawCat.id,
         status: EntryStatus.ACTIVE,

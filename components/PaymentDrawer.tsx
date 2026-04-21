@@ -8,7 +8,7 @@ import { processPayment } from '@/actions/finance.actions'
 import { ChargeDTO, TenantDTO } from '@/types'
 import { X, CreditCard, Banknote } from 'lucide-react'
 import { toast } from '@/lib/toast'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { Button, Input, Select, Badge } from '@/components/ui-finova'
 import { cn } from '@/lib/utils'
 

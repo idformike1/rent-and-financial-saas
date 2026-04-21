@@ -1,9 +1,9 @@
 import { getSovereignClient } from "@/src/lib/db";
 import { Prisma } from "@prisma/client";
-import { AccountCategory, PaymentMode } from "@/src/schema/enums";
+import { AccountCategory, PaymentMode, EntryType } from "@/src/schema/enums";
 import { randomUUID } from "crypto";
 import { recordAuditLog } from "@/lib/audit-logger";
-import { calculateWaterfallDistribution, toNegativeOutflow } from "@/src/core/algorithms/finance";
+import { calculateWaterfallDistribution } from "@/src/core/algorithms/finance";
 
 /**
  * FINANCE MUTATION SERVICE (SOVEREIGN AUTHORITY)
@@ -16,6 +16,92 @@ import { calculateWaterfallDistribution, toNegativeOutflow } from "@/src/core/al
  * 2. Non-Repudiable Audit Logging.
  * 3. Atomic Multi-Step Transactions.
  */
+
+/* ── 0. THE ZERO-SUM ENFORCER ─────────────────────────────────────────── */
+
+export async function createBalancedTransaction(
+  payload: {
+    organizationId: string;
+    description: string;
+    idempotencyKey?: string;
+    date?: Date;
+    entries: {
+      accountId: string;
+      amount: Prisma.Decimal | number;
+      type: 'DEBIT' | 'CREDIT';
+      tenantId?: string;
+      propertyId?: string;
+      expenseCategoryId?: string;
+      payee?: string;
+      paymentMode?: PaymentMode;
+      referenceText?: string;
+    }[];
+  },
+  existingTx?: any
+) {
+  const db = getSovereignClient(payload.organizationId);
+  const runner = existingTx || db;
+
+  // 1. Zero-Sum Math Verification
+  let totalDebit = new Prisma.Decimal(0);
+  let totalCredit = new Prisma.Decimal(0);
+
+  for (const entry of payload.entries) {
+    const amt = new Prisma.Decimal(entry.amount).abs();
+    if (entry.type === 'DEBIT') totalDebit = totalDebit.add(amt);
+    if (entry.type === 'CREDIT') totalCredit = totalCredit.add(amt);
+  }
+
+  if (!totalDebit.equals(totalCredit)) {
+    throw new Error(
+      `ERR_ZERO_SUM_VIOLATION: Transaction is not balanced. ` +
+      `Debits: ${totalDebit.toString()}, Credits: ${totalCredit.toString()}`
+    );
+  }
+
+  // 2. Atomic Execution with Idempotency
+  return await runner.$transaction(async (tx: any) => {
+    if (payload.idempotencyKey) {
+      const existing = await tx.transaction.findUnique({
+        where: { idempotencyKey: payload.idempotencyKey },
+        include: { entries: true }
+      });
+      if (existing) return existing;
+    }
+
+    const transaction = await tx.transaction.create({
+      data: {
+        organizationId: payload.organizationId,
+        idempotencyKey: payload.idempotencyKey,
+        description: payload.description,
+        date: payload.date || new Date(),
+      }
+    });
+
+    for (const entry of payload.entries) {
+      await tx.ledgerEntry.create({
+        data: {
+          organizationId: payload.organizationId,
+          transactionId: transaction.id,
+          accountId: entry.accountId,
+          type: entry.type as EntryType,
+          amount: new Prisma.Decimal(entry.amount),
+          date: payload.date || new Date(),
+          transactionDate: payload.date || new Date(),
+          description: payload.description,
+          tenantId: entry.tenantId,
+          propertyId: entry.propertyId,
+          expenseCategoryId: entry.expenseCategoryId,
+          payee: entry.payee,
+          paymentMode: entry.paymentMode || PaymentMode.CASH,
+          referenceText: entry.referenceText,
+        }
+      });
+    }
+
+    return transaction;
+  });
+}
 
 /* ── 1. BILLING CYCLE ORCHESTRATION ───────────────────────────────────────── */
 
@@ -87,46 +173,66 @@ export async function runMonthlyBillingCycleService(
 /* ── 2. MASS DATA INGESTION ─────────────────────────────────────────────── */
 
 export async function ingestLedgerService(
-  records: any[], 
+  records: any[],
   context: { operatorId: string; organizationId: string }
 ) {
   const db = getSovereignClient(context.organizationId);
-  const totalVolume = records.reduce((sum, r) => sum + Math.abs(r.amount), 0);
+  const totalVolume = records.reduce((sum, r) => sum + Math.abs(Number(r.amount)), 0);
+  const entriesCreated: string[] = [];
 
   return await db.$transaction(async (tx: any) => {
-    const account = await tx.account.findFirst({
-      where: { category: AccountCategory.ASSET, organizationId: context.organizationId }
+    const expenseAccount = await tx.account.findFirst({
+      where: { category: AccountCategory.EXPENSE, organizationId: context.organizationId }
+    }) || await tx.account.create({
+      data: { name: "GENERAL EXPENSE (AUTO)", category: AccountCategory.EXPENSE, organizationId: context.organizationId }
     });
 
-    if (!account) throw new Error(`CRITICAL_FAILURE: No primary asset account found for organization [${context.organizationId}].`);
+    const incomeAccount = await tx.account.findFirst({
+      where: { category: AccountCategory.INCOME, organizationId: context.organizationId }
+    }) || await tx.account.create({
+      data: { name: "GENERAL INCOME (AUTO)", category: AccountCategory.INCOME, organizationId: context.organizationId }
+    });
 
-    const entriesCreated: string[] = [];
+    const assetAccount = await tx.account.findFirst({
+      where: { category: AccountCategory.ASSET, organizationId: context.organizationId }
+    }) || await tx.account.create({
+      data: { name: "OPERATING CASH (AUTO)", category: AccountCategory.ASSET, organizationId: context.organizationId }
+    });
 
     for (const record of records) {
-      const transactionId = randomUUID();
-      const netAmount = toNegativeOutflow(record.amount);
+      const netAmount = new Prisma.Decimal(record.amount);
+      const isOutflow = netAmount.lt(0);
 
-      const entry = await tx.ledgerEntry.create({
-        data: {
-          organizationId: context.organizationId,
-          transactionId,
-          accountId: account.id,
-          amount: netAmount,
-          date: record.date,
-          transactionDate: record.date,
-          description: record.description || `Bulk Import: ${record.payee}`,
-          payee: record.payee,
-          paymentMode: record.paymentMode || PaymentMode.BANK
-        }
-      });
-      entriesCreated.push(entry.id);
+      const transaction = await createBalancedTransaction({
+        organizationId: context.organizationId,
+        description: record.description || `Bulk Import: ${record.payee}`,
+        date: record.date ? new Date(record.date) : new Date(),
+        entries: [
+          {
+            accountId: isOutflow ? expenseAccount.id : assetAccount.id,
+            type: 'DEBIT',
+            amount: netAmount.abs(),
+            payee: record.payee,
+            paymentMode: record.paymentMode || PaymentMode.BANK
+          },
+          {
+            accountId: isOutflow ? assetAccount.id : incomeAccount.id,
+            type: 'CREDIT',
+            amount: netAmount.abs(),
+            payee: record.payee,
+            paymentMode: record.paymentMode || PaymentMode.BANK
+          }
+        ]
+      }, tx);
+
+      entriesCreated.push(transaction.id);
     }
 
     await recordAuditLog({
       action: 'CREATE',
       entityType: 'LEDGER_ENTRY',
       entityId: `BULK_INGEST_${Date.now()}`,
-      metadata: { count: records.length, totalVolume, ingressType: 'CSV_UPLOAD' },
+      metadata: { count: records.length, totalVolume, ingressType: 'CSV_UPLOAD', transactionIds: entriesCreated },
       tx: tx as any
     });
 
@@ -140,7 +246,7 @@ export async function processPaymentService(
   payload: {
     tenantId: string;
     amountPaid: number;
-    transactionDate: Date;
+    transactionDate: Date | string;
     paymentMode: string;
     referenceText?: string;
   },
@@ -156,8 +262,9 @@ export async function processPaymentService(
       where: { id: payload.tenantId, organizationId: context.organizationId },
       include: {
         charges: {
-          where: { isFullyPaid: false, amount: { gt: 0 }, organizationId: context.organizationId }, 
-          include: { lease: true }
+          where: { isFullyPaid: false, amount: { gt: 0 }, organizationId: context.organizationId },
+          include: { lease: true },
+          orderBy: { dueDate: 'asc' }
         }
       }
     });
@@ -177,8 +284,8 @@ export async function processPaymentService(
     }
 
     if (remainingCredit.gt(0)) {
-      const activeLease = await tx.lease.findFirst({ 
-        where: { tenantId: tenant.id, isActive: true, isPrimary: true } 
+      const activeLease = await tx.lease.findFirst({
+        where: { tenantId: tenant.id, isActive: true, isPrimary: true }
       }) || await tx.lease.findFirst({ where: { tenantId: tenant.id, isActive: true } });
 
       if (activeLease) {
@@ -197,59 +304,51 @@ export async function processPaymentService(
       }
     }
 
-    const assetAccount = await tx.account.findFirst({ 
-      where: { category: AccountCategory.ASSET, organizationId: context.organizationId } 
+    const assetAccount = await tx.account.findFirst({
+      where: { category: AccountCategory.ASSET, organizationId: context.organizationId }
     }) || await tx.account.create({
       data: { name: "GENERAL CASH-ON-HAND", category: AccountCategory.ASSET, organizationId: context.organizationId }
     });
 
-    const revenueAccount = await tx.account.findFirst({ 
-      where: { category: AccountCategory.INCOME, organizationId: context.organizationId } 
+    const revenueAccount = await tx.account.findFirst({
+      where: { category: AccountCategory.INCOME, organizationId: context.organizationId }
     }) || await tx.account.create({
       data: { name: "GENERAL OPERATING REVENUE (AUTO)", category: AccountCategory.INCOME, organizationId: context.organizationId }
     });
 
-    const transactionId = randomUUID();
-    
-    await tx.ledgerEntry.create({
-      data: {
-        organizationId: context.organizationId,
-        transactionId,
-        accountId: assetAccount.id,
-        tenantId: tenant.id,
-        amount: amountToApply,
-        date: new Date(),
-        transactionDate: payload.transactionDate,
-        description: `Payment from ${tenant.name} (${payload.paymentMode}) - REF: ${payload.referenceText || 'NONE'}`,
-        paymentMode: payload.paymentMode as any,
-        referenceText: payload.referenceText
-      }
-    });
-
-    await tx.ledgerEntry.create({
-      data: {
-        organizationId: context.organizationId,
-        transactionId,
-        accountId: revenueAccount.id,
-        tenantId: tenant.id,
-        amount: amountToApply.negated(),
-        date: new Date(),
-        transactionDate: payload.transactionDate,
-        description: `Revenue recognized via ${tenant.name}`,
-        paymentMode: payload.paymentMode as any,
-        referenceText: payload.referenceText
-      }
-    });
+    const transaction = await createBalancedTransaction({
+      organizationId: context.organizationId,
+      description: `Payment from ${tenant.name} - REF: ${payload.referenceText || 'NONE'}`,
+      date: new Date(payload.transactionDate),
+      entries: [
+        {
+          accountId: assetAccount.id,
+          type: 'DEBIT',
+          amount: amountToApply,
+          tenantId: tenant.id,
+          paymentMode: payload.paymentMode as any,
+          referenceText: payload.referenceText
+        },
+        {
+          accountId: revenueAccount.id,
+          type: 'CREDIT',
+          amount: amountToApply,
+          tenantId: tenant.id,
+          paymentMode: payload.paymentMode as any,
+          referenceText: payload.referenceText
+        }
+      ]
+    }, tx);
 
     await recordAuditLog({
       action: 'PAYMENT',
       entityType: 'LEDGER_ENTRY',
-      entityId: transactionId,
-      metadata: { amount: amountToApply.toNumber(), tenantId: payload.tenantId },
+      entityId: transaction.id,
+      metadata: { amount: amountToApply.toNumber(), tenantId: payload.tenantId, reference: payload.referenceText },
       tx: tx as any
     });
 
-    return { transactionId, appliedCount: distributions.length, remainingCredit: remainingCredit.toNumber() };
+    return { transactionId: transaction.id, appliedCount: distributions.length, remainingCredit: remainingCredit.toNumber() };
   });
 }
 
@@ -269,45 +368,60 @@ export async function logExpenseService(
   context: { operatorId: string, organizationId: string }
 ) {
   const db = getSovereignClient(context.organizationId);
-  const transactionId = randomUUID();
   const date = new Date();
 
-  const finalAmount = payload.type === 'INCOME' 
-    ? new Prisma.Decimal(payload.amount).abs() 
-    : new Prisma.Decimal(payload.amount).abs().negated();
-
   return await db.$transaction(async (tx: any) => {
-    const account = await tx.account.findFirst({
-      where: { category: AccountCategory.ASSET, organizationId: context.organizationId }
-    });
-
-    if (!account) throw new Error("ERR_REGISTRY_SYNC: No primary asset account for treasury synchronization.");
-
-    const entry = await tx.ledgerEntry.create({
+    const categoryAccount = await tx.account.findFirst({
+      where: { category: payload.type === 'INCOME' ? AccountCategory.INCOME : AccountCategory.EXPENSE, organizationId: context.organizationId }
+    }) || await tx.account.create({
       data: {
-        organizationId: context.organizationId,
-        transactionId,
-        accountId: account.id,
-        amount: finalAmount,
-        date,
-        transactionDate: date,
-        description: payload.description,
-        payee: payload.payee,
-        propertyId: payload.propertyId,
-        expenseCategoryId: payload.expenseCategoryId,
-        paymentMode: payload.paymentMode as any
+        name: payload.type === 'INCOME' ? "GENERAL INCOME (AUTO)" : "GENERAL EXPENSE (AUTO)",
+        category: payload.type === 'INCOME' ? AccountCategory.INCOME : AccountCategory.EXPENSE,
+        organizationId: context.organizationId
       }
     });
+
+    const assetAccount = await tx.account.findFirst({
+      where: { category: AccountCategory.ASSET, organizationId: context.organizationId }
+    }) || await tx.account.create({
+      data: { name: "GENERAL CASH-ON-HAND", category: AccountCategory.ASSET, organizationId: context.organizationId }
+    });
+
+    const transaction = await createBalancedTransaction({
+      organizationId: context.organizationId,
+      description: payload.description,
+      date,
+      entries: [
+        {
+          accountId: payload.type === 'INCOME' ? assetAccount.id : categoryAccount.id,
+          type: 'DEBIT',
+          amount: new Prisma.Decimal(payload.amount).abs(),
+          payee: payload.payee,
+          propertyId: payload.propertyId,
+          expenseCategoryId: payload.expenseCategoryId,
+          paymentMode: payload.paymentMode as any
+        },
+        {
+          accountId: payload.type === 'INCOME' ? categoryAccount.id : assetAccount.id,
+          type: 'CREDIT',
+          amount: new Prisma.Decimal(payload.amount).abs(),
+          payee: payload.payee,
+          propertyId: payload.propertyId,
+          expenseCategoryId: payload.expenseCategoryId,
+          paymentMode: payload.paymentMode as any
+        }
+      ]
+    }, tx);
 
     await recordAuditLog({
       action: 'CREATE',
       entityType: payload.type === 'INCOME' ? 'REVENUE' : 'EXPENSE',
-      entityId: entry.id,
-      metadata: { amount: finalAmount.toNumber(), payee: payload.payee, type: payload.type },
+      entityId: transaction.id,
+      metadata: { amount: payload.amount, payee: payload.payee, type: payload.type, category: payload.expenseCategoryId },
       tx: tx as any
     });
 
-    return { entryId: entry.id, transactionId };
+    return { entryId: transaction.id, transactionId: transaction.id };
   });
 }
 
@@ -323,7 +437,7 @@ export async function waiveChargeService(
   return await db.$transaction(async (tx: any) => {
     const charge = await tx.charge.findFirst({ where: { id: chargeId, organizationId: context.organizationId } });
     if (!charge) throw new Error("ERR_CHARGE_ABSENT");
-    
+
     const balance = charge.amount.minus(charge.amountPaid);
     if (balance.lte(0)) throw new Error("ERR_FISCAL_CONFLICT: Charge already satisfied.");
 
@@ -347,7 +461,7 @@ export async function waiveChargeService(
 /* ── 6. UTILITY RECONCILIATION ────────────────────────────────────────────── */
 
 export async function reconcileUtilitiesService(
-  propertyId: string, 
+  propertyId: string,
   dateRange: { start: Date, end: Date },
   context: { operatorId: string, organizationId: string }
 ) {
@@ -366,7 +480,8 @@ export async function reconcileUtilitiesService(
     where: {
       organizationId: context.organizationId,
       accountId: { in: expenseAccounts.map((a: { id: string }) => a.id) },
-      date: { gte: dateRange.start, lte: dateRange.end }
+      date: { gte: dateRange.start, lte: dateRange.end },
+      status: 'ACTIVE'
     }
   });
 
@@ -375,7 +490,8 @@ export async function reconcileUtilitiesService(
     where: {
       organizationId: context.organizationId,
       accountId: { in: incomeAccounts.map((a: { id: string }) => a.id) },
-      date: { gte: dateRange.start, lte: dateRange.end }
+      date: { gte: dateRange.start, lte: dateRange.end },
+      status: 'ACTIVE'
     }
   });
 
@@ -427,8 +543,8 @@ export async function voidLedgerEntryService(
       action: 'NUCLEAR_PURGE',
       entityType: 'LEDGER_ENTRY',
       entityId: entryId,
-      metadata: { 
-        prevStatus: 'ACTIVE', 
+      metadata: {
+        prevStatus: 'ACTIVE',
         amount: entry.amount.toNumber(),
         description: entry.description,
         payee: entry.payee,

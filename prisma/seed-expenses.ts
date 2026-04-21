@@ -53,23 +53,37 @@ async function main() {
     
     expenses.push({
       organizationId: organization.id,
-      transactionId: `TX-${Math.random().toString(36).substring(7).toUpperCase()}`,
-      accountId: account.id,
-      amount: amount,
       date: date,
-      transactionDate: date,
       description: `Testing expense entry #${i+1} for ${subCat.name}`,
-      paymentMode: i % 5 === 0 ? PaymentMode.CASH : PaymentMode.BANK,
-      expenseCategoryId: subCat.id,
-      propertyId: property ? property.id : null,
-      payee: payee
+      entries: [
+        {
+          accountId: account.id,
+          organizationId: organization.id,
+          amount: amount,
+          type: 'CREDIT' as const,
+          date: date,
+          transactionDate: date,
+          description: `Testing expense entry #${i+1} for ${subCat.name}`,
+          paymentMode: i % 5 === 0 ? PaymentMode.CASH : PaymentMode.BANK,
+          expenseCategoryId: subCat.id,
+          propertyId: property ? property.id : null,
+          payee: payee
+        }
+      ]
     })
   }
 
-  // Create entries one by one
+  // Create entries with their transactions
   for (const exp of expenses) {
-    await prisma.ledgerEntry.create({
-      data: exp
+    await prisma.transaction.create({
+      data: {
+        organizationId: exp.organizationId,
+        description: exp.description,
+        date: exp.date,
+        entries: {
+          create: exp.entries
+        }
+      }
     })
   }
 

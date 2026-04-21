@@ -29,6 +29,16 @@ model Unit {
   leases            Lease[]
   organization      Organization      @relation(fields: [organizationId], references: [id])
   property          Property          @relation(fields: [propertyId], references: [id])
+  meterReadings     MeterReading[]
+}
+
+model MeterReading {
+  id        String   @id @default(uuid())
+  unitId    String
+  unit      Unit     @relation(fields: [unitId], references: [id])
+  value     Float    // The reading (e.g., 322)
+  date      DateTime @default(now())
+  type      String   // 'ELECTRIC' or 'WATER'
 }
 
 model Tenant {
@@ -110,7 +120,11 @@ model Account {
   organizationId String
   name           String
   category       AccountCategory
+  parentId       String?
+  isSystem       Boolean         @default(false)
   organization   Organization    @relation(fields: [organizationId], references: [id])
+  parent         Account?        @relation("SubAccounts", fields: [parentId], references: [id])
+  children       Account[]       @relation("SubAccounts")
   entries        LedgerEntry[]
 }
 
@@ -119,6 +133,7 @@ model LedgerEntry {
   organizationId    String
   transactionId     String
   accountId         String
+  type              EntryType
   amount            Decimal
   date              DateTime         @default(now())
   transactionDate   DateTime         @default(now())
@@ -138,8 +153,25 @@ model LedgerEntry {
   organization      Organization     @relation(fields: [organizationId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
   tenant            Tenant?          @relation(fields: [tenantId], references: [id])
+  transaction       Transaction      @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, transactionDate])
+}
+
+model Transaction {
+  id             String        @id @default(uuid())
+  organizationId String
+  idempotencyKey String?       @unique
+  description    String
+  date           DateTime      @default(now())
+  entries        LedgerEntry[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum EntryType {
+  DEBIT
+  CREDIT
 }
 
 model AuditLog {
@@ -261,6 +293,8 @@ enum AccountCategory {
   ASSET
   INCOME
   EXPENSE
+  LIABILITY
+  EQUITY
 }
 
 enum PaymentMode {
