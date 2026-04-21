@@ -1,6 +1,8 @@
 'use server'
 
 import { cookies } from "next/headers"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
 /**
  * WORKSPACE ABSTRACTION ACTIONS (PHASE 4)
@@ -21,14 +23,34 @@ export async function switchWorkspaceAction(organizationId: string) {
       sameSite: 'lax'
     })
     
-    return { success: true }
+    revalidatePath('/')
   } catch (error) {
     console.error('[WORKSPACE_SWITCH_FATAL]', error)
     return { success: false, error: 'Failed to synchronize workspace context.' }
   }
+  
+  redirect('/home')
 }
 
 export async function getActiveWorkspaceId() {
   const cookieStore = await cookies()
   return cookieStore.get('active_workspace_id')?.value || null
+}
+
+export async function getUserOrganizations() {
+  const { auth } = await import("@/auth")
+  const { prisma } = await import("@/lib/prisma")
+  
+  const session = await auth()
+  if (!session?.user?.id) return []
+
+  const memberships = await prisma.organizationMember.findMany({
+    where: { userId: session.user.id },
+    include: { organization: true }
+  })
+
+  return memberships.map(m => ({
+    id: m.organization.id,
+    name: m.organization.name
+  }))
 }

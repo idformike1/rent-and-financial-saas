@@ -4,6 +4,7 @@ import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import GlobalSearch from './GlobalSearch'
+import WorkspaceSwitcher from '@/src/components/WorkspaceSwitcher'
 import { cn } from '@/lib/utils'
 import {
   Home,
@@ -57,7 +58,15 @@ const navigationSections = [
 ]
 
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({ 
+  children,
+  organizations = [],
+  activeWorkspaceId
+}: { 
+  children: React.ReactNode,
+  organizations?: { id: string, name: string }[],
+  activeWorkspaceId?: string 
+}) {
   const { data: session } = useSession()
   const userRole = session?.user?.role || 'MANAGER'
   const userName = session?.user?.name || 'Sovereign Auditor'
@@ -192,6 +201,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             
             <div className="flex items-center gap-4 ml-auto">
+               <WorkspaceSwitcher organizations={organizations} activeId={activeWorkspaceId} />
                <div className="px-3 py-1 rounded-[var(--radius-sm)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
                   <span className="text-mercury-label-caps text-clinical-muted">{userRole}</span>
                </div>

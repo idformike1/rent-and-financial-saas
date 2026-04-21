@@ -12,7 +12,7 @@ import {
   logExpenseService,
   waiveChargeService,
   voidLedgerEntryService
-} from '@/src/services/mutations/finance.services'
+} from '@/src/services/finance'
 import { PaymentSubmissionPayload, SystemResponse } from '@/types'
 
 /**

@@ -1,5 +1,5 @@
 import { getSovereignClient } from "@/src/lib/db";
-import { createBalancedTransaction } from "@/src/services/mutations/finance.services";
+import { createBalancedTransaction } from "@/src/services/finance";
 import { AccountCategory } from "@/src/schema/enums";
 import React from 'react';
 import { renderToStream } from "@react-pdf/renderer";

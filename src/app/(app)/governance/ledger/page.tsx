@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getCurrentSession } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getMasterLedger, getLedgerFilterMetadata } from "@/actions/analytics.actions";
@@ -27,8 +27,8 @@ export default async function LedgerExplorerPage({
   } 
 }) {
   const params = await searchParams;
-  const session = await auth();
-  if (!session?.user) redirect("/login");
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
 
   const [ledgerData, metadata] = await Promise.all([
      getMasterLedger({
@@ -78,7 +78,7 @@ export default async function LedgerExplorerPage({
         <LedgerExplorerClient 
           initialData={serializedLedger as any} 
           metadata={metadata as any}
-          role={session.user.role}
+          role={session.role}
         />
       </Suspense>
     </div>

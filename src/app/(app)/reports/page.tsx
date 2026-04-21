@@ -1,9 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import ReportClient from "./ReportClient";
+import { getActiveWorkspaceId } from "@/src/actions/workspace.actions";
+import { getCurrentSession } from "@/lib/auth-utils";
+import { redirect } from "next/navigation";
 
 export default async function StrategicReportsPage() {
+  const session = await getCurrentSession();
+  if (!session) redirect('/login');
+
+  const activeOrgId = (await getActiveWorkspaceId()) || session.organizationId;
+
   const entries = await prisma.ledgerEntry.findMany({
     where: {
+      organizationId: activeOrgId,
       status: "ACTIVE",
     },
     include: {

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getCurrentSession } from "@/lib/auth-utils";
 import TransactionFeedClient from "./TransactionFeedClient";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -26,8 +26,8 @@ export default async function TransactionsPage({
   } 
 }) {
   const params = await searchParams;
-  const session = await auth();
-  if (!session?.user) redirect("/login");
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
 
   const [ledgerData, metadata] = await Promise.all([
      getMasterLedger({

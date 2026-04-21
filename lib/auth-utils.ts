@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN' | 'VIEWER';
 
@@ -12,17 +13,42 @@ export interface SessionContext {
 
 /**
  * SECURE: Retrieves the session from NextAuth.
+ * UPDATED (PHASE 4): Now respects the 'active_workspace_id' cookie for workspace switching.
  */
 export async function getCurrentSession(): Promise<SessionContext | null> {
   const session = await auth();
-  
   if (!session?.user) return null;
+
+  const cookieStore = await cookies();
+  const activeWorkspaceId = cookieStore.get('active_workspace_id')?.value;
+
+  let organizationId = session.user.organizationId as string;
+  let organizationName = session.user.organizationName as string;
+
+  // ── WORKSPACE ABSTRACTION OVERRIDE ───────────────────────────
+  if (activeWorkspaceId && activeWorkspaceId !== organizationId) {
+    try {
+      const membership = await prisma.organizationMember.findUnique({
+        where: { userId_organizationId: { userId: session.user.id as string, organizationId: activeWorkspaceId } },
+        include: { organization: true }
+      });
+
+      if (membership) {
+        organizationId = activeWorkspaceId;
+        organizationName = membership.organization.name;
+        // Optionally override role if memberships have specific roles
+        // role = membership.role as UserRole;
+      }
+    } catch (error) {
+      console.error('[WORKSPACE_SYNC_ERROR] Failed to verify membership context.', error);
+    }
+  }
 
   return {
     userId: session.user.id as string,
     role: session.user.role as UserRole,
-    organizationId: session.user.organizationId as string,
-    organizationName: session.user.organizationName as string,
+    organizationId,
+    organizationName,
   };
 }
 

@@ -1,14 +1,17 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
-import { FinancialCommandCenter } from '@/src/components/FinancialCommandCenter';
+import { FinancialCommandCenter } from '@/src/components/CommandCenter';
+import { getActiveWorkspaceId } from '@/src/actions/workspace.actions';
 
 export default async function TenancyCommandCenterPage({ params }: { params: { tenantId: string } }) {
   const session = await auth();
   if (!session) return notFound();
 
+  const activeOrgId = (await getActiveWorkspaceId()) || session.user.organizationId;
+
   const tenant = await prisma.tenant.findUnique({
-    where: { id: params.tenantId, organizationId: session.user.organizationId },
+    where: { id: params.tenantId, organizationId: activeOrgId },
     include: {
       leases: { where: { isActive: true } }
     }
@@ -19,7 +22,7 @@ export default async function TenancyCommandCenterPage({ params }: { params: { t
   const lease = tenant.leases[0];
 
   const ledgerEntries = await prisma.ledgerEntry.findMany({
-    where: { tenantId: tenant.id, organizationId: session.user.organizationId },
+    where: { tenantId: tenant.id, organizationId: activeOrgId },
     orderBy: { date: 'desc' }
   });
 

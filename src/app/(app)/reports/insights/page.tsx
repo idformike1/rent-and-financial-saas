@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { auth } from "@/auth";
+import { getCurrentSession } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 import InsightsGrid from "./InsightsGrid";
 import { ChartSkeleton } from "@/components/ui/SovereignSkeleton";
@@ -10,8 +10,8 @@ export const metadata = {
 };
 
 export default async function InsightsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
 
   return (
     <div className="w-full theme-sharp p-8">

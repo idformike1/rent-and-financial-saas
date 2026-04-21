@@ -1,12 +1,15 @@
-import { auth } from "@/auth"
+import { getCurrentSession } from "@/lib/auth-utils"
 import { fetchTeamMembers } from "@/actions/team.actions"
 import UserTable from "@/components/team/UserTable"
 import InviteOperatorButton from "@/components/team/InviteOperatorButton"
 import { Users, UserCheck, ShieldAlert } from "lucide-react"
 import { Badge } from "@/components/ui-finova"
+import { redirect } from "next/navigation"
 
 export default async function TeamPage() {
-  const session = await auth()
+  const session = await getCurrentSession()
+  if (!session) redirect('/login');
+  
   const { members, stats } = await fetchTeamMembers()
 
   const statCards = [
@@ -28,7 +31,7 @@ export default async function TeamPage() {
             Team <span className="text-[var(--primary)]">Command</span>
           </h1>
           <p className="text-[10px] text-[var(--muted)]  ">
-            Cluster Identity: {session?.user?.organizationName}
+            Cluster Identity: {session.organizationName}
           </p>
         </div>
         <InviteOperatorButton />
@@ -57,7 +60,7 @@ export default async function TeamPage() {
             ...m,
             role: m.role as string
           }))}
-          currentUserId={session?.user?.id}
+          currentUserId={session.userId}
         />
       </div>
 

@@ -10,7 +10,7 @@ import {
   getPropertyAssetPulseService,
   getPropertyLedgerEntriesService,
   getMasterLedgerService
-} from '@/src/services/queries/analytics.services'
+} from '@/src/services/queries/analytics'
 import { getLedgerFilterMetadataService } from '@/src/services/queries/metadata.services'
 
 /**

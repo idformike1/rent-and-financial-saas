@@ -1,18 +1,21 @@
-import { auth } from "@/auth"
 import { prisma } from '@/lib/prisma'
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { ShieldAlert, Fingerprint, Activity, Clock, User as UserIcon, Tag, Database } from "lucide-react"
 import { Badge } from "@/components/ui-finova"
 import { AuditFilterBar, MetadataExplorer } from './AuditClient'
+import { getCurrentSession } from '@/lib/auth-utils'
+import { getActiveWorkspaceId } from '@/src/actions/workspace.actions'
 
 export default async function AuditLogPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const session = await auth();
-  if (!session) return null;
+  const session = await getCurrentSession();
+  if (!session) redirect('/login');
+
+  const activeOrgId = (await getActiveWorkspaceId()) || session.organizationId;
 
   const params = await searchParams;
   const page = parseInt(params.page as string || '1');
@@ -23,7 +26,7 @@ export default async function AuditLogPage({
   const skip = (page - 1) * pageSize;
 
   const where = {
-    organizationId: session.user.organizationId,
+    organizationId: activeOrgId,
     ...(actionFilter && { action: actionFilter }),
     ...(operatorFilter && { userId: operatorFilter }),
   };
@@ -38,7 +41,7 @@ export default async function AuditLogPage({
     }),
     prisma.auditLog.count({ where }),
     prisma.user.findMany({
-      where: { organizationId: session.user.organizationId },
+      where: { organizationId: activeOrgId },
       select: { id: true, name: true, email: true },
     }),
   ]);
@@ -68,7 +71,7 @@ export default async function AuditLogPage({
 
   const statCards = [
     { label: 'Capture Points', value: totalCount, icon: Database },
-    { label: 'Threat Identity', value: session.user.organizationName, icon: UserIcon },
+    { label: 'Threat Identity', value: session.organizationName, icon: UserIcon },
     { label: 'Grid Status', value: 'NOMINAL', icon: Activity },
     { label: 'Archive Page', value: page, icon: Clock },
   ];
@@ -193,8 +196,8 @@ export default async function AuditLogPage({
       <div className="flex justify-between items-center mt-6 text-[10px] font-bold uppercase tracking-widest text-clinical-low">
          <div>Archive Records {skip + 1} - {Math.min(skip + pageSize, totalCount)} of {totalCount}</div>
          <div className="flex gap-4">
-            <span className="text-foreground/20">Session ID: {session.user.id.slice(0, 8)}</span>
-            <span className="text-foreground/20">Jurisdiction: {session.user.organizationId.slice(0, 8)}</span>
+            <span className="text-foreground/20">Session ID: {session.userId.slice(0, 8)}</span>
+            <span className="text-foreground/20">Jurisdiction: {activeOrgId.slice(0, 8)}</span>
          </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ import {
   executeRevenueSyncService
 } from '@/src/services/mutations/system.services'
 import { deepScanSystemService } from '@/src/services/queries/system.services'
-import { getDetailedOntologyService } from '@/src/services/queries/analytics.services'
+import { getDetailedOntologyService } from '@/src/services/queries/analytics'
 
 /**
  * SYSTEM DOMAIN ACTIONS (SOVEREIGN AUTHORITY)
