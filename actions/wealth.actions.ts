@@ -76,3 +76,53 @@ export async function getWealthAccounts() {
         });
     }, false);
 }
+
+export async function logPersonalExpense(payload: {
+  amount: number;
+  categoryId: string;
+  payee: string;
+  date: string;
+  accountId: string;
+}) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const db = getSovereignClient(session.organizationId);
+      const parsedDate = new Date(payload.date);
+      
+      await db.$transaction(async (tx) => {
+        // 1. Create Transaction Shell
+        const transaction = await tx.transaction.create({
+          data: {
+            organizationId: session.organizationId,
+            description: `Personal Expense: ${payload.payee}`,
+            date: parsedDate,
+          }
+        });
+
+        // 2. Create Deduction Entry (CREDIT)
+        await tx.ledgerEntry.create({
+          data: {
+            organizationId: session.organizationId,
+            transactionId: transaction.id,
+            accountId: payload.accountId,
+            amount: -payload.amount,
+            type: EntryType.CREDIT,
+            description: `Expense Payment to ${payload.payee}`,
+            transactionDate: parsedDate,
+            expenseCategoryId: payload.categoryId,
+            payee: payload.payee,
+          }
+        });
+      });
+
+      revalidatePath('/wealth/cash-flow');
+      revalidatePath('/reports/insights');
+      
+      return { success: true, message: "Expense logged to Sovereign Ledger." };
+    } catch (e: any) {
+      console.error('[WEALTH_EXPENSE_FATAL]', e);
+      return { success: false, message: e.message || "Failed to log expense." };
+    }
+  });
+}
+
