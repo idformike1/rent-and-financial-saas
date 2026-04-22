@@ -5,6 +5,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Button } from '@/components/ui-finova';
 
+import { useFinancialMetrics } from '@/src/hooks/useWorkspaceData';
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -18,11 +20,6 @@ interface KpiGridProps {
     avgIncome: number;
     avgExpense: number;
   };
-  telemetry?: {
-    current: { revenue: number, opex: number, debt: number, yieldRate: number };
-    previous: { revenue: number, opex: number, debt: number, yieldRate: number };
-    deltas: { revenue: number, opex: number, debt: number, yield: number };
-  } | null;
   aggregation: string;
   setAggregation: (agg: any) => void;
   chartType: string;
@@ -32,12 +29,13 @@ interface KpiGridProps {
 export function KpiGrid({
   activeTab,
   metrics,
-  telemetry,
   aggregation,
   setAggregation,
   chartType,
   setChartType
 }: KpiGridProps) {
+  const { data: telemetry, isLoading } = useFinancialMetrics();
+
   const formatValue = (val: number) => {
     const absVal = Math.abs(val);
     if (absVal >= 1000000) return Math.round(absVal / 1000).toLocaleString('en-US') + 'K';

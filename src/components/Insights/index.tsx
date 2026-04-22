@@ -281,7 +281,6 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
       <KpiGrid 
         activeTab={activeTab}
         metrics={metrics}
-        telemetry={telemetry}
         aggregation={aggregation}
         setAggregation={setAggregation}
         chartType={chartType}

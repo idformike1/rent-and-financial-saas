@@ -23,39 +23,9 @@ import {
   ShieldCheck,
   Users2
 } from 'lucide-react'
+import DynamicSidebar from '@/src/components/Navigation/DynamicSidebar'
 
-// ─── FULL 5-PILLAR DOMAIN NAVIGATION REGISTRY ──────────────────────────────
-const navigationSections = [
-  {
-    label: 'Command',
-    items: [
-      { name: 'Home',              href: '/home',               icon: Home },
-      { name: 'Transactions',      href: '/treasury/feed',      icon: List },
-      { name: 'Properties',        href: '/assets',             icon: Building2 },
-      { name: 'Tenants',           href: '/tenants',            icon: Users },
-      { name: 'Tenant Registry',   href: '/tenant-register',    icon: Zap },
-      { name: 'Expense Registry',  href: '/treasury/payables',  icon: Tag },
-      { name: 'Treasury',          href: '/treasury',           icon: Wallet },
-    ]
-  },
-  {
-    label: 'Intelligence hub',
-    items: [
-      { name: 'Insights',          href: '/reports/insights',   icon: Activity },
-      { name: 'Analytic Hub',      href: '/reports',            icon: BarChart3 },
-      { name: 'Forensic Explorer',    href: '/governance/ledger',  icon: Database },
-      { name: 'Aging Matrix',      href: '/treasury/receivables/aging', icon: CalendarDays },
-    ]
-  },
-  {
-    label: 'Governance control',
-    items: [
-      { name: 'Taxonomy Logic',    href: '/settings/categories', icon: Database },
-      { name: 'Audit Protocol',    href: '/settings/audit',     icon: ShieldCheck },
-      { name: 'Team Command',      href: '/settings/team',      icon: Users2 },
-    ]
-  }
-]
+// Navigation logic moved to src/config/workspace.config.ts and DynamicSidebar.tsx
 
 
 export default function AppShell({ 
@@ -75,30 +45,6 @@ export default function AppShell({
   const [openSections, setOpenSections] = useState<string[]>(['Treasury', 'Command', 'Intelligence hub', 'Governance control'])
   const pathname = usePathname()
 
-  const toggleSection = (label: string) => {
-    setOpenSections(prev =>
-      prev.includes(label)
-        ? prev.filter(s => s !== label)
-        : [...prev, label]
-    )
-  }
-
-  const filteredSections = navigationSections.map(section => ({
-    ...section,
-    items: section.items.filter(item => {
-      // Rule 1: VIEWER Restriction Matrix
-      if (userRole === 'VIEWER') {
-        const forbidden = ['/governance', '/settings', '/treasury/payables', '/tenant-register'];
-        if (forbidden.some(path => item.href.startsWith(path))) return false;
-      }
-      return true;
-    })
-  })).filter(section => {
-    // Rule 2: Section-level clearance guards
-    if (section.items.length === 0) return false;
-    if (section.label === 'Governance control' && (userRole === 'MANAGER' || userRole === 'VIEWER')) return false;
-    return true;
-  });
 
   // ── AUTH ISOLATION GUARD ─────────────────────────────────────────────
   // If the current path is /login, we bypass the shell to prevent 
@@ -127,49 +73,14 @@ export default function AppShell({
           </div>
         </div>
 
-        {/* Navigation Content */}
-        <nav className="flex-1 overflow-y-auto pt-4 px-2 space-y-4 scrollbar-hide">
-          {filteredSections.map((section) => (
-            <div key={section.label} className="space-y-0.5">
-              <button
-                onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center justify-between px-2 py-1 text-mercury-label-caps text-clinical-muted hover:text-foreground transition-colors"
-              >
-                {section.label}
-                <span className={cn("text-mercury-label-caps transition-transform duration-200", openSections.includes(section.label) ? 'rotate-180' : '')}>▼</span>
-              </button>
-
-              {openSections.includes(section.label) && (
-                <div className="space-y-0.5 mt-0.5">
-                  {section.items.map((item) => {
-                    const isActive = pathname === item.href
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={cn(
-                          "flex items-center w-full px-3 h-[36px] text-mercury-body rounded-[var(--radius-sm)] transition-all duration-150 my-0.5 group",
-                          isActive
-                            ? "text-foreground bg-sidebar-accent border-l-2 border-primary rounded-l-none"
-                            : "text-clinical-muted hover:text-foreground hover:bg-sidebar-accent/50"
-                        )}
-                      >
-                        <item.icon 
-                          className={cn(
-                            "w-[15px] h-[14px] mr-3 transition-opacity duration-150 shrink-0",
-                            isActive ? "opacity-100 text-foreground" : "opacity-40 text-clinical-muted group-hover:opacity-100 group-hover:text-foreground"
-                          )} 
-                        />
-                        <span className="truncate tracking-clinical">{item.name}</span>
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
+        {/* Navigation Content (Context-Aware) */}
+        <div className="flex-1 overflow-hidden">
+          <DynamicSidebar 
+            activeWorkspaceId={activeWorkspaceId}
+            organizations={organizations}
+            onMobileClose={() => setIsMobileMenuOpen(false)}
+          />
+        </div>
 
         {/* ── USER PROFILE ─────────────────────────────────────────────────── */}
         <div className="mt-auto p-3 border-t border-border flex items-center gap-2 bg-card">

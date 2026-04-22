@@ -64,8 +64,10 @@ export async function getGlobalPortfolioTelemetryService(context: { operatorId: 
     return { revenue: rev, opex, debt, yieldRate };
   };
 
-  const current = await fetchMetrics(thirtyDaysAgo, now);
-  const previous = await fetchMetrics(sixtyDaysAgo, thirtyDaysAgo);
+  const [current, previous] = await Promise.all([
+    fetchMetrics(thirtyDaysAgo, now),
+    fetchMetrics(sixtyDaysAgo, thirtyDaysAgo)
+  ]);
 
   const delta = (curr: number, prev: number) =>
     prev === 0 ? (curr > 0 ? 100 : 0) : ((curr - prev) / prev) * 100;

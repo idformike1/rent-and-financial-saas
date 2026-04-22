@@ -1,0 +1,78 @@
+'use server'
+
+import { runSecureServerAction } from '@/lib/auth-utils'
+import { getSovereignClient } from '@/src/lib/db'
+import { revalidatePath } from 'next/cache'
+import { EntryType } from '@prisma/client'
+
+/**
+ * WEALTH HUB ACTIONS (SOVEREIGN AUTHORITY)
+ */
+
+export async function executeInternalTransfer(payload: {
+  fromAccountId: string;
+  toAccountId: string;
+  amount: number;
+  memo: string;
+}) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const db = getSovereignClient(session.organizationId);
+      
+      // Atomic Double-Entry Transaction
+      await db.$transaction(async (tx) => {
+        // 1. Create the parent transaction record
+        const transaction = await tx.transaction.create({
+          data: {
+            organizationId: session.organizationId,
+            description: `Internal Transfer: ${payload.memo}`,
+          }
+        });
+
+        // 2. Source Deduction (CREDIT to Asset)
+        await tx.ledgerEntry.create({
+          data: {
+            organizationId: session.organizationId,
+            transactionId: transaction.id,
+            accountId: payload.fromAccountId,
+            amount: -payload.amount,
+            type: EntryType.CREDIT,
+            description: `Transfer Out: ${payload.memo}`,
+            transactionDate: new Date(),
+          }
+        });
+
+        // 3. Destination Credit (DEBIT to Asset)
+        await tx.ledgerEntry.create({
+          data: {
+            organizationId: session.organizationId,
+            transactionId: transaction.id,
+            accountId: payload.toAccountId,
+            amount: payload.amount,
+            type: EntryType.DEBIT,
+            description: `Transfer In: ${payload.memo}`,
+            transactionDate: new Date(),
+          }
+        });
+      });
+
+      revalidatePath('/wealth/transfers');
+      revalidatePath('/reports/insights');
+      
+      return { success: true, message: "Transfer executed successfully. Sovereign Ledger updated." };
+    } catch (e: any) {
+      console.error('[WEALTH_TRANSFER_FATAL]', e);
+      return { success: false, message: e.message || "Failed to execute transfer." };
+    }
+  });
+}
+
+export async function getWealthAccounts() {
+    return runSecureServerAction('VIEWER', async (session) => {
+        const db = getSovereignClient(session.organizationId);
+        return await db.account.findMany({
+            where: { organizationId: session.organizationId },
+            select: { id: true, name: true, category: true }
+        });
+    }, false);
+}
