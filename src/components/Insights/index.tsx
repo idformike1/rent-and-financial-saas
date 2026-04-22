@@ -305,8 +305,8 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
         {entries.length > 0 ? (
           <>
             {activeTab === 'overview' && <InsightsOverview entries={filteredEntries} income={metrics.income} expense={metrics.expense} />}
-            {activeTab === 'money-in' && <InsightsMoneyIn entries={filteredEntries} income={metrics.income} />}
-            {activeTab === 'money-out' && <InsightsMoneyOut entries={filteredEntries} expense={metrics.expense} />}
+            {activeTab === 'money-in' && <InsightsMoneyIn entries={filteredEntries} income={metrics.income} dateRange={dateRange} />}
+            {activeTab === 'money-out' && <InsightsMoneyOut entries={filteredEntries} expense={metrics.expense} dateRange={dateRange} />}
           </>
         ) : (
           <div className="w-full h-32 bg-white/5 animate-pulse rounded-[var(--radius-sm)]"></div>

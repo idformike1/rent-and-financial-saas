@@ -9,6 +9,8 @@ import { Button } from '@/components/ui-finova'
 import Link from 'next/link'
 import { getActiveWorkspaceId, getUserOrganizations } from '@/src/actions/workspace.actions'
 import WealthOverview from '@/src/components/Cockpit/WealthOverview'
+import BalanceSheetWidget from '@/src/components/Intelligence/BalanceSheetWidget'
+import RunwayRadarWidget from '@/src/components/Intelligence/RunwayRadarWidget'
 
 export default async function HomePage() {
   const session = await getCurrentSession();
@@ -45,6 +47,12 @@ export default async function HomePage() {
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* ── INTELLIGENCE ENGINE HUD ───────────────────────────────────────── */}
+      <div className="mb-12 flex flex-col gap-8">
+        <BalanceSheetWidget />
+        <RunwayRadarWidget />
       </div>
 
       {/* ── CORE VISUALS ──────────────────────────────────────────────────── */}

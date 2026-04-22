@@ -15,44 +15,71 @@ interface BreakdownCardProps {
   type: 'INCOME' | 'EXPENSE';
 }
 
-export default function BreakdownCard({ title, amount, entries, type }: BreakdownCardProps) {
+import TransactionDetailDrawer from '@/src/components/Insights/TransactionDetailDrawer';
+
+// ... inside BreakdownCard component
+export default function BreakdownCard({ title, amount, entries, type, dateRange }: any) {
   const isIncome = type === 'INCOME';
   const subTabs = isIncome ? ['Source', 'Category', 'GL Code'] : ['Recipient', 'Category', 'GL Code'];
   const [activeSubTab, setActiveSubTab] = useState(subTabs[0]);
+  
+  // Drawer State
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedContext, setSelectedContext] = useState({ id: '', name: '' });
 
   const tableData = useMemo(() => {
-    const map: Record<string, number> = {};
-    entries.forEach(e => {
-      // Filter by type if provided, otherwise assume caller filtered
+    const map: Record<string, { amount: number, id: string }> = {};
+    entries.forEach((e: any) => {
       if (type && e.account?.category !== type) return;
 
       let key = "Other";
+      let drillId = "";
+      
       if (activeSubTab === 'Source' || activeSubTab === 'Recipient') {
         key = e.account?.name || "Unknown";
+        drillId = e.accountId;
       } else if (activeSubTab === 'Category') {
         key = isIncome ? (e.account?.type || "Revenue") : (e.expenseCategory?.name || "Operations");
+        drillId = isIncome ? e.incomeSourceId : e.expenseCategoryId;
       } else if (activeSubTab === 'GL Code') {
         const prefix = isIncome ? '400' : '500';
         key = `${prefix}${e.account?.id?.slice(-1) || '1'}`;
+        drillId = e.accountId;
       }
 
-      map[key] = (map[key] || 0) + Math.abs(e.amount);
+      if (!map[key]) map[key] = { amount: 0, id: drillId };
+      map[key].amount += Math.abs(e.amount);
     });
 
-    const total = Object.values(map).reduce((a, b) => a + b, 0);
+    const total = Object.values(map).reduce((a, b) => a + b.amount, 0);
     return Object.entries(map)
-      .map(([name, val]) => ({
+      .map(([name, data]) => ({
         name,
-        amount: val,
-        percent: Number((total > 0 ? (val / total) * 100 : 0).toFixed(1))
+        id: data.id,
+        amount: data.amount,
+        percent: Number((total > 0 ? (data.amount / total) * 100 : 0).toFixed(1))
       }))
       .sort((a, b) => b.amount - a.amount);
   }, [entries, activeSubTab, type, isIncome]);
 
-  const barColor = isIncome ? 'var(--sidebar-primary)' : 'var(--destructive)'; // Indigo vs Pink/Red
+  const handleRowClick = (id: string, name: string) => {
+    if (!id || isIncome) return; // For now, only forensic drill-down for expenses is mapped
+    setSelectedContext({ id, name });
+    setIsDrawerOpen(true);
+  };
+
+  const barColor = isIncome ? 'var(--sidebar-primary)' : 'var(--destructive)';
 
   return (
     <div className="bg-card border border-white/[0.05] rounded-[var(--radius-sm)] p-6 flex flex-col gap-6  overflow-hidden relative">
+      <TransactionDetailDrawer 
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        categoryId={selectedContext.id}
+        categoryName={selectedContext.name}
+        dateRange={dateRange || {}}
+      />
+      
       {/* Glossy Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
 
@@ -96,8 +123,20 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
           <tbody className="divide-y divide-white/5">
             {tableData.length > 0 ? (
               tableData.map((row) => (
-                <tr key={row.name} className="h-[48px] hover:bg-white/[0.02] transition-colors group">
-                  <td className="text-[14px] leading-[20px] text-foreground font-normal truncate max-w-[150px]">{row.name}</td>
+                <tr 
+                    key={row.name} 
+                    onClick={() => handleRowClick(row.id, row.name)}
+                    className={cn(
+                        "h-[48px] hover:bg-white/[0.04] transition-all group",
+                        !isIncome && row.id && "cursor-pointer"
+                    )}
+                >
+                  <td className="text-[14px] leading-[20px] text-foreground font-normal truncate max-w-[150px]">
+                    <div className="flex items-center gap-2">
+                        {row.name}
+                        {!isIncome && row.id && <div className="w-1 h-1 rounded-full bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />}
+                    </div>
+                  </td>
                   <td>
                     <div className="flex items-center gap-3 pr-4">
                       <div className="h-[4px] flex-1 bg-white/10 rounded-[var(--radius-sm)] overflow-hidden">
@@ -125,3 +164,4 @@ export default function BreakdownCard({ title, amount, entries, type }: Breakdow
     </div>
   );
 }
+

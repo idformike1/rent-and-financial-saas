@@ -91,6 +91,7 @@ model ExpenseCategory {
   ledgerId       String
   parentId       String?
   isPersonal     Boolean           @default(false)
+  isArchived     Boolean           @default(false)
   ledger         FinancialLedger   @relation(fields: [ledgerId], references: [id])
   organization   Organization      @relation(fields: [organizationId], references: [id])
   parent         ExpenseCategory?  @relation("SubCategories", fields: [parentId], references: [id])
@@ -132,7 +133,7 @@ model LedgerEntry {
   id                String           @id @default(uuid())
   organizationId    String
   transactionId     String
-  accountId         String
+  accountId         String?
   type              EntryType
   amount            Decimal
   date              DateTime         @default(now())
@@ -144,11 +145,15 @@ model LedgerEntry {
   isCleared         Boolean          @default(false)
   clearedAt         DateTime?
   expenseCategoryId String?
+  wealthAccountId   String?
+  incomeSourceId    String?
   propertyId        String?
   tenantId          String?          @map("tenant_id")
   payee             String?
   receiptUrl        String?
-  account           Account          @relation(fields: [accountId], references: [id])
+  account           Account?          @relation(fields: [accountId], references: [id])
+  wealthAccount     WealthAccount?   @relation(fields: [wealthAccountId], references: [id])
+  incomeSource      IncomeSource?    @relation(fields: [incomeSourceId], references: [id])
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   organization      Organization     @relation(fields: [organizationId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
@@ -209,6 +214,27 @@ model Organization {
   users               User[]
   invitations         Invitation[]
   members             OrganizationMember[]
+  wealthAccounts      WealthAccount[]
+  incomeSources       IncomeSource[]
+}
+
+model WealthAccount {
+  id             String          @id @default(uuid())
+  organizationId String
+  name           String
+  category       AccountCategory @default(ASSET)
+  isArchived     Boolean         @default(false)
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  ledgerEntries  LedgerEntry[]
+}
+
+model IncomeSource {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String
+  isArchived     Boolean      @default(false)
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  ledgerEntries  LedgerEntry[]
 }
 
 model OrganizationMember {

@@ -18,15 +18,16 @@ export default async function StrategicReportsPage() {
     include: {
       expenseCategory: true,
       account: true,
+      wealthAccount: true, // Include wealthAccount
     },
   });
 
   const businessIncome = entries
-    .filter((e) => e.account.category === "INCOME" && !e.expenseCategory?.isPersonal)
+    .filter((e) => (e.account?.category === "INCOME" || e.wealthAccount?.category === "INCOME") && !e.expenseCategory?.isPersonal)
     .reduce((acc, e) => acc + Number(e.amount), 0);
 
   const allExpenses = entries
-    .filter((e) => e.account.category === "EXPENSE");
+    .filter((e) => (e.account?.category === "EXPENSE" || e.wealthAccount?.category === "EXPENSE"));
 
   const personalExpenses = allExpenses
     .filter((e) => e.expenseCategory?.isPersonal)

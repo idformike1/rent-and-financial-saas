@@ -4,7 +4,7 @@ import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import GlobalSearch from './GlobalSearch'
-import WorkspaceSwitcher from '@/src/components/WorkspaceSwitcher'
+import WorkspaceSwitcher from '@/src/components/Navigation/WorkspaceSwitcher'
 import { cn } from '@/lib/utils'
 import {
   Home,

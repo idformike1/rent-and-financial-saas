@@ -34,7 +34,7 @@ export async function executeInternalTransfer(payload: {
           data: {
             organizationId: session.organizationId,
             transactionId: transaction.id,
-            accountId: payload.fromAccountId,
+            wealthAccountId: payload.fromAccountId, // Map to new Registry
             amount: -payload.amount,
             type: EntryType.CREDIT,
             description: `Transfer Out: ${payload.memo}`,
@@ -47,7 +47,7 @@ export async function executeInternalTransfer(payload: {
           data: {
             organizationId: session.organizationId,
             transactionId: transaction.id,
-            accountId: payload.toAccountId,
+            wealthAccountId: payload.toAccountId, // Map to new Registry
             amount: payload.amount,
             type: EntryType.DEBIT,
             description: `Transfer In: ${payload.memo}`,
@@ -70,8 +70,8 @@ export async function executeInternalTransfer(payload: {
 export async function getWealthAccounts() {
     return runSecureServerAction('VIEWER', async (session) => {
         const db = getSovereignClient(session.organizationId);
-        return await db.account.findMany({
-            where: { organizationId: session.organizationId },
+        return await db.wealthAccount.findMany({
+            where: { organizationId: session.organizationId, isArchived: false },
             select: { id: true, name: true, category: true }
         });
     }, false);
@@ -104,7 +104,7 @@ export async function logPersonalExpense(payload: {
           data: {
             organizationId: session.organizationId,
             transactionId: transaction.id,
-            accountId: payload.accountId,
+            wealthAccountId: payload.accountId, // Map to new Registry
             amount: -payload.amount,
             type: EntryType.CREDIT,
             description: `Expense Payment to ${payload.payee}`,
@@ -125,4 +125,51 @@ export async function logPersonalExpense(payload: {
     }
   });
 }
+export async function logPersonalIncome(payload: {
+  amount: number;
+  sourceId: string;
+  payee: string;
+  date: string;
+  accountId: string;
+}) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const db = getSovereignClient(session.organizationId);
+      const parsedDate = new Date(payload.date);
+      
+      await db.$transaction(async (tx) => {
+        // 1. Create Transaction Shell
+        const transaction = await tx.transaction.create({
+          data: {
+            organizationId: session.organizationId,
+            description: `Personal Income: ${payload.payee}`,
+            date: parsedDate,
+          }
+        });
 
+        // 2. Create Inflow Entry (DEBIT to Asset)
+        await tx.ledgerEntry.create({
+          data: {
+            organizationId: session.organizationId,
+            transactionId: transaction.id,
+            wealthAccountId: payload.accountId, // Map to new Registry
+            amount: payload.amount,
+            type: EntryType.DEBIT,
+            description: `Income Inflow: ${payload.payee}`,
+            transactionDate: parsedDate,
+            incomeSourceId: payload.sourceId,
+            payee: payload.payee,
+          }
+        });
+      });
+
+      revalidatePath('/wealth/cash-flow');
+      revalidatePath('/reports/insights');
+      
+      return { success: true, message: "Income logged to Sovereign Ledger." };
+    } catch (e: any) {
+      console.error('[WEALTH_INCOME_FATAL]', e);
+      return { success: false, message: e.message || "Failed to log income." };
+    }
+  });
+}

@@ -9,7 +9,8 @@ import {
   ArrowLeftRight,
   Activity,
   BarChart3,
-  Zap
+  Zap,
+  Settings
 } from 'lucide-react'
 
 export type WorkspaceMode = 'PROPERTY' | 'WEALTH'
@@ -36,6 +37,12 @@ export const WORKSPACE_CONFIG = {
             { name: 'Insights', href: '/reports/insights', icon: Activity },
             { name: 'Market Reports', href: '/reports', icon: BarChart3 },
           ]
+      },
+      {
+          label: 'ADMINISTRATION',
+          items: [
+              { name: 'System Registry', href: '/settings/registry', icon: Settings },
+          ]
       }
     ]
   },
@@ -61,6 +68,7 @@ export const WORKSPACE_CONFIG = {
               { name: 'Master Ledger', href: '/treasury', icon: List },
               { name: 'Ledger Explorer', href: '/governance/ledger', icon: Database },
               { name: 'Internal Audit', href: '/settings/audit', icon: Database },
+              { name: 'System Registry', href: '/settings/registry', icon: Settings },
           ]
       }
     ]

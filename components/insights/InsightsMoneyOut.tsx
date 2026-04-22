@@ -9,16 +9,18 @@ interface InsightsMoneyOutProps {
   expense: number;
 }
 
-export default function InsightsMoneyOut({ entries, expense }: InsightsMoneyOutProps) {
+export default function InsightsMoneyOut({ entries, expense, dateRange }: any) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <SummaryCard entries={entries.filter(e => e.account?.category === "EXPENSE")} title="Summary" />
+      <SummaryCard entries={entries.filter((e: any) => e.account?.category === "EXPENSE")} title="Summary" />
       <BreakdownCard 
         title="Money out" 
         amount={-expense} 
         entries={entries} 
         type="EXPENSE" 
+        dateRange={dateRange}
       />
     </div>
   );
 }
+

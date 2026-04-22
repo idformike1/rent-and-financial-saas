@@ -4,6 +4,7 @@ import './globals.css';
 import SessionProvider from '@/components/providers/SessionProvider';
 import Toaster from '@/components/Toaster';
 import AppShell from '@/components/AppShell';
+import UniversalCommandPalette from '@/src/components/Command/UniversalCommandPalette';
 import { getUserOrganizations, getActiveWorkspaceId } from '@/src/actions/workspace.actions';
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -31,6 +32,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning className="antialiased min-h-screen bg-background text-foreground flex overflow-hidden">
         <SessionProvider>
           <Toaster />
+          <UniversalCommandPalette />
           <AppShell organizations={organizations} activeWorkspaceId={activeId || undefined}>
             {children}
           </AppShell>
