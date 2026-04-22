@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { Wallet, Shield, TrendingUp, Landmark } from 'lucide-react'
 
 const HOLDINGS_DATA = [
@@ -29,9 +30,10 @@ export default function HoldingsMatrix() {
           </thead>
           <tbody className="divide-y divide-border/20">
             {HOLDINGS_DATA.map((item) => (
-              <tr key={item.id} className="hover:bg-white/[0.02] transition-colors group">
+              <tr key={item.id} className="hover:bg-white/10 transition-colors group cursor-pointer relative">
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
+                  <Link href={`/wealth/accounts/${item.id}`} className="absolute inset-0 z-10" />
+                  <div className="flex items-center gap-3 relative z-0">
                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
                         <item.icon className="w-4 h-4 text-clinical-muted group-hover:text-amber-500 transition-colors" />
                     </div>

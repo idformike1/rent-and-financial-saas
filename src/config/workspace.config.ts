@@ -48,7 +48,8 @@ export const WORKSPACE_CONFIG = {
       {
         label: 'WEALTH HUB',
         items: [
-          { name: 'Dashboard', href: '/reports/insights', icon: LayoutDashboard },
+          { name: 'Wealth Cockpit', href: '/home', icon: Home },
+          { name: 'Insights', href: '/reports/insights', icon: LayoutDashboard },
           { name: 'Accounts Matrix', href: '/wealth/accounts', icon: Wallet },
           { name: 'Cash Flow Insights', href: '/wealth/cash-flow', icon: TrendingUp },
           { name: 'Allowances & Transfers', href: '/wealth/transfers', icon: ArrowLeftRight },
@@ -57,6 +58,8 @@ export const WORKSPACE_CONFIG = {
       {
           label: 'SYSTEM',
           items: [
+              { name: 'Master Ledger', href: '/treasury', icon: List },
+              { name: 'Ledger Explorer', href: '/governance/ledger', icon: Database },
               { name: 'Internal Audit', href: '/settings/audit', icon: Database },
           ]
       }
