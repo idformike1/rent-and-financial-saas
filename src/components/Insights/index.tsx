@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
 import { subMonths, isWithinInterval, format, differenceInDays, addDays, startOfDay, isSameMonth } from 'date-fns';
-import { generateRunwayNarrative, generateIncomeNarrative, generateOutflowNarrative } from '@/src/app/(app)/reports/insights/semanticGenerator';
+import { generateRunwayNarrative, generateIncomeNarrative, generateOutflowNarrative } from '@/src/app/(tenant)/reports/insights/semanticGenerator';
 import { FilterBar } from './FilterBar';
 import { KpiGrid } from './KpiGrid';
 import { Visualizer } from './Visualizer';

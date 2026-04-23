@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
-import SessionProvider from '@/components/providers/SessionProvider';
-import Toaster from '@/components/Toaster';
 import AppShell from '@/components/AppShell';
+import Toaster from '@/components/Toaster';
+import SessionProvider from '@/components/providers/SessionProvider';
 import UniversalCommandPalette from '@/src/components/Command/UniversalCommandPalette';
 import { getUserOrganizations, getActiveWorkspaceId } from '@/src/actions/workspace.actions';
 
@@ -24,18 +24,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const organizations = await getUserOrganizations();
-  const activeId = await getActiveWorkspaceId();
-
   return (
     <html lang="en" suppressHydrationWarning className={`${ibmPlexMono.variable}`}>
-      <body suppressHydrationWarning className="antialiased min-h-screen bg-background text-foreground flex overflow-hidden">
+      <body suppressHydrationWarning className="antialiased min-h-screen bg-background text-foreground overflow-hidden">
         <SessionProvider>
           <Toaster />
-          <UniversalCommandPalette />
-          <AppShell organizations={organizations} activeWorkspaceId={activeId || undefined}>
-            {children}
-          </AppShell>
+          {children}
         </SessionProvider>
       </body>
     </html>

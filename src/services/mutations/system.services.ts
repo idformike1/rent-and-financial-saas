@@ -34,9 +34,9 @@ export async function executeRevenueSyncService(context: { operatorId: string, o
 
     let updatedCount = 0;
     for (const ledger of misclassified) {
-      await tx.financialLedger.updateMany({ 
-        where: { id: ledger.id, organizationId: context.organizationId }, 
-        data: { class: 'REVENUE' } 
+      await tx.financialLedger.updateMany({
+        where: { id: ledger.id, organizationId: context.organizationId },
+        data: { class: 'REVENUE' }
       });
       updatedCount++;
 
@@ -49,9 +49,9 @@ export async function executeRevenueSyncService(context: { operatorId: string, o
           data: { name: ledger.name, category: AccountCategory.INCOME, organizationId: context.organizationId }
         });
       } else if (account.category !== AccountCategory.INCOME) {
-        await tx.account.updateMany({ 
-          where: { id: account.id, organizationId: context.organizationId }, 
-          data: { category: AccountCategory.INCOME } 
+        await tx.account.updateMany({
+          where: { id: account.id, organizationId: context.organizationId },
+          data: { category: AccountCategory.INCOME }
         });
       }
     }
@@ -131,8 +131,8 @@ export async function deleteLedgerService(
 
     if (childrenCount > 0) throw new Error("ERR_ENTITY_LOCKED: Ledger contains active taxonomy branches.");
 
-    const result = await tx.financialLedger.deleteMany({ 
-      where: { id: ledgerId, organizationId: context.organizationId } 
+    const result = await tx.financialLedger.deleteMany({
+      where: { id: ledgerId, organizationId: context.organizationId }
     });
 
     if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT: Ledger not found or access denied.");
@@ -279,5 +279,51 @@ export async function deleteAccountNodeService(
     });
 
     return result;
+  });
+}
+
+/**
+ * Executes an organizational bootstrap protocol (ADMIN ONLY).
+ * Creates a new Organization and binds a new Owner account to it.
+ */
+export async function bootstrapOrganizationService(
+  payload: { orgName: string, ownerName: string, ownerEmail: string },
+  context: { operatorId: string }
+) {
+  const db = getSovereignClient("ROOT_SYSTEM"); // Using system identifier for cross-org operations
+
+  return await db.$transaction(async (tx: any) => {
+    // 1. Create the Organization
+    const org = await tx.organization.create({
+      data: { name: payload.orgName }
+    });
+
+    // 2. Create the Owner (with a temporary password that must be reset)
+    // In a real system, this would trigger an invitation or force password reset
+    const tempPasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LpZ8O.t0cK.t0cK.t0cK.t0cK.t0cK.t0cK"; // Placeholder
+
+    const user = await tx.user.create({
+      data: {
+        email: payload.ownerEmail,
+        name: payload.ownerName,
+        passwordHash: tempPasswordHash,
+        role: "OWNER",
+        organizationId: org.id,
+        accountStatus: "ACTIVE",
+        requiresPasswordChange: true
+      }
+    });
+
+    await recordAuditLog({
+      action: 'CREATE',
+      entityType: 'ORGANIZATION',
+      entityId: org.id,
+      metadata: { name: payload.orgName, ownerEmail: payload.ownerEmail },
+      tx: tx as any,
+      userId: context.operatorId,
+      organizationId: org.id
+    });
+
+    return { organization: org, owner: user };
   });
 }

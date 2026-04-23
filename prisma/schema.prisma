@@ -198,6 +198,7 @@ model Organization {
   id                  String               @id @default(uuid())
   name                String
   createdAt           DateTime             @default(now())
+  deletedAt           DateTime?
   accounts            Account[]
   auditLogs           AuditLog[]
   categorizationRules CategorizationRule[]
@@ -279,7 +280,9 @@ model User {
   isSystemAdmin  Boolean       @default(false)
   accountStatus  String        @default("ACTIVE")
   canEdit        Boolean       @default(true)
+  requiresPasswordChange Boolean       @default(false)
   createdAt      DateTime      @default(now())
+  deletedAt      DateTime?
   auditLogs      AuditLog[]
   organization   Organization? @relation(fields: [organizationId], references: [id])
   memberships    OrganizationMember[]

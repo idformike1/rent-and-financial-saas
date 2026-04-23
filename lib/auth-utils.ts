@@ -9,6 +9,7 @@ export interface SessionContext {
   role: UserRole;
   organizationId: string;
   organizationName: string;
+  isSystemAdmin: boolean;
 }
 
 /**
@@ -21,7 +22,7 @@ export async function getCurrentSession(): Promise<SessionContext | null> {
 
   const dbUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { organizationId: true, role: true, name: true }
+    select: { organizationId: true, role: true, name: true, isSystemAdmin: true }
   });
 
   if (!dbUser) return null;
@@ -62,6 +63,7 @@ export async function getCurrentSession(): Promise<SessionContext | null> {
     role: (dbUser.role || 'VIEWER') as UserRole,
     organizationId: organizationId || "",
     organizationName,
+    isSystemAdmin: dbUser.isSystemAdmin || false,
   };
 }
 
@@ -168,6 +170,11 @@ export async function runSecureServerAction<T>(
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (orgExists === 0) {
+      // ── SYSTEM ADMIN EXEMPTION ────────────────────────────────
+      if (session.isSystemAdmin && !session.organizationId) {
+        return await action(session);
+      }
+
       if (isProduction) {
         throw new Error(`SECURITY_ERROR: Access denied. Organization record missing.`);
       }

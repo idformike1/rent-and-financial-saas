@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { runSecureServerAction } from '@/lib/auth-utils'
+import { auth, update } from '@/auth'
+import bcrypt from 'bcryptjs'
 import {
   createLedgerService,
   deleteLedgerService,
@@ -9,8 +11,10 @@ import {
   updateLedgerService,
   updateAccountNodeService,
   deleteAccountNodeService,
-  executeRevenueSyncService
+  executeRevenueSyncService,
+  bootstrapOrganizationService
 } from '@/src/services/mutations/system.services'
+import { prisma } from '@/lib/prisma'
 import { deepScanSystemService } from '@/src/services/queries/system.services'
 import { getDetailedOntologyService } from '@/src/services/queries/analytics'
 
@@ -206,4 +210,137 @@ export async function executeRevenueSync() {
       return { success: false, message: e.message || "ERR_SYNC_FAILURE" };
     }
   });
+}
+
+/* ── 5. PROVISIONING (ADMIN ONLY) ────────────────────────────────────────── */
+
+/**
+ * ORGANIZATIONAL BOOTSTRAP GATEKEEPER
+ */
+export async function bootstrapOrganization(formData: FormData) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    // Strict Gate: Only System Admins can bootstrap new organizations
+    if (!(session as any).isSystemAdmin) {
+      throw new Error("ERR_AUTHORITY_ABSENT: Provisioning requires ROOT_ADMIN clearance.");
+    }
+
+    try {
+      const orgName = formData.get('orgName') as string;
+      const ownerName = formData.get('ownerName') as string;
+      const ownerEmail = formData.get('ownerEmail') as string;
+
+      if (!orgName || !ownerName || !ownerEmail) {
+        return { error: "Missing required provisioning fields: Org Name, Owner Name, Owner Email." };
+      }
+
+      const result = await bootstrapOrganizationService(
+        { orgName, ownerName, ownerEmail },
+        { operatorId: session.userId || "OP_SYSTEM_ADMIN" }
+      );
+
+      revalidatePath('/admin');
+      return { success: true, data: result };
+    } catch (e: any) {
+      console.error('[SYSTEM_BOOTSTRAP_FATAL]', e);
+      return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}
+
+/**
+ * SYSTEM AUDIT DATA FETCHER
+ */
+export async function getSystemAuditSummary() {
+  // Directly query for dashboard metrics
+  const totalUsers = await prisma.user.count({ where: { deletedAt: null } });
+  const activeOrgs = await prisma.organization.count({ where: { deletedAt: null } });
+  const pendingIntake = await prisma.user.count({ where: { organizationId: null, accountStatus: 'ACTIVE', deletedAt: null } });
+
+  return {
+    totalUsers,
+    activeOrgs,
+    pendingIntake
+  };
+}
+
+/* ── 6. IMPERSONATION (SUPPORT PROTOCOL) ─────────────────────────────────── */
+
+/**
+ * Executes a session swap to impersonate a target user.
+ */
+export async function impersonateUser(userId: string) {
+  const session = await auth();
+  if (!session?.user?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Impersonation requires ROOT_ADMIN clearance.");
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId }
+  });
+
+  if (!targetUser) throw new Error("ERR_IDENTITY_ABSENT: Target user does not exist.");
+
+  // Security Guard: Prevent recursive impersonation or self-impersonation
+  if (targetUser.id === session.user.id) throw new Error("ERR_IDENTITY_COLLISION: Cannot impersonate self.");
+
+  await update({
+    impersonate: {
+      id: targetUser.id,
+      organizationId: targetUser.organizationId,
+      role: targetUser.role
+    }
+  });
+
+  revalidatePath('/');
+  return { success: true };
+}
+
+/**
+ * Reverts the session to the original administrator identity.
+ */
+export async function revertImpersonation() {
+  const session = await auth();
+  if (!(session?.user as any)?.isImpersonating) {
+    throw new Error("ERR_STATE_VIOLATION: No active impersonation detected.");
+  }
+
+  await update({ revert: true });
+
+  revalidatePath('/');
+  return { success: true };
+}
+
+/**
+ * Admin Override: Force password reset for a user.
+ */
+export async function adminResetUserPassword(userId: string) {
+  const session = await auth();
+  if (!(session?.user as any)?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Password reset requires ROOT_ADMIN clearance.");
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId }
+  });
+
+  if (!targetUser) throw new Error("ERR_IDENTITY_ABSENT: Target user does not exist.");
+
+  // Generate 8-character temporary password
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let tempPassword = '';
+  for (let i = 0; i < 8; i++) {
+    tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  const hashedPassword = await bcrypt.hash(tempPassword, 12);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      passwordHash: hashedPassword,
+      requiresPasswordChange: true
+    }
+  });
+
+  return { success: true, tempPassword };
 }
