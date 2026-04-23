@@ -30,17 +30,9 @@ export const proxy = auth((req) => {
     return Response.redirect(loginUrl);
   }
 
-  // 4. Enterprise Hardening: Deny deactivated accounts
-  if (isAuth && !req.auth?.user?.isActive) {
-    if (isLoginPage) return; 
-    const errorUrl = new URL('/login', req.nextUrl.origin);
-    errorUrl.searchParams.set('error', 'deactivated');
-    return Response.redirect(errorUrl);
-  }
-
-  // 5. Intelligent Routing: Send logged-in users away from the login gate
+  // 4. Intelligent Routing: Send logged-in users away from the login gate
   if (isAuth && isLoginPage) {
-    const dashboardUrl = new URL('/treasury', req.nextUrl.origin);
+    const dashboardUrl = new URL('/home', req.nextUrl.origin);
     return Response.redirect(dashboardUrl);
   }
 });

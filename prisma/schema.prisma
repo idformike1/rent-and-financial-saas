@@ -267,19 +267,21 @@ model CategorizationRule {
 }
 
 model User {
-  id             String       @id @default(uuid())
-  email          String       @unique
-  passwordHash   String       @map("password")
+  id             String        @id @default(uuid())
+  email          String        @unique
+  passwordHash   String        @map("password")
   name           String?
   firstName      String?
   lastName       String?
-  role           String       @default("MANAGER") // Supported: OWNER, ADMIN, MANAGER, VIEWER
-  organizationId String
-  isActive       Boolean      @default(true)
-  canEdit        Boolean      @default(true)
-  createdAt      DateTime     @default(now())
+  role           String        @default("MANAGER") // Supported: OWNER, ADMIN, MANAGER, VIEWER
+  organizationId String?
+  isActive       Boolean       @default(true)
+  isSystemAdmin  Boolean       @default(false)
+  accountStatus  String        @default("ACTIVE")
+  canEdit        Boolean       @default(true)
+  createdAt      DateTime      @default(now())
   auditLogs      AuditLog[]
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization? @relation(fields: [organizationId], references: [id])
   memberships    OrganizationMember[]
 }
 

@@ -9,9 +9,13 @@ export default async function TenancyCommandCenterPage({ params }: { params: { t
   if (!session) return notFound();
 
   const activeOrgId = (await getActiveWorkspaceId()) || session.user.organizationId;
+  if (!activeOrgId) return notFound();
 
   const tenant = await prisma.tenant.findUnique({
-    where: { id: params.tenantId, organizationId: activeOrgId },
+    where: { 
+      id: params.tenantId, 
+      organizationId: activeOrgId as string 
+    },
     include: {
       leases: { where: { isActive: true } }
     }
@@ -22,7 +26,7 @@ export default async function TenancyCommandCenterPage({ params }: { params: { t
   const lease = tenant.leases[0];
 
   const ledgerEntries = await prisma.ledgerEntry.findMany({
-    where: { tenantId: tenant.id, organizationId: activeOrgId },
+    where: { tenantId: tenant.id, organizationId: activeOrgId as string },
     orderBy: { date: 'desc' }
   });
 

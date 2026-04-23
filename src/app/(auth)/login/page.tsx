@@ -1,126 +1,40 @@
-'use client'
-
-import { useState, useEffect, Suspense } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Zap, ShieldCheck, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
-import { Card, Button, Input, Badge } from '@/components/ui-finova'
-import { toast } from '@/lib/toast'
-
-function LoginForm() {
-  const searchParams = useSearchParams()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-
-  useEffect(() => {
-    if (searchParams.get('onboarding') === 'success') {
-      toast.success("Security Clearance Granted: Account Ready.")
-    }
-  }, [searchParams])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
-    
-    try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError('Invalid credentials. Access restricted.')
-      } else {
-        router.push('/home')
-        router.refresh()
-      }
-    } catch (err) {
-      setError('System authentication failure.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-6 animate-in fade-in duration-1000 selection:bg-primary/10">
-      <Card variant="default" className="w-full max-w-md p-6 border-border rounded-[var(--radius-sm)] animate-in zoom-in-95 duration-700 bg-card">
-        <div className="space-y-10">
-          <div className="text-center space-y-4">
-             <div className="w-12 h-12 bg-foreground rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-6 transition-none">
-                <span className="text-background font-bold text-xl">M</span>
-             </div>
-             <div>
-                <h1 className="text-mercury-heading text-foreground">Mercury Alpha</h1>
-                <p className="text-mercury-body text-clinical-muted mt-2">System login required for terminal access.</p>
-             </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-mercury-label-caps text-clinical-muted ml-1">Email address</label>
-                <div className="relative group">
-                  <Input 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-10 rounded-[var(--radius-sm)] text-mercury-body border-border focus:border-foreground/20 bg-muted" 
-                    placeholder="Enter email..."
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <label className="text-mercury-label-caps text-clinical-muted ml-1">Password</label>
-                <div className="relative group">
-                  <Input 
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="h-10 rounded-[var(--radius-sm)] text-mercury-body border-border focus:border-foreground/20 bg-muted"
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-3 rounded-[var(--radius-sm)] border border-red-500/20 text-center text-mercury-label-caps animate-in shake duration-500">
-                {error}
-              </div>
-            )}
-
-            <Button 
-              type="submit"
-              disabled={isLoading}
-              isLoading={isLoading}
-              variant="primary"
-              className="w-full h-10 rounded-[var(--radius-sm)] text-mercury-body border-none mt-2"
-            >
-              {isLoading ? "Authenticating..." : "Sign In →"}
-            </Button>
-          </form>
-        </div>
-      </Card>
-    </div>
-  )
-}
+"use client";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const res = await signIn("credentials", { email, password, redirect: false });
+    
+    // DEBUGGING LINE
+    console.log("SIGNIN RESPONSE:", res);
+    
+    if (res?.error) {
+       console.error("SIGNIN ERROR:", res.error);
+       alert(`Access Denied: ${res.error}`);
+    } else { 
+       router.push("/admin"); 
+       router.refresh(); 
+    }
+    setLoading(false);
+  };
+
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <Loader2 className="w-8 h-8 text-clinical-muted animate-spin" />
-      </div>
-    }>
-      <LoginForm />
-    </Suspense>
-  )
+    <div className="flex h-screen items-center justify-center bg-black text-white">
+      <form onSubmit={handleSubmit} className="p-8 border border-white/10 rounded-xl bg-neutral-900 w-96">
+        <h1 className="mb-6 text-xl">Sovereign OS Login</h1>
+        <input className="w-full p-2 mb-4 bg-black border border-white/10" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+        <input className="w-full p-2 mb-4 bg-black border border-white/10" type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+        <button className="w-full p-2 bg-white text-black font-bold" disabled={loading}>Initialize Session</button>
+      </form>
+    </div>
+  );
 }

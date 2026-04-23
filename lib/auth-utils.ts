@@ -17,13 +17,28 @@ export interface SessionContext {
  */
 export async function getCurrentSession(): Promise<SessionContext | null> {
   const session = await auth();
-  if (!session?.user) return null;
+  if (!session?.user?.id) return null;
+
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { organizationId: true, role: true, name: true }
+  });
+
+  if (!dbUser) return null;
 
   const cookieStore = await cookies();
   const activeWorkspaceId = cookieStore.get('active_workspace_id')?.value;
 
-  let organizationId = session.user.organizationId as string;
-  let organizationName = session.user.organizationName as string;
+  let organizationId = dbUser.organizationId;
+  let organizationName = ""; // We could fetch this too if needed
+
+  if (organizationId) {
+    const org = await prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { name: true }
+    });
+    organizationName = org?.name || "";
+  }
 
   // ── WORKSPACE ABSTRACTION OVERRIDE ───────────────────────────
   if (activeWorkspaceId && activeWorkspaceId !== organizationId) {
@@ -36,8 +51,6 @@ export async function getCurrentSession(): Promise<SessionContext | null> {
       if (membership) {
         organizationId = activeWorkspaceId;
         organizationName = membership.organization.name;
-        // Optionally override role if memberships have specific roles
-        // role = membership.role as UserRole;
       }
     } catch (error) {
       console.error('[WORKSPACE_SYNC_ERROR] Failed to verify membership context.', error);
@@ -46,8 +59,8 @@ export async function getCurrentSession(): Promise<SessionContext | null> {
 
   return {
     userId: session.user.id as string,
-    role: session.user.role as UserRole,
-    organizationId,
+    role: (dbUser.role || 'VIEWER') as UserRole,
+    organizationId: organizationId || "",
     organizationName,
   };
 }
