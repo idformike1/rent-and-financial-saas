@@ -121,7 +121,7 @@ export default function AppShell({
         </header>
 
         {/* ── MAIN CANVAS ───────────────────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto min-h-0">
           <div className="w-full max-w-[1440px] mx-auto px-8 pt-8 pb-16">
             {children}
           </div>

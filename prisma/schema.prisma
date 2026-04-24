@@ -12,9 +12,12 @@ model Property {
   name           String
   address        String
   createdAt      DateTime      @default(now())
+  deletedAt      DateTime?
   ledgerEntries  LedgerEntry[]
   organization   Organization  @relation(fields: [organizationId], references: [id])
   units          Unit[]
+
+  @@index([organizationId])
 }
 
 model Unit {
@@ -26,19 +29,22 @@ model Unit {
   category          String            @default("FLAT")
   maintenanceStatus MaintenanceStatus @default(OPERATIONAL)
   marketRent        Decimal           @default(0.00)
+  deletedAt         DateTime?
   leases            Lease[]
   organization      Organization      @relation(fields: [organizationId], references: [id])
   property          Property          @relation(fields: [propertyId], references: [id])
   meterReadings     MeterReading[]
+
+  @@index([organizationId])
 }
 
 model MeterReading {
-  id        String   @id @default(uuid())
-  unitId    String
-  unit      Unit     @relation(fields: [unitId], references: [id])
-  value     Float    // The reading (e.g., 322)
-  date      DateTime @default(now())
-  type      String   // 'ELECTRIC' or 'WATER'
+  id     String   @id @default(uuid())
+  unitId String
+  unit   Unit     @relation(fields: [unitId], references: [id])
+  value  Float // The reading (e.g., 322)
+  date   DateTime @default(now())
+  type   String // 'ELECTRIC' or 'WATER'
 }
 
 model Tenant {
@@ -66,10 +72,13 @@ model Lease {
   startDate      DateTime
   endDate        DateTime
   isActive       Boolean      @default(true)
+  deletedAt      DateTime?
   charges        Charge[]
   organization   Organization @relation(fields: [organizationId], references: [id])
   tenant         Tenant       @relation(fields: [tenantId], references: [id])
   unit           Unit         @relation(fields: [unitId], references: [id])
+
+  @@index([organizationId])
 }
 
 model FinancialLedger {
@@ -111,9 +120,12 @@ model Charge {
   amountPaid     Decimal      @default(0.00)
   dueDate        DateTime
   isFullyPaid    Boolean      @default(false)
+  deletedAt      DateTime?
   lease          Lease        @relation(fields: [leaseId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])
   tenant         Tenant       @relation(fields: [tenantId], references: [id])
+
+  @@index([organizationId])
 }
 
 model Account {
@@ -123,10 +135,13 @@ model Account {
   category       AccountCategory
   parentId       String?
   isSystem       Boolean         @default(false)
+  deletedAt      DateTime?
   organization   Organization    @relation(fields: [organizationId], references: [id])
   parent         Account?        @relation("SubAccounts", fields: [parentId], references: [id])
   children       Account[]       @relation("SubAccounts")
   entries        LedgerEntry[]
+
+  @@index([organizationId])
 }
 
 model LedgerEntry {
@@ -151,7 +166,7 @@ model LedgerEntry {
   tenantId          String?          @map("tenant_id")
   payee             String?
   receiptUrl        String?
-  account           Account?          @relation(fields: [accountId], references: [id])
+  account           Account?         @relation(fields: [accountId], references: [id])
   wealthAccount     WealthAccount?   @relation(fields: [wealthAccountId], references: [id])
   incomeSource      IncomeSource?    @relation(fields: [incomeSourceId], references: [id])
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
@@ -159,7 +174,9 @@ model LedgerEntry {
   property          Property?        @relation(fields: [propertyId], references: [id])
   tenant            Tenant?          @relation(fields: [tenantId], references: [id])
   transaction       Transaction      @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  deletedAt         DateTime?
 
+  @@index([organizationId])
   @@index([organizationId, transactionDate])
 }
 
@@ -169,9 +186,12 @@ model Transaction {
   idempotencyKey String?       @unique
   description    String
   date           DateTime      @default(now())
+  deletedAt      DateTime?
   entries        LedgerEntry[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
 }
 
 enum EntryType {
@@ -225,23 +245,29 @@ model WealthAccount {
   name           String
   category       AccountCategory @default(ASSET)
   isArchived     Boolean         @default(false)
+  deletedAt      DateTime?
   organization   Organization    @relation(fields: [organizationId], references: [id])
   ledgerEntries  LedgerEntry[]
+
+  @@index([organizationId])
 }
 
 model IncomeSource {
-  id             String       @id @default(uuid())
+  id             String        @id @default(uuid())
   organizationId String
   name           String
-  isArchived     Boolean      @default(false)
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  isArchived     Boolean       @default(false)
+  deletedAt      DateTime?
+  organization   Organization  @relation(fields: [organizationId], references: [id])
   ledgerEntries  LedgerEntry[]
+
+  @@index([organizationId])
 }
 
 model OrganizationMember {
   userId         String
   organizationId String
-  role           String       @default("MANAGER") 
+  role           String       @default("MANAGER")
   createdAt      DateTime     @default(now())
   user           User         @relation(fields: [userId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])
@@ -268,24 +294,26 @@ model CategorizationRule {
 }
 
 model User {
-  id             String        @id @default(uuid())
-  email          String        @unique
-  passwordHash   String        @map("password")
-  name           String?
-  firstName      String?
-  lastName       String?
-  role           String        @default("MANAGER") // Supported: OWNER, ADMIN, MANAGER, VIEWER
-  organizationId String?
-  isActive       Boolean       @default(true)
-  isSystemAdmin  Boolean       @default(false)
-  accountStatus  String        @default("ACTIVE")
-  canEdit        Boolean       @default(true)
-  requiresPasswordChange Boolean       @default(false)
-  createdAt      DateTime      @default(now())
-  deletedAt      DateTime?
-  auditLogs      AuditLog[]
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  memberships    OrganizationMember[]
+  id                     String               @id @default(uuid())
+  email                  String               @unique
+  passwordHash           String               @map("password")
+  name                   String?
+  firstName              String?
+  lastName               String?
+  role                   String               @default("MANAGER") // Supported: OWNER, ADMIN, MANAGER, VIEWER
+  organizationId         String?
+  isActive               Boolean              @default(true)
+  isSystemAdmin          Boolean              @default(false)
+  accountStatus          String               @default("ACTIVE")
+  canEdit                Boolean              @default(true)
+  requiresPasswordChange Boolean              @default(false)
+  createdAt              DateTime             @default(now())
+  deletedAt              DateTime?
+  auditLogs              AuditLog[]
+  organization           Organization?        @relation(fields: [organizationId], references: [id])
+  memberships            OrganizationMember[]
+
+  @@index([organizationId])
 }
 
 model IdempotencyRecord {
@@ -305,7 +333,7 @@ model Invitation {
   email          String
   firstName      String?
   lastName       String?
-  role           String           // Supported: OWNER, ADMIN, MANAGER, VIEWER
+  role           String // Supported: OWNER, ADMIN, MANAGER, VIEWER
   organizationId String
   status         InvitationStatus @default(PENDING)
   createdAt      DateTime         @default(now())

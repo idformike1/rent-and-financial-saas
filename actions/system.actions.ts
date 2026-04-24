@@ -239,7 +239,12 @@ export async function bootstrapOrganization(formData: FormData) {
       );
 
       revalidatePath('/admin');
-      return { success: true, data: result };
+      return { 
+        success: true, 
+        orgName: result.organization.name,
+        ownerEmail: result.owner.email,
+        tempPassword: result.tempPassword 
+      };
     } catch (e: any) {
       console.error('[SYSTEM_BOOTSTRAP_FATAL]', e);
       return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -251,6 +256,11 @@ export async function bootstrapOrganization(formData: FormData) {
  * SYSTEM AUDIT DATA FETCHER
  */
 export async function getSystemAuditSummary() {
+  const session = await auth();
+  if (!(session?.user as any)?.isSystemAdmin) {
+    throw new Error("UNAUTHORIZED: Access Denied. System telemetry requires ROOT_ADMIN clearance.");
+  }
+
   // Directly query for dashboard metrics
   const totalUsers = await prisma.user.count({ where: { deletedAt: null } });
   const activeOrgs = await prisma.organization.count({ where: { deletedAt: null } });
@@ -343,4 +353,87 @@ export async function adminResetUserPassword(userId: string) {
   });
 
   return { success: true, tempPassword };
+}
+
+/**
+ * ORGANIZATIONAL SOFT-DELETE CASCADE
+ * Executes a cascading soft-delete for an organization and all its associated identities.
+ */
+export async function deleteOrganization(orgId: string) {
+  const session = await auth();
+  if (!(session?.user as any)?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Organizational deletion requires ROOT_ADMIN clearance.");
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 1. Cascade Soft-Delete to all Users within the Organization
+      await tx.user.updateMany({
+        where: { organizationId: orgId },
+        data: { 
+          deletedAt: new Date(),
+          accountStatus: "ARCHIVED" 
+        }
+      });
+
+      // 2. Materialize Soft-Delete for the Organization entity
+      await tx.organization.update({
+        where: { id: orgId },
+        data: { deletedAt: new Date() }
+      });
+    });
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/tenants');
+    return { success: true };
+  } catch (error: any) {
+    console.error('[SYSTEM_ORG_DELETE_FATAL]', error);
+    return { success: false, error: error.message || "ERR_CASCADE_FAILURE" };
+  }
+}
+
+/**
+ * TARGETED USER PROVISIONING
+ * Injects a new administrative identity into an existing organizational silo.
+ */
+export async function provisionTargetedUser(orgId: string, email: string, role: string) {
+  const session = await auth();
+  if (!(session?.user as any)?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Targeted provisioning requires ROOT_ADMIN clearance.");
+  }
+
+  try {
+    // 1. Verify target organization exists and is active
+    const org = await prisma.organization.findUnique({
+      where: { id: orgId, deletedAt: null }
+    });
+
+    if (!org) {
+      return { success: false, error: "ERR_TARGET_LOST: Organization not found or archived." };
+    }
+
+    // 2. Generate secure temporary credentials
+    const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
+    const tempPasswordHash = await bcrypt.hash(tempPassword, 12);
+
+    // 3. Create the Identity
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash: tempPasswordHash,
+        role,
+        organizationId: orgId,
+        accountStatus: "ACTIVE",
+        requiresPasswordChange: true
+      }
+    });
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/tenants');
+    return { success: true, email: user.email, tempPassword, role: user.role };
+  } catch (error: any) {
+    console.error('[SYSTEM_TARGETED_PROVISION_FATAL]', error);
+    if (error.code === 'P2002') return { success: false, error: "ERR_IDENTITY_CONFLICT: Email already exists." };
+    return { success: false, error: error.message || "ERR_PROVISION_FAILURE" };
+  }
 }

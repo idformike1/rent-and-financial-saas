@@ -299,8 +299,8 @@ export async function bootstrapOrganizationService(
     });
 
     // 2. Create the Owner (with a temporary password that must be reset)
-    // In a real system, this would trigger an invitation or force password reset
-    const tempPasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LpZ8O.t0cK.t0cK.t0cK.t0cK.t0cK.t0cK"; // Placeholder
+    const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
+    const tempPasswordHash = await import("bcryptjs").then(m => m.hash(tempPassword, 12));
 
     const user = await tx.user.create({
       data: {
@@ -324,6 +324,10 @@ export async function bootstrapOrganizationService(
       organizationId: org.id
     });
 
-    return { organization: org, owner: user };
+    return { 
+      organization: org, 
+      owner: user,
+      tempPassword // Returning the plain-text password for administrative hand-off
+    };
   });
 }

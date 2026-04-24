@@ -34,6 +34,13 @@ export default auth((req) => {
     return NextResponse.redirect(new URL(dashboard, nextUrl));
   }
 
+  // Deny by Default: If accessing protected routes without session, kick to login
+  const isProtectedRoute = nextUrl.pathname.startsWith('/admin') || nextUrl.pathname.startsWith('/home');
+  if (!isLoggedIn && isProtectedRoute) {
+    console.log(`[SECURITY_GATE] Unauthorized access attempt to ${nextUrl.pathname}. Redirecting to /login.`);
+    return NextResponse.redirect(new URL('/login', nextUrl));
+  }
+
   return NextResponse.next();
 });
 
