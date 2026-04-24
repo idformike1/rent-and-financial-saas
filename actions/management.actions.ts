@@ -178,4 +178,148 @@ export async function updateUserEntitlements(
   }
 }
 
+/**
+ * VAULT LOCKDOWN PROTOCOL
+ * Instantly suspends or restores access to an entire organization.
+ */
+export async function toggleOrganizationLockdown(organizationId: string, suspend: boolean) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized: No session found.");
+
+  // Security Gate: Root clearance required
+  const caller = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isSystemAdmin: true }
+  });
+
+  if (!caller?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Vault lockdown requires ROOT_ADMIN clearance.");
+  }
+
+  try {
+    const organization = await prisma.organization.update({
+      where: { id: organizationId },
+      data: { isSuspended: suspend },
+      select: { name: true }
+    });
+
+    // Create a permanent audit record of this administrative mutation
+    await prisma.auditLog.create({
+      data: {
+        action: suspend ? 'ORGANIZATION_LOCKDOWN' : 'ORGANIZATION_RELEASE',
+        entityType: 'ORGANIZATION',
+        entityId: organizationId,
+        targetName: organization.name,
+        userId: session.user.id,
+        organizationId: organizationId,
+      }
+    });
+
+    // Purge all layout caches to enforce the firewall instantly
+    revalidatePath('/', 'layout');
+    return { success: true };
+  } catch (e: any) {
+    console.error('[MANAGEMENT_LOCKDOWN_FATAL]', e);
+    return { success: false, error: e.message || "ERR_LOCKDOWN_FAILURE" };
+  }
+}
+
+/**
+ * VAULT MATERIALIZATION PROTOCOL
+ * Executes an atomic multi-table transaction to provision a new organizational vault.
+ */
+export async function provisionVault(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized: No session found.");
+
+  // Security Gate: Root clearance required
+  const caller = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isSystemAdmin: true }
+  });
+
+  if (!caller?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Provisioning requires ROOT_ADMIN clearance.");
+  }
+
+  try {
+    const vaultName = formData.get('vaultName') as string;
+    const firstName = formData.get('ownerFirstName') as string;
+    const lastName = formData.get('ownerLastName') as string;
+    const email = formData.get('ownerEmail') as string;
+
+    if (!vaultName || !firstName || !lastName || !email) {
+      return { success: false, error: "ERR_INPUT_INCOMPLETE: All fields are required." };
+    }
+
+    // Generate secure temporary credentials
+    const tempPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-4);
+    const bcrypt = await import("bcryptjs");
+    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Materialize Organization
+      const org = await tx.organization.create({
+        data: { name: vaultName }
+      });
+
+      // 2. Materialize Owner Identity
+      const user = await tx.user.create({
+        data: {
+          email,
+          firstName,
+          lastName,
+          passwordHash: hashedPassword,
+          role: "OWNER",
+          organizationId: org.id,
+          accountStatus: "ACTIVE",
+          requiresPasswordChange: true
+        }
+      });
+
+      // 3. Materialize Entitlements (Junction Table)
+      await tx.organizationMember.create({
+        data: {
+          userId: user.id,
+          organizationId: org.id,
+          role: "OWNER",
+          status: "ACTIVE",
+          canAccessRent: true,
+          canAccessWealth: true
+        }
+      });
+
+      // 4. Create Audit Log
+      await tx.auditLog.create({
+        data: {
+          action: "VAULT_PROVISIONED",
+          entityType: "ORGANIZATION",
+          entityId: org.id,
+          targetName: org.name,
+          userId: session.user.id,
+          organizationId: org.id
+        }
+      });
+
+      return { org, user, tempPassword };
+    });
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/admin/tenants');
+    
+    return { 
+      success: true, 
+      vaultName: result.org.name,
+      ownerEmail: result.user.email,
+      tempPassword: result.tempPassword 
+    };
+  } catch (error: any) {
+    console.error('[MANAGEMENT_PROVISION_FATAL]', error);
+    if (error.code === 'P2002') return { success: false, error: "ERR_IDENTITY_CONFLICT: Email already exists." };
+    return { success: false, error: error.message || "ERR_PROVISION_FAILURE" };
+  }
+}
+
+
+
 

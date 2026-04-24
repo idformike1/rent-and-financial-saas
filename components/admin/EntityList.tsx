@@ -1,9 +1,9 @@
 "use client";
 import { useTransition, useState, useMemo, Fragment } from "react";
 import { useRouter } from "next/navigation";
-import { toggleUserStatus, deleteUser, updateUserRole, updateUserEntitlements } from "@/actions/management.actions";
+import { toggleUserStatus, deleteUser, updateUserRole, updateUserEntitlements, toggleOrganizationLockdown } from "@/actions/management.actions";
 import { impersonateUser, adminResetUserPassword, deleteOrganization } from "@/actions/system.actions";
-import { Eye, Key, UserPlus, ChevronDown, ChevronRight, Shield, Trash2, Power, Layers } from "lucide-react";
+import { Eye, Key, UserPlus, ChevronDown, ChevronRight, Shield, Trash2, Power, Layers, Lock, Unlock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SudoDeleteModal from "./SudoDeleteModal";
 import AddUserModal from "./AddUserModal";
@@ -11,6 +11,7 @@ import AddUserModal from "./AddUserModal";
 interface Entity {
   id: string;
   name: string;
+  isSuspended?: boolean;
   users: {
     id: string;
     email: string;
@@ -51,6 +52,20 @@ export function EntityList({ entities }: EntityListProps) {
       return matchOrg || matchUser;
     });
   }, [entities, searchQuery]);
+
+  const handleToggleLockdown = (orgId: string, currentSuspended: boolean) => {
+    const action = currentSuspended ? 'RESTORE' : 'LOCKDOWN';
+    if (confirm(`CRITICAL: Are you sure you want to ${action} this entire vault?`)) {
+      startTransition(async () => {
+        const res = await toggleOrganizationLockdown(orgId, !currentSuspended);
+        if (res.success) {
+          window.location.reload();
+        } else {
+          alert(res.error || "Failed to execute lockdown protocol.");
+        }
+      });
+    }
+  };
 
   const handleToggleStatus = (userId: string, currentStatus: string) => {
     const action = currentStatus === 'ACTIVE' ? 'suspend' : 'reactivate';
@@ -163,7 +178,12 @@ export function EntityList({ entities }: EntityListProps) {
                         {expandedOrgIds.has(org.id) ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </button>
                       <div>
-                        <div className="text-sm font-medium text-white">{org.name}</div>
+                        <div className="text-sm font-medium text-white flex items-center gap-2">
+                          {org.name}
+                          {org.isSuspended && (
+                            <span className="px-2 py-0.5 rounded-full bg-red-500 text-[8px] font-black uppercase tracking-widest animate-pulse">Quarantined</span>
+                          )}
+                        </div>
                         <div className="text-[10px] font-mono text-neutral-600 mt-1 uppercase tracking-tighter">{org.id}</div>
                       </div>
                     </div>
@@ -184,6 +204,18 @@ export function EntityList({ entities }: EntityListProps) {
                         title="Add Staff"
                       >
                         <UserPlus size={14} />
+                      </button>
+                      <button 
+                        onClick={() => handleToggleLockdown(org.id, !!org.isSuspended)}
+                        className={cn(
+                          "px-4 py-2 rounded-lg border text-[10px] uppercase tracking-widest transition-all flex items-center gap-2",
+                          org.isSuspended 
+                            ? "bg-red-500 border-red-600 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]" 
+                            : "border-white/10 text-neutral-400 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500"
+                        )}
+                      >
+                        {org.isSuspended ? <Lock size={12} /> : <Unlock size={12} />}
+                        {org.isSuspended ? "RELEASE VAULT" : "LOCKDOWN"}
                       </button>
                       <button 
                         onClick={() => setSudoModal({ id: org.id, name: org.name, type: 'ORG' })}
@@ -269,7 +301,7 @@ export function EntityList({ entities }: EntityListProps) {
                                     <button 
                                       onClick={() => startTransition(async () => {
                                         const res = await impersonateUser(user.id);
-                                        if (res.success) router.push('/home');
+                                        if (res.success) window.location.href = '/home';
                                       })}
                                       className="p-1.5 rounded bg-white/5 text-neutral-500 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all"
                                       title="Impersonate"

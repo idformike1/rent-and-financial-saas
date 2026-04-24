@@ -264,7 +264,11 @@ export async function getSystemAuditSummary() {
   // Directly query for dashboard metrics
   const totalUsers = await prisma.user.count({ where: { deletedAt: null } });
   const activeOrgs = await prisma.organization.count({ where: { deletedAt: null } });
-  const pendingIntake = await prisma.user.count({ where: { organizationId: null, accountStatus: 'ACTIVE', deletedAt: null } });
+  
+  // Real-time Intake Tracking: Count all invitations currently awaiting acceptance
+  const pendingIntake = await prisma.invitation.count({ 
+    where: { status: 'PENDING' } 
+  });
 
   return {
     totalUsers,
@@ -301,7 +305,7 @@ export async function impersonateUser(userId: string) {
     }
   });
 
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -316,9 +320,10 @@ export async function revertImpersonation() {
 
   await update({ revert: true });
 
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
   return { success: true };
 }
+
 
 /**
  * Admin Override: Force password reset for a user.

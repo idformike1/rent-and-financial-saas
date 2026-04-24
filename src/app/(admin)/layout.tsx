@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { SignOutButton } from "@/components/admin/SignOutButton";
+import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
 
 import { requireLiveIdentity } from "@/src/lib/guards";
 
@@ -22,6 +23,7 @@ export default async function SovereignLayout({
 
   return (
     <div className="h-screen bg-neutral-950 text-white selection:bg-emerald-500/30 flex flex-col overflow-hidden">
+      <ImpersonationBanner />
       {/* Lightweight Horizontal Navigation */}
       <header className="w-full border-b border-white/5 bg-black/20 backdrop-blur-md px-8 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-8">
@@ -37,10 +39,10 @@ export default async function SovereignLayout({
               Cockpit
             </Link>
             <Link href="/admin/tenants" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
-              Tenants
+              Vault Registry
             </Link>
-            <Link href="/admin/provisioning" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
-              Provisioning
+            <Link href="/admin/audit" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
+              Audit Ledger
             </Link>
           </nav>
         </div>

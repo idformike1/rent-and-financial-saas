@@ -204,6 +204,7 @@ model AuditLog {
   action         String
   entityType     String
   entityId       String
+  targetName     String?
   metadata       Json?
   userId         String
   organizationId String
@@ -237,7 +238,9 @@ model Organization {
   members             OrganizationMember[]
   wealthAccounts      WealthAccount[]
   incomeSources       IncomeSource[]
+  isSuspended         Boolean              @default(false)
 }
+
 
 model WealthAccount {
   id             String          @id @default(uuid())
