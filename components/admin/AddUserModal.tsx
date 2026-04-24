@@ -28,9 +28,11 @@ export default function AddUserModal({ isOpen, onClose, orgId, orgName }: AddUse
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const role = formData.get("role") as string;
+    const canAccessRent = formData.get("canAccessRent") === "true";
+    const canAccessWealth = formData.get("canAccessWealth") === "true";
 
     try {
-      const res = await provisionTargetedUser(orgId, email, role);
+      const res = await provisionTargetedUser(orgId, email, role, canAccessRent, canAccessWealth);
       if (res.success) {
         setSuccessData({ 
           email: res.email!, 
@@ -137,6 +139,20 @@ export default function AddUserModal({ isOpen, onClose, orgId, orgName }: AddUse
               <option value="OWNER">OWNER (Full Sovereign Access)</option>
               <option value="VIEWER">VIEWER (Read-Only Audit)</option>
             </select>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <label className="text-[10px] uppercase tracking-widest text-neutral-500 ml-1">Module Entitlements</label>
+            <div className="grid grid-cols-2 gap-4">
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-black border border-white/5 cursor-pointer hover:bg-white/[0.02] transition-all">
+                <input type="checkbox" name="canAccessRent" value="true" defaultChecked className="w-4 h-4 accent-emerald-500 bg-neutral-900 border-white/10 rounded" />
+                <span className="text-[10px] uppercase tracking-widest text-neutral-400">Rent Module</span>
+              </label>
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-black border border-white/5 cursor-pointer hover:bg-white/[0.02] transition-all">
+                <input type="checkbox" name="canAccessWealth" value="true" defaultChecked className="w-4 h-4 accent-emerald-500 bg-neutral-900 border-white/10 rounded" />
+                <span className="text-[10px] uppercase tracking-widest text-neutral-400">Wealth Module</span>
+              </label>
+            </div>
           </div>
 
           <button

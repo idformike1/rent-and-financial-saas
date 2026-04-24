@@ -268,6 +268,9 @@ model OrganizationMember {
   userId         String
   organizationId String
   role           String       @default("MANAGER")
+  status         String       @default("ACTIVE")
+  canAccessRent   Boolean @default(true)
+  canAccessWealth Boolean @default(true)
   createdAt      DateTime     @default(now())
   user           User         @relation(fields: [userId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])

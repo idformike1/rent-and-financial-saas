@@ -396,7 +396,13 @@ export async function deleteOrganization(orgId: string) {
  * TARGETED USER PROVISIONING
  * Injects a new administrative identity into an existing organizational silo.
  */
-export async function provisionTargetedUser(orgId: string, email: string, role: string) {
+export async function provisionTargetedUser(
+  orgId: string, 
+  email: string, 
+  role: string,
+  canAccessRent: boolean = true,
+  canAccessWealth: boolean = true
+) {
   const session = await auth();
   if (!(session?.user as any)?.isSystemAdmin) {
     throw new Error("ERR_AUTHORITY_ABSENT: Targeted provisioning requires ROOT_ADMIN clearance.");
@@ -416,24 +422,156 @@ export async function provisionTargetedUser(orgId: string, email: string, role: 
     const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4);
     const tempPasswordHash = await bcrypt.hash(tempPassword, 12);
 
-    // 3. Create the Identity
-    const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash: tempPasswordHash,
-        role,
-        organizationId: orgId,
-        accountStatus: "ACTIVE",
-        requiresPasswordChange: true
-      }
+    // 3. Atomic Identity Injection (User + Membership)
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the User
+      const user = await tx.user.create({
+        data: {
+          email,
+          passwordHash: tempPasswordHash,
+          role,
+          organizationId: orgId,
+          accountStatus: "ACTIVE",
+          requiresPasswordChange: true
+        }
+      });
+
+      // Create the Many-to-Many membership with scoped entitlements
+      await tx.organizationMember.create({
+        data: {
+          userId: user.id,
+          organizationId: orgId,
+          role,
+          status: "ACTIVE",
+          canAccessRent,
+          canAccessWealth
+        }
+      });
+
+      return user;
     });
 
     revalidatePath('/admin');
     revalidatePath('/admin/tenants');
-    return { success: true, email: user.email, tempPassword, role: user.role };
+    return { success: true, email: result.email, tempPassword, role: result.role };
   } catch (error: any) {
     console.error('[SYSTEM_TARGETED_PROVISION_FATAL]', error);
     if (error.code === 'P2002') return { success: false, error: "ERR_IDENTITY_CONFLICT: Email already exists." };
     return { success: false, error: error.message || "ERR_PROVISION_FAILURE" };
   }
 }
+
+/**
+ * GLOBAL IDENTITY MIGRATION PROTOCOL
+ * Native execution of the Many-to-Many bridge synchronization.
+ * This runs within the Next.js runtime to ensure environment parity.
+ */
+export async function executeGlobalIdentityMigration() {
+  const session = await auth();
+  if (!session?.user?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Migration protocol requires ROOT_ADMIN clearance.");
+  }
+
+  try {
+    console.log('--- INITIATING NATIVE IDENTITY MIGRATION ---');
+    
+    const users = await prisma.user.findMany({
+      where: {
+        organizationId: { not: null },
+        deletedAt: null
+      }
+    });
+
+    console.log(`Found ${users.length} identity mappings for synchronization.`);
+
+    for (const user of users) {
+      if (user.organizationId) {
+        await prisma.organizationMember.upsert({
+          where: {
+            userId_organizationId: {
+              userId: user.id,
+              organizationId: user.organizationId
+            }
+          },
+          create: {
+            userId: user.id,
+            organizationId: user.organizationId,
+            role: user.role,
+            status: user.accountStatus
+          },
+          update: {
+            role: user.role,
+            status: user.accountStatus
+          }
+        });
+      }
+    }
+
+    revalidatePath('/admin');
+    return { success: true, migratedCount: users.length };
+  } catch (error: any) {
+    console.error('[SYSTEM_MIGRATION_FATAL]', error);
+    return { success: false, error: error.message || "ERR_MIGRATION_FAILURE" };
+  }
+}
+
+/**
+ * WORKSPACE CONTEXT SWITCHER PROTOCOL
+ * Updates the user's active organizational pointer after verifying membership.
+ */
+export async function switchActiveWorkspace(newOrganizationId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("ERR_AUTH_ABSENT: Context switch requires an active session.");
+  }
+
+  try {
+    // 1. Verify Membership Integrity
+    const membership = await prisma.organizationMember.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: session.user.id,
+          organizationId: newOrganizationId
+        }
+      }
+    });
+
+    if (!membership || membership.status !== 'ACTIVE') {
+      throw new Error("ERR_AUTHORITY_ABSENT: You do not have active clearance for this workspace.");
+    }
+
+    // 2. Update Active Context Pointer
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { organizationId: newOrganizationId }
+    });
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    console.error('[SYSTEM_WORKSPACE_SWITCH_FATAL]', error);
+    return { success: false, error: error.message || "ERR_SWITCH_FAILURE" };
+  }
+}
+
+/**
+ * MODULE CONTEXT SWITCHER PROTOCOL
+ * Persists the active functional scope (RENT/WEALTH) via a session cookie.
+ */
+export async function switchActiveModule(module: 'RENT' | 'WEALTH') {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+
+  cookieStore.set('active_module_context', module, {
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
+
+  revalidatePath('/', 'layout');
+  return { success: true };
+}
+
+
+

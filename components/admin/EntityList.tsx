@@ -1,9 +1,10 @@
 "use client";
 import { useTransition, useState, useMemo, Fragment } from "react";
 import { useRouter } from "next/navigation";
-import { toggleUserStatus, deleteUser, updateUserRole } from "@/actions/management.actions";
+import { toggleUserStatus, deleteUser, updateUserRole, updateUserEntitlements } from "@/actions/management.actions";
 import { impersonateUser, adminResetUserPassword, deleteOrganization } from "@/actions/system.actions";
-import { Eye, Key, UserPlus, ChevronDown, ChevronRight, Shield, Trash2, Power } from "lucide-react";
+import { Eye, Key, UserPlus, ChevronDown, ChevronRight, Shield, Trash2, Power, Layers } from "lucide-react";
+import { cn } from "@/lib/utils";
 import SudoDeleteModal from "./SudoDeleteModal";
 import AddUserModal from "./AddUserModal";
 
@@ -15,6 +16,8 @@ interface Entity {
     email: string;
     role: string;
     accountStatus: string;
+    canAccessRent?: boolean;
+    canAccessWealth?: boolean;
   }[];
 }
 
@@ -57,6 +60,17 @@ export function EntityList({ entities }: EntityListProps) {
         router.refresh();
       });
     }
+  };
+
+  const handleEntitlementToggle = (userId: string, orgId: string, type: 'RENT' | 'WEALTH', currentValue: boolean) => {
+    startTransition(async () => {
+      const entitlements = type === 'RENT' ? { canAccessRent: !currentValue } : { canAccessWealth: !currentValue };
+      const res = await updateUserEntitlements(userId, orgId, entitlements);
+      if (!res.success) {
+        alert(res.error || "Failed to update entitlements.");
+      }
+      router.refresh();
+    });
   };
 
   const handleRoleChange = async (userId: string, newRole: string, currentRole: string) => {
@@ -191,6 +205,7 @@ export function EntityList({ entities }: EntityListProps) {
                             <tr className="border-b border-white/5">
                               <th className="pl-12 pr-4 py-3 text-[9px] uppercase tracking-widest text-neutral-600">Identity Email</th>
                               <th className="px-4 py-3 text-[9px] uppercase tracking-widest text-neutral-600">System Role</th>
+                              <th className="px-4 py-3 text-[9px] uppercase tracking-widest text-neutral-600">Functional Scopes</th>
                               <th className="px-4 py-3 text-[9px] uppercase tracking-widest text-neutral-600">Account Status</th>
                               <th className="pl-4 pr-0 py-3 text-[9px] uppercase tracking-widest text-neutral-600 text-right">Identity Controls</th>
                             </tr>
@@ -212,6 +227,34 @@ export function EntityList({ entities }: EntityListProps) {
                                     <option value="MANAGER" className="bg-neutral-900">MANAGER</option>
                                     <option value="VIEWER" className="bg-neutral-900">VIEWER</option>
                                   </select>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="flex items-center gap-2">
+                                     <button
+                                       disabled={isPending}
+                                       onClick={() => handleEntitlementToggle(user.id, org.id, 'RENT', !!user.canAccessRent)}
+                                       className={cn(
+                                         "px-2 py-0.5 rounded border text-[8px] font-mono font-bold tracking-widest uppercase transition-all duration-300",
+                                         user.canAccessRent 
+                                           ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-500 hover:bg-emerald-500/10" 
+                                           : "border-white/5 bg-white/0 text-neutral-700 hover:text-neutral-500 hover:border-white/10"
+                                       )}
+                                     >
+                                       Rent
+                                     </button>
+                                     <button
+                                       disabled={isPending}
+                                       onClick={() => handleEntitlementToggle(user.id, org.id, 'WEALTH', !!user.canAccessWealth)}
+                                       className={cn(
+                                         "px-2 py-0.5 rounded border text-[8px] font-mono font-bold tracking-widest uppercase transition-all duration-300",
+                                         user.canAccessWealth 
+                                           ? "border-amber-500/20 bg-amber-500/5 text-amber-500 hover:bg-amber-500/10" 
+                                           : "border-white/5 bg-white/0 text-neutral-700 hover:text-neutral-500 hover:border-white/10"
+                                       )}
+                                     >
+                                       Wealth
+                                     </button>
+                                  </div>
                                 </td>
                                 <td className="px-4 py-4">
                                   <div className="flex items-center gap-2">

@@ -140,3 +140,42 @@ export async function updateUserRole(userId: string, newRole: string) {
     }
   }
 
+/**
+ * ORTHOGONAL ENTITLEMENT MUTATION PROTOCOL
+ * Updates functional module access flags (RENT/WEALTH) for a specific junction record.
+ */
+export async function updateUserEntitlements(
+  userId: string, 
+  organizationId: string, 
+  entitlements: { canAccessRent?: boolean, canAccessWealth?: boolean }
+) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized: No session found.");
+
+  // Fetch the live caller for security verification
+  const caller = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isSystemAdmin: true }
+  });
+
+  if (!caller?.isSystemAdmin) {
+    throw new Error("ERR_AUTHORITY_ABSENT: Entitlement mutation requires ROOT_ADMIN clearance.");
+  }
+
+  try {
+    await prisma.organizationMember.update({
+      where: {
+        userId_organizationId: { userId, organizationId }
+      },
+      data: entitlements
+    });
+
+    revalidatePath('/admin/tenants');
+    return { success: true };
+  } catch (e: any) {
+    console.error('[MANAGEMENT_ENTITLEMENT_UPDATE_FATAL]', e);
+    return { success: false, error: e.message || "ERR_MANAGEMENT_FAILURE" };
+  }
+}
+
+

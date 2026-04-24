@@ -1,7 +1,9 @@
 import AppShell from '@/components/AppShell';
 import UniversalCommandPalette from '@/src/components/Command/UniversalCommandPalette';
-import { getUserOrganizations, getActiveWorkspaceId } from '@/src/actions/workspace.actions';
 import { ImpersonationBanner } from '@/components/admin/ImpersonationBanner';
+import { WorkspaceSwitcher } from '@/components/tenant/WorkspaceSwitcher';
+import { auth } from '@/auth';
+import { cookies } from 'next/headers';
 
 import { requireLiveIdentity } from '@/src/lib/guards';
 
@@ -13,21 +15,29 @@ export default async function TenantLayout({
   // Triple-Wire Security: Verify identity is still valid in the DB before rendering
   await requireLiveIdentity();
 
-  const organizations = await getUserOrganizations();
-  const activeId = await getActiveWorkspaceId();
-
-  console.log("[FLOW MAP 7: TENANT_LAYOUT] Organizations Found:", organizations.length);
-  console.log("[FLOW MAP 8: TENANT_LAYOUT] Active Workspace ID:", activeId);
+  const session = await auth();
+  
+  // Detect Active Module Context
+  const cookieStore = await cookies();
+  const canAccessRent = (session?.user as any)?.canAccessRent ?? true;
+  const activeModule = (cookieStore.get('active_module_context')?.value as 'RENT' | 'WEALTH') || 
+                       (canAccessRent ? 'RENT' : 'WEALTH');
 
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
       <ImpersonationBanner />
       <div className="flex flex-1 w-full overflow-hidden">
         <UniversalCommandPalette />
-        <AppShell organizations={organizations} activeWorkspaceId={activeId || undefined}>
+        <AppShell 
+          workspaceSwitcher={<WorkspaceSwitcher />} 
+          activeWorkspaceId={session?.user?.organizationId || undefined}
+          activeModule={activeModule}
+        >
           {children}
         </AppShell>
       </div>
     </div>
   );
 }
+
+

@@ -10,24 +10,45 @@ interface DynamicSidebarProps {
   activeWorkspaceId?: string
   organizations: { id: string; name: string }[]
   onMobileClose?: () => void
+  activeModule?: 'RENT' | 'WEALTH'
 }
+
+import { useSession } from 'next-auth/react'
 
 export default function DynamicSidebar({ 
   activeWorkspaceId, 
   organizations,
-  onMobileClose 
+  onMobileClose,
+  activeModule
 }: DynamicSidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
 
-  // Determine Mode based on organization name
-  // Standard: "Personal Wealth" maps to WEALTH mode, others to PROPERTY
-  const activeOrg = organizations.find(o => o.id === activeWorkspaceId)
-  const mode: WorkspaceMode = activeOrg?.name === 'Personal Wealth' ? 'WEALTH' : 'PROPERTY'
+  // ── 1. ENTITLEMENT DETECTION ───────────────────────────────────────────
+  const canAccessRent = (session?.user as any)?.canAccessRent ?? true
+  const canAccessWealth = (session?.user as any)?.canAccessWealth ?? true
+
+  // ── 2. MODE ORCHESTRATION ──────────────────────────────────────────────
+  // The mode is now explicitly driven by the Top Header Switcher (activeModule)
+  const mode: WorkspaceMode = activeModule === 'WEALTH' ? 'WEALTH' : 'PROPERTY'
   
+  // Safety Guard: If user somehow tries to access a forbidden module via URL/Cookie
+  const hasAccess = mode === 'WEALTH' ? canAccessWealth : canAccessRent
   const config = WORKSPACE_CONFIG[mode]
 
+  if (!hasAccess) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center p-6 text-center">
+        <Zap className="w-8 h-8 text-red-500/20 mb-4" />
+        <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Access Terminated</p>
+        <p className="text-[9px] text-neutral-600 mt-2 uppercase tracking-tighter">Your identity lacks active entitlements for this functional scope.</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full animate-in fade-in duration-500">
+
       {/* ── MODE INDICATOR BADGE ────────────────────────────────────────── */}
       <div className="px-4 py-3">
         <div className={cn(

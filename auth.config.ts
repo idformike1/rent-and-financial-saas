@@ -6,7 +6,7 @@ export const authConfig = {
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      console.log("[FLOW MAP 2: JWT FORGE] Incoming User Object:", user);
+      // 1. Initial Identity Ingestion
       if (user) {
         token.id = user.id;
         token.isSystemAdmin = (user as any).isSystemAdmin;
@@ -16,6 +16,36 @@ export const authConfig = {
         token.requiresPasswordChange = (user as any).requiresPasswordChange;
       }
 
+      // 2. Multi-Silo Entitlement Injection
+      // Every time the token is evaluated, we ensure we have the correct module scopes 
+      // for the CURRENT active organizationId.
+      if (token.id && token.organizationId) {
+        try {
+          const { prisma } = await import("@/lib/prisma");
+          const membership = await prisma.organizationMember.findUnique({
+            where: {
+              userId_organizationId: {
+                userId: token.id as string,
+                organizationId: token.organizationId as string
+              }
+            },
+            select: { canAccessRent: true, canAccessWealth: true }
+          });
+
+          if (membership) {
+            token.canAccessRent = membership.canAccessRent;
+            token.canAccessWealth = membership.canAccessWealth;
+          } else {
+            // Default to true if membership is somehow missing but orgId is present
+            token.canAccessRent = true;
+            token.canAccessWealth = true;
+          }
+        } catch (e) {
+          console.error('[AUTH_ENTITLEMENT_SYNC_ERROR]', e);
+        }
+      }
+
+      // 3. Dynamic Context Update (Impersonation/Switching)
       if (trigger === "update" && session) {
         if (session.impersonate) {
           token.originalAdminId = token.id;
@@ -32,7 +62,6 @@ export const authConfig = {
         }
       }
 
-      console.log("[FLOW MAP 3: JWT FORGE] Outgoing Token:", token);
       return token;
     },
     async session({ session, token }) {
@@ -45,6 +74,8 @@ export const authConfig = {
         (session.user as any).requiresPasswordChange = token.requiresPasswordChange;
         (session.user as any).originalAdminId = token.originalAdminId;
         (session.user as any).isImpersonating = token.isImpersonating;
+        (session.user as any).canAccessRent = token.canAccessRent;
+        (session.user as any).canAccessWealth = token.canAccessWealth;
       }
       return session;
     },

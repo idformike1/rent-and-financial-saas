@@ -31,11 +31,15 @@ import DynamicSidebar from '@/src/components/Navigation/DynamicSidebar'
 export default function AppShell({ 
   children,
   organizations = [],
-  activeWorkspaceId
+  activeWorkspaceId,
+  workspaceSwitcher,
+  activeModule
 }: { 
   children: React.ReactNode,
   organizations?: { id: string, name: string }[],
-  activeWorkspaceId?: string 
+  activeWorkspaceId?: string,
+  workspaceSwitcher?: React.ReactNode,
+  activeModule?: 'RENT' | 'WEALTH'
 }) {
   const { data: session } = useSession()
   const userRole = session?.user?.role || 'MANAGER'
@@ -79,6 +83,7 @@ export default function AppShell({
             activeWorkspaceId={activeWorkspaceId}
             organizations={organizations}
             onMobileClose={() => setIsMobileMenuOpen(false)}
+            activeModule={activeModule}
           />
         </div>
 
@@ -112,7 +117,7 @@ export default function AppShell({
             </div>
             
             <div className="flex items-center gap-4 ml-auto">
-               <WorkspaceSwitcher organizations={organizations} activeId={activeWorkspaceId} />
+               {workspaceSwitcher}
                <div className="px-3 py-1 rounded-[var(--radius-sm)] bg-muted/10 border border-border flex items-center justify-center overflow-hidden">
                   <span className="text-mercury-label-caps text-clinical-muted">{userRole}</span>
                </div>
