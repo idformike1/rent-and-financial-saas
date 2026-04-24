@@ -200,17 +200,17 @@ enum EntryType {
 }
 
 model AuditLog {
-  id             String       @id @default(uuid())
+  id             String        @id @default(uuid())
   action         String
   entityType     String
   entityId       String
   targetName     String?
   metadata       Json?
   userId         String
-  organizationId String
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  user           User         @relation(fields: [userId], references: [id])
+  organizationId String?
+  createdAt      DateTime      @default(now())
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  user           User          @relation(fields: [userId], references: [id])
 
   @@index([organizationId, createdAt(sort: Desc)])
 }

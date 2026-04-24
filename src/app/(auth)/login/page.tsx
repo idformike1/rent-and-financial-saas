@@ -9,10 +9,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
     try {
       const res = await signIn("credentials", { 
@@ -21,10 +23,8 @@ export default function LoginPage() {
         redirect: false 
       });
       
-      console.log("[FLOW MAP 6: DISPATCH] SignIn Result:", res);
-      
       if (res?.error) {
-         toast.error(`Access Denied: ${res.error}`);
+         setError("INVALID_PROTOCOL: Credentials failed validation.");
          setLoading(false);
          return;
       }
@@ -43,7 +43,7 @@ export default function LoginPage() {
       
       router.refresh();
     } catch (err) {
-      toast.error("An unexpected authentication error occurred.");
+      setError("COMMUNICATION_FATAL: Unexpected authentication error.");
       setLoading(false);
     }
   };
@@ -55,16 +55,22 @@ export default function LoginPage() {
         <div className="absolute bottom-[10%] right-[10%] w-[20%] h-[20%] bg-blue-500/[0.02] rounded-full blur-[100px]" />
       </div>
 
-      <div className="w-full max-w-sm relative">
+      <div className="w-full max-w-sm relative px-4">
         <div className="mb-12 text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500 text-black font-bold text-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] mb-8">
             S
           </div>
-          <h1 className="text-2xl font-light tracking-tight text-white mb-2">Sovereign OS</h1>
-          <p className="text-neutral-500 text-sm font-light uppercase tracking-widest">Initialize Session</p>
+          <h1 className="text-2xl font-light tracking-tight text-white mb-2 uppercase">Sovereign OS</h1>
+          <p className="text-neutral-500 text-[10px] font-light uppercase tracking-widest italic">Initialize Secure Session</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl space-y-6">
+          {error && (
+            <div className="bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl p-4 text-[10px] font-bold uppercase tracking-widest animate-in fade-in slide-in-from-top-1 duration-300">
+              {error}
+            </div>
+          )}
+          
           <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-widest text-neutral-500 ml-1">Email Identity</label>
             <input 

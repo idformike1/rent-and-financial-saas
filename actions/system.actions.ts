@@ -370,9 +370,29 @@ export async function deleteOrganization(orgId: string) {
     throw new Error("ERR_AUTHORITY_ABSENT: Organizational deletion requires ROOT_ADMIN clearance.");
   }
 
+  // 1. Fetch organization metadata for immutable snapshotting
+  const orgToDelete = await prisma.organization.findUnique({
+    where: { id: orgId },
+    select: { name: true }
+  });
+
+  if (!orgToDelete) throw new Error("ERR_TARGET_ABSENT: Vault not found.");
+
   try {
+    // 2. Create forensic record before termination
+    await prisma.auditLog.create({
+      data: {
+        action: 'VAULT_TERMINATED',
+        entityType: 'ORGANIZATION',
+        entityId: orgId,
+        targetName: orgToDelete.name,
+        userId: session.user.id,
+        organizationId: null, // Ensure log survival after org deletion
+      }
+    });
+
     await prisma.$transaction(async (tx) => {
-      // 1. Cascade Soft-Delete to all Users within the Organization
+      // 3. Cascade Soft-Delete to all Users within the Organization
       await tx.user.updateMany({
         where: { organizationId: orgId },
         data: { 
@@ -381,13 +401,14 @@ export async function deleteOrganization(orgId: string) {
         }
       });
 
-      // 2. Materialize Soft-Delete for the Organization entity
+      // 4. Materialize Soft-Delete for the Organization entity
       await tx.organization.update({
         where: { id: orgId },
         data: { deletedAt: new Date() }
       });
     });
 
+    revalidatePath('/', 'layout');
     revalidatePath('/admin');
     revalidatePath('/admin/tenants');
     return { success: true };
