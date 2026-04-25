@@ -372,8 +372,14 @@ export async function logUtilityConsumption(payload: {
       const { prisma } = await import('@/lib/prisma');
       const { createBalancedTransaction } = await import('@/src/services/finance/core');
 
-      // 1. TARIFF RATE RESOLUTION (TODO: Link to Organization Settings)
-      const tariffRate = payload.utilityType === 'ELECTRIC' ? 0.15 : 0.05;
+      // 1. TARIFF RATE RESOLUTION (Configuration Registry)
+      const settings = await prisma.systemSettings.findUnique({
+        where: { organizationId: session.organizationId }
+      });
+
+      const electricRate = settings ? Number(settings.electricTariff) : 0.15;
+      const waterRate = settings ? Number(settings.waterTariff) : 0.05;
+      const effectiveRate = payload.utilityType === 'ELECTRIC' ? electricRate : waterRate;
 
       // 2. QUERY PREVIOUS READING
       const previousReading = await prisma.meterReading.findFirst({
@@ -400,7 +406,7 @@ export async function logUtilityConsumption(payload: {
       }
 
       const consumption = payload.currentReading - previousReading.value;
-      const chargeAmount = consumption * tariffRate;
+      const chargeAmount = consumption * effectiveRate;
 
       // 5. ATOMIC COMMIT (Meter + Charge + Ledger)
       return await prisma.$transaction(async (tx: any) => {
@@ -439,9 +445,10 @@ export async function logUtilityConsumption(payload: {
         });
 
         // C. Create Ledger Entry (DEBIT)
+        // Forensic Telemetry: Append the rate used to the description for historical audit.
         await createBalancedTransaction({
           organizationId: session.organizationId,
-          description: `Utility Consumption: ${payload.utilityType} (${consumption.toFixed(2)} units)`,
+          description: `Utility Consumption: ${payload.utilityType} (${consumption.toFixed(2)} units @ $${effectiveRate.toFixed(3)})`,
           idempotencyKey,
           date: new Date(payload.date),
           entries: [

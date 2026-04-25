@@ -47,7 +47,7 @@ const PROPERTY_NAV = [
   {
     label: 'SYSTEM',
     items: [
-      { name: 'Settings', href: '/settings', icon: Settings },
+      { name: 'Settings', href: '/settings/parameters', icon: Settings },
       { name: 'Audit Panopticon', href: '/admin/audit', icon: History },
     ]
   }

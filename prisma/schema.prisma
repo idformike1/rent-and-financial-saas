@@ -111,20 +111,20 @@ model ExpenseCategory {
 }
 
 model Charge {
-  id             String       @id @default(uuid())
+  id             String        @id @default(uuid())
   organizationId String
   tenantId       String
   leaseId        String
   type           ChargeType
   amount         Decimal
-  amountPaid     Decimal      @default(0.00)
+  amountPaid     Decimal       @default(0.00)
   dueDate        DateTime
   servicePeriod  String? // e.g. "2026-01"
-  isFullyPaid    Boolean      @default(false)
+  isFullyPaid    Boolean       @default(false)
   deletedAt      DateTime?
-  lease          Lease        @relation(fields: [leaseId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  lease          Lease         @relation(fields: [leaseId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
   ledgerEntries  LedgerEntry[]
 
   @@index([organizationId, servicePeriod])
@@ -245,8 +245,19 @@ model Organization {
   wealthAccounts      WealthAccount[]
   incomeSources       IncomeSource[]
   isSuspended         Boolean              @default(false)
+  settings            SystemSettings?
 }
 
+model SystemSettings {
+  id                String       @id @default(uuid())
+  organizationId    String       @unique
+  electricTariff    Decimal      @default(0.15)
+  waterTariff       Decimal      @default(0.05)
+  lateFeePercentage Decimal      @default(5.0)
+  gracePeriodDays   Int          @default(5)
+  updatedAt         DateTime     @updatedAt
+  organization      Organization @relation(fields: [organizationId], references: [id])
+}
 
 model WealthAccount {
   id             String          @id @default(uuid())
@@ -274,15 +285,15 @@ model IncomeSource {
 }
 
 model OrganizationMember {
-  userId         String
-  organizationId String
-  role           String       @default("MANAGER")
-  status         String       @default("ACTIVE")
-  canAccessRent   Boolean @default(true)
-  canAccessWealth Boolean @default(true)
-  createdAt      DateTime     @default(now())
-  user           User         @relation(fields: [userId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  userId          String
+  organizationId  String
+  role            String       @default("MANAGER")
+  status          String       @default("ACTIVE")
+  canAccessRent   Boolean      @default(true)
+  canAccessWealth Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  user            User         @relation(fields: [userId], references: [id])
+  organization    Organization @relation(fields: [organizationId], references: [id])
 
   @@id([userId, organizationId])
 }

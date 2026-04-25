@@ -44,6 +44,9 @@ export default async function SovereignLayout({
             <Link href="/admin/audit" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
               Audit Ledger
             </Link>
+            <Link href="/admin/settings" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
+              System Registry
+            </Link>
           </nav>
         </div>
 

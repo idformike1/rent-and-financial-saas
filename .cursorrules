@@ -15,7 +15,7 @@ CRITICAL: The following systems are CLASSIFIED and LOCKED. You are strictly forb
 ### 2. THE SUPERADMIN VAULT
 - STATUS: LOCKED (Security & Provisioning)
 - FILES:
-  - `src/app/(superadmin)/*` (or your equivalent superadmin directory)
+  - `src/app/(admin)/*` (or your equivalent superadmin directory)
   - `src/actions/management.actions.ts`
   - `src/lib/audit-logger.ts`
 - RULE: Do not alter the Vault Lockdown protocols, the Organization provisioning logic, or the centralized Audit Logger.

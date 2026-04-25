@@ -320,6 +320,93 @@ export async function provisionVault(formData: FormData) {
   }
 }
 
+/**
+ * CONFIGURATION REGISTRY PROTOCOL
+ * Fetches organization-wide settings or returns system defaults if uninitialized.
+ */
+export async function getSystemSettings() {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const settings = await prisma.systemSettings.findUnique({
+        where: { organizationId: session.organizationId }
+      });
+
+      if (!settings) {
+        // Return protocol defaults if the vault hasn't been initialized
+        return {
+          electricTariff: 0.15,
+          waterTariff: 0.05,
+          lateFeePercentage: 5.0,
+          gracePeriodDays: 5
+        };
+      }
+
+      return {
+        electricTariff: Number(settings.electricTariff),
+        waterTariff: Number(settings.waterTariff),
+        lateFeePercentage: Number(settings.lateFeePercentage),
+        gracePeriodDays: settings.gracePeriodDays
+      };
+    } catch (error: any) {
+      console.error('[SETTINGS_FETCH_FATAL]', error);
+      throw new Error("ERR_REGISTRY_FAILURE: Unable to fetch configuration.");
+    }
+  });
+}
+
+/**
+ * CONFIGURATION MUTATION PROTOCOL
+ * Updates the organizational settings vault via an atomic upsert.
+ */
+export async function updateSystemSettings(payload: { 
+  electricTariff: number, 
+  waterTariff: number, 
+  lateFeePercentage: number, 
+  gracePeriodDays: number 
+}) {
+  return runSecureServerAction('ADMIN', async (session) => {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        // 1. Atomic Upsert
+        const settings = await tx.systemSettings.upsert({
+          where: { organizationId: session.organizationId },
+          update: {
+            electricTariff: payload.electricTariff,
+            waterTariff: payload.waterTariff,
+            lateFeePercentage: payload.lateFeePercentage,
+            gracePeriodDays: payload.gracePeriodDays
+          },
+          create: {
+            organizationId: session.organizationId,
+            electricTariff: payload.electricTariff,
+            waterTariff: payload.waterTariff,
+            lateFeePercentage: payload.lateFeePercentage,
+            gracePeriodDays: payload.gracePeriodDays
+          }
+        });
+
+        // 2. Forensic Audit Log
+        await tx.auditLog.create({
+          data: {
+            action: 'SETTINGS_UPDATED',
+            entityType: 'SYSTEM_SETTINGS',
+            entityId: settings.id,
+            metadata: payload,
+            user: { connect: { id: session.userId || 'SYSTEM' } },
+            organization: { connect: { id: session.organizationId } }
+          }
+        });
+
+        revalidatePath('/admin/settings');
+        return { success: true, message: "Configuration Registry Synchronized." };
+      });
+    } catch (error: any) {
+      console.error('[SETTINGS_UPDATE_FATAL]', error);
+      return { success: false, error: error.message || "ERR_REGISTRY_UPDATE_FAILURE" };
+    }
+  });
+}
+
 
 
 
