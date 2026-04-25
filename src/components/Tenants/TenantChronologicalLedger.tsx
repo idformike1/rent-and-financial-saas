@@ -13,7 +13,6 @@ interface LedgerItem {
 }
 
 interface TenantChronologicalLedgerProps {
-  charges: any[];
   ledgerEntries: any[];
 }
 
@@ -23,33 +22,15 @@ interface TenantChronologicalLedgerProps {
  * Merges Charges (Debits) and Payments (Credits) into a single 
  * chronological stream to visualize the rent lifecycle.
  */
-export default function TenantChronologicalLedger({ charges, ledgerEntries }: TenantChronologicalLedgerProps) {
-  // 1. Merge and Normalize
-  const mergedItems: LedgerItem[] = [
-    ...charges.map(c => ({
-      id: c.id,
-      date: c.dueDate,
-      description: `${c.type.replace('_', ' ')} Obligation`,
-      type: 'CHARGE' as const,
-      amount: Number(c.amount)
-    })),
-    ...ledgerEntries.map(e => ({
-      id: e.id,
-      date: e.transactionDate,
-      description: e.description,
-      type: 'PAYMENT' as const,
-      amount: Number(e.amount)
-    }))
-  ];
-
-  // 2. Sort Ascending to calculate Running Balance correctly
-  const ascendingItems = [...mergedItems].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+export default function TenantChronologicalLedger({ ledgerEntries }: TenantChronologicalLedgerProps) {
+  // 1. Sort Ascending to calculate Running Balance correctly
+  const ascendingItems = [...ledgerEntries].sort((a, b) => 
+    new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime()
   );
   
   let runningBalance = 0;
   const itemsWithBalance = ascendingItems.map(item => {
-    if (item.type === 'CHARGE') {
+    if (item.type === 'DEBIT') {
       runningBalance += item.amount;
     } else {
       runningBalance -= item.amount;
@@ -57,9 +38,9 @@ export default function TenantChronologicalLedger({ charges, ledgerEntries }: Te
     return { ...item, balance: runningBalance };
   });
 
-  // 3. Sort Descending for display (Newest First)
+  // 2. Sort Descending for display (Newest First)
   const displayItems = [...itemsWithBalance].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+    new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime()
   );
 
   const formatCurrency = (val: number) => 
@@ -92,7 +73,7 @@ export default function TenantChronologicalLedger({ charges, ledgerEntries }: Te
               {displayItems.map((item) => (
                 <tr key={item.id} className="border-t border-white/5 hover:bg-white/[0.02] transition-colors group">
                   <td className="p-4 font-mono text-xs text-zinc-400">
-                    {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                    {new Date(item.transactionDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
                   </td>
                   <td className="p-4">
                     <span className="text-xs font-medium text-zinc-200 group-hover:text-white transition-colors">{item.description}</span>
@@ -100,19 +81,19 @@ export default function TenantChronologicalLedger({ charges, ledgerEntries }: Te
                   <td className="p-4 text-center">
                     <span className={cn(
                       "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border flex items-center justify-center w-fit mx-auto gap-1",
-                      item.type === 'CHARGE' 
+                      item.type === 'DEBIT' 
                         ? "border-amber-500/20 text-amber-500 bg-amber-500/5 shadow-[0_0_10px_rgba(245,158,11,0.05)]" 
                         : "border-emerald-500/20 text-emerald-500 bg-emerald-500/5 shadow-[0_0_10px_rgba(16,185,129,0.05)]"
                     )}>
-                      {item.type === 'CHARGE' ? <ArrowUpRight className="w-2.5 h-2.5" /> : <ArrowDownLeft className="w-2.5 h-2.5" />}
+                      {item.type === 'DEBIT' ? <ArrowUpRight className="w-2.5 h-2.5" /> : <ArrowDownLeft className="w-2.5 h-2.5" />}
                       {item.type}
                     </span>
                   </td>
                   <td className={cn(
                     "p-4 text-right font-mono text-xs font-bold",
-                    item.type === 'CHARGE' ? "text-zinc-200" : "text-emerald-400"
+                    item.type === 'DEBIT' ? "text-zinc-200" : "text-emerald-400"
                   )}>
-                    {item.type === 'PAYMENT' ? '-' : ''}{formatCurrency(item.amount)}
+                    {item.type === 'CREDIT' ? '-' : ''}{formatCurrency(item.amount)}
                   </td>
                   <td className={cn(
                     "p-4 text-right font-mono text-xs font-bold",

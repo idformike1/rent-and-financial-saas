@@ -50,8 +50,8 @@ export async function recordAuditLog({ action, entityType, entityId, metadata, t
       entityType,
       entityId,
       metadata: metadata ? metadata : undefined,
-      userId: finalUserId,
-      organizationId: finalOrgId
+      user: { connect: { id: finalUserId } },
+      organization: finalOrgId ? { connect: { id: finalOrgId } } : undefined
     }
   });
 }

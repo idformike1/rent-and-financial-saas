@@ -261,7 +261,8 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
           amountPaid: payload.amountPaid,
           transactionDate: new Date(payload.transactionDate),
           paymentMode: payload.paymentMode,
-          referenceText: payload.referenceText
+          referenceText: payload.referenceText,
+          idempotencyKey: idempotencyKey
         },
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
@@ -354,6 +355,306 @@ export async function clearTransaction(transactionId: string, currentStatus: boo
     } catch (e: any) {
       console.error('[FINANCE_CLEAR_FATAL]', e);
       return { success: false, message: "ERR_CLEARANCE_SERVICE_FAILURE" };
+    }
+  });
+}
+export async function logUtilityConsumption(payload: { 
+  tenantId: string, 
+  unitId: string, 
+  utilityType: 'ELECTRIC' | 'WATER', 
+  currentReading: number, 
+  date: string 
+}) {
+  const idempotencyKey = `UTILITY_${payload.unitId}_${payload.utilityType}_${payload.currentReading}_${payload.date}`;
+  
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
+    try {
+      const { prisma } = await import('@/lib/prisma');
+      const { createBalancedTransaction } = await import('@/src/services/finance/core');
+
+      // 1. TARIFF RATE RESOLUTION (TODO: Link to Organization Settings)
+      const tariffRate = payload.utilityType === 'ELECTRIC' ? 0.15 : 0.05;
+
+      // 2. QUERY PREVIOUS READING
+      const previousReading = await prisma.meterReading.findFirst({
+        where: { unitId: payload.unitId, type: payload.utilityType },
+        orderBy: { date: 'desc' }
+      });
+
+      // 3. BASELINE CHECK (Move-in Case)
+      if (!previousReading) {
+        await prisma.meterReading.create({
+          data: {
+            unitId: payload.unitId,
+            type: payload.utilityType,
+            value: payload.currentReading,
+            date: new Date(payload.date)
+          }
+        });
+        return { success: true, message: "Baseline reading established. No charge created." };
+      }
+
+      // 4. DELTA MATH & VALIDATION
+      if (payload.currentReading <= previousReading.value) {
+        throw new Error(`ERR_METRIC_VIOLATION: Current reading (${payload.currentReading}) must be greater than previous reading (${previousReading.value}).`);
+      }
+
+      const consumption = payload.currentReading - previousReading.value;
+      const chargeAmount = consumption * tariffRate;
+
+      // 5. ATOMIC COMMIT (Meter + Charge + Ledger)
+      return await prisma.$transaction(async (tx: any) => {
+        // A. Save Reading
+        await tx.meterReading.create({
+          data: {
+            unitId: payload.unitId,
+            type: payload.utilityType,
+            value: payload.currentReading,
+            date: new Date(payload.date)
+          }
+        });
+
+        const activeLease = await tx.lease.findFirst({ 
+          where: { tenantId: payload.tenantId, isActive: true, organizationId: session.organizationId } 
+        });
+
+        // B. Create Charge
+        const charge = await tx.charge.create({
+          data: {
+            organizationId: session.organizationId,
+            tenantId: payload.tenantId,
+            leaseId: activeLease?.id || '',
+            type: payload.utilityType === 'ELECTRIC' ? 'ELEC_SUBMETER' : 'WATER_SUBMETER',
+            amount: chargeAmount,
+            dueDate: new Date(payload.date),
+            isFullyPaid: false
+          }
+        });
+
+        const assetAccount = await tx.account.findFirst({ 
+          where: { category: 'ASSET', organizationId: session.organizationId } 
+        });
+        const incomeAccount = await tx.account.findFirst({ 
+          where: { category: 'INCOME', organizationId: session.organizationId } 
+        });
+
+        // C. Create Ledger Entry (DEBIT)
+        await createBalancedTransaction({
+          organizationId: session.organizationId,
+          description: `Utility Consumption: ${payload.utilityType} (${consumption.toFixed(2)} units)`,
+          idempotencyKey,
+          date: new Date(payload.date),
+          entries: [
+            {
+              accountId: assetAccount?.id || '',
+              type: 'DEBIT',
+              amount: chargeAmount,
+              tenantId: payload.tenantId,
+              chargeId: charge.id
+            },
+            {
+              accountId: incomeAccount?.id || '',
+              type: 'CREDIT',
+              amount: chargeAmount,
+              tenantId: payload.tenantId
+            }
+          ]
+        }, tx);
+
+        revalidatePath(`/tenants/${payload.tenantId}`);
+        revalidatePath('/reports/master-ledger');
+        
+        return { 
+          success: true, 
+          message: `Utility Recorded: ${consumption.toFixed(2)} units. Charge: $${chargeAmount.toFixed(2)} generated.` 
+        };
+      });
+
+    } catch (e: any) {
+      console.error('[UTILITY_ENGINE_FATAL]', e);
+      return { success: false, message: e.message || "ERR_ENGINE_FAILURE" };
+    }
+  });
+}
+export async function applyLedgerAdjustment(payload: { 
+  tenantId: string, 
+  amount: number, 
+  type: 'FEE' | 'WAIVER', 
+  reason: string 
+}) {
+  const idempotencyKey = `ADJUSTMENT_${payload.tenantId}_${payload.type}_${payload.amount}_${Date.now()}`;
+  
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
+    try {
+      if (payload.amount <= 0) throw new Error("ERR_PROTOCOL_VIOLATION: Adjustment amount must be greater than 0.");
+      if (!payload.reason || payload.reason.length < 5) throw new Error("ERR_PROTOCOL_VIOLATION: Valid reason required (min 5 chars).");
+
+      const { prisma } = await import('@/lib/prisma');
+      const { createBalancedTransaction } = await import('@/src/services/finance/core');
+
+      return await prisma.$transaction(async (tx: any) => {
+        // 1. RESOLVE ACTIVE LEASE
+        const activeLease = await tx.lease.findFirst({
+          where: { tenantId: payload.tenantId, isActive: true, organizationId: session.organizationId }
+        });
+
+        // 2. CREATE CHARGE RECORD
+        // FEE = Standard Charge (Debit)
+        // WAIVER = Credit Charge (acts as negative debt)
+        const charge = await tx.charge.create({
+          data: {
+            organizationId: session.organizationId,
+            tenantId: payload.tenantId,
+            leaseId: activeLease?.id || '',
+            type: payload.type === 'FEE' ? 'LATE_FEE' : 'CREDIT',
+            amount: payload.amount,
+            dueDate: new Date(),
+            isFullyPaid: false
+          }
+        });
+
+        // 3. RESOLVE ACCOUNTS
+        const assetAccount = await tx.account.findFirst({ where: { category: 'ASSET', organizationId: session.organizationId } });
+        const revenueAccount = await tx.account.findFirst({ where: { category: 'INCOME', organizationId: session.organizationId } });
+
+        // 4. INJECT LEDGER ENTRY
+        // FEE: DEBIT Asset (Receivable), CREDIT Revenue
+        // WAIVER: CREDIT Asset (Receivable), DEBIT Revenue (Contrar-revenue)
+        await createBalancedTransaction({
+          organizationId: session.organizationId,
+          description: `Manual Adjustment [${payload.type}]: ${payload.reason}`,
+          idempotencyKey,
+          date: new Date(),
+          entries: [
+            {
+              accountId: assetAccount?.id || '',
+              type: payload.type === 'FEE' ? 'DEBIT' : 'CREDIT',
+              amount: payload.amount,
+              tenantId: payload.tenantId,
+              chargeId: charge.id
+            },
+            {
+              accountId: revenueAccount?.id || '',
+              type: payload.type === 'FEE' ? 'CREDIT' : 'DEBIT',
+              amount: payload.amount,
+              tenantId: payload.tenantId
+            }
+          ]
+        }, tx);
+
+        // 5. AUDIT LOG
+        await tx.auditLog.create({
+          data: {
+            organization: { connect: { id: session.organizationId } },
+            user: { connect: { id: session.userId || 'SYSTEM' } },
+            action: 'LEDGER_ADJUSTMENT',
+            entityId: payload.tenantId,
+            entityType: 'TENANT',
+            metadata: {
+              type: payload.type,
+              amount: payload.amount,
+              reason: payload.reason,
+              chargeId: charge.id
+            }
+          }
+        });
+
+        revalidatePath(`/tenants/${payload.tenantId}`);
+        revalidatePath('/reports/master-ledger');
+
+        return { success: true, message: `${payload.type} of $${payload.amount.toFixed(2)} applied to ledger.` };
+      });
+
+    } catch (e: any) {
+      console.error('[FINANCE_ADJUSTMENT_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_FAILURE" };
+    }
+  });
+}
+export async function reverseLedgerTransaction(payload: { entryId: string, reason: string }) {
+  const idempotencyKey = `REVERSAL_${payload.entryId}_${Date.now()}`;
+  
+  return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
+    try {
+      if (!payload.reason || payload.reason.length < 5) throw new Error("ERR_PROTOCOL_VIOLATION: Valid reversal reason required (min 5 chars).");
+
+      const { prisma } = await import('@/lib/prisma');
+      const { createBalancedTransaction } = await import('@/src/services/finance/core');
+
+      return await prisma.$transaction(async (tx: any) => {
+        // 1. FETCH ORIGINAL ENTRY
+        const original = await tx.ledgerEntry.findUnique({
+          where: { id: payload.entryId, organizationId: session.organizationId },
+          include: { account: true }
+        });
+
+        if (!original) throw new Error("ERR_TARGET_LOST: Original ledger entry not found.");
+
+        // 2. CALCULATE INVERSION
+        const invertedType = original.type === 'DEBIT' ? 'CREDIT' : 'DEBIT';
+
+        // 3. CREATE BALANCED REVERSAL
+        // We create a dual entry to keep the ledger balanced.
+        // If we are reversing a DEBIT to Asset, we CREDIT Asset and DEBIT the counterparty (Revenue/Cash).
+        
+        // Find the "sister" entry in the same transaction to know what to reverse on the other side
+        const sister = await tx.ledgerEntry.findFirst({
+          where: { 
+            transactionId: original.transactionId, 
+            id: { not: original.id } 
+          }
+        });
+
+        if (!sister) throw new Error("ERR_TRANSACTION_CORRUPTED: Sister entry not found for balance correction.");
+
+        await createBalancedTransaction({
+          organizationId: session.organizationId,
+          description: `REVERSAL: [${original.description}] - Reason: ${payload.reason}`,
+          idempotencyKey,
+          date: new Date(),
+          entries: [
+            {
+              accountId: original.accountId,
+              type: invertedType,
+              amount: original.amount,
+              tenantId: original.tenantId,
+              chargeId: original.chargeId
+            },
+            {
+              accountId: sister.accountId,
+              type: sister.type === 'DEBIT' ? 'CREDIT' : 'DEBIT',
+              amount: sister.amount,
+              tenantId: sister.tenantId,
+              chargeId: sister.chargeId
+            }
+          ]
+        }, tx);
+
+        // 4. AUDIT LOG
+        await tx.auditLog.create({
+          data: {
+            organization: { connect: { id: session.organizationId } },
+            user: { connect: { id: session.userId || 'SYSTEM' } },
+            action: 'LEDGER_REVERSAL',
+            entityId: payload.entryId,
+            entityType: 'LEDGER_ENTRY',
+            metadata: {
+              originalEntryId: payload.entryId,
+              transactionId: original.transactionId,
+              reason: payload.reason
+            }
+          }
+        });
+
+        revalidatePath(`/tenants/${original.tenantId}`);
+        revalidatePath('/reports/master-ledger');
+
+        return { success: true, message: "Transaction reversal appended to ledger." };
+      });
+
+    } catch (e: any) {
+      console.error('[LEDGER_REVERSAL_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_FAILURE" };
     }
   });
 }

@@ -50,10 +50,30 @@ export async function getTenantForensicDossierService(
   const integrityScore = calculateTenancyIntegrityScore(tenant.charges, ledgerEntries);
   const stripChart = generateTenancyStripChart(tenant.charges, ledgerEntries);
 
+  // 2. LEDGER UNIFICATION (Truth Feed Source)
+  // We merge Charges and LedgerEntries into a unified array and force 
+  // the client to consume this as the single source of truth.
+  const unifiedLedger = [
+    ...tenant.charges.map(c => ({
+      id: c.id,
+      transactionDate: c.dueDate,
+      description: `${c.type.replace('_', ' ')} Obligation`,
+      type: 'DEBIT',
+      amount: Number(c.amount)
+    })),
+    ...ledgerEntries.map(e => ({
+      id: e.id,
+      transactionDate: e.transactionDate,
+      description: e.description,
+      type: 'CREDIT',
+      amount: Number(e.amount)
+    }))
+  ].sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
+
   return {
     tenant: {
       ...tenant,
-      ledgerEntries,
+      ledgerEntries: unifiedLedger,
       integrityScore,
       stripChart
     }

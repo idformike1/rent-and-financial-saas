@@ -59,14 +59,6 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
           <TenantProfileView 
             tenant={tenantDTO as any}
             activeLeases={activeLeases as any}
-            charges={tenant.charges.map((c: any) => ({ 
-              id: c.id, 
-              type: c.type,
-              amount: Number(c.amount || 0), 
-              amountPaid: Number(c.amountPaid || 0), 
-              dueDate: c.dueDate instanceof Date ? c.dueDate.toISOString() : c.dueDate,
-              isFullyPaid: c.isFullyPaid
-            }))}
             ledgerEntries={tenant.ledgerEntries.map((e: any) => ({ 
               id: e.id,
               amount: Number(e.amount || 0), 

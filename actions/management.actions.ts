@@ -210,8 +210,8 @@ export async function toggleOrganizationLockdown(organizationId: string, suspend
         entityType: 'ORGANIZATION',
         entityId: organizationId,
         targetName: organization.name,
-        userId: session.user.id,
-        organizationId: organizationId,
+        user: { connect: { id: session.user.id } },
+        organization: { connect: { id: organizationId } },
       }
     });
 
@@ -296,8 +296,8 @@ export async function provisionVault(formData: FormData) {
           entityType: "ORGANIZATION",
           entityId: org.id,
           targetName: org.name,
-          userId: session.user.id,
-          organizationId: org.id
+          user: { connect: { id: session.user.id } },
+          organization: { connect: { id: org.id } }
         }
       });
 

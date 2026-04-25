@@ -18,10 +18,21 @@ export async function processPaymentService(
     transactionDate: Date | string;
     paymentMode: string;
     referenceText?: string;
+    idempotencyKey?: string;
   },
   context: { operatorId: string, organizationId: string }
 ) {
   const db = getSovereignClient(context.organizationId);
+
+  // 1. IDEMPOTENCY LOCK (Backend Enforcement)
+  if (payload.idempotencyKey) {
+    const existing = await db.transaction.findUnique({
+      where: { idempotencyKey: payload.idempotencyKey }
+    });
+    if (existing) {
+      throw new Error(`ERR_IDEMPOTENCY_CONFLICT: Transaction ${payload.idempotencyKey} already exists. Aborting to prevent double-recording.`);
+    }
+  }
 
   return await db.$transaction(async (tx: any) => {
     const amountToApply = new Prisma.Decimal(payload.amountPaid);
@@ -111,6 +122,7 @@ export async function processPaymentService(
       organizationId: context.organizationId,
       description: `Waterfall Payment: ${tenant.name} - REF: ${payload.referenceText || 'NONE'}`,
       date: new Date(payload.transactionDate),
+      idempotencyKey: payload.idempotencyKey,
       entries: ledgerEntries
     }, tx);
 
