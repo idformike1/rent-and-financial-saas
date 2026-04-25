@@ -6,26 +6,7 @@ import { usePathname } from 'next/navigation'
 import GlobalSearch from './GlobalSearch'
 import WorkspaceSwitcher from '@/src/components/Navigation/WorkspaceSwitcher'
 import { cn } from '@/lib/utils'
-import {
-  Home,
-  List,
-  Building2,
-  Users,
-  Zap,
-  Tag,
-  Wallet,
-  Activity,
-  BarChart3,
-  CalendarDays,
-  Database,
-  Search,
-  Settings,
-  ShieldCheck,
-  Users2
-} from 'lucide-react'
 import DynamicSidebar from '@/src/components/Navigation/DynamicSidebar'
-
-// Navigation logic moved to src/config/workspace.config.ts and DynamicSidebar.tsx
 
 
 export default function AppShell({ 
@@ -80,8 +61,6 @@ export default function AppShell({
         {/* Navigation Content (Context-Aware) */}
         <div className="flex-1 overflow-hidden">
           <DynamicSidebar 
-            activeWorkspaceId={activeWorkspaceId}
-            organizations={organizations}
             onMobileClose={() => setIsMobileMenuOpen(false)}
             activeModule={activeModule}
           />

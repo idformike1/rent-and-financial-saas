@@ -1,6 +1,7 @@
 import { getCurrentSession } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { getMasterLedger, getLedgerFilterMetadata } from "@/actions/analytics.actions";
 import LedgerExplorerClient from "./LedgerExplorerClient";
 
@@ -30,6 +31,9 @@ export default async function LedgerExplorerPage({
   const session = await getCurrentSession();
   if (!session) redirect("/login");
 
+  const cookieStore = await cookies();
+  const activeModule = (cookieStore.get('active_module_context')?.value as 'RENT' | 'WEALTH') || 'RENT';
+
   const [ledgerData, metadata] = await Promise.all([
      getMasterLedger({
        query: params.q,
@@ -43,7 +47,8 @@ export default async function LedgerExplorerPage({
        minAmount: params.min ? parseFloat(params.min) : undefined,
        maxAmount: params.max ? parseFloat(params.max) : undefined,
        skip: params.skip ? parseInt(params.skip) : 0,
-       take: params.take ? parseInt(params.take) : 500 // Higher default for explorer
+       take: params.take ? parseInt(params.take) : 500, // Higher default for explorer
+       scope: activeModule
      }),
      getLedgerFilterMetadata()
   ]);

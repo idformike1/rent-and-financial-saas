@@ -119,12 +119,15 @@ model Charge {
   amount         Decimal
   amountPaid     Decimal      @default(0.00)
   dueDate        DateTime
+  servicePeriod  String? // e.g. "2026-01"
   isFullyPaid    Boolean      @default(false)
   deletedAt      DateTime?
   lease          Lease        @relation(fields: [leaseId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])
   tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  ledgerEntries  LedgerEntry[]
 
+  @@index([organizationId, servicePeriod])
   @@index([organizationId])
 }
 
@@ -166,6 +169,8 @@ model LedgerEntry {
   tenantId          String?          @map("tenant_id")
   payee             String?
   receiptUrl        String?
+  chargeId          String?
+  charge            Charge?          @relation(fields: [chargeId], references: [id])
   account           Account?         @relation(fields: [accountId], references: [id])
   wealthAccount     WealthAccount?   @relation(fields: [wealthAccountId], references: [id])
   incomeSource      IncomeSource?    @relation(fields: [incomeSourceId], references: [id])
@@ -176,6 +181,7 @@ model LedgerEntry {
   transaction       Transaction      @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   deletedAt         DateTime?
 
+  @@index([chargeId])
   @@index([organizationId])
   @@index([organizationId, transactionDate])
 }
@@ -361,6 +367,7 @@ enum MaintenanceStatus {
 
 enum ChargeType {
   RENT
+  SECURITY_DEPOSIT
   WATER_SUBMETER
   ELEC_SUBMETER
   LATE_FEE

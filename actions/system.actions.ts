@@ -366,7 +366,7 @@ export async function adminResetUserPassword(userId: string) {
  */
 export async function deleteOrganization(orgId: string) {
   const session = await auth();
-  if (!(session?.user as any)?.isSystemAdmin) {
+  if (!session || !session.user || !(session.user as any).isSystemAdmin) {
     throw new Error("ERR_AUTHORITY_ABSENT: Organizational deletion requires ROOT_ADMIN clearance.");
   }
 
@@ -379,6 +379,10 @@ export async function deleteOrganization(orgId: string) {
   if (!orgToDelete) throw new Error("ERR_TARGET_ABSENT: Vault not found.");
 
   try {
+    if (!session || !session.user) {
+      throw new Error("ERR_UNAUTHORIZED: Session invalid during system action.");
+    }
+
     // 2. Create forensic record before termination
     await prisma.auditLog.create({
       data: {
@@ -406,7 +410,7 @@ export async function deleteOrganization(orgId: string) {
         where: { id: orgId },
         data: { deletedAt: new Date() }
       });
-    });
+    }, { maxWait: 5000, timeout: 15000 });
 
     revalidatePath('/', 'layout');
     revalidatePath('/admin');
@@ -475,7 +479,7 @@ export async function provisionTargetedUser(
       });
 
       return user;
-    });
+    }, { maxWait: 5000, timeout: 15000 });
 
     revalidatePath('/admin');
     revalidatePath('/admin/tenants');
@@ -585,18 +589,23 @@ export async function switchActiveWorkspace(newOrganizationId: string) {
  * Persists the active functional scope (RENT/WEALTH) via a session cookie.
  */
 export async function switchActiveModule(module: 'RENT' | 'WEALTH') {
-  const { cookies } = await import("next/headers");
-  const cookieStore = await cookies();
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
 
-  cookieStore.set('active_module_context', module, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
-  });
+    cookieStore.set('active_module_context', module, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
 
-  revalidatePath('/', 'layout');
-  return { success: true };
+    revalidatePath('/', 'layout');
+    return { success: true };
+  } catch (error: any) {
+    console.error('[MODULE_SWITCH_FATAL]', error);
+    return { success: false, error: "ERR_PROTOCOL_SWITCH_FAILED" };
+  }
 }
 
 

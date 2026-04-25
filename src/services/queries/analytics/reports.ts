@@ -78,14 +78,21 @@ export async function getMasterLedgerService(
     maxAmount?: number;
     skip?: number;
     take?: number;
+    scope?: 'RENT' | 'WEALTH';
   }
 ) {
   const db = getSovereignClient(context.organizationId);
-  const { query, startDate, endDate, category, propertyId, tenantId, accountId, categoryId, minAmount, maxAmount, skip = 0, take = 100 } = filters || {};
+  const { query, startDate, endDate, category, propertyId, tenantId, accountId, categoryId, minAmount, maxAmount, skip = 0, take = 100, scope } = filters || {};
 
   const where: Prisma.LedgerEntryWhereInput = {
     organizationId: context.organizationId,
   };
+
+  if (scope === 'WEALTH') {
+    where.wealthAccountId = { not: null };
+  } else if (scope === 'RENT') {
+    where.wealthAccountId = null;
+  }
 
   if (query) {
     where.OR = [

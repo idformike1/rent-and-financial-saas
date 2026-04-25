@@ -12,19 +12,11 @@ export default async function AccountsMatrixPage() {
   if (!activeId) redirect('/home');
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <header>
-        <h1 className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-500/60 mb-1">
-          Analytical Intelligence
-        </h1>
-        <h2 className="text-display font-weight-display text-white leading-none">
-          Accounts Matrix
-        </h2>
-      </header>
-
-      <div className="max-w-6xl">
-        <HoldingsMatrix />
-      </div>
+    <div className="space-y-8 p-8 animate-in fade-in duration-700">
+      <h1 className="text-4xl font-light text-amber-500 tracking-tight">Wealth Accounts Matrix</h1>
+      <p className="text-clinical-muted uppercase tracking-widest text-[11px]">Personal Wealth Module: Analytical Scaffolding Active.</p>
+      <div className="h-[1px] w-full bg-amber-500/10" />
+      <div className="text-neutral-500 text-sm">Wealth Engine Component pending materialization.</div>
     </div>
   );
 }

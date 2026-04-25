@@ -15,7 +15,7 @@ export interface SystemResponse<T = any> {
 // ----------------------------------------------------------------------------
 export interface PaymentSubmissionPayload {
   tenantId: string;
-  amountPaid: number; 
+  amountPaid: number;
   transactionDate: string; // ISO date
   paymentMode: 'CASH' | 'BANK';
   referenceText: string;
@@ -37,7 +37,7 @@ export interface ChargeDTO {
   type: ChargeType;
   amount: number;         // Represented as number for frontend math
   amountPaid: number;
-  dueDate: Date;
+  dueDate: Date | string;
   isFullyPaid: boolean;
 }
 

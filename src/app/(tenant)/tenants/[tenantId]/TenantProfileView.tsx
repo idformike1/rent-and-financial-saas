@@ -30,7 +30,7 @@ const addLeaseSchema = z.object({
 type TenantForm = z.infer<typeof tenantSchema>
 type AddLeaseForm = z.infer<typeof addLeaseSchema>
 
-import LedgerTerminal from './LedgerTerminal'
+import TenantForensicLedger from '@/components/ui/TenantForensicLedger'
 
 interface TenantProfileViewProps {
   tenant: { 
@@ -337,7 +337,7 @@ export default function TenantProfileView({ tenant, activeLeases, charges, ledge
 
         {/* STEP 3.3: DUAL-LENS LEDGER TERMINAL */}
         <div className="md:col-span-8 space-y-8">
-           <LedgerTerminal charges={charges} ledgerEntries={ledgerEntries} />
+           <TenantForensicLedger charges={charges} tenantName={tenant.name} />
         </div>
       </div>
 

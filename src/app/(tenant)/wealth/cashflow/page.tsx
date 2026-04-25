@@ -3,10 +3,10 @@ import { redirect } from 'next/navigation'
 import { getActiveWorkspaceId } from '@/src/actions/workspace.actions'
 
 /**
- * INTERNAL LIQUIDITY & TRANSFERS (V.1.0)
- * Scaffolding for the Wealth internal movement engine.
+ * PERSONAL CASH FLOW INSIGHTS (V.1.0)
+ * Scaffolding for the Wealth analytical engine.
  */
-export default async function InternalLiquidityTransfersPage() {
+export default async function PersonalCashFlowInsightsPage() {
   const session = await getCurrentSession();
   if (!session) redirect('/login');
 
@@ -15,8 +15,8 @@ export default async function InternalLiquidityTransfersPage() {
 
   return (
     <div className="space-y-8 p-8 animate-in fade-in duration-700">
-      <h1 className="text-4xl font-light text-amber-500 tracking-tight">Internal Liquidity & Transfers</h1>
-      <p className="text-clinical-muted uppercase tracking-widest text-[11px]">Wealth Vault: Liquidity Orchestration Scaffold.</p>
+      <h1 className="text-4xl font-light text-amber-500 tracking-tight">Personal Cash Flow Insights</h1>
+      <p className="text-clinical-muted uppercase tracking-widest text-[11px]">Analytical Cockpit: Cashflow Engine Purged of Property Bleed.</p>
       <div className="h-[1px] w-full bg-amber-500/10" />
       <div className="text-neutral-500 text-sm">Wealth Engine Component pending materialization.</div>
     </div>

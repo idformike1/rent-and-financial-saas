@@ -25,6 +25,7 @@ export async function createBalancedTransaction(
       payee?: string;
       paymentMode?: PaymentMode;
       referenceText?: string;
+      chargeId?: string;
     }[];
   },
   existingTx?: any
@@ -85,12 +86,13 @@ export async function createBalancedTransaction(
           payee: entry.payee,
           paymentMode: entry.paymentMode || PaymentMode.CASH,
           referenceText: entry.referenceText,
+          chargeId: entry.chargeId,
         }
       });
     }
 
     return transaction;
-  });
+  }, { maxWait: 5000, timeout: 15000 });
 }
 
 export async function ingestLedgerService(
@@ -158,7 +160,7 @@ export async function ingestLedgerService(
     });
 
     return { count: records.length, totalVolume };
-  });
+  }, { maxWait: 5000, timeout: 15000 });
 }
 
 export async function logExpenseService(
@@ -229,7 +231,7 @@ export async function logExpenseService(
     });
 
     return { entryId: transaction.id, transactionId: transaction.id };
-  });
+  }, { maxWait: 5000, timeout: 15000 });
 }
 
 export async function voidLedgerEntryService(
@@ -266,5 +268,5 @@ export async function voidLedgerEntryService(
     });
 
     return { ...entry, status: 'VOIDED' };
-  });
+  }, { maxWait: 5000, timeout: 15000 });
 }

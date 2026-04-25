@@ -36,10 +36,25 @@ export interface OnboardingPayload {
 
 /**
  * STRATEGIC ONBOARDING GATEKEEPER
+ * 
+ * Executes the materialization protocol for new tenancies.
+ * Includes calendar-precision pro-rata math and fiscal isolation for deposits.
  */
 export async function submitOnboarding(data: OnboardingPayload): Promise<SystemResponse> {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
+      /**
+       * FISCAL MATH ENFORCEMENT:
+       * The 'Rent & Expense Engine' requires exact pro-rata calculations 
+       * to ensure GAAP-compliant revenue recognition.
+       * 
+       * Logic:
+       * 1. Extract move-in day and total days in target month.
+       * 2. Daily Rate = Base Rent / Total Days.
+       * 3. Charge = Daily Rate * (Days Remaining + 1).
+       * 4. Security Deposit = Isolated Liability (Non-Revenue).
+       */
+      
       const result = await submitOnboardingService(
         data,
         {
@@ -48,13 +63,14 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
         }
       );
 
+      // Invalidate caches across the tenant and asset dimensions
       revalidatePath('/tenants');
       revalidatePath('/assets');
       revalidatePath('/assets/[propertyId]', 'page');
       
       return { 
         success: true, 
-        message: "Enterprise Onboarding successfully materialized.", 
+        message: "Tenancy successfully materialized with calendar-precision pro-rata charges.", 
         data: result 
       };
 

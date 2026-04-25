@@ -220,6 +220,14 @@ export async function submitOnboardingService(
     const proratedRent = calculateProratedRent(payload.baseRent, moveIn);
     const secDep = new Prisma.Decimal(payload.securityDeposit);
 
+    /**
+     * PRO-RATA FISCAL MATH (CALENDAR-PRECISION)
+     * 1. Determine total days in move-in month.
+     * 2. Calculate daily rate (Monthly Rent / Days in Month).
+     * 3. Calculate remaining days (Days in Month - MoveIn Date + 1).
+     * 4. Pro-Rata Amount = Daily Rate * Remaining Days.
+     */
+
     // 2. MATERIALIZATION: TENANT
     const tenant = await tx.tenant.create({
       data: { 
@@ -250,15 +258,15 @@ export async function submitOnboardingService(
       }
     });
 
-    // 4. FINANCIAL INITIALIZATION (ENTROPY DEPOSIT + PRORATED RENT)
-    // Batched creation via createMany to avoid multiple round-trips in sequence
+    // 4. FINANCIAL INITIALIZATION (ESCROW ISOLATION + PRO-RATA REVENUE)
+    // We explicitly isolate the Security Deposit as a liability/escrow charge.
     await tx.charge.createMany({
       data: [
         {
           organizationId: context.organizationId,
           tenantId: tenant.id,
           leaseId: lease.id,
-          type: 'RENT', 
+          type: 'SECURITY_DEPOSIT', 
           amount: secDep,
           amountPaid: 0,
           dueDate: moveIn,

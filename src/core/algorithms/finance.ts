@@ -71,10 +71,16 @@ export const calculateTotalVolume = (records: { amount: Prisma.Decimal | number 
 };
 
 /**
- * ALGORITHM: PAYMENT WATERFALL (FIFO + PRIORITY)
+ * ALGORITHM: PAYMENT WATERFALL (PRIORITY-BASED)
  * 
  * Distributes a payment amount across a set of outstanding charges.
- * Prioritizes by Due Date (FIFO) and then by 'Primary' lease status.
+ * Mandate: Prioritize high-risk debt (Fees/Utilities) before basic rent revenue.
+ * 
+ * Priority Hierarchy:
+ * 1. LATE_FEE
+ * 2. UTILITIES (WATER_SUBMETER, ELEC_SUBMETER)
+ * 3. RENT
+ * 4. OTHERS (SECURITY_DEPOSIT, etc.)
  */
 export type ChargeDistro = {
   id: string;
@@ -84,19 +90,30 @@ export type ChargeDistro = {
 
 export const calculateWaterfallDistribution = (
   paymentAmount: Prisma.Decimal | number,
-  charges: any[] // Expects { id, amount, amountPaid, lease: { isPrimary } }
+  charges: any[] // Expects { id, amount, amountPaid, type, createdAt }
 ): { distributions: ChargeDistro[], remainingCredit: Prisma.Decimal } => {
   let amountRemaining = new Prisma.Decimal(paymentAmount);
   const distributions: ChargeDistro[] = [];
 
-  // Sort: 1. Due Date (ASC), 2. Primary Lease status
+  // Define Priority Mapping
+  const getPriority = (type: string) => {
+    if (type === 'LATE_FEE') return 1;
+    if (type === 'WATER_SUBMETER' || type === 'ELEC_SUBMETER') return 2;
+    if (type === 'RENT') return 3;
+    return 4; // Other charges (Deposit, etc.)
+  };
+
+  // Execute Strict Waterfall Sorting
   const sorted = [...charges].sort((a, b) => {
-    const d1 = new Date(a.dueDate).getTime();
-    const d2 = new Date(b.dueDate).getTime();
-    if (d1 !== d2) return d1 - d2;
-    if (a.lease?.isPrimary && !b.lease?.isPrimary) return -1;
-    if (!a.lease?.isPrimary && b.lease?.isPrimary) return 1;
-    return 0;
+    const p1 = getPriority(a.type);
+    const p2 = getPriority(b.type);
+    
+    if (p1 !== p2) return p1 - p2;
+    
+    // Fallback: FIFO based on fiscal due date
+    const t1 = new Date(a.dueDate).getTime();
+    const t2 = new Date(b.dueDate).getTime();
+    return t1 - t2;
   });
 
   for (const charge of sorted) {

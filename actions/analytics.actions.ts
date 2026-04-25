@@ -170,6 +170,7 @@ export async function getMasterLedger(filters?: {
   maxAmount?: number;
   skip?: number;
   take?: number;
+  scope?: 'RENT' | 'WEALTH';
 }) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {

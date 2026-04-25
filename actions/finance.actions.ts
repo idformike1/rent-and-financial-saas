@@ -24,28 +24,51 @@ import { PaymentSubmissionPayload, SystemResponse } from '@/types'
 
 /* ── 1. BILLING & AUTOMATION ─────────────────────────────────────────────── */
 
-export async function runMonthlyBillingCycle(targetDate: string, idempotencyKey: string) {
+/**
+ * PAYROLL BATCH GATEKEEPER
+ * 
+ * Manually triggers a recurring revenue batch for a specific service period.
+ * Enforces strict 'Period Lockdown' to prevent double-billing.
+ */
+export async function runMonthlyBillingCycle(payload: { servicePeriod: string, postingDate: string }) {
+  // Use a generated idempotency key for the request itself
+  const idempotencyKey = `BILLING_${payload.servicePeriod}`;
+
   return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
+      // 1. PROTOCOL VALIDATION
+      if (!payload.servicePeriod.match(/^\d{4}-\d{2}$/)) {
+        throw new Error("ERR_PROTOCOL_VIOLATION: servicePeriod must follow 'YYYY-MM' format.");
+      }
+
       const result = await runMonthlyBillingCycleService(
-        targetDate,
+        {
+          servicePeriod: payload.servicePeriod,
+          postingDate: new Date(payload.postingDate)
+        },
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
           organizationId: session.organizationId
         }
       );
 
+      // 2. CACHE PURGE
       revalidatePath('/reports/master-ledger');
       revalidatePath('/tenants');
+      revalidatePath('/treasury/receivables');
       
       return { 
         success: true, 
-        message: `Billing Cycle Complete: ${result.generated} charges generated, ${result.bypassed} decommissioned units bypassed.`,
+        message: `Payroll Batch Complete: Generated ${result.generated} charges for ${result.period}. ${result.bypassed} units bypassed.`,
         data: result
       };
     } catch (e: any) {
       console.error('[FINANCE_BILLING_FATAL]', e);
-      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+      return { 
+        success: false, 
+        message: e.message || "ERR_SERVICE_LAYER_FAILURE",
+        errorCode: "BATCH_ABORTED" 
+      };
     }
   });
 }
@@ -221,6 +244,12 @@ export async function ingestBulkExpenses(data: any[], idempotencyKey: string) {
 
 /* ── 5. LEDGER & PAYMENTS ───────────────────────────────────────────────── */
 
+/**
+ * WATERFALL PAYMENT GATEKEEPER
+ * 
+ * Orchestrates the complex liquidation of tenant debt across multiple 
+ * priority tiers (Fees > Utilities > Rent).
+ */
 export async function processPayment(payload: PaymentSubmissionPayload): Promise<SystemResponse> {
   const idempotencyKey = payload.idempotencyKey || `PAYMENT_${payload.tenantId}_${payload.amountPaid}_${payload.transactionDate}`;
   
@@ -240,9 +269,15 @@ export async function processPayment(payload: PaymentSubmissionPayload): Promise
         }
       );
 
+      // Invalidate the fiscal state across the platform
+      revalidatePath('/tenants');
+      revalidatePath(`/tenants/${payload.tenantId}`);
+      revalidatePath('/treasury/feed');
+      revalidatePath('/reports/master-ledger');
+
       return { 
         success: true, 
-        message: "Waterfall processing complete. Ledger entry immutable.", 
+        message: `Waterfall Protocol Successful: ${result.summary}`, 
         data: result 
       };
     } catch (e: any) {

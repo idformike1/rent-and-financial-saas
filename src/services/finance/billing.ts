@@ -10,17 +10,32 @@ import { recordAuditLog } from "@/lib/audit-logger";
  */
 
 export async function runMonthlyBillingCycleService(
-  targetDate: string,
+  payload: { servicePeriod: string, postingDate: Date },
   context: { operatorId: string, organizationId: string }
 ) {
   const db = getSovereignClient(context.organizationId);
-  const targetTime = new Date(targetDate);
-  const startOfMonth = new Date(targetTime.getFullYear(), targetTime.getMonth(), 1);
-  const endOfMonth = new Date(targetTime.getFullYear(), targetTime.getMonth() + 1, 0);
 
   return await db.$transaction(async (tx: any) => {
+    // 1. PERIOD LOCKDOWN (IDEMPOTENCY)
+    // Check if any RENT charges already exist for this organization and service period.
+    const existingPeriodCharge = await tx.charge.findFirst({
+      where: {
+        organizationId: context.organizationId,
+        type: 'RENT',
+        servicePeriod: payload.servicePeriod
+      }
+    });
+
+    if (existingPeriodCharge) {
+      throw new Error(`ERR_PERIOD_LOCKED: A billing batch for period ${payload.servicePeriod} has already been materialized.`);
+    }
+
+    // 2. RETRIEVE ACTIVE TENANCY TARGETS
     const activeLeases = await tx.lease.findMany({
-      where: { isActive: true, organizationId: context.organizationId },
+      where: { 
+        isActive: true, 
+        organizationId: context.organizationId 
+      },
       include: { unit: true }
     });
 
@@ -28,50 +43,54 @@ export async function runMonthlyBillingCycleService(
     let bypassedCount = 0;
     const generatedIds: string[] = [];
 
+    // 3. EXECUTE BATCH MATERIALIZATION
     for (const lease of activeLeases) {
+      // Logic Guard: Skip units currently undergoing decommissioning or repair
       if (lease.unit.maintenanceStatus === 'DECOMMISSIONED') {
         bypassedCount++;
         continue;
       }
 
-      const existingCharge = await tx.charge.findFirst({
-        where: {
+      const charge = await tx.charge.create({
+        data: {
+          organizationId: context.organizationId,
+          tenantId: lease.tenantId,
           leaseId: lease.id,
           type: 'RENT',
-          dueDate: { gte: startOfMonth, lte: endOfMonth },
-          organizationId: context.organizationId
+          amount: lease.rentAmount,
+          dueDate: payload.postingDate,
+          servicePeriod: payload.servicePeriod,
+          isFullyPaid: false
         }
       });
 
-      if (!existingCharge) {
-        const charge = await tx.charge.create({
-          data: {
-            organizationId: context.organizationId,
-            tenantId: lease.tenantId,
-            leaseId: lease.id,
-            type: 'RENT',
-            amount: lease.rentAmount,
-            dueDate: startOfMonth,
-            isFullyPaid: false
-          }
-        });
-        generatedCount++;
-        generatedIds.push(charge.id);
-      }
+      generatedCount++;
+      generatedIds.push(charge.id);
     }
 
+    // 4. FORENSIC TELEMETRY
     if (generatedCount > 0) {
       await recordAuditLog({
         action: 'CREATE',
         entityType: 'CHARGE',
-        entityId: `BILLING_CYCLE_${startOfMonth.toISOString()}`,
-        metadata: { cycleStart: startOfMonth, generated: generatedCount, recordIds: generatedIds },
+        entityId: `BATCH_${payload.servicePeriod}`,
+        metadata: { 
+          action: 'PAYROLL_BATCH',
+          period: payload.servicePeriod, 
+          postingDate: payload.postingDate,
+          generated: generatedCount, 
+          recordIds: generatedIds 
+        },
         tx: tx as any
       });
     }
 
-    return { generated: generatedCount, bypassed: bypassedCount };
-  });
+    return { 
+      period: payload.servicePeriod,
+      generated: generatedCount, 
+      bypassed: bypassedCount 
+    };
+  }, { maxWait: 5000, timeout: 15000 });
 }
 
 export async function waiveChargeService(
@@ -102,7 +121,7 @@ export async function waiveChargeService(
     });
 
     return { success: true, waived: balance.toNumber() };
-  });
+  }, { maxWait: 5000, timeout: 15000 });
 }
 
 export async function reconcileUtilitiesService(

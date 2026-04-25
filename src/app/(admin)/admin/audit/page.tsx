@@ -55,7 +55,7 @@ export default async function PanopticonPage({ searchParams }: PageProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {logs.length === 0 ? (
+            {(logs ?? []).length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-8 py-24 text-center">
                   <div className="flex flex-col items-center gap-4 opacity-20">
@@ -65,7 +65,7 @@ export default async function PanopticonPage({ searchParams }: PageProps) {
                 </td>
               </tr>
             ) : (
-              logs.map((log) => (
+              (logs ?? []).map((log) => (
                 <tr key={log.id} className="group hover:bg-white/[0.01] transition-colors">
                   <td className="px-8 py-5">
                     <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-tighter">

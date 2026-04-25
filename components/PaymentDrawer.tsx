@@ -51,23 +51,41 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   const amountPaid = isNaN(amountPaidRaw) ? 0 : Number(amountPaidRaw)
 
   const { previewData, overpayment } = useMemo(() => {
-    let tempRemaining = amountPaid
-    const data = activeCharges.map((charge) => {
-      const balanceOwed = charge.amount - charge.amountPaid
-      let applied = 0
+    let tempRemaining = amountPaid;
+    
+    // Define Priority Mapping (Synchronized with Backend)
+    const getPriority = (type: string) => {
+      if (type === 'LATE_FEE') return 1;
+      if (type === 'WATER_SUBMETER' || type === 'ELEC_SUBMETER') return 2;
+      if (type === 'RENT') return 3;
+      return 4;
+    };
+
+    // Sort by Priority then FIFO
+    const sortedCharges = [...activeCharges].sort((a, b) => {
+      const p1 = getPriority(a.type);
+      const p2 = getPriority(b.type);
+      if (p1 !== p2) return p1 - p2;
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    });
+
+    const data = sortedCharges.map((charge) => {
+      const balanceOwed = Number(charge.amount) - Number(charge.amountPaid);
+      let applied = 0;
 
       if (tempRemaining >= balanceOwed) {
-        applied = balanceOwed
-        tempRemaining -= applied
+        applied = balanceOwed;
+        tempRemaining -= applied;
       } else if (tempRemaining > 0) {
-        applied = tempRemaining
-        tempRemaining = 0
+        applied = tempRemaining;
+        tempRemaining = 0;
       }
 
-      return { ...charge, balanceOwed, applied }
-    })
-    return { previewData: data, overpayment: tempRemaining > 0 ? tempRemaining : 0 }
-  }, [amountPaid, activeCharges])
+      return { ...charge, balanceOwed, applied };
+    });
+
+    return { previewData: data, overpayment: tempRemaining > 0 ? tempRemaining : 0 };
+  }, [amountPaid, activeCharges]);
 
   const onSubmit = (data: PaymentForm) => {
     if (isViewer) {
