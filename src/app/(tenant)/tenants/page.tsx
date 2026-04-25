@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import TenantGrid from "./TenantGrid";
 import { TableSkeleton } from "@/components/ui/SovereignSkeleton";
 
@@ -14,6 +15,12 @@ export default async function TenantRegistryPage() {
             Occupant Registry
           </h2>
         </div>
+        <Link 
+          href="/tenant-register" 
+          className="h-10 px-6 bg-amber-500 text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-amber-400 transition-all flex items-center shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+        >
+          Onboard New Tenant
+        </Link>
       </header>
 
       <Suspense fallback={<TableSkeleton rows={10} />}>

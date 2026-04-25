@@ -2,6 +2,8 @@ import TenantProfileView from './TenantProfileView'
 import { getTenantForensicDossierService } from '@/src/services/mutations/tenant.services'
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSession } from '@/lib/auth-utils'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default async function TenantProfilePage({ params }: { params: Promise<{ tenantId: string }> }) {
   const { tenantId } = await params;
@@ -44,25 +46,35 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
       }));
 
     return (
-      <div className="min-h-screen bg-background">
-        <TenantProfileView 
-          tenant={tenantDTO as any}
-          activeLeases={activeLeases as any}
-          charges={tenant.charges.map((c: any) => ({ 
-            id: c.id, 
-            type: c.type,
-            amount: Number(c.amount || 0), 
-            amountPaid: Number(c.amountPaid || 0), 
-            dueDate: c.dueDate instanceof Date ? c.dueDate.toISOString() : c.dueDate,
-            isFullyPaid: c.isFullyPaid
-          }))}
-          ledgerEntries={tenant.ledgerEntries.map((e: any) => ({ 
-            id: e.id,
-            amount: Number(e.amount || 0), 
-            description: e.description,
-            transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : e.transactionDate 
-          }))}
-        />
+      <div className="min-h-screen bg-background pb-20">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <Link 
+            href="/tenants" 
+            className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500 hover:text-white transition-colors mb-8"
+          >
+            <ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-1" />
+            Back to Registry
+          </Link>
+          
+          <TenantProfileView 
+            tenant={tenantDTO as any}
+            activeLeases={activeLeases as any}
+            charges={tenant.charges.map((c: any) => ({ 
+              id: c.id, 
+              type: c.type,
+              amount: Number(c.amount || 0), 
+              amountPaid: Number(c.amountPaid || 0), 
+              dueDate: c.dueDate instanceof Date ? c.dueDate.toISOString() : c.dueDate,
+              isFullyPaid: c.isFullyPaid
+            }))}
+            ledgerEntries={tenant.ledgerEntries.map((e: any) => ({ 
+              id: e.id,
+              amount: Number(e.amount || 0), 
+              description: e.description,
+              transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : e.transactionDate 
+            }))}
+          />
+        </div>
       </div>
     );
   } catch (e) {
