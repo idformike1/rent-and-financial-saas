@@ -31,7 +31,7 @@ export default function UnitGrid({ units }: UnitGridProps) {
   }, [pathname, searchParams, router]);
 
   return (
-    <div className="w-full bg-muted/10 border border-border rounded-[var(--radius-sm)] overflow-hidden backdrop-blur-sm shadow-xl">
+    <div className="w-full bg-muted/10 border border-border rounded-[var(--radius-sm)] overflow-x-auto backdrop-blur-sm shadow-xl">
       <table className="w-full border-collapse text-[13px]">
         <colgroup>
           <col className="w-[20%]" />

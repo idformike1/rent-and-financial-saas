@@ -88,11 +88,11 @@ export async function submitOnboarding(data: OnboardingPayload): Promise<SystemR
 /**
  * IDENTITY PROTOCOL VALIDATION (GATEKEEPER)
  */
-export async function checkTenantExistence(name: string, email?: string, phone?: string) {
+export async function checkTenantExistence(name: string, email?: string, phone?: string, nationalId?: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
       const result = await checkTenantExistenceService(
-        { name, email, phone },
+        { name, email, phone, nationalId },
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
           organizationId: session.organizationId
@@ -101,7 +101,7 @@ export async function checkTenantExistence(name: string, email?: string, phone?:
       return result;
     } catch (e: any) {
       console.error('[CHECK_EXISTENCE_FATAL]', e);
-      return { exists: false, message: "Validation Protocol Failure" };
+      return { exists: false, message: "Validation Protocol Failure", conflicts: undefined };
     }
   });
 }

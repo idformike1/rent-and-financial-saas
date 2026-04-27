@@ -27,7 +27,7 @@ const PROPERTY_NAV = [
     items: [
       { name: 'Dashboard', href: '/home', icon: Home },
       { name: 'Assets', href: '/assets', icon: Building2 },
-      { name: 'Registry', href: '/tenants', icon: Users },
+      { name: 'Tenants', href: '/tenants', icon: Users },
     ]
   },
   {

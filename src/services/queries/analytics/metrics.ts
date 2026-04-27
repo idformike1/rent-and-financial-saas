@@ -144,7 +144,7 @@ export async function getPropertyAssetPulseService(
 ) {
   const db = getSovereignClient(context.organizationId);
 
-  const [property, units, revenueAgg, opexAgg] = await Promise.all([
+  const [property, units, revenueAgg, opexAgg, chargeAgg] = await Promise.all([
     db.property.findUnique({ where: { id: propertyId, organizationId: context.organizationId } }),
     db.unit.findMany({
       where: { propertyId, organizationId: context.organizationId },
@@ -157,6 +157,10 @@ export async function getPropertyAssetPulseService(
     db.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: { propertyId, organizationId: context.organizationId, account: { category: AccountCategory.EXPENSE } }
+    }),
+    db.charge.aggregate({
+      _sum: { amount: true, amountPaid: true },
+      where: { organizationId: context.organizationId, lease: { unit: { propertyId } } }
     })
   ]);
 
@@ -166,12 +170,22 @@ export async function getPropertyAssetPulseService(
   const opex = Math.abs(Number(opexAgg._sum.amount || 0));
   const noi = revenue - opex;
 
+  // Collection Efficiency: (Paid / Charged) * 100
+  const totalCharged = Number(chargeAgg._sum.amount || 0);
+  const totalPaid = Number(chargeAgg._sum.amountPaid || 0);
+  const collectionEfficiency = totalCharged > 0 ? (totalPaid / totalCharged) * 100 : 100;
+
+  // Revenue Leakage: (Gross Potential - Actual Billed)
+  const grossPotential = units.reduce((sum, u) => sum + Number(u.marketRent || 0), 0);
+  const actualBilled = units.reduce((sum, u) => sum + (u.leases[0] ? Number(u.leases[0].rentAmount || 0) : 0), 0);
+  const leakagePercent = grossPotential > 0 ? ((grossPotential - actualBilled) / grossPotential) * 100 : 0;
+
   return {
     hud: {
       noi,
       adjustedNoi: noi * 0.95,
-      revenueLeakage: 12.5,
-      collectionEfficiency: 98.2
+      revenueLeakage: leakagePercent,
+      collectionEfficiency: collectionEfficiency
     },
     waterfall: { revenue, opex, capex: 0, netCash: noi },
     units: units.map((u: any) => ({

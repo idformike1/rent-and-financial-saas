@@ -1,15 +1,14 @@
-'use client'
-
-import { useState, useEffect, useMemo } from 'react'
+"use client"
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
+import { Lock, ShieldCheck, ChevronRight, CheckCircle2, AlertTriangle, Building2, Calendar, DollarSign } from 'lucide-react';
 import { submitOnboarding, checkTenantExistence } from '@/actions/tenant.actions'
 import { getAvailableUnits } from '@/actions/asset.actions'
-
 import { toast } from '@/lib/toast'
-import { Card, Button, Input, cn } from '@/components/ui-finova'
+import { cn } from "@/lib/utils"
 
 const onboardingSchema = z.object({
   tenantName: z.string().min(2, "Full name required"),
@@ -24,9 +23,15 @@ const onboardingSchema = z.object({
 
 type OnboardingFormData = z.infer<typeof onboardingSchema>
 
-export default function OnboardingWizard() {
+const steps = [
+  { id: 1, title: 'Identity', desc: 'Basic information' },
+  { id: 2, title: 'Terms', desc: 'Property & Lease' },
+  { id: 3, title: 'Execution', desc: 'Review & Confirm' },
+];
+
+export default function TenantOnboardingWizard() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
   const [successData, setSuccessData] = useState<any>(null);
@@ -47,7 +52,7 @@ export default function OnboardingWizard() {
     fetchUnits();
   }, []);
 
-  const { register, handleSubmit, formState: { errors }, trigger, control, reset, getValues } = useForm<OnboardingFormData>({
+  const { register, handleSubmit, formState: { errors }, trigger, control, reset, getValues, setError } = useForm<OnboardingFormData>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       tenantName: '',
@@ -60,6 +65,8 @@ export default function OnboardingWizard() {
       moveInDate: new Date().toISOString().split('T')[0]
     }
   });
+
+  const [isValidating, setIsValidating] = useState(false);
 
   const watchedValues = useWatch({ control });
   
@@ -83,25 +90,39 @@ export default function OnboardingWizard() {
     };
   }, [watchedValues.moveInDate, watchedValues.baseRent, watchedValues.securityDeposit]);
 
-  const nextStep = async () => {
+  const handleNext = async () => {
     setServerError('');
     let fieldsToValidate: any[] = [];
-    if (step === 1) fieldsToValidate = ['tenantName', 'email', 'phone', 'nationalId'];
-    if (step === 2) fieldsToValidate = ['unitId', 'baseRent', 'securityDeposit', 'moveInDate'];
+    if (currentStep === 1) fieldsToValidate = ['tenantName', 'email', 'phone', 'nationalId'];
+    if (currentStep === 2) fieldsToValidate = ['unitId', 'baseRent', 'securityDeposit', 'moveInDate'];
     
     const isValid = await trigger(fieldsToValidate);
     if (!isValid) return;
 
-    if (step === 1) {
+    if (currentStep === 1) {
+      setIsValidating(true);
       const vals = getValues();
-      const check = await checkTenantExistence(vals.tenantName, vals.email, vals.phone);
-      if (check.exists) {
-        setServerError(check.message || "Identity conflict detected.");
+      try {
+        const check = await checkTenantExistence(vals.tenantName, vals.email, vals.phone, vals.nationalId);
+        if (check.exists) {
+          setServerError("Identity conflict detected. Please resolve highlighted fields.");
+          // Map all detected conflicts to their respective form fields for granular feedback
+          if (check.conflicts) {
+            Object.entries(check.conflicts).forEach(([field, message]) => {
+              setError(field as any, { message: message as string });
+            });
+          }
+          return;
+        }
+      } catch (err) {
+        setServerError("Identity validation protocol failed. Please retry.");
         return;
+      } finally {
+        setIsValidating(false);
       }
     }
 
-    setStep(step + 1);
+    setCurrentStep(prev => Math.min(prev + 1, 3));
   };
 
   const onSubmit = async (data: OnboardingFormData) => {
@@ -110,9 +131,9 @@ export default function OnboardingWizard() {
     try {
       const response = await submitOnboarding(data);
       if (response.success) {
-        toast.success("Deployment Successful");
+        toast.success("Tenancy Materialized Successfully");
         setSuccessData(response.data);
-        setStep(4);
+        setCurrentStep(4); // Success step
       } else {
         setServerError(response.message || "Mutation failed");
       }
@@ -123,307 +144,319 @@ export default function OnboardingWizard() {
     }
   };
 
-  const steps = [
-    { id: 1, label: 'Recipient' },
-    { id: 2, label: 'Amount' },
-    { id: 3, label: 'Categorization' },
-    { id: 4, label: 'Details' },
-    { id: 5, label: 'Review' }
-  ];
-
-  const mercuryStepInfo = useMemo(() => {
-    switch(step) {
-      case 1: return { title: 'Recipient', index: 0 };
-      case 2: return { title: 'Terms & Fiscal', index: 1 };
-      case 3: return { title: 'Registry Review', index: 4 };
-      default: return { title: 'Registry', index: 0 };
-    }
-  }, [step]);
-
-  if (step === 4) {
+  if (currentStep === 4) {
     return (
-      <div className="max-w-3xl mx-auto py-20 px-6 animate-in zoom-in-95 duration-500">
-        <Card className="p-12 text-center space-y-10 rounded-[var(--radius-sm)] border border-border bg-card ">
-          <div className="w-20 h-20 bg-mercury-green/10 rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-8 border border-mercury-green/20">
-            <span className="text-mercury-green text-3xl">✓</span>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="w-full max-w-xl bg-card border border-slate-800 rounded-2xl p-12 text-center space-y-8 animate-in zoom-in-95 duration-500 shadow-2xl">
+          <div className="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto border border-brand/20 shadow-brand/20 shadow-lg">
+            <CheckCircle2 size={40} className="text-brand" />
           </div>
           
-          <div className="space-y-4">
-            <h2 className="text-mercury-headline font-display text-foreground">Identity Activated</h2>
-            <p className="text-mercury-body text-clinical-muted max-w-sm mx-auto">
-              The tenant has been successfully registered and the initial ledger accounts have been initialized.
+          <div className="space-y-3">
+            <h2 className="text-3xl text-white font-light tracking-tight">Identity Activated</h2>
+            <p className="text-slate-400 text-sm max-w-xs mx-auto">
+              The tenancy has been successfully registered and initial ledger accounts materialized.
             </p>
           </div>
           
-          <div className=" border border-border rounded-[var(--radius-sm)] p-8 text-left space-y-6">
-             <div className="grid grid-cols-2 gap-8">
+          <div className="bg-background border border-slate-800 rounded-xl p-6 text-left space-y-4">
+             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                   <p className="text-mercury-label-caps text-clinical-muted">Lease Reference</p>
-                   <p className="text-mercury-heading text-foreground font-mono">{successData?.leaseId || '—'}</p>
+                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Lease Reference</p>
+                   <p className="text-sm text-brand/80 font-mono">{successData?.leaseId?.slice(0, 12).toUpperCase() || '—'}</p>
                 </div>
                 <div className="space-y-1">
-                   <p className="text-mercury-label-caps text-clinical-muted">Registry ID</p>
-                   <p className="text-mercury-heading text-foreground font-mono">{successData?.tenantId || '—'}</p>
+                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Registry ID</p>
+                   <p className="text-sm text-brand/80 font-mono">{successData?.tenantId?.slice(0, 12).toUpperCase() || '—'}</p>
                 </div>
              </div>
           </div>
 
-          <div className="flex items-center gap-4 pt-6 justify-center">
-            <Button 
-               variant="primary" 
-               type="button"
-               disabled={false}
+          <div className="flex flex-col gap-3">
+            <button 
                onClick={() => router.push('/tenants')} 
-               className="h-12 px-10 rounded-[var(--radius-sm)] text-mercury-label-caps transition-all "
+               className="w-full h-12 bg-brand hover:bg-brand/90 text-white rounded-lg font-medium transition-all shadow-brand/30 shadow-lg"
             >
-               View Profile →
-            </Button>
-            <Button 
-               variant="ghost" 
-               onClick={() => { reset(); setStep(1); }} 
-               className="h-12 px-8 rounded-[var(--radius-sm)] text-mercury-label-caps text-clinical-muted hover:text-foreground transition-all"
+               View Forensic Profile →
+            </button>
+            <button 
+               onClick={() => { reset(); setCurrentStep(1); setSuccessData(null); }} 
+               className="w-full h-12 text-slate-500 hover:text-white font-medium transition-all"
             >
-               Finish
-            </Button>
+               Register Another Tenancy
+            </button>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-12 px-8 flex flex-col animate-in fade-in duration-700">
-      <div className="max-w-[1100px] mx-auto w-full grid grid-cols-[240px_1fr] gap-16">
-        <aside className="space-y-1 pt-16">
-           {steps.map((s, idx) => (
-             <div 
-               key={s.id} 
-               className={cn(
-                 "relative pl-6 py-2.5 transition-all duration-300",
-                 mercuryStepInfo.index === idx ? "text-foreground opacity-100" : "text-clinical-muted/40"
-               )}
-             >
+    <div className="min-h-screen bg-background text-slate-300 flex flex-col items-center pt-12 pb-24 px-4 font-sans selection:bg-brand/30">
+      
+      {/* HEADER & HORIZONTAL STEPPER */}
+      <div className="w-full max-w-4xl mb-10">
+        <h1 className="text-3xl text-white font-light tracking-tight mb-8">Register New Tenancy</h1>
+        
+        <div className="flex items-center justify-between relative">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[1px] bg-slate-800 z-0"></div>
+          {steps.map((step) => {
+            const isActive = currentStep === step.id;
+            const isPast = currentStep > step.id;
+            return (
+              <div key={step.id} className="relative z-10 flex flex-col items-center gap-3 bg-background px-4">
                 <div className={cn(
-                  "absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] transition-all duration-300",
-                  mercuryStepInfo.index === idx ? "bg-white" : "bg-border"
-                )} />
-                <span className="text-[12px] font-bold tracking-[0.1em] uppercase">{s.label}</span>
-             </div>
-           ))}
-        </aside>
-
-        <div className="space-y-12">
-          <div className="space-y-1">
-             <h1 className="text-mercury-headline font-display text-foreground">
-               {mercuryStepInfo.title}
-             </h1>
-             <p className="text-mercury-body text-clinical-muted">Registry Initialization Protocol // V.4.1</p>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-12 pb-32">
-             {step === 1 && (
-               <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <Card className="bg-card border-border rounded-[var(--radius-sm)]  overflow-hidden p-8">
-                    <div className="flex items-center gap-8">
-                       <div className="w-14 h-14 rounded-[var(--radius-sm)] bg-background border border-border flex items-center justify-center text-[16px] font-bold text-[#5D71F9]">
-                         {watchedValues.tenantName ? watchedValues.tenantName.substring(0, 2).toUpperCase() : '??'}
-                       </div>
-                       <div className="flex-1 space-y-6">
-                         <div className="space-y-2">
-                           <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Legal Identity</label>
-                           <Input 
-                             {...register('tenantName')} 
-                             className="h-10 border-b border-t-0 border-x-0 border-border rounded-none bg-transparent px-0 text-[16px] focus:border-[#5D71F9] transition-all" 
-                             placeholder="ENTER NAME" 
-                           />
-                         </div>
-                         <div className="flex gap-8">
-                            <div className="flex-1 space-y-2">
-                               <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Email Address</label>
-                               <Input 
-                                 {...register('email')} 
-                                 className="h-9 border-b border-t-0 border-x-0 border-border rounded-none bg-transparent px-0 text-[14px] focus:border-[#5D71F9] transition-all" 
-                                 placeholder="identity@domain.com" 
-                               />
-                            </div>
-                            <div className="flex-1 space-y-2">
-                               <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Mobile Contact</label>
-                               <Input 
-                                 {...register('phone')} 
-                                 className="h-9 border-b border-t-0 border-x-0 border-border rounded-none bg-transparent px-0 text-[14px] focus:border-[#5D71F9] transition-all" 
-                                 placeholder="+X XXX XXX XXXX" 
-                               />
-                            </div>
-                         </div>
-                       </div>
-                    </div>
-                 </Card>
-
-                 <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Identity Identifier</label>
-                    <div className="bg-card border border-border rounded-[var(--radius-sm)] p-5 flex items-center gap-4">
-                       <span className="text-clinical-muted/30 font-bold">[S]</span>
-                       <Input 
-                         {...register('nationalId')} 
-                         className="bg-transparent border-0 focus:ring-0 text-[15px] h-8 px-0 flex-1 placeholder:text-clinical-muted/20" 
-                         placeholder="Enter SSN or Passport details" 
-                       />
-                    </div>
-                 </div>
-               </div>
-             )}
-
-             {step === 2 && (
-               <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Asset Allocation</label>
-                    <div className="bg-card border border-border rounded-[var(--radius-sm)] overflow-hidden">
-                       <select 
-                         {...register('unitId')} 
-                         className="w-full bg-transparent text-foreground p-6 text-[16px] outline-none appearance-none cursor-pointer border-0"
-                       >
-                         <option value="" className="bg-card">Select available inventory...</option>
-                         {units.map(u => <option key={u.id} value={u.id} className="bg-card">Unit {u.unitNumber} - {u.type}</option>)}
-                       </select>
-                    </div>
-                 </div>
-
-                 <div className="grid grid-cols-2 gap-8">
-                    <div className="space-y-3">
-                       <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Monthly Baseline</label>
-                       <div className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex items-center">
-                          <span className="text-clinical-muted/20 text-[18px] mr-3 font-mono">$</span>
-                          <Input 
-                             type="number" 
-                             {...register('baseRent', {valueAsNumber: true})} 
-                             className="bg-transparent border-0 focus:ring-0 text-[20px] p-0 flex-1 font-mono tracking-clinical" 
-                             placeholder="0.00" 
-                          />
-                       </div>
-                    </div>
-                    <div className="space-y-3">
-                       <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Security Reserve</label>
-                       <div className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex items-center">
-                          <span className="text-clinical-muted/20 text-[18px] mr-3 font-mono">$</span>
-                          <Input 
-                             type="number" 
-                             {...register('securityDeposit', {valueAsNumber: true})} 
-                             className="bg-transparent border-0 focus:ring-0 text-[20px] p-0 flex-1 font-mono tracking-clinical" 
-                             placeholder="0.00" 
-                          />
-                       </div>
-                    </div>
-                 </div>
-
-                 <div className="space-y-3">
-                    <label className="text-[11px] font-bold text-clinical-muted uppercase tracking-widest ml-1">Activation Date</label>
-                    <div className="bg-card border border-border rounded-[var(--radius-sm)] p-6 flex items-center gap-5">
-                       <span className="text-clinical-muted/30">🗓️</span>
-                       <Input 
-                          type="date" 
-                          {...register('moveInDate')} 
-                          className="bg-transparent border-0 focus:ring-0 text-[16px] p-0 h-8 flex-1 invert" 
-                       />
-                    </div>
-                 </div>
-               </div>
-             )}
-
-             {step === 3 && (
-               <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                 <Card className="bg-card border border-border rounded-[var(--radius-sm)] p-10 overflow-hidden relative ">
-                    <div className="absolute top-0 right-0 p-8 opacity-[0.02]">
-                       <span className="text-6xl font-bold">⚡</span>
-                    </div>
-                    
-                    <div className="space-y-10">
-                       <div className="flex justify-between items-end border-b border-white/[0.04] pb-8">
-                          <div className="space-y-1">
-                             <h4 className="text-[22px] font-display text-foreground tracking-clinical">Ledger Summary</h4>
-                             <p className="text-[11px] text-clinical-muted uppercase tracking-widest">Initial Ledger Hit</p>
-                          </div>
-                          <div className="text-right">
-                             <p className="text-[28px] font-mono text-foreground tracking-clinicaler">${prorationPreview?.total.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
-                          </div>
-                       </div>
-
-                       <div className="grid grid-cols-2 gap-16">
-                          <div className="space-y-5">
-                             <div className="space-y-0.5">
-                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Prorated Allocation</p>
-                                <p className="text-[16px] font-mono text-foreground/80">${prorationPreview?.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
-                             </div>
-                             <div className="space-y-0.5">
-                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Security Reserve</p>
-                                <p className="text-[16px] font-mono text-foreground/80">${watchedValues.securityDeposit?.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
-                             </div>
-                          </div>
-                          <div className="space-y-5">
-                             <div className="space-y-0.5">
-                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Entity</p>
-                                <p className="text-[16px] text-foreground/80 tracking-clinical">{watchedValues.tenantName || 'UNKNOWN'}</p>
-                             </div>
-                             <div className="space-y-0.5">
-                                <p className="text-[10px] text-clinical-muted uppercase tracking-widest font-bold">Allocated Asset</p>
-                                <p className="text-[16px] text-foreground/80 tracking-clinical">Unit {units.find(u => u.id === watchedValues.unitId)?.unitNumber || 'TBD'}</p>
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                 </Card>
-                 
-                 {serverError && (
-                   <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-[var(--radius-sm)] flex items-center gap-5 text-red-500/80">
-                     <span className="text-xl shrink-0">⚠️</span>
-                     <div className="space-y-0.5">
-                       <p className="text-[14px] font-bold uppercase tracking-wider">Protocol Violation</p>
-                       <p className="text-[13px] opacity-70">{serverError}</p>
-                     </div>
-                   </div>
-                 )}
-               </div>
-             )}
-          </form>
+                  "w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all duration-500",
+                  isActive ? "bg-brand text-white shadow-brand/50 shadow-lg scale-110" : 
+                  isPast ? "bg-slate-800 text-brand/80 border border-slate-700" : "bg-card text-slate-500 border border-slate-800"
+                )}>
+                  {isPast ? <ChevronRight size={16} /> : step.id}
+                </div>
+                <div className="text-center">
+                  <p className={cn(
+                    "text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-300",
+                    isActive ? "text-brand" : "text-slate-500"
+                  )}>{step.title}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-[240px] right-0 h-24 flex items-center justify-center gap-3 bg-gradient-to-t from-background to-transparent pointer-events-none">
-         <div className="flex items-center gap-3 pointer-events-auto   p-2 rounded-[var(--radius-sm)] border border-border/50">
-           {step > 1 && (
-             <Button 
-               type="button" 
-               variant="ghost"
-               disabled={isSubmitting}
-               onClick={() => { setStep(step-1); setServerError(''); }} 
-               className="h-10 px-8 rounded-[var(--radius-sm)] text-[13px] font-bold text-clinical-muted hover:text-foreground hover:bg-white/5 transition-all bg-transparent border-none"
-             >
-               Go back
-             </Button>
-           )}
-           
-           {step < 3 ? (
-             <Button 
-               type="button" 
-               variant="primary" 
-               onClick={nextStep} 
-               disabled={false}
-               className="h-10 px-10 rounded-[var(--radius-sm)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white flex items-center gap-2  transition-all"
-             >
-               Next Step →
-             </Button>
-           ) : (
-             <Button 
-               type="submit" 
-               variant="primary" 
-               onClick={handleSubmit(onSubmit)}
-               disabled={isSubmitting} 
-               isLoading={isSubmitting}
-               className="h-10 px-12 rounded-[var(--radius-sm)] text-[13px] font-bold bg-[#5D71F9] hover:bg-[#5D71F9]/90 text-white  transition-all"
-             >
-               Authorize Registry ✓
-             </Button>
-           )}
-         </div>
+      {/* MAIN CONTENT AREA */}
+      <div className="w-full max-w-4xl bg-card border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+        
+        {/* Step Header */}
+        <div className="border-b border-slate-800 p-8 bg-white/[0.01]">
+          <p className="text-[10px] font-bold tracking-[0.2em] text-brand mb-2 uppercase">Step {currentStep} of 3</p>
+          <h2 className="text-2xl text-white font-light tracking-tight">{steps[currentStep - 1].desc}</h2>
+          <p className="text-slate-500 mt-2 text-sm">
+            {currentStep === 1 && "Materialize the legal identity of the primary occupant."}
+            {currentStep === 2 && "Define the fiscal terms and asset allocation for the lease."}
+            {currentStep === 3 && "Final forensic audit before registry commit."}
+          </p>
+        </div>
+
+        {/* Form Grid Area */}
+        <div className="p-8">
+          {currentStep === 1 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Legal Full Name</label>
+                <input 
+                  {...register('tenantName')}
+                  type="text" 
+                  placeholder="e.g. Aris Thorne" 
+                  className="w-full bg-muted border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all" 
+                />
+                {errors.tenantName && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.tenantName.message}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                <input 
+                  {...register('email')}
+                  type="email" 
+                  placeholder="aris@example.com" 
+                  className="w-full bg-muted border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all" 
+                />
+                {errors.email && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.email.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                <input 
+                  {...register('phone')}
+                  type="tel" 
+                  placeholder="+X XXX XXX XXXX" 
+                  className="w-full bg-muted border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all" 
+                />
+                {errors.phone && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.phone.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Identity Identifier</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock size={14} className="text-slate-500" />
+                  </div>
+                  <input 
+                    {...register('nationalId')}
+                    type="text" 
+                    placeholder="SSN / National ID" 
+                    className="w-full bg-muted border border-slate-700 rounded-lg pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-brand transition-all" 
+                  />
+                </div>
+                {errors.nationalId && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.nationalId.message}</p>}
+              </div>
+
+              <div className="col-span-1 md:col-span-2 mt-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                <p className="text-xs text-emerald-500/80 flex items-center gap-2">
+                  <ShieldCheck size={16} /> 
+                  Identity information is encrypted and stored securely within the Sovereign Vault.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          {currentStep === 2 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asset Allocation</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Building2 size={16} className="text-slate-500" />
+                  </div>
+                  <select 
+                    {...register('unitId')}
+                    className="w-full bg-muted border border-slate-700 rounded-lg pl-11 pr-4 py-3 text-white appearance-none focus:outline-none focus:border-brand transition-all cursor-pointer"
+                  >
+                    <option value="">Select available inventory...</option>
+                    {units.map(u => (
+                      <option key={u.id} value={u.id}>Unit {u.unitNumber} — {u.type} (Market: ${u.marketRent})</option>
+                    ))}
+                  </select>
+                </div>
+                {errors.unitId && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.unitId.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monthly Baseline Rent</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <DollarSign size={16} className="text-slate-500" />
+                  </div>
+                  <input 
+                    {...register('baseRent', { valueAsNumber: true })}
+                    type="number" 
+                    placeholder="0.00" 
+                    className="w-full bg-muted border border-slate-700 rounded-lg pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-brand transition-all" 
+                  />
+                </div>
+                {errors.baseRent && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.baseRent.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Security Reserve</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <ShieldCheck size={16} className="text-slate-500" />
+                  </div>
+                  <input 
+                    {...register('securityDeposit', { valueAsNumber: true })}
+                    type="number" 
+                    placeholder="0.00" 
+                    className="w-full bg-muted border border-slate-700 rounded-lg pl-11 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-brand transition-all" 
+                  />
+                </div>
+                {errors.securityDeposit && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.securityDeposit.message}</p>}
+              </div>
+
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Activation Date</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Calendar size={16} className="text-slate-500" />
+                  </div>
+                  <input 
+                    {...register('moveInDate')}
+                    type="date" 
+                    className="w-full bg-muted border border-slate-700 rounded-lg pl-11 pr-4 py-3 text-slate-400 focus:outline-none focus:border-brand transition-all [color-scheme:dark]" 
+                  />
+                </div>
+                {errors.moveInDate && <p className="text-xs text-rose-500 mt-1 ml-1">{errors.moveInDate.message}</p>}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="bg-background border border-slate-800 rounded-xl overflow-hidden">
+                <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                  <h4 className="text-white font-medium">Initial Ledger Impact</h4>
+                  <div className="text-right">
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total Immediate Hit</p>
+                    <p className="text-xl text-brand/80 font-mono">${prorationPreview?.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  </div>
+                </div>
+                
+                <div className="p-6 grid grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Prorated Allocation</p>
+                      <p className="text-sm text-slate-300 font-mono">${prorationPreview?.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Security Reserve</p>
+                      <p className="text-sm text-slate-300 font-mono">${watchedValues.securityDeposit?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Primary Occupant</p>
+                      <p className="text-sm text-slate-300 tracking-tight">{watchedValues.tenantName || '—'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Allocated Unit</p>
+                      <p className="text-sm text-slate-300 tracking-tight">Unit {units.find(u => u.id === watchedValues.unitId)?.unitNumber || 'TBD'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {serverError && (
+                <div className="p-4 bg-rose-500/5 border border-rose-500/10 rounded-xl flex items-center gap-4 text-rose-500">
+                  <AlertTriangle size={20} />
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-bold uppercase tracking-wider">Protocol Violation</p>
+                    <p className="text-xs opacity-80">{serverError}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ACTION CONTROLS (Bottom Right Bias) */}
+        <div className="border-t border-slate-800 bg-white/[0.01] p-6 flex justify-between items-center">
+          <button 
+            onClick={() => router.push('/tenants')}
+            className="text-xs font-bold uppercase tracking-widest text-slate-600 hover:text-slate-300 transition-colors"
+          >
+            Abort Protocol
+          </button>
+          
+          <div className="flex gap-4">
+            {currentStep > 1 && (
+              <button 
+                onClick={() => setCurrentStep(prev => prev - 1)}
+                disabled={isSubmitting}
+                className="px-6 py-2.5 rounded-lg border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white transition-all text-xs font-bold uppercase tracking-widest"
+              >
+                Back
+              </button>
+            )}
+            <button 
+              onClick={currentStep === 3 ? handleSubmit(onSubmit) : handleNext}
+              disabled={isSubmitting || isValidating}
+              className="px-8 py-2.5 rounded-lg bg-brand hover:bg-brand/90 text-white shadow-brand/30 shadow-lg transition-all text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+            >
+              {isSubmitting || isValidating ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : currentStep === 3 ? (
+                'Execute Onboarding'
+              ) : (
+                'Continue Protocol'
+              )}
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div className="mt-12 flex items-center gap-4 opacity-20 hover:opacity-100 transition-opacity duration-500">
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Sovereign Registry Control // V.4.2</p>
       </div>
     </div>
   );

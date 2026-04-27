@@ -462,8 +462,7 @@ export async function logUtilityConsumption(payload: {
             {
               accountId: incomeAccount?.id || '',
               type: 'CREDIT',
-              amount: chargeAmount,
-              tenantId: payload.tenantId
+              amount: chargeAmount
             }
           ]
         }, tx);
@@ -543,8 +542,7 @@ export async function applyLedgerAdjustment(payload: {
             {
               accountId: revenueAccount?.id || '',
               type: payload.type === 'FEE' ? 'CREDIT' : 'DEBIT',
-              amount: payload.amount,
-              tenantId: payload.tenantId
+              amount: payload.amount
             }
           ]
         }, tx);

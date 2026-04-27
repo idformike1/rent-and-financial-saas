@@ -39,7 +39,7 @@ export default async function SovereignLayout({
               Cockpit
             </Link>
             <Link href="/admin/tenants" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
-              Vault Registry
+              Tenants
             </Link>
             <Link href="/admin/audit" className="text-xs font-medium tracking-wide text-neutral-400 hover:text-white transition-colors">
               Audit Ledger

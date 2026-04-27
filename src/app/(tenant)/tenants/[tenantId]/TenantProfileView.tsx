@@ -66,7 +66,9 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
   // All financial vitals must be derived from the ledgerEntries array to ensure parity.
   const liveBalance = ledgerEntries.reduce((sum, entry) => {
     const amount = Number(entry.amount);
-    return sum + (entry.type === 'DEBIT' ? amount : -amount);
+    if (entry.type === 'DEBIT') return sum + amount;
+    if (entry.type === 'CREDIT') return sum - amount;
+    return sum;
   }, 0);
 
   const totalEscrow = activeLeases.reduce((sum, l) => sum + l.depositAmount, 0);
@@ -88,7 +90,8 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
     const rows = sorted.map(entry => {
       const amount = Number(entry.amount);
       const type = entry.type;
-      runningBalance += (type === 'DEBIT' ? amount : -amount);
+      if (type === 'DEBIT') runningBalance += amount;
+      else if (type === 'CREDIT') runningBalance -= amount;
       
       return [
         new Date(entry.transactionDate).toLocaleDateString(),
@@ -288,7 +291,9 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
                       let rowBalance = 0;
                       for(let i = ledgerEntries.length - 1; i >= idx; i--) {
                         const e = ledgerEntries[i];
-                        rowBalance += (e.type === 'DEBIT' ? Number(e.amount) : -Number(e.amount));
+                        const amt = Number(e.amount);
+                        if (e.type === 'DEBIT') rowBalance += amt;
+                        else if (e.type === 'CREDIT') rowBalance -= amt;
                       }
 
                       return (

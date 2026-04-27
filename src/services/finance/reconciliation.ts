@@ -77,7 +77,6 @@ export async function processPaymentService(
       accountId: assetAccount.id,
       type: 'DEBIT',
       amount: amountToApply,
-      tenantId: tenant.id,
       paymentMode: payload.paymentMode as any,
       referenceText: payload.referenceText
     });

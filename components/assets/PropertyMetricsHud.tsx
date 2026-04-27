@@ -17,7 +17,7 @@ interface PropertyMetricsHudProps {
 
 export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMetricsHudProps) {
   return (
-    <div className="bg-muted/10 border border-border divide-x divide-border overflow-hidden rounded-[var(--radius-sm)] shadow-2xl backdrop-blur-md">
+    <div className="flex w-full flex-col md:flex-row bg-muted/10 border border-border divide-y md:divide-y-0 md:divide-x divide-border overflow-hidden rounded-[var(--radius-sm)] shadow-2xl backdrop-blur-md">
       
       {/* NOI */}
       <Button 

@@ -62,6 +62,7 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
             ledgerEntries={tenant.ledgerEntries.map((e: any) => ({ 
               id: e.id,
               amount: Number(e.amount || 0), 
+              type: e.type,
               description: e.description,
               transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : e.transactionDate 
             }))}

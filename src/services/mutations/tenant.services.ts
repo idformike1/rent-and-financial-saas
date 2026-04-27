@@ -4,7 +4,7 @@ import {
   calculateTenancyIntegrityScore, 
   generateTenancyStripChart 
 } from "@/src/core/algorithms/tenancy";
-import { Prisma } from "@prisma/client";
+import { Prisma, AccountCategory } from "@prisma/client";
 import { recordAuditLog } from "@/lib/audit-logger";
 
 /**
@@ -51,24 +51,15 @@ export async function getTenantForensicDossierService(
   const stripChart = generateTenancyStripChart(tenant.charges, ledgerEntries);
 
   // 2. LEDGER UNIFICATION (Truth Feed Source)
-  // We merge Charges and LedgerEntries into a unified array and force 
-  // the client to consume this as the single source of truth.
-  const unifiedLedger = [
-    ...tenant.charges.map(c => ({
-      id: c.id,
-      transactionDate: c.dueDate,
-      description: `${c.type.replace('_', ' ')} Obligation`,
-      type: 'DEBIT',
-      amount: Number(c.amount)
-    })),
-    ...ledgerEntries.map(e => ({
-      id: e.id,
-      transactionDate: e.transactionDate,
-      description: e.description,
-      type: 'CREDIT',
-      amount: Number(e.amount)
-    }))
-  ].sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
+  // The Forensic Ledger is now strictly derived from the LedgerEntry table.
+  // Obligations (DEBITs) and Payments (CREDITs) are synchronized via the financial engine.
+  const unifiedLedger = ledgerEntries.map(e => ({
+    id: e.id,
+    transactionDate: e.transactionDate,
+    description: e.description,
+    type: e.type,
+    amount: Number(e.amount)
+  })).sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
 
   return {
     tenant: {
@@ -280,30 +271,102 @@ export async function submitOnboardingService(
 
     // 4. FINANCIAL INITIALIZATION (ESCROW ISOLATION + PRO-RATA REVENUE)
     // We explicitly isolate the Security Deposit as a liability/escrow charge.
-    await tx.charge.createMany({
-      data: [
-        {
-          organizationId: context.organizationId,
-          tenantId: tenant.id,
-          leaseId: lease.id,
-          type: 'SECURITY_DEPOSIT', 
-          amount: secDep,
-          amountPaid: 0,
-          dueDate: moveIn,
-          isFullyPaid: false,
+    // Auto-Healing: Materialize mandatory organizational accounts if missing.
+    let assetAccount = await tx.account.findFirst({ 
+      where: { category: AccountCategory.ASSET, organizationId: context.organizationId } 
+    });
+    if (!assetAccount) {
+      assetAccount = await tx.account.create({
+        data: { organizationId: context.organizationId, name: 'Accounts Receivable', category: AccountCategory.ASSET }
+      });
+    }
+
+    let liabilityAccount = await tx.account.findFirst({ 
+      where: { category: AccountCategory.LIABILITY, organizationId: context.organizationId } 
+    });
+    if (!liabilityAccount) {
+      liabilityAccount = await tx.account.create({
+        data: { organizationId: context.organizationId, name: 'Security Deposits (Escrow)', category: AccountCategory.LIABILITY }
+      });
+    }
+
+    let incomeAccount = await tx.account.findFirst({ 
+      where: { category: AccountCategory.INCOME, organizationId: context.organizationId } 
+    });
+    if (!incomeAccount) {
+      incomeAccount = await tx.account.create({
+        data: { organizationId: context.organizationId, name: 'Rental Revenue', category: AccountCategory.INCOME }
+      });
+    }
+
+    const depositCharge = await tx.charge.create({
+      data: {
+        organizationId: context.organizationId,
+        tenantId: tenant.id,
+        leaseId: lease.id,
+        type: 'SECURITY_DEPOSIT', 
+        amount: secDep,
+        amountPaid: 0,
+        dueDate: moveIn,
+        isFullyPaid: false,
+      }
+    });
+
+    const rentCharge = await tx.charge.create({
+      data: {
+        organizationId: context.organizationId,
+        tenantId: tenant.id,
+        leaseId: lease.id,
+        type: 'RENT', 
+        amount: proratedRent,
+        amountPaid: 0,
+        dueDate: moveIn,
+        isFullyPaid: false,
+      }
+    });
+
+    // Materialize Ledger Entries (Double-Entry mandate)
+    const { createBalancedTransaction } = await import("@/src/services/finance/core");
+
+    await createBalancedTransaction({
+      organizationId: context.organizationId,
+      description: `Initial Security Deposit: ${tenant.name}`,
+      date: moveIn,
+      entries: [
+        { 
+          accountId: assetAccount.id, 
+          type: 'DEBIT', 
+          amount: secDep, 
+          tenantId: tenant.id, 
+          chargeId: depositCharge.id 
         },
-        {
-          organizationId: context.organizationId,
-          tenantId: tenant.id,
-          leaseId: lease.id,
-          type: 'RENT', 
-          amount: proratedRent,
-          amountPaid: 0,
-          dueDate: moveIn,
-          isFullyPaid: false,
+        { 
+          accountId: liabilityAccount.id, 
+          type: 'CREDIT', 
+          amount: secDep 
         }
       ]
-    });
+    }, tx);
+
+    await createBalancedTransaction({
+      organizationId: context.organizationId,
+      description: `Initial Prorated Rent: ${tenant.name}`,
+      date: moveIn,
+      entries: [
+        { 
+          accountId: assetAccount.id, 
+          type: 'DEBIT', 
+          amount: proratedRent, 
+          tenantId: tenant.id, 
+          chargeId: rentCharge.id 
+        },
+        { 
+          accountId: incomeAccount.id, 
+          type: 'CREDIT', 
+          amount: proratedRent 
+        }
+      ]
+    }, tx);
 
     await tx.unit.updateMany({
       where: { id: payload.unitId, organizationId: context.organizationId },
@@ -326,24 +389,64 @@ export async function submitOnboardingService(
  * IDENTITY PROTOCOL: PRE-MISSION VALIDATION (SERVICE)
  */
 export async function checkTenantExistenceService(
-  query: { name: string, email?: string, phone?: string },
+  query: { name: string, email?: string, phone?: string, nationalId?: string },
   context: { operatorId: string, organizationId: string }
 ) {
   const db = getSovereignClient(context.organizationId);
+  const conflicts: string[] = [];
+  const fieldConflicts: Record<string, string> = {};
 
+  // 1. Check for Name Collision
   const nameMatch = await db.tenant.findFirst({
     where: { organizationId: context.organizationId, name: { equals: query.name, mode: 'insensitive' }, isDeleted: false }
   });
-  if (nameMatch) return { exists: true, message: `Identity Conflict: Tenant '${nameMatch.name}' already registered.` };
+  if (nameMatch) {
+    conflicts.push(`Name collision detected for '${nameMatch.name}'.`);
+    fieldConflicts.tenantName = 'Identity already registered in registry.';
+  }
 
+  // 2. Check for Email Collision
   if (query.email) {
     const emailMatch = await db.tenant.findFirst({
       where: { organizationId: context.organizationId, email: { equals: query.email, mode: 'insensitive' }, isDeleted: false }
     });
-    if (emailMatch) return { exists: true, message: `Identity Conflict: Email '${query.email}' already associated with '${emailMatch.name}'.` };
+    if (emailMatch) {
+      conflicts.push(`Email collision detected for '${query.email}'.`);
+      fieldConflicts.email = 'Email already associated with an active record.';
+    }
   }
 
-  return { exists: false };
+  // 3. Check for National ID Collision
+  if (query.nationalId) {
+    const idMatch = await db.tenant.findFirst({
+      where: { organizationId: context.organizationId, nationalId: query.nationalId, isDeleted: false }
+    });
+    if (idMatch) {
+      conflicts.push(`National ID collision detected.`);
+      fieldConflicts.nationalId = 'Identifier already exists in secure vault.';
+    }
+  }
+
+  // 4. Check for Phone Collision
+  if (query.phone) {
+    const phoneMatch = await db.tenant.findFirst({
+      where: { organizationId: context.organizationId, phone: query.phone, isDeleted: false }
+    });
+    if (phoneMatch) {
+      conflicts.push(`Phone collision detected.`);
+      fieldConflicts.phone = 'Contact number already registered.';
+    }
+  }
+
+  if (conflicts.length > 0) {
+    return { 
+      exists: true, 
+      message: conflicts.join(' '), 
+      conflicts: fieldConflicts 
+    };
+  }
+
+  return { exists: false, message: undefined, conflicts: undefined };
 }
 
 /**

@@ -81,7 +81,6 @@ export async function generateRentAccrual(
       accountId: incomeAccount.id,
       type: 'CREDIT',
       amount: charge.amount,
-      tenantId: lease.tenantId,
       propertyId: lease.unit.propertyId
     });
     totalDebit += Number(charge.amount);

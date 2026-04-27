@@ -70,19 +70,19 @@ export async function getPortfolioSummaryService(context: { operatorId: string, 
 
   // 2. Transform into Hierarchical Asset DTO
   const mappedProperties: AssetProperty[] = properties.map((p: any) => {
-    let propCollected = 0;
+    // Calculate total property-level income (including direct property income)
+    const propCollected = p.ledgerEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
     
     const mappedUnits: AssetUnit[] = p.units.map((u: any) => {
       const activeLease = u.leases[0];
       const unitTenantId = activeLease?.tenant?.id;
 
-      // Map property-level entries to this specific unit via Tenant ID
+      // Map property-level entries to this specific unit via Tenant ID for granular view
       const unitEntries = unitTenantId 
         ? p.ledgerEntries.filter((e: any) => e.tenantId === unitTenantId)
         : [];
       
       const unitIncome = unitEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
-      propCollected += unitIncome;
 
       // Clinical Status Logic
       let status = '[ SURVEILLANCE ]';
