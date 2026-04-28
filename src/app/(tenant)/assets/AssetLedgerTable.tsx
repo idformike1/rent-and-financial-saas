@@ -1,90 +1,148 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
 import { AssetProperty } from "@/src/services/queries/assets.services";
+import { Filter, Receipt, Plus, Upload } from 'lucide-react';
+import { toast } from '@/lib/toast';
 
 interface AssetLedgerTableProps {
   properties: AssetProperty[];
+  ledgerEntries?: any[];
 }
 
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'decimal',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const formatCurrency = (val: number | null | undefined) => {
+  if (val === null || val === undefined || isNaN(Number(val))) return '—';
+  return new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD' 
+  }).format(Number(val));
+};
 
-export default function AssetLedgerTable({ properties }: AssetLedgerTableProps) {
+export default function AssetLedgerTable({ properties, ledgerEntries = [] }: AssetLedgerTableProps) {
+  const [filterUnit, setFilterUnit] = useState('ALL');
+  const [filterType, setFilterType] = useState('ALL');
+
+  const allUnits = properties.flatMap(p => p.units || []);
+
+  const filteredEntries = ledgerEntries.filter(entry => {
+    const matchesUnit = filterUnit === 'ALL' || entry.unitId === filterUnit;
+    const matchesType = filterType === 'ALL' || (
+      filterType === 'INCOME' ? Number(entry.amount) > 0 : Number(entry.amount) < 0
+    );
+    return matchesUnit && matchesType;
+  });
+
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full border-collapse text-[13px]">
-        {/* Force strict column sizing for hierarchical alignment */}
-        <colgroup><col className="w-[120px]" /><col /><col className="w-[100px]" /><col className="w-[160px]" /><col className="w-[150px]" /></colgroup>
-        
-        <thead>
-          <tr className="text-[#9CA3AF] text-left border-b border-[#1F2937]">
-            <th className="py-3 px-4 font-bold uppercase tracking-wider">Asset / ID</th>
-            <th className="py-3 px-4 font-bold uppercase tracking-wider">Location / Tenant</th>
-            <th className="py-3 px-4 font-bold uppercase tracking-wider text-right">Units</th>
-            <th className="py-3 px-4 font-bold uppercase tracking-wider text-center">Status Badge</th>
-            <th className="py-3 px-4 font-bold uppercase tracking-wider text-right">Collected Income</th>
-          </tr>
-        </thead>
+    <div className="flex flex-col w-full">
+      {/* ── FILTER BAR ─────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between p-4 bg-muted/20 border-b border-border gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Filter size={14} className="text-muted-foreground" />
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Filters</span>
+          </div>
+          
+          <select 
+            value={filterUnit} 
+            onChange={(e) => setFilterUnit(e.target.value)}
+            className="bg-card border border-border text-xs font-bold rounded-lg px-3 py-1.5 outline-none focus:border-brand/40 text-foreground/80 appearance-none cursor-pointer"
+          >
+            <option value="ALL">All Units</option>
+            {allUnits.map(unit => (
+              <option key={unit.id} value={unit.id}>{unit.unitNumber}</option>
+            ))}
+          </select>
 
-        <tbody>
-          {properties.map((property) => (
-            <React.Fragment key={property.id}>
-              {/* PROPERTY GROUP HEADER */}
-              <tr className="bg-[#1A1A24] text-[#E5E7EB] font-medium border-y border-[#374151]">
-                <td className="py-3 px-4 font-mono">
-                  {property.id.slice(0, 8).toUpperCase()}
-                </td>
-                <td className="py-3 px-4 uppercase tracking-clinical">
-                  {property.name} — {property.address}
-                </td>
-                <td className="py-3 px-4 text-right font-mono tabular-nums">
-                  {property.totalUnits}
-                </td>
-                <td className="py-3 px-4 text-center">
-                  <span className={cn(
-                    "font-bold",
-                    property.occupancyRate >= 90 ? "text-mercury-green" : "text-amber-500"
-                  )}>
-                    {property.occupancyRate.toFixed(1)}% OCCUPANCY
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-right font-mono tabular-nums">
-                  $ {formatter.format(property.collectedIncome)}
-                </td>
-              </tr>
+          <select 
+            value={filterType} 
+            onChange={(e) => setFilterType(e.target.value)}
+            className="bg-card border border-border text-xs font-bold rounded-lg px-3 py-1.5 outline-none focus:border-brand/40 text-foreground/80 appearance-none cursor-pointer"
+          >
+            <option value="ALL">All Types</option>
+            <option value="INCOME">Income</option>
+            <option value="EXPENSE">Expense</option>
+          </select>
+        </div>
+      </div>
 
-              {/* UNIT ROWS */}
-              {property.units.map((unit) => (
-                <tr key={unit.id} className="text-[#9CA3AF] border-b border-[#1F2937]/50 hover:bg-white/[0.02] transition-colors">
-                  <td className="py-2 px-4 pl-8 font-mono opacity-60">
-                    {unit.unitNumber}
-                  </td>
-                  <td className="py-2 px-4 italic opacity-80">
-                    {unit.tenantName}
-                  </td>
-                  <td className="py-2 px-4 text-right">—</td>
-                  <td className="py-2 px-4 text-center">
-                    <span className={cn(
-                      "font-mono font-bold tracking-clinicaler scale-90 inline-block",
-                      unit.status.includes('OPTIMIZED') ? "text-mercury-green" : 
-                      unit.status.includes('CRITICAL') ? "text-destructive" : "text-amber-500"
-                    )}>
-                      {unit.status}
-                    </span>
-                  </td>
-                  <td className="py-2 px-4 text-right font-mono tabular-nums opacity-80">
-                    $ {formatter.format(unit.collectedIncome)}
-                  </td>
+      {/* ── TABLE / EMPTY HUB ────────────────────────────────────────────── */}
+      <div className="w-full">
+        {filteredEntries.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="text-muted-foreground text-left border-b border-border bg-muted/10">
+                  <th className="py-3 px-6 text-[10px] font-bold uppercase tracking-widest">Timestamp</th>
+                  <th className="py-3 px-6 text-[10px] font-bold uppercase tracking-widest">Unit / Entity</th>
+                  <th className="py-3 px-6 text-[10px] font-bold uppercase tracking-widest">Description</th>
+                  <th className="py-3 px-6 text-[10px] font-bold uppercase tracking-widest text-right">Value</th>
                 </tr>
-              ))}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {filteredEntries.map((entry) => (
+                  <tr key={entry.id} className="hover:bg-muted/50 transition-colors">
+                    <td className="py-2.5 px-6 whitespace-nowrap">
+                      <span className="font-mono text-[11px] text-muted-foreground">
+                        {new Date(entry.transactionDate).toLocaleDateString()}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-6">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-foreground">
+                          {allUnits.find(u => u.id === entry.unitId)?.unitNumber || 'Global'}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                          {entry.tenant?.name || 'Asset Registry'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-6">
+                      <p className="text-xs text-foreground/60 truncate max-w-[250px]">
+                        {entry.description || entry.expenseCategory?.name || 'Fiscal Operation'}
+                      </p>
+                    </td>
+                    <td className="py-2.5 px-6 text-right">
+                      <span className={cn(
+                        "font-mono text-sm font-bold tabular-nums",
+                        Number(entry.amount) > 0 ? "text-emerald-500" : "text-rose-500"
+                      )}>
+                        {formatCurrency(Math.abs(Number(entry.amount)))}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="py-16 text-center">
+            <div className="flex flex-col items-center gap-6 max-w-sm mx-auto">
+              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
+                <Receipt className="w-6 h-6 text-muted-foreground opacity-40" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-bold text-foreground">No transactions recorded</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">This ledger is currently silent. Log a manual transaction or import bank statements to begin fiscal surveillance.</p>
+              </div>
+              <div className="flex items-center gap-3 w-full">
+                <button 
+                  onClick={() => toast.info('Transaction log pending.')}
+                  className="flex-1 h-10 bg-brand text-white rounded-lg text-xs font-bold hover:bg-brand/90 transition-all flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" /> Log Transaction
+                </button>
+                <button 
+                  onClick={() => toast.info('Import engine pending.')}
+                  className="flex-1 h-10 bg-muted text-foreground rounded-lg text-xs font-bold hover:bg-accent transition-all flex items-center justify-center gap-2 border border-border"
+                >
+                  <Upload className="w-4 h-4" /> Import Data
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-

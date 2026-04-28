@@ -1,100 +1,109 @@
-'use client'
+'use client';
 
-import { Button, cn } from '@/components/ui-finova'
-import { TrendingUp, Calculator, AlertCircle, CheckCircle2 } from 'lucide-react'
-
-interface HudMetrics {
-  noi: number
-  adjustedNoi: number
-  revenueLeakage: number
-  collectionEfficiency: number
-}
+import React from 'react';
+import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui-finova';
 
 interface PropertyMetricsHudProps {
-  metrics: HudMetrics
-  onDrillDown: (type: string) => void
+  metrics: {
+    noi: number;
+    grossPotential: number;
+    revenueLeakage: number;
+    collectionEfficiency: number;
+  };
+  timeframe: 'MONTHLY' | 'YEARLY' | 'ALL_TIME';
+  onDrillDown: (type: string) => void;
 }
 
-export default function PropertyMetricsHud({ metrics, onDrillDown }: PropertyMetricsHudProps) {
+const formatCurrency = (val: number) => 
+  new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD',
+    maximumFractionDigits: 0
+  }).format(val);
+
+export default function PropertyMetricsHud({ metrics, timeframe, onDrillDown }: PropertyMetricsHudProps) {
+  const multiplier = timeframe === 'YEARLY' ? 12 : 1;
+
   return (
-    <div className="flex w-full flex-col md:flex-row bg-muted/10 border border-border divide-y md:divide-y-0 md:divide-x divide-border overflow-hidden rounded-[var(--radius-sm)] shadow-2xl backdrop-blur-md">
+    <div className="flex items-end justify-between w-full gap-12 py-4">
       
-      {/* NOI */}
-      <Button 
-        type="button"
-        variant="ghost"
-        onClick={() => onDrillDown('NOI')}
-        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
-      >
-        <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Net Operating Income</span>
-           <TrendingUp size={14} className="text-foreground/20 group-hover:text-mercury-green transition-colors" />
+      {/* TIER 1: CORE FINANCIALS (Left, Dominant) */}
+      <div className="flex items-end gap-12">
+        {/* NOI */}
+        <div 
+          onClick={() => onDrillDown('NOI')}
+          className="cursor-pointer group flex flex-col gap-2"
+        >
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest group-hover:text-foreground transition-colors">
+            Net Operating Income
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-bold tracking-tight text-foreground">
+              {formatCurrency(Number(metrics?.noi || 0) * multiplier)}
+            </span>
+            <span className="text-xs font-bold text-emerald-500 mb-1">↑ 2.4%</span>
+          </div>
         </div>
-        <div className={cn("text-[32px] font-display font-weight-display tracking-clinical text-foreground")}>
-           <span className="font-finance">${metrics.noi.toLocaleString()}</span>
-        </div>
-        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Verified for FY2026</p>
-      </Button>
 
-      {/* ADJUSTED NOI */}
-      <Button 
-        type="button"
-        variant="ghost"
-        onClick={() => onDrillDown('ADJ_NOI')}
-        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
-      >
-        <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Adjusted NOI</span>
-           <Calculator size={14} className="text-foreground/20 group-hover:text-brand transition-colors" />
+        {/* GROSS POTENTIAL */}
+        <div 
+          onClick={() => onDrillDown('GROSS_POTENTIAL')}
+          className="cursor-pointer group flex flex-col gap-2"
+        >
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest group-hover:text-foreground transition-colors">
+            Gross Potential Rent
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-bold tracking-tight text-foreground">
+              {formatCurrency(Number(metrics?.grossPotential || 0) * multiplier)}
+            </span>
+            <span className="text-xs font-bold text-muted-foreground/40 mb-1">Est. Cap: 5.2%</span>
+          </div>
         </div>
-        <div className="text-[32px] font-display font-weight-display text-foreground tracking-clinical">
-           <span className="font-finance">${metrics.adjustedNoi.toLocaleString()}</span>
-        </div>
-        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">OPEX Adjusted Flow</p>
-      </Button>
+      </div>
 
-      {/* REVENUE LEAKAGE */}
-      <Button 
-        type="button"
-        variant="ghost"
-        onClick={() => onDrillDown('LEAKAGE')}
-        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
-      >
-        <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Revenue Leakage</span>
-           <AlertCircle size={14} className="text-foreground/20 group-hover:text-amber-500 transition-colors" />
+      {/* TIER 2: RISK / EFFICIENCY (Right, Compressed) */}
+      <div className="flex items-end gap-10 border-l border-border pl-10">
+        {/* REVENUE LEAKAGE */}
+        <div 
+          onClick={() => onDrillDown('LEAKAGE')}
+          className="cursor-pointer group flex flex-col gap-1.5"
+        >
+          <div className="flex items-center justify-between min-w-[120px]">
+             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Revenue Leakage</span>
+          </div>
+          <div className="flex items-baseline gap-2">
+             <span className={cn(
+               "text-xl font-bold tabular-nums",
+               metrics.revenueLeakage > 10 ? "text-rose-500" : metrics.revenueLeakage > 5 ? "text-amber-500" : "text-foreground"
+             )}>
+               {Number(metrics.revenueLeakage || 0).toFixed(1)}%
+             </span>
+             <span className="text-[10px] text-muted-foreground/40 font-medium">↓ vs last period</span>
+          </div>
         </div>
-        <div className={cn(
-          "text-[32px] font-display font-weight-display tracking-clinical", 
-          metrics.revenueLeakage > 15 ? "text-destructive/80" : 
-          metrics.revenueLeakage > 8 ? "text-amber-500/80" : "text-foreground"
-        )}>
-           <span className="font-finance">{metrics.revenueLeakage}%</span>
-        </div>
-        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Market Contract Delta</p>
-      </Button>
 
-      {/* COLLECTION EFFICIENCY */}
-      <Button 
-        type="button"
-        variant="ghost"
-        onClick={() => onDrillDown('COLLECTION')}
-        className="p-8 text-left hover:bg-muted/50 transition-all group h-auto border-none flex flex-col items-stretch rounded-none"
-      >
-        <div className="flex justify-between items-start mb-4">
-           <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.15em] leading-none">Collection Ratio</span>
-           <CheckCircle2 size={14} className="text-foreground/20 group-hover:text-mercury-green transition-colors" />
+        {/* COLLECTION RATIO */}
+        <div 
+          onClick={() => onDrillDown('COLLECTION')}
+          className="cursor-pointer group flex flex-col gap-1.5"
+        >
+          <div className="flex items-center justify-between min-w-[120px]">
+             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Collection Ratio</span>
+          </div>
+          <div className="flex items-baseline gap-2">
+             <span className={cn(
+               "text-xl font-bold tabular-nums",
+               metrics.collectionEfficiency < 90 ? "text-rose-500" : metrics.collectionEfficiency < 95 ? "text-amber-500" : "text-foreground"
+             )}>
+               {Number(metrics.collectionEfficiency || 0).toFixed(1)}%
+             </span>
+             <span className="text-[10px] text-emerald-500/60 font-medium">↑ Target</span>
+          </div>
         </div>
-        <div className={cn(
-          "text-[32px] font-display font-weight-display tracking-clinical", 
-          metrics.collectionEfficiency >= 95 ? "text-mercury-green/80" : 
-          metrics.collectionEfficiency >= 85 ? "text-amber-500/80" : "text-destructive/80"
-        )}>
-           <span className="font-finance">{metrics.collectionEfficiency}%</span>
-        </div>
-        <p className="mt-3 text-[10px] font-bold text-foreground/20 uppercase tracking-[0.15em]">Current Cycle Inflow</p>
-      </Button>
+      </div>
 
     </div>
-  )
+  );
 }

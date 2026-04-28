@@ -183,7 +183,7 @@ export async function getPropertyAssetPulseService(
   return {
     hud: {
       noi,
-      adjustedNoi: noi * 0.95,
+      grossPotential,
       revenueLeakage: leakagePercent,
       collectionEfficiency: collectionEfficiency
     },
