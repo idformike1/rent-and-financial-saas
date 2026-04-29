@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import AccountTelemetryHud from './AccountTelemetryHud';
-import TreasuryLedgerTable from './TreasuryLedgerTable';
+import AccountTelemetryHud from "@/src/components/modules/treasury/AccountTelemetryHud";
+import TreasuryLedgerTable from "@/src/components/modules/treasury/TreasuryLedgerTable";
 import { getAccountLedger } from '@/actions/treasury.actions';
 
 export function generateStaticParams() {

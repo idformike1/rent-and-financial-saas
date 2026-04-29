@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { IBM_Plex_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
-import AppShell from '@/components/AppShell';
-import Toaster from '@/components/Toaster';
-import SessionProvider from '@/components/providers/SessionProvider';
+import AppShell from '@/src/components/finova/AppShell';
+import Toaster from '@/src/components/finova/Toaster';
+import SessionProvider from '@/src/components/finova/providers/SessionProvider';
 import UniversalCommandPalette from '@/src/components/Command/UniversalCommandPalette';
 import { getUserOrganizations, getActiveWorkspaceId } from '@/src/actions/workspace.actions';
 

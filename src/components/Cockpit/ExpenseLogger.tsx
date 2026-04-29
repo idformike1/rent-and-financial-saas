@@ -2,7 +2,7 @@
 
 import React, { useTransition, useState } from 'react'
 import { logPersonalExpense } from '@/actions/wealth.actions'
-import { Button, Input, Select, Label } from '@/components/ui-finova'
+import { Button, Input, Select, Label } from '@/src/components/finova/ui-finova'
 import { toast } from 'react-hot-toast'
 
 interface Account {

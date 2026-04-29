@@ -1,5 +1,5 @@
 import { getCurrentSession } from "@/lib/auth-utils";
-import TransactionFeedClient from "./TransactionFeedClient";
+import TransactionFeedClient from "@/src/components/modules/treasury/TransactionFeedClient";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getMasterLedger, getLedgerFilterMetadata } from "@/actions/analytics.actions";
@@ -64,7 +64,7 @@ export default async function TransactionsPage({
   }));
 
   return (
-    <div className="w-full theme-sharp">
+    <div className="w-full p-8">
       <Suspense fallback={<div className="h-96 flex items-center justify-center text-clinical-muted uppercase tracking-widest text-[11px] animate-pulse">Materializing Ledger...</div>}>
         <TransactionFeedClient 
           initialData={serializedLedger as any} 

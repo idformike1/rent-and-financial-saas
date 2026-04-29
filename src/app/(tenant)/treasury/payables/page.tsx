@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Landmark, ShieldCheck, Zap, ArrowLeft, History } from 'lucide-react'
-import RegistrySurveillanceClient from './RegistrySurveillanceClient'
-import { Badge, Button } from '@/components/ui-finova'
+import RegistrySurveillanceClient from "@/src/components/modules/treasury/RegistrySurveillanceClient"
+import { Badge, Button } from '@/src/components/finova/ui-finova'
 
 import { getCurrentSession } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'

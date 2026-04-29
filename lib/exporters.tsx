@@ -2,7 +2,7 @@ import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { generateReportData } from './reports'
 import { renderToBuffer } from '@react-pdf/renderer'
-import { ReportPDF } from '@/components/ReportPDF'
+import { ReportPDF } from '@/src/components/finova/ReportPDF'
 
 export interface FilterParams {
   id?: string;

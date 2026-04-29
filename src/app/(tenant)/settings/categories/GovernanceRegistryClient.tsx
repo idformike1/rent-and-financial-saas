@@ -22,7 +22,8 @@ import {
 } from '@/actions/system.actions'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from '@/lib/toast'
-import { Card, Badge, Button, Input, cn } from '@/components/ui-finova'
+import { Badge, Button, Input, cn } from '@/src/components/finova/ui-finova'
+import { Card } from '@/src/components/system/Card'
 
 type FinancialLedger = {
   id: string;

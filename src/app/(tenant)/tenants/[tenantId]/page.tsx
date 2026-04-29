@@ -1,4 +1,4 @@
-import TenantProfileView from './TenantProfileView'
+import TenantProfileView from '@/src/components/modules/tenants/TenantProfileView'
 import { getTenantForensicDossierService } from '@/src/services/mutations/tenant.services'
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSession } from '@/lib/auth-utils'

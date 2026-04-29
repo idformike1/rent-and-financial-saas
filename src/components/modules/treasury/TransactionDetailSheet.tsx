@@ -1,0 +1,209 @@
+'use client';
+
+import React, { useTransition, useMemo } from 'react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { Button } from '@/src/components/finova/ui-finova';
+import { voidTransaction } from '@/actions/finance.actions';
+import { Transaction } from './types';
+import { SideSheet } from '@/src/components/system/SideSheet';
+
+interface TransactionDetailSheetProps {
+  transaction: Transaction | null;
+  onClose: () => void;
+  role?: string;
+}
+
+export default function TransactionDetailSheet({ transaction, onClose, role }: TransactionDetailSheetProps) {
+  const [isPending, startTransition] = useTransition();
+  const isNegative = transaction ? Number(transaction.amount) < 0 : false;
+  const absAmount = transaction ? Math.abs(Number(transaction.amount)) : 0;
+  const isVoided = transaction?.status === 'VOIDED';
+
+  // Stable Idempotency Key generated once per selection event
+  const idempotencyKey = useMemo(() => crypto.randomUUID(), [transaction?.id]);
+
+  const handleVoid = () => {
+    if (!transaction) return;
+    
+    const confirmed = window.confirm(
+      "NUCLEAR WARNING: You are about to decommission this fiscal record. This will flag the entry as VOIDED in the permanent ledger and record a non-repudiable audit signature. This action cannot be undone. Proceed?"
+    );
+
+    if (confirmed) {
+      startTransition(async () => {
+        try {
+          const result = await voidTransaction(transaction.id, idempotencyKey);
+          if (result.success) {
+            import('@/lib/toast').then(({ toast }) => {
+              toast.success("Registry node decommissioned successfully.");
+            });
+            onClose(); // Close on success
+          } else {
+            alert(result.message || "Failed to decommission transaction.");
+          }
+        } catch (error: any) {
+          console.error('[VOID_TRANSACTION_CRASH_GUARD]', error);
+          alert(error.message || "Execution layer failure.");
+        }
+      });
+    }
+  };
+
+  const handleExport = () => {
+    if (!transaction) return;
+    window.location.href = `/api/reports/csv?id=${transaction.id}`;
+  };
+
+  const handleExternalView = () => {
+    import('@/lib/toast').then(({ toast }) => {
+      toast.info("Registry Sync: Source document sequestered in secure archive.");
+    });
+  };
+
+  return (
+    <SideSheet
+      isOpen={!!transaction}
+      onClose={onClose}
+      title={isVoided ? "Voided Forensic Record" : "Forensic Audit"}
+    >
+      {transaction && (
+        <div className="flex flex-col h-full">
+          {/* Header Subtitle */}
+          <p className="text-[10px] text-clinical-muted uppercase tracking-[0.2em] mb-8">
+            TX ID: {transaction.id.substring(0, 8)}
+          </p>
+
+          {/* Content Stratum */}
+          <div className={cn(
+            "flex-1 space-y-10 transition-all duration-700",
+            isVoided && "opacity-50 grayscale"
+          )}>
+            
+            {/* Primary Amount Block */}
+            <div className="space-y-2">
+              <p className="text-[10px] uppercase tracking-widest text-clinical-muted font-bold">Transaction Value</p>
+              <div className="flex items-baseline gap-2">
+                <span className={cn(
+                  "text-[40px] font-finance tracking-tight",
+                  isVoided ? "text-white/40" : isNegative ? "text-white" : "text-mercury-green"
+                )}>
+                  {isNegative ? '−' : ''}${absAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="text-clinical-muted text-[11px] font-bold">USD</span>
+              </div>
+              <p className="text-sm text-foreground/80 leading-relaxed font-normal">
+                {transaction.description || "No description provided"}
+              </p>
+            </div>
+
+            {/* Forensic Grid */}
+            <div className="grid grid-cols-2 gap-y-8 gap-x-12 border-t border-white/5 pt-10">
+              <MetadataItem 
+                icon="🗓️" 
+                label="Payment Date" 
+                value={format(new Date(transaction.transactionDate), 'MMMM dd, yyyy')} 
+              />
+              <MetadataItem 
+                icon="[C]" 
+                label="Category" 
+                value={transaction.expenseCategory?.name || 'Uncategorized'} 
+              />
+              <MetadataItem 
+                icon="[V]" 
+                label="Source Account" 
+                value={transaction.account.name} 
+              />
+              <MetadataItem 
+                icon="[M]" 
+                label="Payment Method" 
+                value={transaction.paymentMode === 'BANK' ? 'Bank Transfer' : 'Cash'} 
+              />
+              <MetadataItem 
+                icon="[A]" 
+                label="Property" 
+                value={transaction.property?.name || 'Global Assets'} 
+              />
+              <MetadataItem 
+                icon="[U]" 
+                label="Tenant / Payee" 
+                value={transaction.tenant?.name || transaction.payee || 'System Admin'} 
+              />
+            </div>
+
+            {/* Reference Block */}
+            {transaction.referenceText && (
+              <div className="space-y-3 pt-4">
+                <p className="text-[10px] uppercase tracking-widest text-clinical-muted font-bold">Reference Notes</p>
+                <div className="p-4 rounded-[var(--radius-sm)] bg-white/[0.02] border border-white/5 text-sm text-foreground/80 leading-relaxed">
+                  {transaction.referenceText}
+                </div>
+              </div>
+            )}
+
+            {/* Receipt Area */}
+            {!isVoided && (
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase tracking-widest text-clinical-muted font-bold">Audit Evidence</p>
+                  <Button type="button" variant="ghost" onClick={handleExternalView} className="h-auto p-0 text-[10px] uppercase tracking-widest text-clinical-muted hover:text-white flex items-center gap-1.5 transition-colors bg-transparent border-none">
+                    ➲ External View
+                  </Button>
+                </div>
+                {transaction.receiptUrl ? (
+                   <div className="aspect-[3/4] rounded-[var(--radius-sm)] bg-white/[0.03] border border-dashed border-white/10 flex items-center justify-center group cursor-pointer overflow-hidden">
+                      <img src={transaction.receiptUrl} alt="Receipt" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" />
+                   </div>
+                ) : (
+                  <div className="h-40 rounded-[var(--radius-sm)] bg-white/[0.03] border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 group cursor-pointer hover:bg-white/[0.05] transition-all">
+                   <span className="text-white/10 text-xl font-bold">[_]</span>
+                    <p className="text-xs text-clinical-muted font-bold uppercase tracking-widest">Digital Receipt Missing</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Actions Stratum */}
+          <div className="mt-auto pt-10 border-t border-white/5 flex items-center gap-4">
+             {isVoided ? (
+               <div className="w-full flex flex-col items-center gap-1 animate-pulse">
+                 <p className="text-[10px] uppercase tracking-widest text-clinical-muted font-bold">DECOMMISSIONED</p>
+                 <p className="text-[10px] uppercase tracking-widest opacity-40">Immutable Record</p>
+               </div>
+             ) : (
+               <>
+                  <Button type="button" onClick={handleExport} className="flex-1 bg-white hover:bg-white/90 text-black h-11 text-[11px] uppercase tracking-widest font-bold rounded-[var(--radius-sm)]">
+                    Export Forensic Receipt
+                  </Button>
+                  {role !== 'VIEWER' && (
+                    <Button 
+                     type="button"
+                     variant="ghost" 
+                     onClick={handleVoid}
+                     disabled={isPending}
+                     className="px-5 border border-white/10 hover:bg-white/5 h-11 text-[11px] uppercase tracking-widest font-bold rounded-[var(--radius-sm)] text-white/40 hover:text-destructive transition-colors"
+                    >
+                      {isPending ? "Voiding..." : "Void Activity"}
+                    </Button>
+                  )}
+               </>
+             )}
+          </div>
+        </div>
+      )}
+    </SideSheet>
+  );
+}
+
+function MetadataItem({ icon, label, value }: { icon: string, label: string, value: string }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-clinical-muted font-bold">
+        {icon}
+        {label}
+      </div>
+      <p className="text-sm text-foreground font-normal leading-tight">{value}</p>
+    </div>
+  );
+}

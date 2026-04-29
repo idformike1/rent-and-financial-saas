@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { generateUtilityAccrualAction } from '@/actions/billing.actions';
-import { Card, Input, Button, Label } from '@/components/ui-finova';
+import { Input, Button, Label } from '@/src/components/finova/ui-finova'
+import { Card } from '@/src/components/system/Card';
 import { toast } from '@/lib/toast';
 import { FileText, Zap, Droplets, MinusCircle } from 'lucide-react';
 

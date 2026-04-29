@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { SignOutButton } from "@/components/admin/SignOutButton";
-import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
+import { SignOutButton } from "@/src/components/finova/admin/SignOutButton";
+import { ImpersonationBanner } from "@/src/components/finova/admin/ImpersonationBanner";
 
 import { requireLiveIdentity } from "@/src/lib/guards";
 

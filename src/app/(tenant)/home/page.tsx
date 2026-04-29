@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDashboardKPIs } from "@/src/services/queries/dashboard";
-import DashboardKPI from "@/components/ui/DashboardKPI";
+import DashboardKPI from "@/src/components/finova/ui/DashboardKPI";
 
 export default async function HomePage() {
   const session = await auth();

@@ -12,10 +12,10 @@ import {
 } from 'lucide-react'
 
 import { DateRange } from 'react-day-picker'
-import InsightsDatePicker from '@/components/insights/InsightsDatePicker'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui-finova'
-import TransactionDetailSheet from '../../treasury/feed/TransactionDetailSheet'
+import InsightsDatePicker from '@/src/components/finova/insights/InsightsDatePicker'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/finova/ui/popover'
+import { Button } from '@/src/components/finova/ui-finova'
+import TransactionDetailSheet from '@/src/components/modules/treasury/TransactionDetailSheet'
 
 interface Transaction {
   id: string

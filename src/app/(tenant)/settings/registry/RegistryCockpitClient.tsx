@@ -5,7 +5,8 @@ import {
   createWealthAccount, createExpenseCategory, createIncomeSource,
   toggleArchiveStatus 
 } from '@/src/actions/registry.actions'
-import { Card, Button, Input, Select, Label, Badge } from '@/components/ui-finova'
+import { Button, Input, Select, Label, Badge } from '@/src/components/finova/ui-finova'
+import { Card } from '@/src/components/system/Card'
 import { toast } from 'react-hot-toast'
 import { Wallet, Landmark, Tag, Archive, RotateCcw, Plus } from 'lucide-react'
 

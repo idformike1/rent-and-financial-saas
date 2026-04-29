@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import TenantGrid from "./TenantGrid";
-import { TableSkeleton } from "@/components/ui/SovereignSkeleton";
+import TenantGrid from "@/src/components/modules/tenants/TenantGrid";
+import { TableSkeleton } from "@/src/components/finova/ui/SovereignSkeleton";
 
 export default async function TenantRegistryPage() {
   return (

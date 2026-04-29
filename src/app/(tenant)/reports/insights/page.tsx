@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { getCurrentSession } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
-import InsightsGrid from "./InsightsGrid";
-import { ChartSkeleton } from "@/components/ui/SovereignSkeleton";
+import InsightsGrid from "@/src/components/modules/insights/InsightsGrid";
+import { ChartSkeleton } from "@/src/components/finova/ui/SovereignSkeleton";
 
 export const metadata = {
   title: "Insights | Axiom Finova",
@@ -14,7 +14,7 @@ export default async function InsightsPage() {
   if (!session) redirect("/login");
 
   return (
-    <div className="w-full theme-sharp p-8">
+    <div className="w-full p-8">
       <header className="mb-10">
         <h1 className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/40 mb-1">
           Analytical Intelligence

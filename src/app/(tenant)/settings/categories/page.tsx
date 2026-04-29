@@ -3,7 +3,7 @@ import { Info } from 'lucide-react'
 import ExecutiveLedgerHub from './GovernanceRegistryClient'
 import { getCurrentSession } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
-import { Card } from '@/components/ui-finova'
+import { Card } from '@/src/components/system/Card'
 
 export default async function CategoriesManagementPage() {
   const session = await getCurrentSession();

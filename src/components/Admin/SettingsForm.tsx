@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { updateSystemSettings } from '@/actions/management.actions'
-import { Card, Button, cn } from '@/components/ui-finova'
+import { Button, cn } from '@/src/components/finova/ui-finova'
+import { Card } from '@/src/components/system/Card'
 import { toast } from '@/lib/toast'
 import { Settings, Zap, Droplets, Clock, Percent, ShieldCheck } from 'lucide-react'
 

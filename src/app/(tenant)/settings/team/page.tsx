@@ -1,9 +1,9 @@
 import { getCurrentSession } from "@/lib/auth-utils"
 import { fetchTeamMembers } from "@/actions/team.actions"
-import UserTable from "@/components/team/UserTable"
-import InviteOperatorButton from "@/components/team/InviteOperatorButton"
+import UserTable from "@/src/components/finova/team/UserTable"
+import InviteOperatorButton from "@/src/components/finova/team/InviteOperatorButton"
 import { Users, UserCheck, ShieldAlert } from "lucide-react"
-import { Badge } from "@/components/ui-finova"
+import { Badge } from "@/src/components/finova/ui-finova"
 import { redirect } from "next/navigation"
 
 export default async function TeamPage() {

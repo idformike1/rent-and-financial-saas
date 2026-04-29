@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { ShieldAlert, Fingerprint, Activity, Clock, User as UserIcon, Tag, Database } from "lucide-react"
-import { Badge } from "@/components/ui-finova"
+import { Badge } from "@/src/components/finova/ui-finova"
 import { AuditFilterBar, MetadataExplorer } from './AuditClient'
 import { getCurrentSession } from '@/lib/auth-utils'
 import { getActiveWorkspaceId } from '@/src/actions/workspace.actions'

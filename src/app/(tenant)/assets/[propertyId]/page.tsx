@@ -2,7 +2,7 @@ import { getCurrentSession } from '@/lib/auth-utils';
 import { redirect } from 'next/navigation';
 import { getPropertySovereignViewService, getSidebarPropertiesService } from '@/src/services/queries/assets.services';
 import { getPropertyAssetPulse } from '@/actions/analytics.actions';
-import PropertySovereignClient from './PropertySovereignClient';
+import PropertySovereignClient from "@/src/components/modules/assets/PropertySovereignClient";
 
 interface SovereignPageProps {
   /** Geographic and semantic node identifier */

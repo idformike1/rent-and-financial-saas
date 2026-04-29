@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { ArrowRightLeft, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react'
 import { executeInternalTransfer, getWealthAccounts } from '@/actions/wealth.actions'
-import { Button } from '@/components/ui-finova'
+import { Button } from '@/src/components/finova/ui-finova'
 
 export default function TransferEngine() {
   const [accounts, setAccounts] = useState<any[]>([])

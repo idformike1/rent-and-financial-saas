@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import AssetGrid from "./AssetGrid";
-import { PortfolioSkeleton } from "@/components/ui/SovereignSkeleton";
+import AssetGrid from "@/src/components/modules/assets/AssetGrid";
+import { PortfolioSkeleton } from "@/src/components/finova/ui/SovereignSkeleton";
 
 export default async function AssetsPage() {
   return (

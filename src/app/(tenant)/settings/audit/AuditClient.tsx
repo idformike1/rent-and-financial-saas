@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { LucideSearch, LucideChevronLeft, LucideChevronRight, LucideEye, LucideFilter, LucideX } from 'lucide-react'
-import { SovereignSheet } from '@/src/components/ui/SovereignSheet'
+import { SideSheet } from '@/src/components/system/SideSheet'
 import { cn } from '@/lib/utils'
 
 interface UserOption {
@@ -110,7 +110,7 @@ export function MetadataExplorer({ metadata, action }: { metadata: any, action: 
         View Payload
       </button>
 
-      <SovereignSheet 
+      <SideSheet 
         isOpen={isOpen} 
         onClose={() => setIsOpen(false)} 
         title={`Forensic Intelligence: ${action}`}
@@ -146,7 +146,7 @@ export function MetadataExplorer({ metadata, action }: { metadata: any, action: 
              </div>
           </div>
         </div>
-      </SovereignSheet>
+      </SideSheet>
     </>
   )
 }

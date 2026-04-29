@@ -1,11 +1,11 @@
 import { getGlobalExecutiveMetrics, getCollectionVelocity } from "@/src/services/analytics.service";
-import DashboardKPI from "@/components/ui/DashboardKPI";
-import VelocityHeatmap from "@/components/ui/VelocityHeatmap";
+import DashboardKPI from "@/src/components/finova/ui/DashboardKPI";
+import VelocityHeatmap from "@/src/components/finova/ui/VelocityHeatmap";
 import { getCurrentSession } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 import { Landmark, Zap, BarChart3, History, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import BillingBatchForm from "@/components/treasury/BillingBatchForm";
+import BillingBatchForm from "@/src/components/finova/treasury/BillingBatchForm";
 
 export default async function CommandCenterPage({ searchParams }: { searchParams: Promise<{ period?: string }> }) {
   const session = await getCurrentSession();

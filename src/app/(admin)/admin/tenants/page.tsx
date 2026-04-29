@@ -1,5 +1,5 @@
-import { EntityList } from "@/components/admin/EntityList";
-import ProvisionVaultModal from "@/components/admin/ProvisionVaultModal";
+import { EntityList } from "@/src/components/finova/admin/EntityList";
+import ProvisionVaultModal from "@/src/components/finova/admin/ProvisionVaultModal";
 import { prisma } from "@/lib/prisma";
 
 export default async function TenantsPage() {

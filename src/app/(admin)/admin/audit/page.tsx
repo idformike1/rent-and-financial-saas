@@ -2,7 +2,7 @@ import { getGlobalAuditLogs } from "@/actions/audit.actions";
 import { format } from "date-fns";
 import { History } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AuditSearch } from "@/components/admin/AuditSearch";
+import { AuditSearch } from "@/src/components/finova/admin/AuditSearch";
 
 interface PageProps {
   searchParams: Promise<{ q?: string }>;

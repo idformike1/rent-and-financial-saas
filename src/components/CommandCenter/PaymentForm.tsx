@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { processPayment } from '@/actions/finance.actions';
-import { Card, Input, Button, Label, Select } from '@/components/ui-finova';
+import { Input, Button, Label, Select } from '@/src/components/finova/ui-finova'
+import { Card } from '@/src/components/system/Card';
 import { toast } from '@/lib/toast';
 
 /**

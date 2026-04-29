@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import TreasuryGrid from "./TreasuryGrid";
-import { LedgerSkeleton } from "@/components/ui/SovereignSkeleton";
+import TreasuryGrid from "@/src/components/modules/treasury/TreasuryGrid";
+import { LedgerSkeleton } from "@/src/components/finova/ui/SovereignSkeleton";
 
 export default async function TreasuryMasterPage() {
   return (

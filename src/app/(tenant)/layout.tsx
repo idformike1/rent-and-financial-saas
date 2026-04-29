@@ -1,7 +1,7 @@
-import AppShell from '@/components/AppShell';
+import AppShell from '@/src/components/finova/AppShell';
 import UniversalCommandPalette from '@/src/components/Command/UniversalCommandPalette';
-import { ImpersonationBanner } from '@/components/admin/ImpersonationBanner';
-import { WorkspaceSwitcher } from '@/components/tenant/WorkspaceSwitcher';
+import { ImpersonationBanner } from '@/src/components/finova/admin/ImpersonationBanner';
+import { WorkspaceSwitcher } from '@/src/components/finova/tenant/WorkspaceSwitcher';
 import { auth } from '@/auth';
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';

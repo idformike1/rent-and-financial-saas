@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, Badge, MercuryTable, THead, TBody, TR, TD } from '@/components/ui-finova';
+import { Badge } from '@/src/components/finova/ui-finova'
+import { MercuryTable, THead, TBody, TR, TD } from '@/src/components/system/DataTable'
+import { Card } from '@/src/components/system/Card';
 
 /**
  * LEDGER VIEW (COMMAND CENTER COMPONENT)
