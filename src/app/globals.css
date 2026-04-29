@@ -1,12 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../design-system/tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: 'Arcadia Text', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-arcadia-text), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-display: 'Arcadia Display', ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-arcadia-display), ui-sans-serif, system-ui, sans-serif;
 
   --radius: 16px;
   --radius-sm: 10px;
@@ -167,3 +168,12 @@
     --radius-xl: 6px !important;
   }
 }
+/* TEXT SYSTEM */
+.text-label { font-size: var(--text-xs); color: var(--color-text-secondary); }
+.text-value { font-size: var(--text-xl); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--color-text-primary); }
+.text-body { font-size: var(--text-md); color: var(--color-text-primary); }
+.text-muted { color: var(--color-text-secondary); }
+/* DATA COLORS */
+.data-positive { color: var(--color-positive); }
+.data-negative { color: var(--color-negative); }
+.data-warning { color: var(--color-warning); }

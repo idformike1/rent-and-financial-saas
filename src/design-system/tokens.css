@@ -1,0 +1,23 @@
+:root {
+  /* SURFACES */
+  --color-bg: #161821;
+  --color-surface: #1E1E2A;
+  --color-surface-elevated: #242638;
+  /* TEXT */
+  --color-text-primary: #F4F4F5;
+  --color-text-secondary: #A1A1AA;
+  /* BORDER */
+  --color-border-subtle: rgba(255,255,255,0.06);
+  /* SEMANTIC */
+  --color-positive: #22C55E;
+  --color-negative: #EF4444;
+  --color-warning: #F59E0B;
+  --color-brand: #5D71F9;
+  /* SPACING */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px;
+  /* RADIUS */
+  --radius-sm: 8px; --radius-md: 12px;
+  /* TYPOGRAPHY */
+  --text-xs: 12px; --text-sm: 13px; --text-md: 15px; --text-lg: 18px; --text-xl: 28px;
+}
