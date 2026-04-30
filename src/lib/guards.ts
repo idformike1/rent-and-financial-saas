@@ -1,5 +1,5 @@
 import { auth, signOut } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/src/lib/prisma';
 import { redirect } from "next/navigation";
 
 /**

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/src/lib/prisma'
 import Link from 'next/link'
 import ExpenseFormClient from '@/src/components/modules/treasury/ExpenseFormClient'
 import { Landmark, ShieldAlert, History, ArrowLeft, Shield, Zap } from 'lucide-react'

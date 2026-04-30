@@ -10,6 +10,8 @@ import {
   TrendingUp, BarChart3, ChevronDown, Search, ArrowUpRight
 } from 'lucide-react'
 import { Button } from '@/src/components/finova/ui-finova'
+import { toast } from '@/lib/toast'
+
 
 import TransactionFilterBar from './TransactionFilterBar'
 import { DateRange } from 'react-day-picker'
@@ -474,7 +476,16 @@ export default function TransactionFeedClient({ initialData, properties, tenants
 
       <div className="py-12 border-t border-white/[0.05] flex justify-between items-center px-4">
         <p className="text-mercury-label-caps text-clinical-low">Volumetric Report: {filteredData.length} entries</p>
-        <Button type="button" variant="ghost" disabled={false} className="h-9 px-8 rounded-[var(--radius-sm)] border border-white/10 text-mercury-label-caps text-clinical-muted hover:text-white transition-all bg-transparent">Load Forensic History</Button>
+        <Button 
+          type="button" 
+          variant="ghost" 
+          disabled={false} 
+          onClick={() => toast.info("Forensic History Engine: Repository indexing in progress.")}
+          className="h-9 px-8 rounded-[var(--radius-sm)] border border-white/10 text-mercury-label-caps text-clinical-muted hover:text-white transition-all bg-transparent"
+        >
+          Load Forensic History
+        </Button>
+
       </div>
     </div>
   )

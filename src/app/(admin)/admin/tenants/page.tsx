@@ -1,6 +1,6 @@
 import { EntityList } from "@/src/components/finova/admin/EntityList";
 import ProvisionVaultModal from "@/src/components/finova/admin/ProvisionVaultModal";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/src/lib/prisma';
 
 export default async function TenantsPage() {
   // Fetch active entities for the registry via the junction table

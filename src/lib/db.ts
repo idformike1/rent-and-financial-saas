@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/src/lib/prisma';
 
 /**
  * THE SHIELDED CLIENT (SOVEREIGN EDITION)
@@ -25,6 +25,8 @@ export const getSovereignClient = (organizationId: string) => {
             // The 'true' flag ensures this variable evaporates when the transaction ends
             await tx.$executeRawUnsafe(`SELECT set_config('app.current_tenant_id', '${organizationId}', true)`);
             return query(args);
+          }, {
+            timeout: 15000 // Sovereign Reliability: Extended for deep analytical aggregation
           });
         },
       },

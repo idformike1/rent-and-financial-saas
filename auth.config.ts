@@ -21,7 +21,7 @@ export const authConfig = {
       // for the CURRENT active organizationId.
       if (token.id && token.organizationId) {
         try {
-          const { prisma } = await import("@/lib/prisma");
+          const { prisma } = await import("@/src/lib/prisma");
           const membership = await prisma.organizationMember.findUnique({
             where: {
               userId_organizationId: {

@@ -63,6 +63,17 @@ export default function TransactionFilterBar({
 }: FilterBarProps) {
   const [activeTabPanel, setActiveTabPanel] = useState<TabPanel>('properties')
   const [isTabPopoverOpen, setIsTabPopoverOpen] = useState(false)
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false)
+  const [isApplying, setIsApplying] = useState(false)
+
+  const handleApply = () => {
+    setIsApplying(true)
+    // Simulate application delay for visual feedback as requested
+    setTimeout(() => {
+      setIsApplying(false)
+      setIsFilterPopoverOpen(false)
+    }, 600)
+  }
 
   return (
     <div className="w-full h-14 flex items-center px-0">
@@ -101,8 +112,9 @@ export default function TransactionFilterBar({
         </Popover>
 
         {/* PILLAR 2: ADVANCED FILTERS (Mega-Dropdown) */}
-        <Popover>
+        <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
           <PopoverTrigger asChild>
+
             <Button 
               type="button"
               variant="ghost" 
@@ -279,9 +291,23 @@ export default function TransactionFilterBar({
             </div>
             {/* Popover Footer */}
             <div className="h-14 border-t border-white/5 flex items-center justify-between px-6 bg-white/[0.01]">
-              <Button type="button" variant="ghost" disabled={false} size="sm" onClick={onReset} className="text-white/40 hover:text-white border border-white/5">Reset Selection</Button>
-              <Button type="button" disabled={false} size="sm" className="bg-primary text-primary-foreground font-semibold px-6 hover:opacity-90 transition-opacity">Apply Parameters</Button>
+              <Button type="button" variant="ghost" disabled={isApplying} size="sm" onClick={onReset} className="text-white/40 hover:text-white border border-white/5">Reset Selection</Button>
+              <Button 
+                type="button" 
+                disabled={isApplying} 
+                onClick={handleApply}
+                size="sm" 
+                className="bg-primary text-primary-foreground font-semibold px-6 hover:opacity-90 transition-opacity min-w-[140px]"
+              >
+                {isApplying ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Applying...</span>
+                  </div>
+                ) : "Apply Parameters"}
+              </Button>
             </div>
+
           </PopoverContent>
         </Popover>
 

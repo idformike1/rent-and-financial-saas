@@ -4,7 +4,7 @@ import { ImpersonationBanner } from '@/src/components/finova/admin/Impersonation
 import { WorkspaceSwitcher } from '@/src/components/finova/tenant/WorkspaceSwitcher';
 import { auth } from '@/auth';
 import { cookies } from 'next/headers';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/src/lib/prisma';
 
 import { requireLiveIdentity } from '@/src/lib/guards';
 

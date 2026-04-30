@@ -1,7 +1,7 @@
 import { getCurrentSession } from '@/lib/auth-utils';
 import { redirect } from 'next/navigation';
-import { getPropertySovereignViewService, getSidebarPropertiesService } from '@/src/services/queries/assets.services';
-import { getPropertyAssetPulse } from '@/actions/analytics.actions';
+import { assetService } from '@/src/services/asset.service';
+import { getProfitAndLoss } from '@/actions/analytics.actions';
 import PropertySovereignClient from "@/src/components/modules/assets/PropertySovereignClient";
 
 interface SovereignPageProps {
@@ -20,31 +20,30 @@ export default async function SovereignViewport({ params }: SovereignPageProps) 
   let allProperties;
 
   try {
-    const [pData, plData, sidebarProps] = await Promise.all([
-      getPropertySovereignViewService(propertyId, {
-        operatorId: session.userId,
-        organizationId: session.organizationId,
-      }),
-      getPropertyAssetPulse(propertyId),
-      getSidebarPropertiesService({
-        operatorId: session.userId,
-        organizationId: session.organizationId
-      })
-    ]);
+    // 1. Fetch primary identity data
+    propertyData = await assetService.getPropertySovereignView(propertyId, session.organizationId);
     
-    propertyData = pData;
-    pulseData = plData;
-    allProperties = sidebarProps;
+    // 2. Fetch secondary telemetry
+    const plData = await assetService.getPropertyAssetPulse(propertyId, session.organizationId);
+    
+    // 3. Fetch sidebar context
+    allProperties = await assetService.getSidebarProperties(session.organizationId);
+    
+    pulseData = plData; 
   } catch (error) {
+    console.error('[ASSET_VIEWPORT_FATAL]', error);
     redirect('/assets');
   }
 
   return (
     <PropertySovereignClient 
       propertyData={propertyData} 
-      pulseData={pulseData.success ? pulseData.data : null} 
+      pulseData={pulseData} 
       allProperties={allProperties}
       role={session.role}
     />
   );
+
+
+
 }

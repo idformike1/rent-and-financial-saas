@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getDashboardKPIs } from "@/src/services/queries/dashboard";
+import { treasuryService } from "@/src/services/treasury.service";
 import DashboardKPI from "@/src/components/finova/ui/DashboardKPI";
 
 export default async function HomePage() {
@@ -36,7 +36,7 @@ export default async function HomePage() {
   // 3. Hydrate Data (Phase 1: Rent Workspace)
   let rentData = { occupancy: 0, noi: 0, arrears: 0 };
   if (activeModule === 'RENT') {
-    rentData = await getDashboardKPIs(organizationId);
+    rentData = await treasuryService.getDashboardKPIs(organizationId);
   }
 
   return (

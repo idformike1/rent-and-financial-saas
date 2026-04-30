@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/src/lib/prisma'
 import { AccountCategory, Prisma } from '@prisma/client'
 
 // Technical interface for internal report aggregation

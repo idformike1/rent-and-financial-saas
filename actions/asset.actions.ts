@@ -2,14 +2,7 @@
 
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
-import { 
-  createPropertyService, 
-  updatePropertyService,
-  deletePropertyService,
-  createUnitService,
-  updateUnitService
-} from '@/src/services/mutations/asset.services'
-import { getAvailableUnitsService } from '@/src/services/queries/asset.services'
+import { assetService } from '@/src/services/asset.service'
 import { MaintenanceStatus } from '@/src/schema/enums'
 
 /**
@@ -24,7 +17,7 @@ import { MaintenanceStatus } from '@/src/schema/enums'
 export async function createProperty(data: { name: string, address: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const property = await createPropertyService(
+      const property = await assetService.createProperty(
         data,
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
@@ -45,7 +38,7 @@ export async function createProperty(data: { name: string, address: string }) {
 export async function updateProperty(propertyId: string, data: { name?: string, address?: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const property = await updatePropertyService(
+      const property = await assetService.updateProperty(
         propertyId,
         data,
         {
@@ -68,7 +61,7 @@ export async function updateProperty(propertyId: string, data: { name?: string, 
 export async function deleteProperty(propertyId: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      await deletePropertyService(
+      await assetService.deleteProperty(
         propertyId,
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
@@ -92,7 +85,7 @@ export async function deleteProperty(propertyId: string) {
 export async function createUnit(data: { unitNumber: string, type: string, category: string, propertyId: string, marketRent?: number }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const unit = await createUnitService(
+      const unit = await assetService.createUnit(
         data,
         {
           operatorId: session.userId || "OP_SYSTEM_ADMIN",
@@ -101,7 +94,10 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
       );
 
       revalidatePath(`/assets/${data.propertyId}`);
+      revalidatePath('/tenants');
+      revalidatePath('/tenant-register');
       return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
+
     } catch (e: any) {
       console.error('[ASSET_UNIT_CREATE_FATAL]', e);
       return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -112,7 +108,7 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
 export async function updateUnit(unitId: string, data: { maintenanceStatus?: MaintenanceStatus, marketRent?: number, propertyId?: string, unitNumber?: string, type?: string, category?: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const unit = await updateUnitService(
+      const unit = await assetService.updateUnit(
         unitId,
         data,
         {
@@ -142,10 +138,7 @@ export async function updateUnitStatus(unitId: string, status: MaintenanceStatus
 export async function getAvailableUnits() {
   try {
     return await runSecureServerAction('VIEWER', async (session) => {
-      const units = await getAvailableUnitsService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
+      const units = await assetService.getAvailableUnits(session.organizationId);
       return JSON.parse(JSON.stringify(units || []));
     }, false);
   } catch (e) {
@@ -157,12 +150,7 @@ export async function getAvailableUnits() {
 export async function getUnitLedgerFeed(unitId: string) {
   try {
     return await runSecureServerAction('VIEWER', async (session) => {
-      // Lazy import to prevent circular dependencies if any
-      const { getUnitLedgerFeedService } = await import('@/src/services/queries/assets.services');
-      const feed = await getUnitLedgerFeedService(unitId, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
+      const feed = await assetService.getUnitLedgerFeed(unitId, session.organizationId);
       return JSON.parse(JSON.stringify(feed || []));
     }, false);
   } catch (e) {

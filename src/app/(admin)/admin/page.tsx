@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/src/lib/prisma';
 import { format } from "date-fns";
 import { Activity, ShieldAlert, History, User, Box, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";

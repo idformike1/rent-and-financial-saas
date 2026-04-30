@@ -1,4 +1,4 @@
-import { prisma } from './prisma'
+import { prisma } from '@/src/lib/prisma'
 import { auth } from '@/auth'
 
 interface AuditLogParams {

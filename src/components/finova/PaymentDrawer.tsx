@@ -93,7 +93,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
           paymentMode: data.paymentMode,
           referenceText: data.referenceText,
           idempotencyKey
-        })
+        }) as any;
         if (response.success) {
           toast.success("Liquid Expenditure Successfully Materialized");
           reset();

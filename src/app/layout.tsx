@@ -13,6 +13,7 @@ const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin'],
   variable: '--font-ibm-plex-mono',
   display: 'swap',
+  fallback: ['monospace'], // Resilience: Bypass build failures on Google Fonts timeout
 });
 
 const arcadiaText = localFont({

@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/src/lib/prisma';
 import { cookies } from "next/headers";
 
 export type UserRole = 'OWNER' | 'MANAGER' | 'ADMIN' | 'VIEWER';

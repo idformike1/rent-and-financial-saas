@@ -103,10 +103,9 @@ export default function TenantOnboardingWizard() {
       setIsValidating(true);
       const vals = getValues();
       try {
-        const check = await checkTenantExistence(vals.tenantName, vals.email, vals.phone, vals.nationalId);
+        const check = await checkTenantExistence(vals.tenantName, vals.email, vals.phone, vals.nationalId) as any;
         if (check.exists) {
           setServerError("Identity conflict detected. Please resolve highlighted fields.");
-          // Map all detected conflicts to their respective form fields for granular feedback
           if (check.conflicts) {
             Object.entries(check.conflicts).forEach(([field, message]) => {
               setError(field as any, { message: message as string });

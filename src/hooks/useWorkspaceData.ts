@@ -33,7 +33,7 @@ export function useWorkspaceData() {
         ])
         setWorkspaceId(id)
         
-        const activeOrg = orgs.find(o => o.id === id)
+        const activeOrg = orgs.find((o: any) => o.id === id)
         if (activeOrg?.name === 'Personal Wealth') {
           setOrgType('WEALTH')
         } else {

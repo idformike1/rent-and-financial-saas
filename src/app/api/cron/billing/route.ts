@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRentAccrual } from '@/src/services/billing.services';
-import { prisma } from '@/lib/prisma'; // Base client to get all leases across orgs
+import { prisma } from '@/src/lib/prisma'; // Base client to get all leases across orgs
 
 /**
  * Vercel Cron Job: Autonomous Monthly Accrual Protocol

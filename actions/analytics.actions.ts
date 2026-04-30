@@ -1,40 +1,23 @@
 'use server'
 
 import { runSecureServerAction } from '@/lib/auth-utils'
-import {
-  getGlobalPortfolioTelemetryService,
-  getProfitAndLossService,
-  getRentRollService,
-  getTaxPrepService,
-  saveReportSnapshotService,
-  getPropertyAssetPulseService,
-  getPropertyLedgerEntriesService,
-  getMasterLedgerService
-} from '@/src/services/queries/analytics'
-import { getLedgerFilterMetadataService } from '@/src/services/queries/metadata.services'
+import { assetService } from '@/src/services/asset.service'
+import { treasuryService } from '@/src/services/treasury.service'
 
 /**
  * ANALYTICS DOMAIN ACTIONS (SOVEREIGN AUTHORITY)
  *
- * Centralized gatekeeper for all read-only analytics operations:
- * Macro Dashboard Telemetry, Financial Reports, and Asset Pulse.
+ * Centralized gatekeeper for all read-only analytics operations.
  */
 
 /* ── 1. MACRO DASHBOARD ─────────────────────────────────────────────────── */
 
-/**
- * GLOBAL PORTFOLIO TELEMETRY (GATEKEEPER)
- */
 export async function getGlobalPortfolioTelemetry() {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      const result = await getGlobalPortfolioTelemetryService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-      return { success: true, data: result };
+      const data = await treasuryService.getGlobalPortfolioTelemetry(session.organizationId);
+      return { success: true, data };
     } catch (e: any) {
-      console.error('[ANALYTICS_TELEMETRY_FATAL]', e);
       return { success: false, message: e.message || "System Reconciliation Failure" };
     }
   }, false);
@@ -42,18 +25,10 @@ export async function getGlobalPortfolioTelemetry() {
 
 /* ── 2. FINANCIAL REPORTS ───────────────────────────────────────────────── */
 
-/**
- * GAAP PROFIT & LOSS ENGINE GATEKEEPER
- */
 export async function getProfitAndLoss(dateRange: string, scope: string, propertyId?: string) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-// ... lines 51-54
-      const data = await getProfitAndLossService(propertyId, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-      return data;
+      return await treasuryService.getProfitAndLoss(session.organizationId, propertyId);
     } catch (e: any) {
       console.error('[ANALYTICS_PL_FATAL]', e);
       return {
@@ -65,126 +40,36 @@ export async function getProfitAndLoss(dateRange: string, scope: string, propert
   }, false);
 }
 
-/**
- * RENT ROLL GATEKEEPER
- */
-export async function getRentRoll(propertyId?: string) {
-  return runSecureServerAction('VIEWER', async (session) => {
-    try {
-      return await getRentRollService(propertyId, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-    } catch (e: any) {
-      console.error('[ANALYTICS_RENTROLL_FATAL]', e);
-      return [];
-    }
-  }, false);
-}
-
-/**
- * TAX PREP GATEKEEPER
- */
-export async function getTaxPrep(year: number, propertyId?: string) {
-  return runSecureServerAction('VIEWER', async (session) => {
-    try {
-      return await getTaxPrepService(year, propertyId, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-    } catch (e: any) {
-      console.error('[ANALYTICS_TAXPREP_FATAL]', e);
-      return [];
-    }
-  }, false);
-}
-
-/**
- * REPORT SNAPSHOT GATEKEEPER
- */
-export async function saveReportSnapshot(payload: any) {
-  return runSecureServerAction('MANAGER', async (session) => {
-    try {
-      return await saveReportSnapshotService(payload, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
-    } catch (e: any) {
-      console.error('[ANALYTICS_SNAPSHOT_FATAL]', e);
-      throw e;
-    }
-  });
-}
-
 /* ── 3. ASSET ANALYTICS ─────────────────────────────────────────────────── */
 
-/**
- * ASSET PULSE GATEKEEPER
- */
 export async function getPropertyAssetPulse(propertyId: string) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      const data = await getPropertyAssetPulseService(propertyId, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
+      const data = await assetService.getPropertyAssetPulse(propertyId, session.organizationId);
       return { success: true, data };
     } catch (e: any) {
-      console.error('[ANALYTICS_PULSE_FATAL]', e);
       return { success: false, message: e.message };
     }
   }, false);
 }
 
-/**
- * ASSET LEDGER DRILL-DOWN GATEKEEPER
- */
 export async function getPropertyLedgerEntries(propertyId: string, type: string) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      return await getPropertyLedgerEntriesService(propertyId, type, {
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
+      return await treasuryService.getMasterLedger(session.organizationId, {
+        propertyId,
+        category: type
       });
     } catch (e: any) {
-      console.error('[ANALYTICS_LEDGER_DRILL_FATAL]', e);
       return [];
     }
   }, false);
 }
 
-/**
- * MASTER LEDGER GATEKEEPER
- */
-export async function getMasterLedger(filters?: {
-// ... filters definition
-  query?: string;
-  startDate?: string;
-  endDate?: string;
-  category?: string;
-  propertyId?: string;
-  tenantId?: string;
-  accountId?: string;
-  categoryId?: string;
-  minAmount?: number;
-  maxAmount?: number;
-  skip?: number;
-  take?: number;
-  scope?: 'RENT' | 'WEALTH';
-}) {
+export async function getMasterLedger(filters?: any) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      return await getMasterLedgerService(
-        {
-          operatorId: session.userId || "OP_SYSTEM_ADMIN",
-          organizationId: session.organizationId
-        },
-        {
-          ...filters,
-          startDate: filters?.startDate ? new Date(filters.startDate) : undefined,
-          endDate: filters?.endDate ? new Date(filters.endDate) : undefined,
-        }
-      );
+      return await treasuryService.getMasterLedger(session.organizationId, filters);
     } catch (e: any) {
       console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
       return [];
@@ -192,18 +77,11 @@ export async function getMasterLedger(filters?: {
   }, false);
 }
 
-/**
- * LEDGER FILTER METADATA GATEKEEPER
- */
 export async function getLedgerFilterMetadata() {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      return await getLedgerFilterMetadataService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
+      return await treasuryService.getGovernanceMetadata(session.organizationId);
     } catch (e: any) {
-      console.error('[ANALYTICS_METADATA_FATAL]', e);
       return { properties: [], tenants: [], accounts: [], categories: [] };
     }
   }, false);

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/src/lib/prisma';
 import ReportClient from "./ReportClient";
 import { getActiveWorkspaceId } from "@/src/actions/workspace.actions";
 import { getCurrentSession } from "@/lib/auth-utils";

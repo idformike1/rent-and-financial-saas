@@ -2,8 +2,17 @@ import { Suspense } from "react";
 import Link from "next/link";
 import TenantGrid from "@/src/components/modules/tenants/TenantGrid";
 import { TableSkeleton } from "@/src/components/finova/ui/SovereignSkeleton";
+import { tenantService } from "@/src/services/tenant.service";
+import { getCurrentSession } from "@/lib/auth-utils";
+import { redirect } from "next/navigation";
 
 export default async function TenantRegistryPage() {
+  const session = await getCurrentSession();
+  if (!session) redirect("/login");
+
+  // Fetch data at the page level to enforce Client/Server boundary
+  const tenants = await tenantService.getTenantsWithContext(session.organizationId);
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col gap-6 w-full">
       <header className="flex justify-between items-end mb-4">
@@ -24,7 +33,7 @@ export default async function TenantRegistryPage() {
       </header>
 
       <Suspense fallback={<TableSkeleton rows={10} />}>
-        <TenantGrid />
+        <TenantGrid initialTenants={JSON.parse(JSON.stringify(tenants))} role={session.role} />
       </Suspense>
     </div>
   );

@@ -1,5 +1,5 @@
 // prisma/seed-superadmin.ts
-import { prisma } from '@/lib/prisma'; // Importing your pre-configured Sovereign OS client
+import { prisma } from '@/src/lib/prisma'; // Importing your pre-configured Sovereign OS client
 import bcrypt from 'bcryptjs';
 
 async function forgeMasterKey() {

@@ -1,5 +1,5 @@
 import TenantProfileView from '@/src/components/modules/tenants/TenantProfileView'
-import { getTenantForensicDossierService } from '@/src/services/mutations/tenant.services'
+import { tenantService } from '@/src/services/tenant.service'
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSession } from '@/lib/auth-utils'
 import Link from 'next/link'
@@ -12,13 +12,13 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
   if (!session) redirect('/login');
 
   try {
-    const data = await getTenantForensicDossierService(tenantId, {
+    const data = await tenantService.getTenantForensicDossier(tenantId, {
       operatorId: session.userId,
       organizationId: session.organizationId
     });
 
     const { tenant } = data;
-    const { integrityScore, stripChart } = tenant;
+    const { integrityScore, stripChart } = tenant as any;
 
     // DATA RECONSTRUCTION FOR V3.0 INTERFACE (Decimal -> Number Serialization)
     const tenantDTO = {
@@ -27,12 +27,12 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
       email: tenant.email,
       phone: tenant.phone,
       nationalId: tenant.nationalId,
-      isDeleted: tenant.isDeleted,
+      isDeleted: (tenant as any).isDeleted,
       integrityScore,
       stripChart
     };
 
-    const activeLeases = tenant.leases
+    const activeLeases = (tenant as any).leases
       .filter((l: any) => l.isActive)
       .map((l: any) => ({
         id: l.id,
@@ -59,13 +59,13 @@ export default async function TenantProfilePage({ params }: { params: Promise<{ 
           <TenantProfileView 
             tenant={tenantDTO as any}
             activeLeases={activeLeases as any}
-            ledgerEntries={tenant.ledgerEntries.map((e: any) => ({ 
+            ledgerEntries={(tenant as any).ledgerEntries.map((e: any) => ({ 
               id: e.id,
               amount: Number(e.amount || 0), 
               type: e.type,
               description: e.description,
               transactionDate: e.transactionDate instanceof Date ? e.transactionDate.toISOString() : e.transactionDate 
-            }))}
+             }))}
           />
         </div>
       </div>

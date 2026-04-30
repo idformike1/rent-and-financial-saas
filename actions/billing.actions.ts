@@ -3,7 +3,7 @@
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
 import { calculateUtilityCharge, generateRentAccrual } from '@/src/services/billing.services'
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/src/lib/prisma'
 
 /**
  * BILLING DOMAIN ACTIONS

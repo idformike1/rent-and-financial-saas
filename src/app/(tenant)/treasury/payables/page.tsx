@@ -1,8 +1,8 @@
-import { prisma } from '@/lib/prisma'
+import { treasuryService } from '@/src/services/treasury.service'
 import Link from 'next/link'
-import { Plus, Landmark, ShieldCheck, Zap, ArrowLeft, History } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import RegistrySurveillanceClient from "@/src/components/modules/treasury/RegistrySurveillanceClient"
-import { Badge, Button } from '@/src/components/finova/ui-finova'
+import { Button } from '@/src/components/finova/ui-finova'
 
 import { getCurrentSession } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
@@ -13,42 +13,12 @@ export default async function ExpenseRegistryPage() {
   const session = await getCurrentSession();
   if (!session) redirect('/login');
 
-  const entriesRaw = await prisma.ledgerEntry.findMany({
-    where: { 
-      organizationId: session.organizationId,
-      ...getTemporalFragment(FINANCIAL_PERIODS.TRAILING_MONTH),
-      AND: REVENUE_FILTER_CONTEXT
-    },
-    select: {
-      id: true,
-      amount: true,
-      date: true,
-      transactionDate: true,
-      description: true,
-      paymentMode: true,
-      referenceText: true,
-      expenseCategory: {
-        select: {
-          id: true,
-          name: true,
-          parent: {
-            select: { id: true, name: true }
-          }
-        }
-      },
-      account: {
-        select: {
-          id: true,
-          name: true,
-          category: true
-        }
-      },
-      property: {
-        select: { id: true, name: true }
-      }
-    },
-    orderBy: { transactionDate: 'desc' }
-  });
+  const filters = {
+    ...getTemporalFragment(FINANCIAL_PERIODS.TRAILING_MONTH),
+    AND: REVENUE_FILTER_CONTEXT
+  };
+
+  const entriesRaw = await treasuryService.getExpenseRegistryEntries(session.organizationId, filters);
 
   const entries = entriesRaw.map((e: any) => ({
     id: e.id,

@@ -2,16 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { runSecureServerAction } from "@/lib/auth-utils"
-import { 
-  inviteTeamMemberService, 
-  updateUserRoleService, 
-  deleteUserService,
-  toggleUserActivationService,
-  toggleUserEditPermissionService,
-  consumeInvitationService,
-  updateProfileService
-} from "@/src/services/mutations/team.services"
-import { getTeamMembersService } from "@/src/services/queries/team.services"
+import { teamService } from "@/src/services/team.service"
 import { UpdateProfileSchema } from "@/src/lib/validations/user.schema"
 
 /**
@@ -19,10 +10,7 @@ import { UpdateProfileSchema } from "@/src/lib/validations/user.schema"
  */
 export async function fetchTeamMembers() {
   return runSecureServerAction('VIEWER', async (session) => {
-    return await getTeamMembersService({
-      operatorId: session.userId,
-      organizationId: session.organizationId
-    });
+    return await teamService.getTeamMembers(session.organizationId);
   }, false);
 }
 
@@ -32,13 +20,11 @@ export async function fetchTeamMembers() {
 export async function updateUserRole(userId: string, newRole: string) {
   return runSecureServerAction('OWNER', async (session) => {
     try {
-      await updateUserRoleService(
+      await teamService.updateUserRole(
         userId,
         newRole,
-        {
-          operatorId: session.userId || "OP_SYSTEM_ADMIN",
-          organizationId: session.organizationId
-        }
+        session.organizationId,
+        session.userId || "OP_SYSTEM_ADMIN"
       );
       revalidatePath('/settings/team');
     } catch (e: any) {
@@ -57,13 +43,10 @@ export async function toggleUserActivation(userId: string, isActive: boolean) {
       throw new Error("ERR_GRAVITY_VIOLATION: Self-deactivation protocol blocked.");
     }
 
-    await toggleUserActivationService(
+    await teamService.toggleActivation(
       userId,
       isActive,
-      {
-        operatorId: session.userId,
-        organizationId: session.organizationId
-      }
+      session.organizationId
     );
     
     revalidatePath('/settings/team');
@@ -75,13 +58,10 @@ export async function toggleUserActivation(userId: string, isActive: boolean) {
  */
 export async function toggleUserEditPermission(userId: string, canEdit: boolean) {
   return runSecureServerAction('OWNER', async (session) => {
-    await toggleUserEditPermissionService(
+    await teamService.toggleEditPermission(
       userId,
       canEdit,
-      {
-        operatorId: session.userId,
-        organizationId: session.organizationId
-      }
+      session.organizationId
     );
     revalidatePath('/settings/team');
   });
@@ -93,12 +73,10 @@ export async function toggleUserEditPermission(userId: string, canEdit: boolean)
 export async function deleteUserForever(userId: string) {
   return runSecureServerAction('OWNER', async (session) => {
     try {
-      await deleteUserService(
+      await teamService.deleteUser(
         userId,
-        {
-          operatorId: session.userId || "OP_SYSTEM_ADMIN",
-          organizationId: session.organizationId
-        }
+        session.organizationId,
+        session.userId || "OP_SYSTEM_ADMIN"
       );
       revalidatePath('/settings/team');
     } catch (e: any) {
@@ -119,12 +97,9 @@ export async function inviteMember(email: string, name: string, role: string = '
       const firstName = nameParts[0] || "";
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
-      const result = await inviteTeamMemberService(
+      const result = await teamService.inviteMember(
         { email, name, role, firstName, lastName },
-        {
-          operatorId: session.userId || "OP_SYSTEM_ADMIN",
-          organizationId: session.organizationId
-        }
+        session.organizationId
       );
 
       revalidatePath('/settings/team');
@@ -145,7 +120,7 @@ export async function inviteMember(email: string, name: string, role: string = '
  */
 export async function consumeInvitation(token: string, passwordPlain: string) {
   try {
-    await consumeInvitationService({ token, passwordPlain });
+    await teamService.consumeInvitation({ token, passwordPlain });
     return { success: true };
   } catch (e: any) {
     console.error('[ONBOARDING_CONSUMPTION_FATAL]', e);
@@ -163,13 +138,10 @@ export async function updateProfile(data: any) {
       const parsedData = UpdateProfileSchema.parse(data);
 
       // 2. Execute update via service layer
-      await updateProfileService(
+      await teamService.updateProfile(
         session.userId,
         parsedData,
-        {
-          operatorId: session.userId,
-          organizationId: session.organizationId
-        }
+        session.organizationId
       );
 
       revalidatePath('/home');

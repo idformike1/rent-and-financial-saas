@@ -107,7 +107,7 @@ export default function TransactionDetailDrawer({
                 </div>
                 <div className="flex items-center gap-6">
                     <span className="text-white/60 font-mono tracking-tighter">{transactions.length} Records</span>
-                    <button className="hover:text-brand transition-colors flex items-center gap-2 group">
+                    <button onClick={() => alert('Export protocol initializing...')} className="hover:text-brand transition-colors flex items-center gap-2 group">
                         Export Forensic Log <ExternalLink className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
                     </button>
                 </div>

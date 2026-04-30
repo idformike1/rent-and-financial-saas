@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { runSecureServerAction } from '@/lib/auth-utils';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/src/lib/prisma';
 import { auth } from '@/auth';
 
 /**

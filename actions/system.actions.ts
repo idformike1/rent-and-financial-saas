@@ -4,19 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { runSecureServerAction } from '@/lib/auth-utils'
 import { auth, update } from '@/auth'
 import bcrypt from 'bcryptjs'
-import {
-  createLedgerService,
-  deleteLedgerService,
-  createAccountNodeService,
-  updateLedgerService,
-  updateAccountNodeService,
-  deleteAccountNodeService,
-  executeRevenueSyncService,
-  bootstrapOrganizationService
-} from '@/src/services/mutations/system.services'
-import { prisma } from '@/lib/prisma'
-import { deepScanSystemService } from '@/src/services/queries/system.services'
-import { getDetailedOntologyService } from '@/src/services/queries/analytics'
+import { systemService } from '@/src/services/system.service'
+import { prisma } from '@/src/lib/prisma'
 
 /**
  * SYSTEM DOMAIN ACTIONS (SOVEREIGN AUTHORITY)
@@ -33,9 +22,9 @@ import { getDetailedOntologyService } from '@/src/services/queries/analytics'
 export async function materializeLedger(name: string, ledgerClass: string = "EXPENSE") {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const ledger = await createLedgerService(
+      const ledger = await systemService.createLedger(
         { name, class: ledgerClass },
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
+        session.organizationId
       );
       revalidatePath('/settings/categories');
       return { success: true, data: ledger };
@@ -52,10 +41,7 @@ export async function materializeLedger(name: string, ledgerClass: string = "EXP
 export async function vaporizeLedger(id: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      await deleteLedgerService(
-        id,
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
-      );
+      await systemService.deleteLedger(id, session.organizationId);
       revalidatePath('/settings/categories');
       return { success: true };
     } catch (e: any) {
@@ -79,9 +65,9 @@ export async function createAccountNode(formData: FormData) {
         return { error: "Missing required taxonomy fields: Label, Ledger." };
       }
 
-      const node = await createAccountNodeService(
+      const node = await systemService.createAccountNode(
         { name: label, ledgerId, parentId },
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
+        session.organizationId
       );
 
       revalidatePath('/settings/categories');
@@ -99,10 +85,7 @@ export async function createAccountNode(formData: FormData) {
 export async function recalibrateLedger(id: string, name: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      await updateLedgerService(
-        id, name,
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
-      );
+      await systemService.updateLedger(id, name, session.organizationId);
       revalidatePath('/settings/categories');
       return { success: true };
     } catch (e: any) {
@@ -118,10 +101,7 @@ export async function recalibrateLedger(id: string, name: string) {
 export async function updateAccountNode(id: string, label: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      await updateAccountNodeService(
-        id, label,
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
-      );
+      await systemService.updateAccountNode(id, label, session.organizationId);
       revalidatePath('/settings/categories');
       return { success: true };
     } catch (e: any) {
@@ -137,10 +117,7 @@ export async function updateAccountNode(id: string, label: string) {
 export async function deleteAccountNode(id: string) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      await deleteAccountNodeService(
-        id,
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
-      );
+      await systemService.deleteAccountNode(id, session.organizationId);
       revalidatePath('/settings/categories');
       return { success: true };
     } catch (e: any) {
@@ -160,10 +137,7 @@ export async function deepScanSystem(query: string) {
 
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const results = await deepScanSystemService(
-        query,
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
-      );
+      const results = await systemService.deepScan(query, session.organizationId);
       return { success: true, data: results };
     } catch (error: any) {
       console.error('[SYSTEM_SEARCH_FATAL]', error);
@@ -180,10 +154,7 @@ export async function deepScanSystem(query: string) {
 export async function fetchDetailedOntology() {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const root = await getDetailedOntologyService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
+      const root = await systemService.getDetailedOntology(session.organizationId);
       return { root };
     } catch (e: any) {
       console.error('[SYSTEM_ONTOLOGY_FATAL]', e);
@@ -200,10 +171,7 @@ export async function fetchDetailedOntology() {
 export async function executeRevenueSync() {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const result = await executeRevenueSyncService({
-        operatorId: session.userId || "OP_SYSTEM_ADMIN",
-        organizationId: session.organizationId
-      });
+      const result = await systemService.executeRevenueSync(session.organizationId);
       return { success: true, data: result };
     } catch (e: any) {
       console.error('[SYSTEM_REVENUE_SYNC_FATAL]', e);
@@ -233,9 +201,9 @@ export async function bootstrapOrganization(formData: FormData) {
         return { error: "Missing required provisioning fields: Org Name, Owner Name, Owner Email." };
       }
 
-      const result = await bootstrapOrganizationService(
+      const result = await systemService.bootstrapOrganization(
         { orgName, ownerName, ownerEmail },
-        { operatorId: session.userId || "OP_SYSTEM_ADMIN" }
+        session.userId || "OP_SYSTEM_ADMIN"
       );
 
       revalidatePath('/admin');

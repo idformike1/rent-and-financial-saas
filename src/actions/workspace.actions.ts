@@ -16,7 +16,7 @@ import { redirect } from "next/navigation"
  */
 export async function switchActiveOrganization(organizationId: string) {
   const { auth } = await import("@/auth")
-  const { prisma } = await import("@/lib/prisma")
+  const { prisma } = await import("@/src/lib/prisma")
 
   const session = await auth()
   if (!session?.user?.id) throw new Error("UNAUTHORIZED: Session invalid.")
@@ -65,7 +65,7 @@ export async function getActiveWorkspaceId() {
  */
 export async function getUserOrganizations() {
   const { auth } = await import("@/auth")
-  const { prisma } = await import("@/lib/prisma")
+  const { prisma } = await import("@/src/lib/prisma")
 
   const session = await auth()
   if (!session?.user?.id) return []
@@ -82,7 +82,7 @@ export async function getUserOrganizations() {
     orderBy: { name: 'asc' }
   })
 
-  return organizations.map(org => ({
+  return organizations.map((org: any) => ({
     id: org.id,
     name: org.name
   }))

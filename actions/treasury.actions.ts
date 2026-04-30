@@ -1,6 +1,6 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/src/lib/prisma';
 import { runSecureServerAction } from '@/lib/auth-utils';
 import { AccountCategory, Charge, LedgerEntry, Prisma } from '@prisma/client';
 
@@ -123,3 +123,19 @@ export async function getAccountLedger(accountId: string) {
     }
   }, false);
 }
+
+
+
+export async function getFinanceMetadataAction() {
+  return runSecureServerAction('VIEWER', async (session) => {
+    try {
+      const { treasuryService } = await import('@/src/services/treasury.service');
+      const data = await treasuryService.getFinanceMetadata(session.organizationId);
+      return { success: true, data };
+    } catch (e: any) {
+      console.error('[TREASURY_META_FETCH_FATAL]', e);
+      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  }, false);
+}
+

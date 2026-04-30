@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
-import { subMonths, isWithinInterval, format, differenceInDays, addDays, startOfDay, isSameMonth } from 'date-fns';
+import { subMonths, isWithinInterval, format, differenceInDays, addDays, startOfDay, isSameMonth, startOfYear, subDays } from 'date-fns';
 import { generateRunwayNarrative, generateIncomeNarrative, generateOutflowNarrative } from './semanticGenerator';
-import { FilterBar } from './FilterBar';
+import { FilterBar, TimeframeType } from './FilterBar';
 import { KpiGrid } from './KpiGrid';
 import { Visualizer } from './Visualizer';
 
@@ -36,11 +36,39 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
   const [aggregation, setAggregation] = useState<'day' | 'month' | 'quarter'>('month');
   const trackRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframeType>('12M');
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subMonths(new Date(), 3),
     to: new Date(),
   });
+
+  // --- Step 1: Timeline Quick Selector Sync ---
+  useEffect(() => {
+    const now = new Date();
+    let from: Date;
+    let to = now;
+
+    switch (selectedTimeframe) {
+      case 'YTD':
+        from = startOfYear(now);
+        break;
+      case '30D':
+        from = subDays(now, 30);
+        break;
+      case '12M':
+        from = subMonths(now, 12);
+        break;
+      case 'ALL':
+        from = TIMELINE_START;
+        to = TIMELINE_END;
+        break;
+      default:
+        return;
+    }
+
+    setDateRange({ from, to });
+  }, [selectedTimeframe]);
 
   const scrubberState = useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) return { left: 0, width: 100 };
@@ -56,6 +84,7 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
     const from = addDays(TIMELINE_START, Math.round((newLeft / 100) * TOTAL_DAYS));
     const to = addDays(from, Math.round((newWidth / 100) * TOTAL_DAYS));
     setDateRange({ from, to });
+    if (selectedTimeframe !== 'CUSTOM') setSelectedTimeframe('CUSTOM');
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -255,8 +284,8 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
 
   return (
     <div className="w-full">
-      <h1 className="text-mercury-headline text-foreground mb-6 flex items-center gap-3">
-        Insights
+      <h1 className="text-display text-2xl text-foreground mb-8 flex items-center gap-3">
+        Insights Telemetry
       </h1>
 
       <FilterBar 
@@ -264,6 +293,8 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
         setActiveTab={setActiveTab}
         dateRange={dateRange}
         setDateRange={setDateRange}
+        selectedTimeframe={selectedTimeframe}
+        setSelectedTimeframe={setSelectedTimeframe}
         aggregation={aggregation}
         setAggregation={setAggregation}
         chartType={chartType}
@@ -281,6 +312,7 @@ export function InsightsDashboard(props: InsightsDashboardProps) {
       <KpiGrid 
         activeTab={activeTab}
         metrics={metrics}
+        telemetry={telemetry}
         aggregation={aggregation}
         setAggregation={setAggregation}
         chartType={chartType}

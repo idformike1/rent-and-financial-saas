@@ -1,15 +1,14 @@
-import { prisma } from '@/lib/prisma'
+import { tenantService } from '@/src/services/tenant.service'
+import { getCurrentSession } from '@/lib/auth-utils'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { AlertTriangle, Clock } from 'lucide-react'
 
 export default async function DelinquencyReport() {
-  const tenants = await prisma.tenant.findMany({
-    include: {
-      charges: {
-        where: { isFullyPaid: false, amount: { gt: 0 } }
-      }
-    }
-  });
+  const session = await getCurrentSession();
+  if (!session) redirect('/login');
+
+  const tenants = await tenantService.getDelinquencyData(session.organizationId);
 
   const now = new Date().getTime();
 

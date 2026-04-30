@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { treasuryService } from '@/src/services/treasury.service'
 import { Info } from 'lucide-react'
 import ExecutiveLedgerHub from './GovernanceRegistryClient'
 import { getCurrentSession } from '@/lib/auth-utils'
@@ -7,26 +7,15 @@ import { Card } from '@/src/components/system/Card'
 
 export default async function CategoriesManagementPage() {
   const session = await getCurrentSession();
-  if (!session) return null;
+  if (!session) redirect('/login');
 
-  const allLedgers = await prisma.financialLedger.findMany({
-    where: { organizationId: session.organizationId },
-    include: {
-      categories: true
-    },
-    orderBy: { name: 'asc' }
-  });
-
-  const allNodes = await prisma.expenseCategory.findMany({
-    where: { organizationId: session.organizationId },
-    orderBy: { name: 'asc' }
-  });
+  const { ledgers, categories } = await treasuryService.getGovernanceMetadata(session.organizationId);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
       <ExecutiveLedgerHub 
-        initialLedgers={JSON.parse(JSON.stringify(allLedgers))} 
-        initialNodes={JSON.parse(JSON.stringify(allNodes))} 
+        initialLedgers={JSON.parse(JSON.stringify(ledgers))} 
+        initialNodes={JSON.parse(JSON.stringify(categories))} 
       />
 
       <Card className="glass-panel border border-[var(--border)] rounded-[var(--radius-sm)] p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden group">

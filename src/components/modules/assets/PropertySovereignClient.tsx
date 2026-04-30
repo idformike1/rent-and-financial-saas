@@ -13,9 +13,13 @@ import { updateProperty, deleteProperty, createUnit } from '@/actions/asset.acti
 import { getPropertyLedgerEntries } from '@/actions/analytics.actions';
 import { toast } from '@/lib/toast';
 import { useRouter } from 'next/navigation';
+import { getFinanceMetadataAction } from '@/actions/treasury.actions';
+
 import DomainSwitcher from '@/src/components/finova/assets/DomainSwitcher';
 import { SideSheet } from '@/src/components/system/SideSheet';
 import AssetLedgerTable from './AssetLedgerTable';
+import ExpenseFormClient from '../treasury/ExpenseFormClient';
+
 
 interface PropertySovereignClientProps {
   propertyData: any;
@@ -24,18 +28,27 @@ interface PropertySovereignClientProps {
   role?: string;
 }
 
+
+
 export default function PropertySovereignClient({ 
   propertyData, 
   pulseData, 
   allProperties,
   role 
 }: PropertySovereignClientProps) {
+
+
   const router = useRouter();
   const [timeframe, setTimeframe] = useState<'MONTHLY' | 'YEARLY' | 'ALL_TIME'>('MONTHLY');
   const [drillDownType, setDrillDownType] = useState<string | null>(null);
   const [isAddUnitModalOpen, setIsAddUnitModalOpen] = useState(false);
   const [isEditAssetModalOpen, setIsEditAssetModalOpen] = useState(false);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [governanceData, setGovernanceData] = useState<any>(null);
+  const [isLoadingGov, setIsLoadingGov] = useState(false);
+
+
 
   // Buffer states for forms
   const [editPropName, setEditPropName] = useState(propertyData.name);
@@ -90,6 +103,47 @@ export default function PropertySovereignClient({
     }
   };
 
+  const handleExportCSV = () => {
+    if (mainLedger.length === 0) {
+      toast.error("No ledger data available for export.");
+      return;
+    }
+    const headers = ["Date", "Description", "Amount", "Account", "Status"].join(",");
+    const rows = mainLedger.map(e => [
+      new Date(e.transactionDate).toLocaleDateString(),
+      `"${(e.description || "").replace(/"/g, '""')}"`,
+      e.amount,
+      `"${e.account?.name || ""}"`,
+      e.status
+    ].join(",")).join("\n");
+
+    const csvContent = "data:text/csv;charset=utf-8," + headers + "\n" + rows;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${propertyData.name.replace(/\s+/g, '_')}_Ledger.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Forensic CSV materialized.");
+  };
+
+  const handleOpenLogModal = async () => {
+    setIsLogModalOpen(true);
+    if (!governanceData && !isLoadingGov) {
+      setIsLoadingGov(true);
+      const res = await getFinanceMetadataAction();
+      if (res.success) {
+        setGovernanceData({ ...res.data, properties: allProperties });
+      } else {
+        toast.error("Failed to materialize treasury context.");
+      }
+      setIsLoadingGov(false);
+    }
+  };
+
+
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col gap-8 p-8 animate-in fade-in duration-700 subpixel-antialiased">
       
@@ -128,10 +182,11 @@ export default function PropertySovereignClient({
             <Button variant="ghost" size="sm" onClick={() => setIsEditAssetModalOpen(true)} className="text-muted-foreground hover:text-foreground">
               <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
             </Button>
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-muted-foreground hover:text-foreground">
               <Download className="w-3.5 h-3.5 mr-2" /> Export
             </Button>
           </div>
+
 
           {/* Group: Risk & Destructive */}
           <div className="flex items-center gap-3">
@@ -212,10 +267,12 @@ export default function PropertySovereignClient({
             <h2 className="text-sm font-bold text-foreground">Transactions</h2>
             <Badge variant="default" className="text-[10px] font-bold opacity-60">{mainLedger.length}</Badge>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => toast.info('Log interface pending.')} className="text-xs text-brand hover:text-brand/80">
+          <Button variant="ghost" size="sm" onClick={handleOpenLogModal} className="text-xs text-brand hover:text-brand/80">
             <Plus className="w-3 h-3 mr-1.5" /> Log Transaction
           </Button>
         </div>
+
+
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           <AssetLedgerTable 
             properties={[propertyData]} 
@@ -243,6 +300,62 @@ export default function PropertySovereignClient({
           </div>
           <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-sm">{isUpdating ? 'Saving...' : 'Save Changes'}</Button>
         </div>
+      </SideSheet>
+
+      <SideSheet
+        isOpen={isArchiveModalOpen}
+        onClose={() => setIsArchiveModalOpen(false)}
+        title="Archive Asset"
+      >
+        <div className="space-y-6 py-4">
+          <p className="text-sm text-muted-foreground">Are you sure you want to archive this asset? This action cannot be undone.</p>
+          <div className="flex gap-4">
+            <Button onClick={() => setIsArchiveModalOpen(false)} variant="ghost" className="flex-1">Cancel</Button>
+            <Button onClick={handleArchive} className="flex-1 bg-destructive hover:bg-destructive/90 text-white border-none">Execute Archive</Button>
+          </div>
+        </div>
+      </SideSheet>
+
+      <SideSheet
+        isOpen={isAddUnitModalOpen}
+        onClose={() => setIsAddUnitModalOpen(false)}
+        title="Provision New Unit"
+      >
+        <form action={async (formData) => {
+          setIsUpdating(true);
+          const res = await createUnit({
+            unitNumber: formData.get('unitNumber') as string,
+            type: formData.get('type') as string,
+            category: formData.get('category') as string,
+            marketRent: Number(formData.get('marketRent')),
+            propertyId: propertyData.id
+          });
+          if (res.success) {
+            toast.success("Unit provisioned successfully.");
+            setIsAddUnitModalOpen(false);
+          } else {
+            toast.error(res.message);
+          }
+          setIsUpdating(false);
+        }} className="space-y-8 py-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground">Unit Number</label>
+            <input name="unitNumber" required className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground">Type</label>
+            <input name="type" required className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground">Category</label>
+            <input name="category" required className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-muted-foreground">Market Rent ($)</label>
+            <input name="marketRent" type="number" required className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40 tabular-nums" />
+          </div>
+          <Button type="submit" disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-sm">{isUpdating ? 'Provisioning...' : 'Provision Unit'}</Button>
+        </form>
       </SideSheet>
 
       <SideSheet
@@ -274,6 +387,30 @@ export default function PropertySovereignClient({
           <div className="flex items-center justify-center h-full opacity-40 text-sm font-bold">No records found</div>
         )}
       </SideSheet>
+
+      <SideSheet
+        isOpen={isLogModalOpen}
+        onClose={() => setIsLogModalOpen(false)}
+        title="Log Treasury Transaction"
+        size="xl"
+      >
+        {governanceData ? (
+          <ExpenseFormClient 
+            properties={governanceData.properties} 
+            allCategories={governanceData.categories} 
+            allLedgers={governanceData.ledgers} 
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+             <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+             <span className="font-mono text-[11px] text-[#9CA3AF] uppercase tracking-widest">
+                Materializing Treasury Logic...
+             </span>
+          </div>
+        )}
+      </SideSheet>
+
     </div>
+
   );
 }

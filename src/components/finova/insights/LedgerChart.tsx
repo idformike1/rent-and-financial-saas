@@ -40,26 +40,23 @@ const CustomBipolarBar = (props: any) => {
   const { x, y, width, height, fill, dataKey, payload, hoveredDate } = props;
   if (!height || height === 0) return null;
 
-  // Recharts vector math
   const visualTop = height < 0 ? y + height : y;
   const absHeight = Math.abs(height);
 
   const isPositive = dataKey === 'moneyIn';
-
-  // High-Fidelity Logic: Compare payload date to the hovered date string
-  // This bypasses any Recharts internal index offset issues.
   const isHighlighted = hoveredDate && payload?.date === hoveredDate;
 
-  let finalOpacity = 0.8; // Baseline
+  let finalOpacity = 0.8;
   if (hoveredDate !== null) {
     finalOpacity = isHighlighted ? 1 : 0.15;
   }
 
-  // Rule lines at the outer edge
-  const lineY = isPositive ? visualTop : visualTop + absHeight;
   const strokeColor = isPositive
-    ? (hoveredDate !== null && !isHighlighted ? 'rgba(80, 120, 255, 0.15)' : 'rgba(80, 120, 255, 0.95)')
-    : (hoveredDate !== null && !isHighlighted ? 'rgba(255, 120, 140, 0.15)' : 'rgba(255, 120, 140, 0.95)');
+    ? (hoveredDate !== null && !isHighlighted ? 'var(--color-positive-low)' : 'var(--color-positive)')
+    : (hoveredDate !== null && !isHighlighted ? 'var(--color-negative-low)' : 'var(--color-negative)');
+
+  // Dynamic series coloring
+  const finalFill = isPositive ? 'var(--color-positive)' : 'var(--color-negative)';
 
   return (
     <g style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
@@ -68,7 +65,7 @@ const CustomBipolarBar = (props: any) => {
         y={visualTop}
         width={width}
         height={absHeight}
-        fill={fill}
+        fill={finalFill}
         style={{
           opacity: finalOpacity,
           transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -77,12 +74,12 @@ const CustomBipolarBar = (props: any) => {
       />
       <line
         x1={x}
-        y1={lineY}
+        y1={isPositive ? visualTop : visualTop + absHeight}
         x2={x + width}
-        y2={lineY}
+        y2={isPositive ? visualTop : visualTop + absHeight}
         stroke={strokeColor}
         strokeWidth={2}
-        style={{ transition: 'stroke 0.3s ease' }}
+        style={{ transition: 'stroke 0.3s ease', opacity: finalOpacity }}
       />
     </g>
   );
@@ -99,7 +96,6 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
     const showOut = mode === 'overview' || mode === 'money-out';
     const showNet = mode === 'overview';
 
-    // Technical Formatting
     let monthLabel = '';
     try {
       const date = new Date(label);
@@ -109,14 +105,12 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
     }
 
     return (
-      <div
-        className=" border border-white/[0.1] -[0_16px_32px_-8px_rgba(0,0,0,0.8)] px-5 py-4 rounded-[var(--radius-sm)] flex flex-col gap-3 z-50 min-w-[220px] "
-      >
+      <div className="mercury-card bg-surface border border-border/10 shadow-elevation p-4 flex flex-col gap-3 min-w-[200px]">
         <div className="flex flex-col gap-2">
           {showIn && (
             <div className="flex items-center justify-between gap-6">
-              <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">Money in</span>
-              <span className="text-[13px] text-white font-medium font-finance">
+              <span className="text-label text-foreground/50">Money in</span>
+              <span className="text-sm font-finance text-positive">
                 ${formatCurrency(income)}
               </span>
             </div>
@@ -124,8 +118,8 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
 
           {showOut && (
             <div className="flex items-center justify-between gap-6">
-              <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">Money out</span>
-              <span className="text-[13px] text-white font-medium font-finance">
+              <span className="text-label text-foreground/50">Money out</span>
+              <span className="text-sm font-finance text-negative">
                 ${formatCurrency(Math.abs(expense))}
               </span>
             </div>
@@ -134,23 +128,21 @@ const ClinicalTooltip = ({ active, payload, label, mode }: any) => {
 
         {showNet && (
           <>
-            <div className="h-[1px] bg-white/10" />
+            <div className="h-[1px] bg-border/5" />
             <div className="flex items-center justify-between gap-6">
-              <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">
-                {monthLabel} cashflow
+              <span className="text-label text-foreground/50">
+                Net Cashflow
               </span>
-              <span className="text-[14px] text-white font-bold font-finance">
+              <span className="text-display text-sm font-bold font-finance text-brand">
                 {net < 0 ? '-' : ''}${formatCurrency(Math.abs(net))}
               </span>
             </div>
           </>
         )}
 
-        {!showNet && (
-          <div className="flex items-center justify-between gap-6 pt-1 border-t border-white/5">
-            <span className="text-[11px] text-white font-normal uppercase tracking-[0.08em]">{monthLabel}</span>
-          </div>
-        )}
+        <div className="pt-2 mt-1 border-t border-border/5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/30">{label}</span>
+        </div>
       </div>
     );
   }
@@ -170,11 +162,9 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
     setMounted(true);
   }, []);
 
-  // Switched from Index to ID/Date string to avoid Recharts internal index offset issues
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   const onMouseMove = (state: any) => {
-    // Standardize on the activeLabel (X-Axis string) for 100% accurate grouping
     if (state && state.activeLabel) {
       setHoveredDate(state.activeLabel);
     } else {
@@ -199,44 +189,48 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
         >
           <defs>
             <linearGradient id="glowIn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--sidebar-primary)" stopOpacity={0.22} />
-              <stop offset="100%" stopColor="var(--sidebar-primary)" stopOpacity={0.04} />
+              <stop offset="0%" stopColor="var(--color-positive)" stopOpacity={0.15} />
+              <stop offset="100%" stopColor="var(--color-positive)" stopOpacity={0.02} />
             </linearGradient>
             <linearGradient id="glowOut" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--destructive)" stopOpacity={0.04} />
-              <stop offset="100%" stopColor="var(--destructive)" stopOpacity={0.22} />
+              <stop offset="0%" stopColor="var(--color-negative)" stopOpacity={0.02} />
+              <stop offset="100%" stopColor="var(--color-negative)" stopOpacity={0.15} />
             </linearGradient>
           </defs>
 
           <CartesianGrid
-            vertical={true}
+            vertical={false}
             horizontal={true}
-            stroke="rgba(255,255,255,0.05)"
-            strokeDasharray="1 39"
+            stroke="var(--color-border-subtle)"
+            strokeDasharray="4 4"
           />
 
           <XAxis
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: 'rgb(157, 157, 168)', fontSize: 13, fontFamily: '"Arcadia Text", system-ui, sans-serif' }}
+            className="text-label"
+            tick={{ 
+              fill: 'var(--color-text-secondary)', 
+              fontSize: 10, 
+              fontWeight: 500
+            }}
             dy={16}
             minTickGap={20}
-            padding={{ left: 40, right: 40 }}
           />
 
           <YAxis
             axisLine={false}
             tickLine={false}
+            className="text-label"
             tick={{
-              fill: 'rgb(157, 157, 168)',
-              fontSize: 13,
-              fontFamily: '"Arcadia Text", system-ui, sans-serif',
-              fontWeight: 400
+              fill: 'var(--color-text-secondary)',
+              fontSize: 10,
+              fontWeight: 500
             }}
             tickFormatter={formatYAxis}
             dx={-10}
-            width={70}
+            width={60}
           />
 
           <Tooltip
@@ -245,20 +239,19 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
             allowEscapeViewBox={{ x: false, y: true }}
           />
 
-          <ReferenceLine y={0} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+          <ReferenceLine y={0} stroke="var(--color-border-subtle)" strokeWidth={1} />
 
           {showIncome && (
             <Bar
               dataKey="moneyIn"
               fill="url(#glowIn)"
-              barSize={40}
+              barSize={32}
               shape={<CustomBipolarBar dataKey="moneyIn" hoveredDate={hoveredDate} />}
             >
               {data.map((entry, i) => (
                 <Cell
                   key={`cell-in-${i}`}
                   fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
-                  style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
                 />
               ))}
             </Bar>
@@ -268,14 +261,13 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
             <Bar
               dataKey="moneyOut"
               fill="url(#glowOut)"
-              barSize={40}
+              barSize={32}
               shape={<CustomBipolarBar dataKey="moneyOut" hoveredDate={hoveredDate} />}
             >
               {data.map((entry, i) => (
                 <Cell
                   key={`cell-out-${i}`}
                   fillOpacity={hoveredDate === null ? 0.8 : (entry.date === hoveredDate ? 1 : 0.15)}
-                  style={{ transition: 'fill-opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
                 />
               ))}
             </Bar>
@@ -285,19 +277,19 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
             <Line
               type="monotone"
               dataKey="netCashflow"
-              stroke="var(--mercury-green)"
+              stroke="var(--color-brand)"
               strokeWidth={2}
               dot={{
-                r: 4,
-                fill: 'var(--mercury-green)',
-                stroke: '#FFFFFF',
+                r: 3,
+                fill: 'var(--color-brand)',
+                stroke: 'var(--color-bg)',
                 strokeWidth: 2,
                 fillOpacity: 1
               }}
               activeDot={{
                 r: 5,
-                fill: 'var(--mercury-green)',
-                stroke: '#FFFFFF',
+                fill: 'var(--color-brand)',
+                stroke: 'var(--color-bg)',
                 strokeWidth: 2
               }}
               style={{

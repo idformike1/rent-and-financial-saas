@@ -1,39 +1,16 @@
-import { prisma } from "@/lib/prisma";
-import { getCurrentSession } from "@/lib/auth-utils";
 import TenantClient from "./TenantClient";
 
-export default async function TenantGrid() {
-  const session = await getCurrentSession();
-  if (!session) return null;
+interface TenantGridProps {
+  initialTenants: any[];
+  role: string;
+}
 
-  const tenants = await prisma.tenant.findMany({
-    where: {
-      organizationId: session.organizationId,
-      isDeleted: false,
-    },
-    include: {
-      leases: {
-        where: {
-          isActive: true,
-        },
-        include: {
-          unit: {
-            include: {
-              property: true
-            }
-          }
-        }
-      },
-      charges: {
-        where: {
-          isFullyPaid: false,
-        },
-      },
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-
-  return <TenantClient initialData={JSON.parse(JSON.stringify(tenants))} role={session.role} />;
+/**
+ * TENANT GRID (SOVEREIGN UI COMPONENT)
+ * 
+ * Receives pre-fetched tenant data from the Page layer.
+ * Enforces strict Client/Server boundary.
+ */
+export default function TenantGrid({ initialTenants, role }: TenantGridProps) {
+  return <TenantClient initialData={initialTenants} role={role} />;
 }

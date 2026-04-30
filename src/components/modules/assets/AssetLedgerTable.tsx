@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { AssetProperty } from "@/src/services/queries/assets.services";
+import { AssetProperty } from "@/src/services/asset.service";
 import { Filter, Receipt, Plus, Upload } from 'lucide-react';
 import { toast } from '@/lib/toast';
 

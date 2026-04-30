@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState, useOptimistic } from 'react';
 import { getUnitLedgerFeed } from '@/actions/asset.actions';
 import { cn } from '@/lib/utils';
@@ -58,15 +59,6 @@ export default function UnitLedgerTab({ activeUnit }: { activeUnit: any }) {
     return <LedgerSkeleton />;
   }
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-32 border border-[#1F2937] bg-[#1A1A24] flex items-center justify-center flex-col gap-2 animate-in fade-in">
-        <span className="font-mono text-[11px] text-[#9CA3AF] uppercase tracking-widest animate-pulse">
-          Retrieving Forensic Trajectory...
-        </span>
-      </div>
-    );
-  }
 
   const handleOptimisticInjection = async (entry: LedgerEntryRow) => {
     addOptimisticEntry(entry);
