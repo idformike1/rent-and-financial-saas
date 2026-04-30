@@ -48,7 +48,8 @@ export async function getPropertyAssetPulse(propertyId: string) {
       const data = await assetService.getPropertyAssetPulse(propertyId, session.organizationId);
       return { success: true, data };
     } catch (e: any) {
-      return { success: false, message: e.message };
+      console.error('[ANALYTICS_PULSE_FATAL]', e);
+      return { success: false, error: e.message || "ERR_TELEMETRY_FAILURE" };
     }
   }, false);
 }
@@ -56,12 +57,29 @@ export async function getPropertyAssetPulse(propertyId: string) {
 export async function getPropertyLedgerEntries(propertyId: string, type: string) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      return await treasuryService.getMasterLedger(session.organizationId, {
-        propertyId,
-        category: type
-      });
+      // 1. Semantic Mapping Layer (UI -> DB)
+      const filters: any = { propertyId };
+      
+      switch (type) {
+        case 'NOI':
+          filters.category = ['INCOME', 'EXPENSE'];
+          break;
+        case 'GROSS_POTENTIAL':
+        case 'LEAKAGE':
+        case 'COLLECTION':
+          filters.category = 'INCOME';
+          break;
+        case 'ALL':
+        default:
+          // No specific category filter
+          break;
+      }
+
+      const data = await treasuryService.getMasterLedger(session.organizationId, filters);
+      return { success: true, data };
     } catch (e: any) {
-      return [];
+      console.error('[ANALYTICS_LEDGER_FATAL]', e);
+      return { success: false, error: e.message || "ERR_LEDGER_RECONCILIATION" };
     }
   }, false);
 }
@@ -69,10 +87,11 @@ export async function getPropertyLedgerEntries(propertyId: string, type: string)
 export async function getMasterLedger(filters?: any) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      return await treasuryService.getMasterLedger(session.organizationId, filters);
+      const data = await treasuryService.getMasterLedger(session.organizationId, filters);
+      return { success: true, data };
     } catch (e: any) {
       console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
-      return [];
+      return { success: false, error: e.message || "ERR_MASTER_QUERY_FAILURE" };
     }
   }, false);
 }
@@ -80,9 +99,11 @@ export async function getMasterLedger(filters?: any) {
 export async function getLedgerFilterMetadata() {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      return await treasuryService.getGovernanceMetadata(session.organizationId);
+      const data = await treasuryService.getGovernanceMetadata(session.organizationId);
+      return { success: true, data };
     } catch (e: any) {
-      return { properties: [], tenants: [], accounts: [], categories: [] };
+      console.error('[ANALYTICS_METADATA_FATAL]', e);
+      return { success: false, error: e.message || "ERR_METADATA_ABSENT" };
     }
   }, false);
 }

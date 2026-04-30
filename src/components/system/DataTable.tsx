@@ -17,6 +17,7 @@ interface Column<T> {
   accessor: keyof T | ((item: T) => React.ReactNode);
   align?: 'left' | 'right';
   className?: string;
+  sortKey?: string;
 }
 
 interface DataTableProps<T> {
@@ -25,6 +26,8 @@ interface DataTableProps<T> {
   onRowClick?: (item: T) => void;
   getRowClassName?: (item: T) => string;
   className?: string;
+  sortConfig?: { key: string; direction: 'asc' | 'desc' } | null;
+  onSort?: (key: string) => void;
 }
 
 // --- HIGH-LEVEL COMPONENT ---
@@ -35,6 +38,8 @@ export function DataTable<T>({
   onRowClick,
   getRowClassName,
   className,
+  sortConfig,
+  onSort,
 }: DataTableProps<T>) {
   return (
     <TableContainer className={className}>
@@ -45,12 +50,24 @@ export function DataTable<T>({
               <TD
                 key={idx}
                 isHeader
+                onClick={() => column.sortKey && onSort?.(column.sortKey)}
                 className={cn(
                   column.align === 'right' ? "text-right" : "text-left",
+                  column.sortKey ? "cursor-pointer hover:text-white transition-colors" : "",
                   column.className
                 )}
               >
-                {column.header}
+                <div className={cn(
+                  "flex items-center gap-1",
+                  column.align === 'right' ? "justify-end" : "justify-start"
+                )}>
+                  {column.header}
+                  {column.sortKey && sortConfig?.key === column.sortKey && (
+                    <span className="text-[12px] font-bold text-brand">
+                      {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                    </span>
+                  )}
+                </div>
               </TD>
             ))}
           </TR>

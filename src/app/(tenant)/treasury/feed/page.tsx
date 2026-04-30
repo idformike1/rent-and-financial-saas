@@ -46,7 +46,8 @@ export default async function TransactionsPage({
   ]);
 
   // Strictly pick only the required fields to prevent Prisma metadata from crashing RSC transport
-  const rawLedger = Array.isArray(ledgerData) ? ledgerData : [];
+  const rawLedger = ledgerData.success ? (ledgerData.data as any[]) : [];
+  const metadataPayload = metadata.success ? metadata.data : { properties: [], tenants: [] };
   
   const serializedLedger = rawLedger.map((tx: any) => ({
     id: tx.id,
@@ -68,8 +69,8 @@ export default async function TransactionsPage({
       <Suspense fallback={<div className="h-96 flex items-center justify-center text-clinical-muted uppercase tracking-widest text-[11px] animate-pulse">Materializing Ledger...</div>}>
         <TransactionFeedClient 
           initialData={serializedLedger as any} 
-          properties={metadata.properties || []}
-          tenants={metadata.tenants || []}
+          properties={metadataPayload?.properties || []}
+          tenants={metadataPayload?.tenants || []}
         />
       </Suspense>
     </div>

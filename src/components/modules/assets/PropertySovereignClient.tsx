@@ -63,7 +63,11 @@ export default function PropertySovereignClient({
   useEffect(() => {
     const fetchMainLedger = async () => {
       const res = await getPropertyLedgerEntries(propertyData.id, 'ALL');
-      setMainLedger(res || []);
+      if (res.success) {
+        setMainLedger(res.data || []);
+      } else {
+        toast.error(res.error || "Failed to materialize ledger.");
+      }
     };
     fetchMainLedger();
   }, [propertyData.id]);
@@ -73,7 +77,11 @@ export default function PropertySovereignClient({
       const fetchLedger = async () => {
         setIsLedgerLoading(true);
         const res = await getPropertyLedgerEntries(propertyData.id, drillDownType);
-        setLedgerEntries(res || []);
+        if (res.success) {
+          setLedgerEntries(res.data || []);
+        } else {
+          toast.error(res.error || "Drill-down reconciliation failed.");
+        }
         setIsLedgerLoading(false);
       };
       fetchLedger();
@@ -87,9 +95,11 @@ export default function PropertySovereignClient({
       if (res.success) {
         toast.success("Asset details updated.");
         setIsEditAssetModalOpen(false);
+      } else {
+        toast.error(res.error || "Update failed.");
       }
-    } catch (error) {
-      toast.error("Update failed.");
+    } catch (error: any) {
+      toast.error(error.message || "Update failed.");
     } finally {
       setIsUpdating(false);
     }
@@ -100,6 +110,8 @@ export default function PropertySovereignClient({
     if (res.success) {
       toast.success("Asset removed.");
       router.push('/assets');
+    } else {
+      toast.error(res.error || "Archive failed.");
     }
   };
 
@@ -334,7 +346,7 @@ export default function PropertySovereignClient({
             toast.success("Unit provisioned successfully.");
             setIsAddUnitModalOpen(false);
           } else {
-            toast.error(res.message);
+            toast.error(res.error || "Provisioning failed.");
           }
           setIsUpdating(false);
         }} className="space-y-8 py-4">

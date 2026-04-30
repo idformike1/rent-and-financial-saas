@@ -124,9 +124,11 @@ export function useLedgerEntries(filters: any = {}) {
       }
 
       setIsLoading(true)
-      const entries = await getMasterLedger(filters)
-      BLOODSTREAM_CACHE.ledger[cacheKey] = entries
-      setData(entries as any[])
+      const res = await getMasterLedger(filters)
+      if (res.success) {
+        BLOODSTREAM_CACHE.ledger[cacheKey] = res.data
+        setData(res.data as any[])
+      }
       setIsLoading(false)
     }
 

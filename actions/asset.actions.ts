@@ -30,7 +30,7 @@ export async function createProperty(data: { name: string, address: string }) {
       return { success: true, data: property };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_CREATE_FATAL]', e);
-      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }
@@ -53,7 +53,7 @@ export async function updateProperty(propertyId: string, data: { name?: string, 
       return { success: true, data: property };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_UPDATE_FATAL]', e);
-      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }
@@ -75,7 +75,7 @@ export async function deleteProperty(propertyId: string) {
       return { success: true };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_DELETE_FATAL]', e);
-      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }
@@ -94,13 +94,14 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
       );
 
       revalidatePath(`/assets/${data.propertyId}`);
+      revalidatePath('/assets');
       revalidatePath('/tenants');
       revalidatePath('/tenant-register');
       return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
 
     } catch (e: any) {
       console.error('[ASSET_UNIT_CREATE_FATAL]', e);
-      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }
@@ -124,7 +125,7 @@ export async function updateUnit(unitId: string, data: { maintenanceStatus?: Mai
       return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
     } catch (e: any) {
       console.error('[ASSET_UNIT_UPDATE_FATAL]', e);
-      return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
     }
   });
 }

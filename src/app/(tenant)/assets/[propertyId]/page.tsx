@@ -37,9 +37,9 @@ export default async function SovereignViewport({ params }: SovereignPageProps) 
 
   return (
     <PropertySovereignClient 
-      propertyData={propertyData} 
-      pulseData={pulseData} 
-      allProperties={allProperties}
+      propertyData={JSON.parse(JSON.stringify(propertyData))} 
+      pulseData={JSON.parse(JSON.stringify(pulseData))} 
+      allProperties={JSON.parse(JSON.stringify(allProperties))}
       role={session.role}
     />
   );

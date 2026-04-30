@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { DataTable } from '@/src/components/system/DataTable';
 import { cn } from "@/lib/utils";
@@ -34,6 +34,47 @@ export default function AssetClient({ initialData, role }: AssetClientProps) {
   const [newPropData, setNewPropData] = useState({ name: '', address: '' });
   const [isCreating, setIsCreating] = useState(false);
 
+  // --- SORTING ENGINE ---
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return initialData;
+
+    return [...initialData].sort((a, b) => {
+      let aValue: any = '';
+      let bValue: any = '';
+
+      switch (sortConfig.key) {
+        case 'name':
+          aValue = (a.name || "").toLowerCase();
+          bValue = (b.name || "").toLowerCase();
+          break;
+        case 'address':
+          aValue = (a.address || "").toLowerCase();
+          bValue = (b.address || "").toLowerCase();
+          break;
+        case 'units':
+          aValue = a.units.length;
+          bValue = b.units.length;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [initialData, sortConfig]);
+
   const handleCreateProperty = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreating(true);
@@ -44,7 +85,7 @@ export default function AssetClient({ initialData, role }: AssetClientProps) {
       setNewPropData({ name: '', address: '' });
       router.refresh();
     } else {
-      toast.error(res.message || "Failed to register property.");
+      toast.error(res.error || "Failed to register property.");
     }
     setIsCreating(false);
   };
@@ -52,6 +93,7 @@ export default function AssetClient({ initialData, role }: AssetClientProps) {
   const columns: any[] = [
     { 
       header: "Asset Identifier", 
+      sortKey: "name",
       accessor: (prop: Property) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-foreground/40 shrink-0">
@@ -64,6 +106,7 @@ export default function AssetClient({ initialData, role }: AssetClientProps) {
     },
     { 
       header: "Physical Coordinates", 
+      sortKey: "address",
       accessor: (prop: Property) => (
         <div className="flex items-center gap-2 text-foreground/40">
            <MapPin size={12} className="opacity-40" />
@@ -74,6 +117,7 @@ export default function AssetClient({ initialData, role }: AssetClientProps) {
     },
     { 
       header: "Node Capacity", 
+      sortKey: "units",
       accessor: (prop: Property) => (
         <div className="flex items-center gap-2 justify-end">
            <BarChart3 size={12} className="text-foreground/20" />
@@ -112,8 +156,10 @@ export default function AssetClient({ initialData, role }: AssetClientProps) {
       )}
 
       <DataTable
-        data={initialData}
+        data={sortedData}
         columns={columns}
+        sortConfig={sortConfig}
+        onSort={handleSort}
         className="bg-muted/10 backdrop-blur-sm border border-border shadow-2xl"
       />
 

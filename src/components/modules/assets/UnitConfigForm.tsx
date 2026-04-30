@@ -31,7 +31,7 @@ const updateUnitAction = async (prevState: any, formData: FormData) => {
     return await updateUnit(unitId, data);
   } catch (error: any) {
     console.error('[UNIT_CONFIG_MUTATION_CRASH_GUARD]', error);
-    return { success: false, message: error.message || "Mutation execution failed." };
+    return { success: false, error: error.message || "Mutation execution failed." };
   }
 };
 
@@ -45,7 +45,7 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
       if (state.success) {
         toast.success("Unit configuration synchronized.");
       } else {
-        toast.error(state.message || "Protocol violation in payload.");
+        toast.error(state.error || "Protocol violation in payload.");
       }
     }
   }, [state]);
