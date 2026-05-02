@@ -37,6 +37,7 @@ export default function LogUtilityModal({ isOpen, onClose, tenantId, unitId, onS
 
       if (res.success) {
         toast.success(res.message || "Utility consumption logged.");
+        setCurrentReading(''); // RESET FORM STATE
         if (onSuccess) onSuccess();
         onClose();
       } else {

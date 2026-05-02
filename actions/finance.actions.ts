@@ -159,7 +159,8 @@ export async function clearTransaction(transactionId: string, currentStatus: boo
 }
 
 export async function logUtilityConsumption(payload: any) {
-  const idempotencyKey = `UTILITY_${payload.unitId}_${payload.utilityType}_${payload.currentReading}_${payload.date}`;
+  // BYPASS POISONED CACHE: Adding a salt to the key to ensure the new validation logic is executed
+  const idempotencyKey = `UTILITY_V2_${payload.unitId}_${payload.utilityType}_${payload.currentReading}_${Date.now()}`;
   return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const result = await treasuryService.logUtilityConsumption(
@@ -168,20 +169,25 @@ export async function logUtilityConsumption(payload: any) {
       );
       revalidatePath(`/tenants/${payload.tenantId}`);
       revalidatePath('/reports/master-ledger');
-      return { success: true, message: "Utility Recorded.", data: result };
+      return { success: true, message: result.message || "Utility Recorded.", data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_ENGINE_FAILURE" };
     }
   });
 }
 
-export async function applyLedgerAdjustment(payload: any) {
+export async function applyLedgerAdjustment(payload: { tenantId: string, amount: number, type: 'FEE' | 'WAIVER', reason: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      // Need adjustment service in treasuryService
+      await treasuryService.applyLedgerAdjustment(payload, {
+        operatorId: session.userId,
+        organizationId: session.organizationId
+      });
+      
+      revalidatePath(`/tenants/${payload.tenantId}`);
       revalidatePath('/reports/master-ledger');
       revalidatePath('/treasury/feed');
-      return { success: true, message: "Adjustment applied." };
+      return { success: true, message: "Adjustment applied successfully." };
 
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_SERVICE_FAILURE" };
@@ -189,13 +195,18 @@ export async function applyLedgerAdjustment(payload: any) {
   });
 }
 
-export async function reverseLedgerTransaction(payload: any) {
+export async function reverseLedgerTransaction(payload: { entryId: string, tenantId?: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-       // Need reversal service in treasuryService
-       revalidatePath('/reports/master-ledger');
+      await treasuryService.reverseLedgerTransaction(payload.entryId, {
+        operatorId: session.userId,
+        organizationId: session.organizationId
+      });
+
+      if (payload.tenantId) revalidatePath(`/tenants/${payload.tenantId}`);
+      revalidatePath('/reports/master-ledger');
       revalidatePath('/treasury/feed');
-      return { success: true, message: "Transaction reversed." };
+      return { success: true, message: "Transaction reversed and audit trail updated." };
 
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_SERVICE_FAILURE" };

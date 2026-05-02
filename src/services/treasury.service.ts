@@ -222,6 +222,9 @@ export const treasuryService = {
    * Orchestrates the materialization of utility consumption charges and ledger entries.
    */
   async logUtilityConsumption(payload: any, context: { operatorId: string, organizationId: string }) {
+    if (!payload.unitId) {
+      throw new Error("ERR_VALIDATION_FAILURE: Unit ID is required for utility consumption logging.");
+    }
     const db = getSovereignClient(context.organizationId);
     const { createBalancedTransaction } = await import('@/src/services/finance/core');
 
@@ -234,6 +237,11 @@ export const treasuryService = {
       const waterRate = settings ? Number(settings.waterTariff) : 0.05;
       const effectiveRate = payload.utilityType === 'ELECTRIC' ? electricRate : waterRate;
 
+      // GRANULAR TIMESTAMP: Merge current time with payload date to ensure stable ordering within the same day
+      const now = new Date();
+      const readingDate = new Date(payload.date);
+      readingDate.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+
       const previousReading = await tx.meterReading.findFirst({
         where: { unitId: payload.unitId, type: payload.utilityType },
         orderBy: { date: 'desc' }
@@ -245,26 +253,39 @@ export const treasuryService = {
             unitId: payload.unitId,
             type: payload.utilityType,
             value: payload.currentReading,
-            date: new Date(payload.date)
+            date: readingDate
           }
         });
         return { success: true, message: "Baseline reading established." };
       }
 
       if (payload.currentReading <= previousReading.value) {
-        throw new Error("ERR_METRIC_VIOLATION");
+        const unit = payload.utilityType === 'ELECTRIC' ? 'kWh' : 'units';
+        throw new Error(`CRITICAL_VAL_FAIL: Current reading must be greater than the previous log of ${previousReading.value} ${unit}.`);
       }
 
       const consumption = payload.currentReading - previousReading.value;
       const chargeAmount = consumption * effectiveRate;
 
+      const lease = await tx.lease.findFirst({
+        where: { 
+          tenantId: payload.tenantId, 
+          unitId: payload.unitId, 
+          isActive: true, 
+          organizationId: context.organizationId 
+        }
+      });
+
+      if (!lease) throw new Error("ERR_LEASE_RECORD_ABSENT: No active lease detected for this occupant at this unit.");
+
       const charge = await tx.charge.create({
         data: {
           organizationId: context.organizationId,
           tenantId: payload.tenantId,
+          leaseId: lease.id,
           type: payload.utilityType === 'ELECTRIC' ? 'ELEC_SUBMETER' : 'WATER_SUBMETER',
           amount: chargeAmount,
-          dueDate: new Date(payload.date),
+          dueDate: readingDate,
           isFullyPaid: false
         }
       });
@@ -279,14 +300,109 @@ export const treasuryService = {
       await createBalancedTransaction({
         organizationId: context.organizationId,
         description: `Utility Consumption: ${payload.utilityType}`,
-        date: new Date(payload.date),
+        date: readingDate,
         entries: [
           { accountId: assetAccount?.id || '', type: 'DEBIT', amount: chargeAmount, tenantId: payload.tenantId, chargeId: charge.id },
           { accountId: incomeAccount?.id || '', type: 'CREDIT', amount: chargeAmount }
         ]
       }, tx);
 
+      // PERSIST NEW READING: Ensure the meter advances to the new value for the next validation cycle
+      await tx.meterReading.create({
+        data: {
+          unitId: payload.unitId,
+          type: payload.utilityType,
+          value: payload.currentReading,
+          date: readingDate
+        }
+      });
+
       return { success: true, amount: chargeAmount };
+    });
+  },
+
+  /**
+   * Applies a manual fiscal adjustment (FEE or WAIVER) to a tenant's ledger.
+   */
+  async applyLedgerAdjustment(payload: { tenantId: string, amount: number, type: 'FEE' | 'WAIVER', reason: string }, context: { operatorId: string, organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    const { createBalancedTransaction } = await import("@/src/services/finance/core");
+
+    return await db.$transaction(async (tx: any) => {
+      const assetAccount = await tx.account.findFirst({ 
+        where: { category: 'ASSET', organizationId: context.organizationId } 
+      });
+      const incomeAccount = await tx.account.findFirst({ 
+        where: { category: 'INCOME', organizationId: context.organizationId } 
+      });
+
+      if (!assetAccount || !incomeAccount) throw new Error("ERR_CHART_INCOMPLETE: Required fiscal accounts missing.");
+
+      const isWaiver = payload.type === 'WAIVER';
+      
+      await createBalancedTransaction({
+        organizationId: context.organizationId,
+        description: `${payload.type}: ${payload.reason}`,
+        date: new Date(),
+        entries: [
+          { 
+            accountId: assetAccount.id, 
+            type: isWaiver ? 'CREDIT' : 'DEBIT', 
+            amount: payload.amount, 
+            tenantId: payload.tenantId 
+          },
+          { 
+            accountId: incomeAccount.id, 
+            type: isWaiver ? 'DEBIT' : 'CREDIT', 
+            amount: payload.amount 
+          }
+        ]
+      }, tx);
+
+      return { success: true };
+    });
+  },
+
+  /**
+   * Reverses a specific ledger entry by creating a counter-transaction.
+   */
+  async reverseLedgerTransaction(entryId: string, context: { operatorId: string, organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    const { createBalancedTransaction } = await import("@/src/services/finance/core");
+
+    return await db.$transaction(async (tx: any) => {
+      const originalEntry = await tx.ledgerEntry.findFirst({
+        where: { id: entryId, organizationId: context.organizationId },
+        include: { account: true }
+      });
+
+      if (!originalEntry) throw new Error("ERR_IDENTITY_ABSENT: Original entry not found.");
+      if (originalEntry.status === 'VOIDED') throw new Error("ERR_PROTOCOL_VIOLATION: Entry already reversed.");
+
+      // Find all entries in the same transaction to reverse the whole set
+      const siblingEntries = await tx.ledgerEntry.findMany({
+        where: { transactionId: originalEntry.transactionId, organizationId: context.organizationId }
+      });
+
+      await createBalancedTransaction({
+        organizationId: context.organizationId,
+        description: `REVERSAL: ${originalEntry.description}`,
+        date: new Date(),
+        entries: siblingEntries.map((e: any) => ({
+          accountId: e.accountId,
+          type: e.type === 'DEBIT' ? 'CREDIT' : 'DEBIT',
+          amount: Number(e.amount),
+          tenantId: e.tenantId
+        }))
+      }, tx);
+
+      // Mark original entries as VOIDED
+      await tx.ledgerEntry.updateMany({
+        where: { transactionId: originalEntry.transactionId, organizationId: context.organizationId },
+        data: { status: 'VOIDED' }
+      });
+
+      return { success: true };
     });
   },
 

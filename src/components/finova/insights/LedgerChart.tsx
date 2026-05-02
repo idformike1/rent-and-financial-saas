@@ -14,6 +14,8 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from 'recharts';
+import { LineChart, Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // --- Analytical Formatting ---
 const formatCurrency = (val: number) => {
@@ -175,6 +177,26 @@ export default function LedgerChart({ data, type = 'area', mode = 'overview' }: 
   const showIncome = mode === 'overview' || mode === 'money-in';
   const showExpense = mode === 'overview' || mode === 'money-out';
   const showNet = mode === 'overview';
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-full p-4 flex items-center justify-center bg-surface/5 border border-border/5 rounded-2xl animate-pulse">
+        <Zap size={24} className="text-brand/20" />
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-surface/5 border border-border/10 rounded-2xl animate-in fade-in duration-700">
+        <div className="w-16 h-16 rounded-full bg-brand/5 flex items-center justify-center mb-4">
+          <LineChart size={32} className="text-brand/40" />
+        </div>
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground/60 mb-2">Awaiting Telemetry Data</h3>
+        <p className="text-[11px] text-foreground/30 text-center max-w-[240px] leading-relaxed">The fiscal engine is currently scanning the ledger for transactional patterns and reconciliation events.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full p-4 relative z-20">

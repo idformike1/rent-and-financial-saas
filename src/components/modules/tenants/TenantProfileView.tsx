@@ -7,6 +7,8 @@ import LogUtilityModal from './LogUtilityModal'
 import AdjustLedgerModal from './AdjustLedgerModal'
 import EditTenantModal from './EditTenantModal'
 import ReverseTransactionModal from './ReverseTransactionModal'
+import AssignUnitModal from './AssignUnitModal'
+import TerminateLeaseModal from './TerminateLeaseModal'
 import { 
   User, 
   Mail, 
@@ -25,7 +27,8 @@ import {
   Download,
   Plus,
   Scale,
-  RotateCcw
+  RotateCcw,
+  Trash2
 } from 'lucide-react'
 import { Badge, Button, cn } from '@/src/components/finova/ui-finova'
 import { MercuryTable, THead, TBody, TR, TD } from '@/src/components/system/DataTable'
@@ -62,6 +65,8 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
   const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [reversalContext, setReversalContext] = useState<{ id: string; description: string } | null>(null);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isTerminateModalOpen, setIsTerminateModalOpen] = useState(false);
   const router = useRouter();
 
   // 1. STRICT DATA INTEGRITY: Dynamic Balance Calculation
@@ -138,13 +143,21 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="secondary" onClick={() => downloadStatementCSV(tenant.name, ledgerEntries)}>
-            <Download className="w-4 h-4 mr-2" />
-            Generate Statement
-          </Button>
-          <Button variant="primary" className="bg-emerald-600 hover:bg-emerald-500 text-white" onClick={() => setIsPaymentDrawerOpen(true)}>
+          <Button 
+            variant="ghost" 
+            className="h-10 bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-black uppercase tracking-[0.2em] px-8 border border-emerald-500 shadow-lg shadow-emerald-500/20" 
+            onClick={() => setIsPaymentDrawerOpen(true)}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Record Payment
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="h-10 bg-white/[0.03] hover:bg-white/[0.08] text-white text-[10px] font-black uppercase tracking-[0.2em] px-8 border border-white/10"
+            onClick={() => downloadStatementCSV(tenant.name, ledgerEntries)}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Generate Statement
           </Button>
         </div>
       </header>
@@ -210,7 +223,13 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
               <Button variant="secondary" className="w-full" onClick={() => setIsEditModalOpen(true)}>
                 Manage Tenant
               </Button>
-              <Button variant="secondary" className="w-full border-white/5 bg-white/[0.02]" onClick={() => setIsUtilityModalOpen(true)}>
+              <Button 
+                variant="secondary" 
+                className="w-full border-white/5 bg-white/[0.02]" 
+                onClick={() => setIsUtilityModalOpen(true)}
+                disabled={activeLeases.length === 0}
+                title={activeLeases.length === 0 ? "No active unit assignment detected." : ""}
+              >
                 <Activity className="w-4 h-4 mr-2 opacity-50" />
                 Log Utility/Meter
               </Button>
@@ -218,6 +237,54 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
                 <Scale className="w-4 h-4 mr-2 opacity-50" />
                 Apply Waiver/Adjustment
               </Button>
+            </div>
+          </Card>
+          
+          {/* Tenure Control Card */}
+          <Card className="p-6 border border-border shadow-sm bg-white/5">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-brand/10 rounded-lg">
+                <Activity className="w-4 h-4 text-brand" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-clinical-muted uppercase tracking-widest">Tenure Status</p>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Lease Management</h3>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {activeLeases.length > 0 ? (
+                <>
+                  <div className="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
+                    <p className="text-[10px] font-bold text-emerald-500/60 uppercase mb-1">Active Assignment</p>
+                    <p className="text-lg font-bold text-emerald-500 tabular-nums">Unit {activeLeases[0].unitNumber}</p>
+                    <p className="text-[10px] text-clinical-muted uppercase mt-1">Sovereign Towers • {new Date(activeLeases[0].startDate).toLocaleDateString()}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full h-11 bg-rose-500/5 hover:bg-rose-500/10 text-rose-500 text-[10px] font-bold uppercase tracking-widest border border-rose-500/10"
+                    onClick={() => setIsTerminateModalOpen(true)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Terminate Lease
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="p-4 bg-white/[0.03] border border-dashed border-white/10 rounded-lg text-center">
+                    <p className="text-[10px] font-bold text-clinical-muted uppercase mb-1 tracking-widest">Status: Unassigned</p>
+                    <p className="text-sm text-white/40 italic">No active lease record found</p>
+                  </div>
+                  <Button 
+                    variant="primary" 
+                    className="w-full h-11 bg-brand hover:bg-brand/90 text-white text-[10px] font-bold uppercase tracking-widest"
+                    onClick={() => setIsAssignModalOpen(true)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Assign Available Unit
+                  </Button>
+                </>
+              )}
             </div>
           </Card>
 
@@ -389,6 +456,27 @@ export default function TenantProfileView({ tenant, activeLeases, ledgerEntries 
         onClose={() => setReversalContext(null)}
         entryId={reversalContext?.id || ''}
         description={reversalContext?.description || ''}
+        tenantId={tenant.id}
+        onSuccess={() => {
+          router.refresh();
+        }}
+      />
+
+      <AssignUnitModal 
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        tenantId={tenant.id}
+        onSuccess={() => {
+          router.refresh();
+        }}
+      />
+
+      <TerminateLeaseModal 
+        isOpen={isTerminateModalOpen}
+        onClose={() => setIsTerminateModalOpen(false)}
+        tenantId={tenant.id}
+        leaseId={activeLeases[0]?.id || ''}
+        unitNumber={activeLeases[0]?.unitNumber || ''}
         onSuccess={() => {
           router.refresh();
         }}

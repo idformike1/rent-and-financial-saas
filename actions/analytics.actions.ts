@@ -76,7 +76,18 @@ export async function getPropertyLedgerEntries(propertyId: string, type: string)
       }
 
       const data = await treasuryService.getMasterLedger(session.organizationId, filters);
-      return { success: true, data };
+      
+      // EXPLICIT SERIALIZATION (Surgical Decimal & Date conversion)
+      const serializedData = data.map((entry: any) => ({
+        ...entry,
+        amount: Number(entry.amount),
+        transactionDate: entry.transactionDate.toISOString(),
+        createdAt: entry.createdAt?.toISOString(),
+        updatedAt: entry.updatedAt?.toISOString(),
+        deletedAt: entry.deletedAt?.toISOString() || null
+      }));
+
+      return { success: true, data: serializedData };
     } catch (e: any) {
       console.error('[ANALYTICS_LEDGER_FATAL]', e);
       return { success: false, error: e.message || "ERR_LEDGER_RECONCILIATION" };
@@ -88,7 +99,18 @@ export async function getMasterLedger(filters?: any) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
       const data = await treasuryService.getMasterLedger(session.organizationId, filters);
-      return { success: true, data };
+      
+      // EXPLICIT SERIALIZATION
+      const serializedData = data.map((entry: any) => ({
+        ...entry,
+        amount: Number(entry.amount),
+        transactionDate: entry.transactionDate.toISOString(),
+        createdAt: entry.createdAt?.toISOString(),
+        updatedAt: entry.updatedAt?.toISOString(),
+        deletedAt: entry.deletedAt?.toISOString() || null
+      }));
+
+      return { success: true, data: serializedData };
     } catch (e: any) {
       console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
       return { success: false, error: e.message || "ERR_MASTER_QUERY_FAILURE" };

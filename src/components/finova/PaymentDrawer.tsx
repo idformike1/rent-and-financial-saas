@@ -40,7 +40,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
   const { register, handleSubmit, control, formState: { errors, isSubmitting }, reset, watch } = useForm<PaymentForm>({
     resolver: zodResolver(paymentSchema),
     defaultValues: { 
-      amountPaid: 0,
+      amountPaid: undefined as any,
       paymentMode: 'CASH',
       referenceText: '',
       transactionDate: new Date().toISOString().split('T')[0]
@@ -137,6 +137,7 @@ export default function PaymentDrawer({ tenant, activeCharges, isOpen, onClose, 
                 type="number" 
                 step="0.01"
                 disabled={isViewer}
+                onFocus={(e) => e.target.select()}
                 {...register('amountPaid', { valueAsNumber: true })} 
                 className="pl-4 pr-4 py-6 text-[32px] font-bold font-finance tracking-clinical h-16 border-border bg-muted/30 disabled:opacity-30" 
                 placeholder="0.00"

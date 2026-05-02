@@ -36,6 +36,8 @@ export default function AdjustLedgerModal({ isOpen, onClose, tenantId, onSuccess
 
       if (res.success) {
         toast.success(res.message);
+        setAmount('');
+        setReason('');
         if (onSuccess) onSuccess();
         onClose();
       } else {

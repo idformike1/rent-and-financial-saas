@@ -2,7 +2,13 @@ import { Suspense } from "react";
 import TreasuryGrid from "@/src/components/modules/treasury/TreasuryGrid";
 import { LedgerSkeleton } from "@/src/components/finova/ui/SovereignSkeleton";
 
-export default async function TreasuryMasterPage() {
+export default async function TreasuryMasterPage({ 
+  searchParams 
+}: { 
+  searchParams: { type?: string } 
+}) {
+  const params = await searchParams;
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col gap-8 w-full">
       <header className="flex justify-between items-end border-b border-border pb-8">
@@ -17,7 +23,7 @@ export default async function TreasuryMasterPage() {
       </header>
 
       <Suspense fallback={<LedgerSkeleton />}>
-        <TreasuryGrid />
+        <TreasuryGrid filterType={params.type} />
       </Suspense>
     </div>
   );

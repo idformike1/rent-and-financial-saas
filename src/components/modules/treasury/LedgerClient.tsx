@@ -5,6 +5,8 @@ import { DataTable } from '@/src/components/system/DataTable';
 import { SideSheet } from '@/src/components/system/SideSheet';
 import { voidTransaction, clearTransaction } from "@/actions/finance.actions";
 import { cn } from "@/lib/utils";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Filter } from "lucide-react";
 
 interface LedgerEntry {
   id: string;
@@ -23,9 +25,21 @@ interface LedgerClientProps {
 }
 
 export default function LedgerClient({ initialData }: LedgerClientProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentType = searchParams.get('type') || 'ALL';
+
   const [selectedEntry, setSelectedEntry] = useState<LedgerEntry | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+
+  const setFilter = (type: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (type === 'ALL') params.delete('type');
+    else params.set('type', type);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const columns: any[] = [
     { 
@@ -81,7 +95,31 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2 p-1 bg-muted/20 border border-border rounded-lg">
+          {['ALL', 'INCOME', 'EXPENSE'].map(type => (
+            <button
+              key={type}
+              onClick={() => setFilter(type)}
+              className={cn(
+                "px-6 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-[0.1em] transition-all",
+                currentType === type 
+                  ? "bg-foreground text-background shadow-lg" 
+                  : "text-foreground/40 hover:text-foreground/60 hover:bg-muted/30"
+              )}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+        
+        <div className="flex items-center gap-3 text-foreground/30">
+          <Filter size={14} />
+          <span className="text-[10px] font-bold uppercase tracking-widest">Surveillance Filter Active</span>
+        </div>
+      </div>
+
       <DataTable
         data={initialData}
         columns={columns}
@@ -145,6 +183,6 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
           </div>
         </SideSheet>
       )}
-    </>
+    </div>
   );
 }

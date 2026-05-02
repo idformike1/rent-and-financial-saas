@@ -12,6 +12,7 @@ interface ReverseTransactionModalProps {
   onClose: () => void;
   entryId: string;
   description: string;
+  tenantId?: string;
   onSuccess?: () => void;
 }
 
@@ -27,11 +28,13 @@ export default function ReverseTransactionModal({ isOpen, onClose, entryId, desc
     try {
       const res = await reverseLedgerTransaction({
         entryId,
+        tenantId,
         reason
       });
 
       if (res.success) {
         toast.success(res.message);
+        setReason('');
         if (onSuccess) onSuccess();
         onClose();
       } else {

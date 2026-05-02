@@ -79,7 +79,11 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
   useEffect(() => {
     if (flowType === 'EXISTING') {
       getActiveTenants().then(res => {
-        if (res.success && res.data) setTenants(res.data);
+        if (res.success) {
+          setTenants(res.data);
+        } else {
+          toast.error(res.message || "Failed to synchronize occupant registry.");
+        }
       });
     }
   }, [flowType]);

@@ -88,6 +88,9 @@ export async function updateTenantDetails(tenantId: string, data: any) {
       );
       revalidatePath(`/tenants/${tenantId}`);
       revalidatePath('/tenants');
+      revalidatePath('/assets');
+      revalidatePath('/home');
+      revalidatePath('/reports/insights');
       return { success: true, data: tenant };
     } catch (e: any) {
       return { success: false, message: e.message };
@@ -151,5 +154,17 @@ export async function getActiveTenants() {
     } catch (e: any) {
       return { success: false, data: [] };
     }
-  });
+  }, false);
+}
+
+export async function getVacantUnits() {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const { assetService } = await import('@/src/services/asset.service');
+      const units = await assetService.getAvailableUnits(session.organizationId);
+      return { success: true, data: units };
+    } catch (e: any) {
+      return { success: false, data: [] };
+    }
+  }, false); // Set isMutation to false for READ operations
 }

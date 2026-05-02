@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { DataTable } from '@/src/components/system/DataTable';
@@ -39,9 +39,51 @@ export default function TenantClient({ initialData, role }: TenantClientProps) {
   const router = useRouter();
   const [selectedTenantForPayment, setSelectedTenantForPayment] = useState<Tenant | null>(null);
 
+  // --- SORTING ENGINE ---
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return initialData;
+
+    return [...initialData].sort((a, b) => {
+      let aValue: any = '';
+      let bValue: any = '';
+
+      switch (sortConfig.key) {
+        case 'name':
+          aValue = (a.name || "").toLowerCase();
+          bValue = (b.name || "").toLowerCase();
+          break;
+        case 'asset':
+          aValue = (a.leases[0]?.unit?.property?.name || "").toLowerCase();
+          bValue = (b.leases[0]?.unit?.property?.name || "").toLowerCase();
+          break;
+        case 'balance':
+          aValue = a.charges.reduce((acc, c) => acc + (Number(c.amount) - Number(c.amountPaid)), 0);
+          bValue = b.charges.reduce((acc, c) => acc + (Number(c.amount) - Number(c.amountPaid)), 0);
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [initialData, sortConfig]);
+
   const columns: any[] = [
     { 
       header: "Occupant", 
+      sortKey: "name",
       accessor: (tenant: Tenant) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-muted border border-border flex items-center justify-center text-[10px] font-bold text-foreground/40 uppercase tracking-[0.1em]">
@@ -57,6 +99,7 @@ export default function TenantClient({ initialData, role }: TenantClientProps) {
     },
     { 
       header: "Asset Deployment", 
+      sortKey: "asset",
       accessor: (tenant: Tenant) => {
         const lease = tenant.leases[0];
         if (!lease) return <span className="text-zinc-700 italic text-[11px]">UNASSIGNED</span>;
@@ -89,6 +132,7 @@ export default function TenantClient({ initialData, role }: TenantClientProps) {
     },
     { 
       header: "Aggregate Fisc", 
+      sortKey: "balance",
       accessor: (tenant: Tenant) => {
         const balance = tenant.charges.reduce((acc, c) => acc + (Number(c.amount) - Number(c.amountPaid)), 0);
         return (
@@ -148,9 +192,11 @@ export default function TenantClient({ initialData, role }: TenantClientProps) {
   return (
     <div className="space-y-4">
       <DataTable
-        data={initialData}
+        data={sortedData}
         columns={columns}
         onRowClick={handleRowClick}
+        sortConfig={sortConfig}
+        onSort={handleSort}
       />
 
       {selectedTenantForPayment && (

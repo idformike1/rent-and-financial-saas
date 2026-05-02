@@ -229,13 +229,15 @@ export const tenantService = {
             organizationId: context.organizationId,
             OR: [
               ...(payload.email ? [{ email: payload.email }] : []),
-              ...(payload.phone ? [{ phone: payload.phone }] : [])
+              ...(payload.phone ? [{ phone: payload.phone }] : []),
+              ...(payload.nationalId ? [{ nationalId: payload.nationalId }] : []),
+              { name: payload.tenantName }
             ],
             isDeleted: false
           }
         });
 
-        if (existing) throw new Error(`ERR_PROTOCOL_VIOLATION: Tenant already registered (${existing.name}).`);
+        if (existing) throw new Error(`ERR_PROTOCOL_VIOLATION: Identity conflict detected (${existing.name}). This name, email, phone, or ID is already in use.`);
       }
 
       const unit = await tx.unit.findFirst({ 
@@ -264,46 +266,54 @@ export const tenantService = {
       const endDate = new Date(moveIn);
       endDate.setUTCFullYear(endDate.getUTCFullYear() + 1);
 
+      if (isNaN(moveIn.getTime()) || isNaN(endDate.getTime())) {
+        throw new Error("ERR_PROTOCOL_VIOLATION: Invalid move-in dates.");
+      }
+
       const lease = await tx.lease.create({
         data: {
           organizationId: context.organizationId,
           tenantId: tenant.id,
           unitId: payload.unitId,
           isPrimary: true,
-          rentAmount: new Prisma.Decimal(payload.baseRent),
+          rentAmount: new Prisma.Decimal(payload.baseRent || 0),
           depositAmount: secDep,
           startDate: moveIn,
-          endDate,
+          endDate: endDate,
           isActive: true
         }
       });
 
       // MATERIALIZE CHARGES
-      const depositCharge = await tx.charge.create({
-        data: {
-          organizationId: context.organizationId,
-          tenantId: tenant.id,
-          leaseId: lease.id,
-          type: 'SECURITY_DEPOSIT', 
-          amount: secDep,
-          amountPaid: 0,
-          dueDate: moveIn,
-          isFullyPaid: false,
-        }
-      });
+      if (secDep.gt(0)) {
+        await tx.charge.create({
+          data: {
+            organizationId: context.organizationId,
+            tenantId: tenant.id,
+            leaseId: lease.id,
+            type: 'SECURITY_DEPOSIT', 
+            amount: secDep,
+            amountPaid: 0,
+            dueDate: moveIn,
+            isFullyPaid: false,
+          }
+        });
+      }
 
-      const rentCharge = await tx.charge.create({
-        data: {
-          organizationId: context.organizationId,
-          tenantId: tenant.id,
-          leaseId: lease.id,
-          type: 'RENT', 
-          amount: proratedRent,
-          amountPaid: 0,
-          dueDate: moveIn,
-          isFullyPaid: false,
-        }
-      });
+      if (proratedRent.gt(0)) {
+        await tx.charge.create({
+          data: {
+            organizationId: context.organizationId,
+            tenantId: tenant.id,
+            leaseId: lease.id,
+            type: 'RENT', 
+            amount: proratedRent,
+            amountPaid: 0,
+            dueDate: moveIn,
+            isFullyPaid: false,
+          }
+        });
+      }
 
       // Materialize Ledger Entries (Double-Entry)
       const { createBalancedTransaction } = await import("@/src/services/finance/core");
@@ -319,17 +329,25 @@ export const tenantService = {
    */
   async checkTenantExistence(query: any, context: { operatorId: string, organizationId: string }) {
     const db = getSovereignClient(context.organizationId);
-    const existing = await db.tenant.findFirst({
-      where: {
-        organizationId: context.organizationId,
-        OR: [
-          ...(query.email ? [{ email: query.email }] : []),
-          ...(query.phone ? [{ phone: query.phone }] : [])
-        ],
-        isDeleted: false
-      }
-    });
-    return { exists: !!existing, conflicts: existing ? { name: existing.name } : null };
+    
+    // EXHAUSTIVE PARALLEL IDENTITY SCAN
+    const [nameMatch, emailMatch, phoneMatch, idMatch] = await Promise.all([
+      db.tenant.findFirst({ where: { name: query.name, organizationId: context.organizationId, isDeleted: false } }),
+      query.email ? db.tenant.findFirst({ where: { email: query.email, organizationId: context.organizationId, isDeleted: false } }) : null,
+      query.phone ? db.tenant.findFirst({ where: { phone: query.phone, organizationId: context.organizationId, isDeleted: false } }) : null,
+      query.nationalId ? db.tenant.findFirst({ where: { nationalId: query.nationalId, organizationId: context.organizationId, isDeleted: false } }) : null,
+    ]);
+
+    const conflicts: any = {};
+    if (nameMatch) conflicts.tenantName = `Name conflict: ${nameMatch.name}`;
+    if (emailMatch) conflicts.email = `Email conflict: ${emailMatch.email}`;
+    if (phoneMatch) conflicts.phone = `Phone conflict: ${phoneMatch.phone}`;
+    if (idMatch) conflicts.nationalId = `ID conflict: ${idMatch.nationalId}`;
+
+    return { 
+      exists: Object.keys(conflicts).length > 0, 
+      conflicts: Object.keys(conflicts).length > 0 ? conflicts : null 
+    };
   },
 
   /**
@@ -351,8 +369,31 @@ export const tenantService = {
    */
   async updateTenantDetails(tenantId: string, data: any, context: { operatorId: string, organizationId: string }) {
     const db = getSovereignClient(context.organizationId);
-    // ... (Implementation from updateTenantDetailsService)
-    return { id: tenantId, ...data };
+    
+    console.log(`[TENANT_SERVICE] Attempting update for ${tenantId} | New Name: ${data.name}`);
+    
+    const tenant = await db.tenant.update({
+      where: { id: tenantId, organizationId: context.organizationId },
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        nationalId: data.nationalId
+      }
+    });
+
+    console.log(`[TENANT_SERVICE] DB Update successful. Result Name: ${tenant.name}`);
+
+    await recordAuditLog({
+      action: 'UPDATE',
+      entityType: 'TENANT',
+      entityId: tenantId,
+      metadata: { updates: data },
+      operatorId: context.operatorId,
+      organizationId: context.organizationId
+    });
+
+    return tenant;
   },
 
   /**
@@ -360,15 +401,124 @@ export const tenantService = {
    */
   async softDeleteTenant(tenantId: string, context: { operatorId: string, organizationId: string }) {
     const db = getSovereignClient(context.organizationId);
-    // ... (Implementation from softDeleteTenantService)
+    
+    await db.$transaction(async (tx: any) => {
+      await tx.tenant.update({
+        where: { id: tenantId, organizationId: context.organizationId },
+        data: { isDeleted: true }
+      });
+
+      // Also deactivate all primary leases
+      await tx.lease.updateMany({
+        where: { tenantId, organizationId: context.organizationId, isActive: true },
+        data: { isActive: false, endDate: new Date() }
+      });
+
+      await recordAuditLog({
+        action: 'DELETE',
+        entityType: 'TENANT',
+        entityId: tenantId,
+        metadata: { status: 'DEACTIVATED' },
+        tx
+      });
+    });
   },
 
   /**
-   * Materializes an additional lease.
+   * Materializes an additional lease for an existing tenant.
    */
-  async addAdditionalLease(data: any, context: { operatorId: string, organizationId: string }) {
+  async addAdditionalLease(data: { tenantId: string, unitId: string, rentAmount: number, depositAmount: number, startDate: string }, context: { operatorId: string, organizationId: string }) {
     const db = getSovereignClient(context.organizationId);
-    // ... (Implementation from addAdditionalLeaseService)
-    return {};
+    
+    return await db.$transaction(async (tx: any) => {
+      // 1. Verify unit vacancy
+      const unit = await tx.unit.findFirst({
+        where: { id: data.unitId, organizationId: context.organizationId, leases: { none: { isActive: true } } }
+      });
+      if (!unit) throw new Error("ERR_UNIT_OCCUPIED: Target unit is already optimized with an active occupant.");
+
+      // 2. Create Lease record
+      const start = data.startDate ? new Date(data.startDate) : new Date();
+      const end = new Date(start);
+      end.setFullYear(end.getFullYear() + 1);
+
+      // Final validation before DB commit
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new Error("ERR_PROTOCOL_VIOLATION: Invalid tenure dates provided.");
+      }
+
+      const lease = await tx.lease.create({
+        data: {
+          organizationId: context.organizationId,
+          tenantId: data.tenantId,
+          unitId: data.unitId,
+          rentAmount: new Prisma.Decimal(data.rentAmount || 0),
+          depositAmount: new Prisma.Decimal(data.depositAmount || 0),
+          startDate: start,
+          endDate: end,
+          isActive: true
+        }
+      });
+
+      // 3. Materialize initial charges
+      const charges = [];
+      if (data.rentAmount > 0) {
+        charges.push({
+          organizationId: context.organizationId,
+          tenantId: data.tenantId,
+          leaseId: lease.id,
+          type: 'RENT',
+          amount: new Prisma.Decimal(data.rentAmount),
+          dueDate: start
+        });
+      }
+
+      if (data.depositAmount > 0) {
+        charges.push({
+          organizationId: context.organizationId,
+          tenantId: data.tenantId,
+          leaseId: lease.id,
+          type: 'SECURITY_DEPOSIT',
+          amount: new Prisma.Decimal(data.depositAmount),
+          dueDate: start
+        });
+      }
+
+      if (charges.length > 0) {
+        await tx.charge.createMany({ data: charges });
+      }
+
+      await recordAuditLog({
+        action: 'CREATE',
+        entityType: 'LEASE',
+        entityId: lease.id,
+        metadata: { tenantId: data.tenantId, unitId: data.unitId, rent: data.rentAmount },
+        tx
+      });
+
+      return lease;
+    });
+  },
+
+  /**
+   * Executes the definitive move-out protocol for a tenant.
+   */
+  async processMoveOut(data: { tenantId: string, leaseId: string, unitId: string }, context: { operatorId: string, organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    
+    await db.$transaction(async (tx: any) => {
+      await tx.lease.update({
+        where: { id: data.leaseId, organizationId: context.organizationId },
+        data: { isActive: false, endDate: new Date() }
+      });
+
+      await recordAuditLog({
+        action: 'UPDATE',
+        entityType: 'LEASE',
+        entityId: data.leaseId,
+        metadata: { status: 'TERMINATED', moveOutDate: new Date().toISOString() },
+        tx
+      });
+    });
   }
 };

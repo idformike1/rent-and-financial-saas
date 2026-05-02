@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { updateTenantDetails } from '@/actions/tenant.actions'
+import { useState, useEffect } from 'react'
+import { updateTenantDetails, softDeleteTenant } from '@/actions/tenant.actions'
 import { Button, Input, Label } from '@/src/components/finova/ui-finova'
 import { toast } from '@/lib/toast'
-import { User, Mail, Phone, ShieldCheck } from 'lucide-react'
+import { User, Mail, Phone, ShieldCheck, AlertTriangle } from 'lucide-react'
 import { SideSheet } from '@/src/components/system/SideSheet'
 
 interface EditTenantModalProps {
@@ -27,7 +27,20 @@ export default function EditTenantModal({ isOpen, onClose, tenant, onSuccess }: 
     phone: tenant.phone || '',
     nationalId: tenant.nationalId || ''
   });
+
+  // SYNC ENGINE: Ensure form reflects latest prop state when modal opens or tenant updates
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: tenant.name,
+        email: tenant.email || '',
+        phone: tenant.phone || '',
+        nationalId: tenant.nationalId || ''
+      });
+    }
+  }, [tenant, isOpen]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +61,26 @@ export default function EditTenantModal({ isOpen, onClose, tenant, onSuccess }: 
       toast.error(error.message || "Internal engine failure.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("CRITICAL: Are you sure you want to deactivate this occupant? This will restrict further fiscal actions but preserve ledger history.")) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await softDeleteTenant(tenant.id);
+      if (res.success) {
+        toast.success("Occupant deactivated successfully.");
+        if (onSuccess) onSuccess();
+        onClose();
+      } else {
+        toast.error(res.message || "Failed to deactivate tenant.");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Internal engine failure.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -127,7 +160,7 @@ export default function EditTenantModal({ isOpen, onClose, tenant, onSuccess }: 
                         variant="secondary" 
                         className="flex-1 h-12 uppercase font-bold" 
                         onClick={onClose}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || isDeleting}
                     >
                         Cancel
                     </Button>
@@ -136,9 +169,38 @@ export default function EditTenantModal({ isOpen, onClose, tenant, onSuccess }: 
                         variant="primary" 
                         className="flex-1 h-12 uppercase font-bold"
                         isLoading={isSubmitting}
+                        disabled={isDeleting}
                     >
                         Save Changes
                     </Button>
+                </div>
+
+                {/* DANGER ZONE */}
+                <div className="mt-8 pt-8 border-t border-white/10">
+                    <div className="bg-rose-500/5 rounded-xl p-5 border border-rose-500/10">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="p-2 bg-rose-500/10 rounded-lg">
+                                <AlertTriangle className="w-5 h-5 text-rose-500" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-rose-500 uppercase tracking-widest mb-1">Danger Zone</h4>
+                                <p className="text-[11px] text-clinical-muted leading-relaxed">
+                                    Deactivating this occupant will mark them as inactive in the registry. 
+                                    All financial history is preserved for audit purity, but no new charges can be issued.
+                                </p>
+                            </div>
+                        </div>
+                        <Button 
+                            type="button"
+                            variant="secondary"
+                            className="w-full h-11 border-rose-500/20 text-rose-500 hover:bg-rose-500/10 uppercase font-black tracking-tighter"
+                            onClick={handleDelete}
+                            isLoading={isDeleting}
+                            disabled={isSubmitting}
+                        >
+                            Deactivate Occupant
+                        </Button>
+                    </div>
                 </div>
             </form>
         </div>
