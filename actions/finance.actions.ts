@@ -1,7 +1,7 @@
 'use server'
 
 import { runSecureServerAction, runIdempotentAction } from '@/lib/auth-utils'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { treasuryService } from '@/src/services/treasury.service'
 
 /**
@@ -19,6 +19,7 @@ export async function runMonthlyBillingCycle(payload: { servicePeriod: string, p
       );
       revalidatePath('/reports/master-ledger');
       revalidatePath('/tenants');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: `Batch Complete: ${result.generated} charges.`, data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -35,6 +36,7 @@ export async function waiveCharge(chargeId: string, reasonText: string, idempote
         { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
       );
       revalidatePath(`/tenants`);
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: `Charge waived.`, data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -62,6 +64,7 @@ export async function logExpense(formData: FormData) {
       );
       revalidatePath('/treasury/payables');
       revalidatePath('/reports/master-ledger');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, data: result };
     } catch (e: any) {
       return { error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -79,6 +82,7 @@ export async function ingestBulkExpenses(data: any[], idempotencyKey: string) {
       });
       revalidatePath('/reports/master-ledger');
       revalidatePath('/treasury/payables');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: `Mass Ingestion Complete: ${result.count} records.`, data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "Internal database synchronization failure." };
@@ -98,6 +102,7 @@ export async function processPayment(payload: any) {
       revalidatePath('/tenants');
       revalidatePath(`/tenants/${payload.tenantId}`);
       revalidatePath('/treasury/feed');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: `Payment successful.`, data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "Unknown error" };

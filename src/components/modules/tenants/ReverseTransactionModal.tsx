@@ -16,7 +16,9 @@ interface ReverseTransactionModalProps {
   onSuccess?: () => void;
 }
 
-export default function ReverseTransactionModal({ isOpen, onClose, entryId, description, onSuccess }: ReverseTransactionModalProps) {
+export default function ReverseTransactionModal({ 
+  isOpen, onClose, entryId, description, tenantId, onSuccess 
+}: ReverseTransactionModalProps) {
   const [reason, setReason] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,8 +30,7 @@ export default function ReverseTransactionModal({ isOpen, onClose, entryId, desc
     try {
       const res = await reverseLedgerTransaction({
         entryId,
-        tenantId,
-        reason
+        tenantId
       });
 
       if (res.success) {

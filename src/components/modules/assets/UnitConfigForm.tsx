@@ -98,26 +98,37 @@ export default function UnitConfigForm({ activeUnit }: { activeUnit: any }) {
         />
       </div>
 
-      <div className="pt-8 flex gap-4 border-t border-[#1F2937]">
-        <button 
-          type="submit" 
-          disabled={isPending || isViewer}
-          className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
-        >
-          <Check size={14} />
-          {isPending ? 'Executing...' : 'Commit Configuration'}
-        </button>
+      <div className="pt-8 space-y-6 border-t border-[#1F2937]">
+        {activeUnit.leases?.length > 0 && (
+          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
+             <div className="w-4 h-4 rounded-full bg-destructive flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
+             <p className="text-[10px] font-bold text-destructive leading-normal">
+                GOVERNANCE LOCK: Decommissioning is restricted while an occupant is active. Terminate the lease before purging this inventory node.
+             </p>
+          </div>
+        )}
 
-        <button 
-          type="submit" 
-          name="decommission" 
-          value="true"
-          disabled={isPending || isViewer}
-          className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
-        >
-          <Trash2 size={14} />
-          {isPending ? 'Executing...' : 'Decommission Asset'}
-        </button>
+        <div className="flex gap-4">
+          <button 
+            type="submit" 
+            disabled={isPending || isViewer}
+            className="flex-1 flex items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
+          >
+            <Check size={14} />
+            {isPending ? 'Executing...' : 'Commit Configuration'}
+          </button>
+
+          <button 
+            type="submit" 
+            name="decommission" 
+            value="true"
+            disabled={isPending || isViewer || activeUnit.leases?.length > 0}
+            className="flex-1 flex items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
+          >
+            <Trash2 size={14} />
+            {isPending ? 'Executing...' : 'Decommission Asset'}
+          </button>
+        </div>
       </div>
       
       {isViewer && (

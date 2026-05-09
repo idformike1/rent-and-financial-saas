@@ -24,36 +24,55 @@ export const tenantService = {
   /**
    * Retrieves all tenants for a specific organization with active leases and outstanding charges.
    */
-  async getTenantsWithContext(organizationId: string) {
+  async getTenantsWithContext(organizationId: string, filters: { skip?: number, take?: number } = {}) {
     const db = getSovereignClient(organizationId);
-    return db.tenant.findMany({
-      where: {
-        organizationId,
-        isDeleted: false,
-      },
-      include: {
-        leases: {
-          where: {
-            isActive: true,
-          },
-          include: {
-            unit: {
-              include: {
-                property: true
+    const take = filters.take || 50;
+    const skip = filters.skip || 0;
+
+    const where = {
+      organizationId,
+      isDeleted: false,
+    };
+
+    const [data, total] = await Promise.all([
+      db.tenant.findMany({
+        where,
+        include: {
+          leases: {
+            where: {
+              isActive: true,
+            },
+            include: {
+              unit: {
+                include: {
+                  property: true
+                }
               }
             }
-          }
-        },
-        charges: {
-          where: {
-            isFullyPaid: false,
+          },
+          charges: {
+            where: {
+              isFullyPaid: false,
+            },
           },
         },
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
+        orderBy: {
+          name: "asc",
+        },
+        skip,
+        take
+      }),
+      db.tenant.count({ where })
+    ]);
+
+    return {
+      data,
+      metadata: {
+        total,
+        totalPages: Math.ceil(total / take),
+        currentPage: Math.floor(skip / take) + 1
+      }
+    };
   },
 
   /**
@@ -389,7 +408,7 @@ export const tenantService = {
       entityType: 'TENANT',
       entityId: tenantId,
       metadata: { updates: data },
-      operatorId: context.operatorId,
+      userId: context.operatorId,
       organizationId: context.organizationId
     });
 
@@ -499,26 +518,4 @@ export const tenantService = {
       return lease;
     });
   },
-
-  /**
-   * Executes the definitive move-out protocol for a tenant.
-   */
-  async processMoveOut(data: { tenantId: string, leaseId: string, unitId: string }, context: { operatorId: string, organizationId: string }) {
-    const db = getSovereignClient(context.organizationId);
-    
-    await db.$transaction(async (tx: any) => {
-      await tx.lease.update({
-        where: { id: data.leaseId, organizationId: context.organizationId },
-        data: { isActive: false, endDate: new Date() }
-      });
-
-      await recordAuditLog({
-        action: 'UPDATE',
-        entityType: 'LEASE',
-        entityId: data.leaseId,
-        metadata: { status: 'TERMINATED', moveOutDate: new Date().toISOString() },
-        tx
-      });
-    });
-  }
 };

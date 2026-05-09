@@ -1,7 +1,7 @@
 'use server'
 
 import { runSecureServerAction } from '@/lib/auth-utils'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { assetService } from '@/src/services/asset.service'
 import { MaintenanceStatus } from '@/src/schema/enums'
 
@@ -27,6 +27,7 @@ export async function createProperty(data: { name: string, address: string }) {
 
       revalidatePath('/assets');
       revalidatePath('/assets/[propertyId]', 'page');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, data: property };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_CREATE_FATAL]', e);
@@ -50,6 +51,7 @@ export async function updateProperty(propertyId: string, data: { name?: string, 
       revalidatePath(`/assets/${propertyId}`);
       revalidatePath('/assets');
       revalidatePath('/assets/[propertyId]', 'page');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, data: property };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_UPDATE_FATAL]', e);
@@ -59,6 +61,7 @@ export async function updateProperty(propertyId: string, data: { name?: string, 
 }
 
 export async function deleteProperty(propertyId: string) {
+  // [ TRACE: SOVEREIGN_PURGE_PROTOCOL_V2 ]
   return runSecureServerAction('MANAGER', async (session) => {
     try {
       await assetService.deleteProperty(
@@ -72,6 +75,7 @@ export async function deleteProperty(propertyId: string) {
       revalidatePath('/assets');
       revalidatePath('/assets/[propertyId]', 'page');
       revalidatePath(`/properties/${propertyId}`);
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true };
     } catch (e: any) {
       console.error('[ASSET_PROPERTY_DELETE_FATAL]', e);
@@ -97,6 +101,7 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
       revalidatePath('/assets');
       revalidatePath('/tenants');
       revalidatePath('/tenant-register');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, data: { ...unit, marketRent: Number(unit.marketRent) } };
 
     } catch (e: any) {

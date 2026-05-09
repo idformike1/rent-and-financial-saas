@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useTransition, useOptimistic } from "react";
 import { DataTable } from '@/src/components/system/DataTable';
 import { SideSheet } from '@/src/components/system/SideSheet';
 import { voidTransaction, clearTransaction } from "@/actions/finance.actions";
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Filter } from "lucide-react";
+import { toast } from "@/lib/toast";
 
 interface LedgerEntry {
   id: string;
@@ -28,17 +29,38 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPendingNav, startTransition] = useTransition();
   const currentType = searchParams.get('type') || 'ALL';
 
   const [selectedEntry, setSelectedEntry] = useState<LedgerEntry | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const [isMutationPending, setIsMutationPending] = useState(false);
+
+  // OPTIMISTIC UI ENGINE
+  const [optimisticEntries, updateOptimisticEntries] = useOptimistic(
+    initialData,
+    (state, { id, isCleared, status }: { id: string, isCleared?: boolean, status?: string }) => {
+      return state.map(e => {
+        if (e.id === id) {
+          return {
+            ...e,
+            isCleared: isCleared !== undefined ? isCleared : e.isCleared,
+            status: status !== undefined ? status : e.status
+          };
+        }
+        return e;
+      });
+    }
+  );
 
   const setFilter = (type: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (type === 'ALL') params.delete('type');
     else params.set('type', type);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    });
   };
 
   const columns: any[] = [
@@ -76,22 +98,47 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
   const onVoid = async () => {
     if (!selectedEntry) return;
     if (confirm("This action is immutable. A corrective entry will be required.")) {
-      setIsPending(true);
+      setIsMutationPending(true);
+      
+      // 1. Fire Optimistic Update
+      updateOptimisticEntries({ id: selectedEntry.id, status: 'VOIDED' });
+      
       try {
-        await voidTransaction(selectedEntry.id, idempotencyKey);
-        setIsSheetOpen(false);
+        const res = await voidTransaction(selectedEntry.id, idempotencyKey);
+        if (!res.success) {
+          toast.error(res.message || "Void failed. Security protocols active.");
+        } else {
+          setIsSheetOpen(false);
+        }
+      } catch (e) {
+        toast.error("Network synchronization failure.");
       } finally {
-        setIsPending(false);
+        setIsMutationPending(false);
       }
     }
   };
 
   const onToggleClear = async () => {
     if (!selectedEntry) return;
-    setIsPending(true);
-    await clearTransaction(selectedEntry.id, selectedEntry.isCleared);
-    setIsPending(false);
-    setIsSheetOpen(false); // Close to force refresh state or keep open for UX? User didn't specify.
+    setIsMutationPending(true);
+    
+    const nextClearedState = !selectedEntry.isCleared;
+    
+    // 1. Fire Optimistic Update
+    updateOptimisticEntries({ id: selectedEntry.id, isCleared: nextClearedState });
+    
+    try {
+      const res = await clearTransaction(selectedEntry.id, selectedEntry.isCleared);
+      if (!res.success) {
+        toast.error(res.message || "Clearance failed.");
+      } else {
+        setIsSheetOpen(false);
+      }
+    } catch (e) {
+      toast.error("Persistence layer unreachable.");
+    } finally {
+      setIsMutationPending(false);
+    }
   };
 
   return (
@@ -121,7 +168,8 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
       </div>
 
       <DataTable
-        data={initialData}
+        data={optimisticEntries}
+        isLoading={isPendingNav}
         columns={columns}
         onRowClick={handleRowClick}
         getRowClassName={(item) => item.status === "VOIDED" ? "opacity-40" : ""}
@@ -166,7 +214,7 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
             <section className="pt-8 flex flex-col gap-4">
               <button
                 onClick={onToggleClear}
-                disabled={isPending || selectedEntry.status === "VOIDED"}
+                disabled={isMutationPending || isPendingNav || selectedEntry.status === "VOIDED"}
                 className="w-full h-12 bg-foreground text-background text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius-sm)] hover:bg-foreground/90 transition-all disabled:opacity-30 border-none"
               >
                 {selectedEntry.isCleared ? "Relinquish Clearance" : "Authorize Settlement"}
@@ -174,7 +222,7 @@ export default function LedgerClient({ initialData }: LedgerClientProps) {
               
               <button
                 onClick={onVoid}
-                disabled={isPending || selectedEntry.status === "VOIDED"}
+                disabled={isMutationPending || isPendingNav || selectedEntry.status === "VOIDED"}
                 className="w-full h-12 bg-destructive/10 border border-destructive/20 text-destructive/80 text-[11px] font-bold uppercase tracking-[0.15em] rounded-[var(--radius-sm)] hover:bg-destructive/20 transition-all disabled:opacity-30"
               >
                 Void Immutable Entry

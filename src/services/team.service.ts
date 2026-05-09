@@ -2,7 +2,6 @@ import { getSovereignClient } from "@/src/lib/db";
 import { recordAuditLog } from "@/lib/audit-logger";
 import { resolveTerminationSafety } from "@/src/core/algorithms/governance";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
 
 /**
  * SOVEREIGN OS DATA ENGINE: TEAM SERVICE
@@ -53,8 +52,11 @@ export const teamService = {
     const existingUser = await db.user.findUnique({ where: { email: payload.email } });
     if (existingUser) throw new Error("ERR_IDENTITY_CONFLICT: User already exists.");
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const rawTokenBytes = crypto.getRandomValues(new Uint8Array(32));
+    const rawToken = Array.from(rawTokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(rawToken));
+    const hashedToken = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 
     return await db.$transaction(async (tx: any) => {
       const invitation = await tx.invitation.create({
@@ -84,7 +86,8 @@ export const teamService = {
   async consumeInvitation(payload: { token: string; passwordPlain: string }) {
     const db = getSovereignClient("OP_SYSTEM_ONBOARDING");
 
-    const hashedToken = crypto.createHash('sha256').update(payload.token).digest('hex');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payload.token));
+    const hashedToken = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     const invitation = await db.invitation.findUnique({
       where: { token: hashedToken },
       include: { organization: true }

@@ -54,54 +54,15 @@ export async function getPropertyAssetPulse(propertyId: string) {
   }, false);
 }
 
-export async function getPropertyLedgerEntries(propertyId: string, type: string) {
-  return runSecureServerAction('VIEWER', async (session) => {
-    try {
-      // 1. Semantic Mapping Layer (UI -> DB)
-      const filters: any = { propertyId };
-      
-      switch (type) {
-        case 'NOI':
-          filters.category = ['INCOME', 'EXPENSE'];
-          break;
-        case 'GROSS_POTENTIAL':
-        case 'LEAKAGE':
-        case 'COLLECTION':
-          filters.category = 'INCOME';
-          break;
-        case 'ALL':
-        default:
-          // No specific category filter
-          break;
-      }
-
-      const data = await treasuryService.getMasterLedger(session.organizationId, filters);
-      
-      // EXPLICIT SERIALIZATION (Surgical Decimal & Date conversion)
-      const serializedData = data.map((entry: any) => ({
-        ...entry,
-        amount: Number(entry.amount),
-        transactionDate: entry.transactionDate.toISOString(),
-        createdAt: entry.createdAt?.toISOString(),
-        updatedAt: entry.updatedAt?.toISOString(),
-        deletedAt: entry.deletedAt?.toISOString() || null
-      }));
-
-      return { success: true, data: serializedData };
-    } catch (e: any) {
-      console.error('[ANALYTICS_LEDGER_FATAL]', e);
-      return { success: false, error: e.message || "ERR_LEDGER_RECONCILIATION" };
-    }
-  }, false);
-}
 
 export async function getMasterLedger(filters?: any) {
   return runSecureServerAction('VIEWER', async (session) => {
     try {
-      const data = await treasuryService.getMasterLedger(session.organizationId, filters);
+      const response = await treasuryService.getMasterLedger(session.organizationId, filters);
+      const rawLedger = response.data;
       
       // EXPLICIT SERIALIZATION
-      const serializedData = data.map((entry: any) => ({
+      const serializedData = rawLedger.map((entry: any) => ({
         ...entry,
         amount: Number(entry.amount),
         transactionDate: entry.transactionDate.toISOString(),
@@ -110,7 +71,7 @@ export async function getMasterLedger(filters?: any) {
         deletedAt: entry.deletedAt?.toISOString() || null
       }));
 
-      return { success: true, data: serializedData };
+      return { success: true, data: serializedData, metadata: response.metadata };
     } catch (e: any) {
       console.error('[ANALYTICS_MASTER_LEDGER_FATAL]', e);
       return { success: false, error: e.message || "ERR_MASTER_QUERY_FAILURE" };

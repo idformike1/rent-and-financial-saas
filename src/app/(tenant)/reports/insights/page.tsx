@@ -18,12 +18,12 @@ export default async function InsightsPage() {
   const activeOrgId = (await getActiveWorkspaceId()) || session.organizationId;
 
   // Parallel fetch for optimal telemetry materialization
-  const [ledgerEntries, telemetry] = await Promise.all([
+  const [ledgerResponse, telemetry] = await Promise.all([
     treasuryService.getMasterLedger(activeOrgId, { take: 10000 }),
     treasuryService.getGlobalPortfolioTelemetry(activeOrgId)
   ]);
 
-  const sanitizedEntries = (ledgerEntries as any[] || []).map((e: any) => ({
+  const sanitizedEntries = (ledgerResponse.data || []).map((e: any) => ({
     id: e.id,
     amount: Number(e.amount),
     transactionDate: e.transactionDate,

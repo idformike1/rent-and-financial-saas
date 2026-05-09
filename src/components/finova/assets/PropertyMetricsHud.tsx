@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
-import { Button } from '@/src/components/finova/ui-finova';
+import { Card } from '@/src/components/system/Card';
+import { TrendingUp, TrendingDown, Target, BarChart3 } from 'lucide-react';
 
 interface PropertyMetricsHudProps {
   metrics: {
@@ -23,87 +24,120 @@ const formatCurrency = (val: number) =>
   }).format(val);
 
 export default function PropertyMetricsHud({ metrics, timeframe, onDrillDown }: PropertyMetricsHudProps) {
-  const multiplier = timeframe === 'YEARLY' ? 12 : 1;
+
 
   return (
-    <div className="flex items-end justify-between w-full gap-12 py-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
       
-      {/* TIER 1: CORE FINANCIALS (Left, Dominant) */}
-      <div className="flex items-end gap-12">
-        {/* NOI */}
-        <div 
-          onClick={() => onDrillDown('NOI')}
-          className="cursor-pointer group flex flex-col gap-2"
-        >
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest group-hover:text-foreground transition-colors">
+      {/* NOI */}
+      <Card 
+        onClick={() => onDrillDown('NOI')}
+        className="cursor-pointer group flex flex-col gap-4 p-6 hover:border-brand/40 transition-all"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
             Net Operating Income
           </span>
+          <BarChart3 className="w-3.5 h-3.5 text-muted-foreground/40" />
+        </div>
+        <div className="space-y-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold tracking-tight text-foreground">
-              {formatCurrency(Number(metrics?.noi || 0) * multiplier)}
+            <span className="text-3xl font-bold tracking-tight text-foreground">
+              {formatCurrency(Number(metrics?.noi || 0))}
             </span>
-            <span className="text-xs font-bold text-emerald-500 mb-1">↑ 2.4%</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500">
+              <TrendingUp className="w-3 h-3" /> +2.4%
+            </span>
+            <span className="text-[10px] text-muted-foreground/40 font-medium">vs previous period</span>
           </div>
         </div>
+      </Card>
 
-        {/* GROSS POTENTIAL */}
-        <div 
-          onClick={() => onDrillDown('GROSS_POTENTIAL')}
-          className="cursor-pointer group flex flex-col gap-2"
-        >
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest group-hover:text-foreground transition-colors">
+      {/* GROSS POTENTIAL */}
+      <Card 
+        onClick={() => onDrillDown('GROSS_POTENTIAL')}
+        className="cursor-pointer group flex flex-col gap-4 p-6 hover:border-brand/40 transition-all"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
             Gross Potential Rent
           </span>
+        </div>
+        <div className="space-y-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold tracking-tight text-foreground">
-              {formatCurrency(Number(metrics?.grossPotential || 0) * multiplier)}
+            <span className="text-3xl font-bold tracking-tight text-foreground">
+              {formatCurrency(Number(metrics?.grossPotential || 0))}
             </span>
-            <span className="text-xs font-bold text-muted-foreground/40 mb-1">Est. Cap: 5.2%</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-brand font-bold">Est. Cap: 5.2%</span>
+            <span className="text-[10px] text-muted-foreground/40 font-medium ml-auto">market benchmark</span>
           </div>
         </div>
-      </div>
+      </Card>
 
-      {/* TIER 2: RISK / EFFICIENCY (Right, Compressed) */}
-      <div className="flex items-end gap-10 border-l border-border pl-10">
-        {/* REVENUE LEAKAGE */}
-        <div 
-          onClick={() => onDrillDown('LEAKAGE')}
-          className="cursor-pointer group flex flex-col gap-1.5"
-        >
-          <div className="flex items-center justify-between min-w-[120px]">
-             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Revenue Leakage</span>
-          </div>
+      {/* REVENUE LEAKAGE */}
+      <Card 
+        onClick={() => onDrillDown('LEAKAGE')}
+        className="cursor-pointer group flex flex-col gap-4 p-6 hover:border-brand/40 transition-all"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            Revenue Leakage
+          </span>
+        </div>
+        <div className="space-y-1">
           <div className="flex items-baseline gap-2">
              <span className={cn(
-               "text-xl font-bold tabular-nums",
+               "text-3xl font-bold tabular-nums",
                metrics.revenueLeakage > 10 ? "text-rose-500" : metrics.revenueLeakage > 5 ? "text-amber-500" : "text-foreground"
              )}>
                {Number(metrics.revenueLeakage || 0).toFixed(1)}%
              </span>
-             <span className="text-[10px] text-muted-foreground/40 font-medium">↓ vs last period</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className={cn(
+              "flex items-center gap-1 text-[10px] font-bold",
+              metrics.revenueLeakage > 10 ? "text-rose-500" : "text-amber-500"
+            )}>
+              <TrendingDown className="w-3 h-3" /> vs last period
+            </span>
+            <span className="text-[10px] text-muted-foreground/40 font-medium ml-auto">improvement trend</span>
           </div>
         </div>
+      </Card>
 
-        {/* COLLECTION RATIO */}
-        <div 
-          onClick={() => onDrillDown('COLLECTION')}
-          className="cursor-pointer group flex flex-col gap-1.5"
-        >
-          <div className="flex items-center justify-between min-w-[120px]">
-             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Collection Ratio</span>
-          </div>
+      {/* COLLECTION RATIO */}
+      <Card 
+        onClick={() => onDrillDown('COLLECTION')}
+        className="cursor-pointer group flex flex-col gap-4 p-6 hover:border-brand/40 transition-all"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            Collection Ratio
+          </span>
+        </div>
+        <div className="space-y-1">
           <div className="flex items-baseline gap-2">
              <span className={cn(
-               "text-xl font-bold tabular-nums",
+               "text-3xl font-bold tabular-nums",
                metrics.collectionEfficiency < 90 ? "text-rose-500" : metrics.collectionEfficiency < 95 ? "text-amber-500" : "text-foreground"
              )}>
                {Number(metrics.collectionEfficiency || 0).toFixed(1)}%
              </span>
-             <span className="text-[10px] text-emerald-500/60 font-medium">↑ Target</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-500">
+              <Target className="w-3 h-3" /> Target
+            </span>
+            <span className="text-[10px] text-muted-foreground/40 font-medium ml-auto">action required</span>
           </div>
         </div>
-      </div>
+      </Card>
 
     </div>
   );
 }
+

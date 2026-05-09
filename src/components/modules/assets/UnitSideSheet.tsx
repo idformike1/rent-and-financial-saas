@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 import UnitConfigForm from './UnitConfigForm';
 import LeaseAssignmentForm from './LeaseAssignmentForm';
@@ -10,33 +10,43 @@ import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface UnitSideSheetProps {
-  propertyData: any;
+  propertyData?: any;
+  activeUnitOverride?: any;
+  isModal?: boolean;
 }
 
 type TabKey = 'CONFIGURATION' | 'OCCUPANT' | 'LEDGER';
 
-export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
+export default function UnitSideSheet({ propertyData, activeUnitOverride, isModal }: UnitSideSheetProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const unitId = searchParams.get('unitId');
-  const isOpen = !!unitId;
+  const isOpen = !!(unitId || activeUnitOverride);
 
   const activeUnit = useMemo(() => {
+    if (activeUnitOverride) return activeUnitOverride;
     if (!unitId || !propertyData?.units) return null;
     return propertyData.units.find((u: any) => u.id === unitId);
-  }, [unitId, propertyData]);
+  }, [unitId, propertyData, activeUnitOverride]);
 
   const [activeTab, setActiveTab] = useState<TabKey>('CONFIGURATION');
 
   const closeSheet = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('unitId');
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    if (isModal) {
+      router.back();
+      return;
+    }
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('unitId');
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    });
     // Reset tab state when closing so next open starts at CONFIGURATION
     setTimeout(() => setActiveTab('CONFIGURATION'), 300);
-  }, [pathname, searchParams, router]);
+  }, [pathname, searchParams, router, isModal]);
 
   if (!isOpen) return null;
 
@@ -50,8 +60,9 @@ export default function UnitSideSheet({ propertyData }: UnitSideSheetProps) {
 
       {/* ── SOVEREIGN SIDE SHEET ──────────────────────────────────────────── */}
       <div className={cn(
-        "fixed right-0 top-0 h-screen w-full md:w-[40vw] max-w-[600px] border-l border-border bg-background z-50 flex flex-col shadow-2xl",
-        "animate-in slide-in-from-right duration-500 ease-in-out"
+        "fixed right-0 top-0 h-screen w-full md:w-[40vw] max-w-[600px] border-l border-border bg-background z-50 flex flex-col shadow-2xl transition-opacity duration-300",
+        "animate-in slide-in-from-right duration-500 ease-in-out",
+        isPending && "opacity-50"
       )}>
         
         {/* HEADER BAR */}

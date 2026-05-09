@@ -1,5 +1,6 @@
 import { getSovereignClient } from "@/src/lib/db";
 import { LedgerEntry, FinancialLedger, Prisma, AccountCategory, EntryStatus } from '@prisma/client';
+import { unstable_cache } from "next/cache";
 import { calculatePLMetrics, FINANCIAL_PERIODS, REVENUE_FILTER_CONTEXT } from "@/src/core/algorithms/finance";
 
 /**
@@ -18,14 +19,15 @@ export const treasuryService = {
     const db = getSovereignClient(organizationId);
     return db.ledgerEntry.findMany({
       where: {
-        organizationId
+        organizationId,
+        status: EntryStatus.ACTIVE
       },
-      orderBy: { transactionDate: 'desc' },
-      take: limit,
       include: {
         account: true,
-        tenant: true
-      }
+        expenseCategory: true
+      },
+      orderBy: { transactionDate: 'desc' },
+      take: limit
     });
   },
 
@@ -33,86 +35,129 @@ export const treasuryService = {
    * Retrieves the master ledger with complex filters.
    */
   async getMasterLedger(organizationId: string, filters: any) {
-    const db = getSovereignClient(organizationId);
-    
-    const where: any = { organizationId };
+    return unstable_cache(
+      async () => {
+        const db = getSovereignClient(organizationId);
+        
+        const where: any = { organizationId };
 
-    if (filters.query) {
-      where.description = { contains: filters.query, mode: 'insensitive' };
-    }
-    if (filters.startDate || filters.endDate) {
-      where.transactionDate = {
-        gte: filters.startDate,
-        lte: filters.endDate
-      };
-    }
-    if (filters.propertyId) where.propertyId = filters.propertyId;
-    if (filters.tenantId) where.tenantId = filters.tenantId;
-    if (filters.accountId) where.accountId = filters.accountId;
-    if (filters.category) {
-      where.account = { category: filters.category as AccountCategory };
-    }
+        if (filters.query) {
+          where.description = { contains: filters.query, mode: 'insensitive' };
+        }
+        if (filters.startDate || filters.endDate) {
+          where.transactionDate = {
+            gte: filters.startDate,
+            lte: filters.endDate
+          };
+        }
+        if (filters.propertyId) where.propertyId = filters.propertyId;
+        if (filters.tenantId) where.tenantId = filters.tenantId;
+        if (filters.OR) where.OR = filters.OR;
+        if (filters.accountId) where.accountId = filters.accountId;
+        if (filters.category) {
+          where.account = { category: filters.category as AccountCategory };
+        }
 
-    return db.ledgerEntry.findMany({
-      where,
-      include: {
-        account: true,
-        expenseCategory: true,
-        property: true,
-        tenant: true
+        const take = filters.take || 50;
+        const skip = filters.skip || 0;
+
+        const [data, total] = await Promise.all([
+          db.ledgerEntry.findMany({
+            where,
+            include: {
+              account: true,
+              expenseCategory: true,
+              property: true,
+              tenant: true
+            },
+            orderBy: { transactionDate: 'desc' },
+            skip,
+            take
+          }),
+          db.ledgerEntry.count({ where })
+        ]);
+
+        return {
+          data: JSON.parse(JSON.stringify(data)),
+          metadata: {
+            total,
+            totalPages: Math.ceil(total / take),
+            currentPage: Math.floor(skip / take) + 1
+          }
+        };
       },
-      orderBy: { transactionDate: 'desc' },
-      skip: filters.skip || 0,
-      take: filters.take || 100
-    });
+      [`org-${organizationId}-master-ledger-${JSON.stringify(filters)}`],
+      {
+        tags: [`org-${organizationId}-analytics`, `org-${organizationId}-ledger`],
+        revalidate: 300 // 5 Minutes
+      }
+    )();
   },
 
   /**
    * Materializes the Profit & Loss statement.
    */
   async getProfitAndLoss(organizationId: string, propertyId?: string) {
-    const db = getSovereignClient(organizationId);
+    return unstable_cache(
+      async () => {
+        const db = getSovereignClient(organizationId);
 
-    const entries = await db.ledgerEntry.findMany({
-      where: {
-        organizationId,
-        propertyId: propertyId || undefined
+        const [revenueAgg, expenseAgg] = await Promise.all([
+          db.ledgerEntry.aggregate({
+            _sum: { amount: true },
+            where: {
+              organizationId,
+              propertyId: propertyId || undefined,
+              status: 'ACTIVE',
+              OR: [
+                { account: { category: AccountCategory.INCOME } },
+                { expenseCategory: { ledger: { class: 'REVENUE' } } }
+              ]
+            }
+          }),
+          db.ledgerEntry.aggregate({
+            _sum: { amount: true },
+            where: {
+              organizationId,
+              propertyId: propertyId || undefined,
+              status: 'ACTIVE',
+              OR: [
+                { account: { category: AccountCategory.EXPENSE } },
+                { expenseCategory: { ledger: { class: 'EXPENSE' } } }
+              ]
+            }
+          })
+        ]);
+
+        const totalRevenue = new Prisma.Decimal(revenueAgg._sum.amount || 0);
+        const totalExpense = new Prisma.Decimal(expenseAgg._sum.amount || 0);
+        const noi = totalRevenue.minus(totalExpense);
+        const oer = totalRevenue.gt(0) ? totalExpense.dividedBy(totalRevenue).times(100) : new Prisma.Decimal(0);
+
+        return {
+          revenue: {
+            grossPotentialRent: totalRevenue.toNumber(),
+            effectiveGrossRevenue: totalRevenue.toNumber(),
+            vacancyLoss: 0
+          },
+          expenses: {
+            operating: {
+              total: totalExpense.toNumber(),
+              categories: {}
+            }
+          },
+          metrics: {
+            netOperatingIncome: noi.toNumber(),
+            operatingExpenseRatio: oer.toNumber()
+          }
+        };
       },
-      include: {
-        account: true,
-        expenseCategory: { include: { ledger: true } }
+      [`org-${organizationId}-pnl-${propertyId || 'global'}`],
+      {
+        tags: [`org-${organizationId}-analytics`],
+        revalidate: 3600 // 1 Hour
       }
-    });
-
-    const revenue = entries.filter((e: any) =>
-      e.account?.category === AccountCategory.INCOME ||
-      e.expenseCategory?.ledger?.class === 'REVENUE'
-    );
-
-    const expenses = entries.filter((e: any) =>
-      e.account?.category === AccountCategory.EXPENSE ||
-      e.expenseCategory?.ledger?.class === 'EXPENSE'
-    );
-
-    const metrics = calculatePLMetrics(revenue, expenses);
-
-    return {
-      revenue: {
-        grossPotentialRent: metrics.totalRevenue.toNumber(),
-        effectiveGrossRevenue: metrics.totalRevenue.toNumber(),
-        vacancyLoss: 0
-      },
-      expenses: {
-        operating: {
-          total: metrics.totalExpense.toNumber(),
-          categories: {}
-        }
-      },
-      metrics: {
-        netOperatingIncome: metrics.noi.toNumber(),
-        operatingExpenseRatio: metrics.oer.toNumber()
-      }
-    };
+    )();
   },
 
   /**

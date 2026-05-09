@@ -2,7 +2,13 @@ import { getCurrentSession } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'
 
-export default async function AssetsDeepRoutingLayout({ children }: { children: ReactNode }) {
+export default async function AssetsDeepRoutingLayout({ 
+  children,
+  modal 
+}: { 
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}) {
   const session = await getCurrentSession();
   if (!session) redirect('/login');
 
@@ -12,6 +18,7 @@ export default async function AssetsDeepRoutingLayout({ children }: { children: 
       <main className="w-full">
         <div className="p-8 pb-32 max-w-[1440px] mx-auto">
           {children}
+          {modal}
         </div>
       </main>
     </div>
