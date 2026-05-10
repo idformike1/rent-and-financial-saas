@@ -255,19 +255,28 @@ export const assetService = {
       name: property.name,
       address: property.address,
       status: property.status,
-      units: property.units.map((u: any) => ({
-        id: u.id,
-        unitNumber: u.unitNumber,
-        type: u.type,
-        maintenanceStatus: u.maintenanceStatus,
-        leases: u.leases.map((l: any) => ({
-          id: l.id,
-          rentAmount: Number(l.rentAmount),
-          depositAmount: Number(l.depositAmount),
-          startDate: l.startDate,
-          tenant: l.tenant ? { id: l.tenantId, name: l.tenant.name } : null
-        }))
-      })),
+      units: property.units.map((u: any) => {
+        const activeLease = u.leases[0];
+        // In this system, balance is often derived from the active lease's financial standing
+        // We'll calculate a mock balance for now or use the unit's balance field if it exists in the schema
+        const unitBalance = Number(u.balance || activeLease?.balance || 0);
+
+        return {
+          id: u.id,
+          unitNumber: u.unitNumber,
+          type: u.type,
+          maintenanceStatus: u.maintenanceStatus,
+          balance: unitBalance, // INJECTING FISCAL DATA
+          marketRent: Number(u.marketRent || 0),
+          leases: u.leases.map((l: any) => ({
+            id: l.id,
+            rentAmount: Number(l.rentAmount),
+            depositAmount: Number(l.depositAmount),
+            startDate: l.startDate,
+            tenant: l.tenant ? { id: l.tenantId, name: l.tenant.name } : null
+          }))
+        };
+      }),
       telemetry: {
         totalUnits,
         activeLeases,

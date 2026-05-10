@@ -18,6 +18,7 @@ import DomainSwitcher from '@/src/components/finova/assets/DomainSwitcher';
 import { SideSheet } from '@/src/components/system/SideSheet';
 import AssetLedgerTable from './AssetLedgerTable';
 import ExpenseFormClient from '../treasury/ExpenseFormClient';
+import AssetSwitcher from './AssetSwitcher';
 import FinancialActivityFeed from './FinancialActivityFeed';
 import { MapPin, Share2, Globe } from 'lucide-react';
 import { Card } from '@/src/components/system/Card';
@@ -148,78 +149,84 @@ export default function PropertySovereignClient({
     <div className="min-h-screen lg:h-screen bg-background text-foreground flex flex-col p-4 md:p-8 subpixel-antialiased overflow-y-auto lg:overflow-hidden">
       
       {/* ── 1. MINIMALIST HEADER ────────────────────────────────────────── */}
-      <header className="flex items-center justify-between mb-8 flex-shrink-0">
-        <div className="flex items-center gap-6">
-          <div className="space-y-2">
-            {/* Clinical Breadcrumbs */}
-            <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
-              <span className="hover:text-foreground/50 transition-colors cursor-default">PORTFOLIO</span>
-              <span>/</span>
-              <Link href="/assets" className="hover:text-foreground/50 transition-colors">ASSETS</Link>
-              <span>/</span>
-              <span className="text-foreground/60">{propertyData.name.toUpperCase()}</span>
-            </nav>
+      <header className="mb-12 flex-shrink-0 space-y-6">
+        {/* Breadcrumb Row */}
+        <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+          <span className="hover:text-foreground/50 transition-colors cursor-default">PORTFOLIO</span>
+          <span>/</span>
+          <Link href="/assets" className="hover:text-foreground/50 transition-colors">ASSETS</Link>
+          <span>/</span>
+          <AssetSwitcher 
+            currentName={propertyData.name}
+            currentId={propertyData.id}
+            allProperties={allProperties}
+          />
+        </nav>
 
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                {propertyData.name.charAt(0)}
-              </div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">{propertyData.name}</h1>
-                {propertyData.status === 'DECOMMISSIONED' ? (
-                  <Badge variant="danger" className="text-[9px] font-bold px-2 py-0.5 bg-rose-500/10 border-rose-500/20 text-rose-500 animate-pulse">DECOMMISSIONED</Badge>
-                ) : (
-                  <Badge variant="brand" className="text-[9px] font-bold px-2 py-0.5 bg-brand/10 border-brand/20 text-brand">ACTIVE</Badge>
-                )}
-              </div>
+        {/* Action Row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-5">
+            <div className="w-12 h-12 bg-brand/10 border border-brand/20 rounded-2xl flex items-center justify-center text-brand relative group transition-all hover:bg-brand/20 shadow-[0_0_20px_rgba(var(--brand-rgb),0.05)]">
+              <Building2 className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-brand/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
             
-            <div className="flex items-center gap-3 text-muted-foreground/40">
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                <p className="text-[10px] font-bold uppercase tracking-widest">{propertyData.address}</p>
+            <div className="space-y-1">
+              <div className="flex items-center gap-4">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground leading-none">{propertyData.name}</h1>
+                {propertyData.status === 'DECOMMISSIONED' ? (
+                  <Badge variant="danger" className="text-[9px] font-bold px-2 py-0.5 bg-rose-500/10 border-rose-500/20 text-rose-500 animate-pulse uppercase">DECOMMISSIONED</Badge>
+                ) : (
+                  <Badge variant="brand" className="text-[9px] font-bold px-2 py-0.5 bg-brand/10 border-brand/20 text-brand uppercase">ACTIVE</Badge>
+                )}
               </div>
-              <div className="w-1 h-1 rounded-full bg-border" />
-              <p className="text-[10px] font-bold uppercase tracking-widest">ID: {propertyData.id.slice(0, 8).toUpperCase()}</p>
+              <div className="flex items-center gap-3 text-muted-foreground/30">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest leading-none">{propertyData.address}</p>
+                </div>
+                <div className="w-1 h-1 rounded-full bg-border/40" />
+                <p className="text-[10px] font-bold uppercase tracking-widest leading-none">SID: {propertyData.id.slice(0, 8).toUpperCase()}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setIsEditAssetModalOpen(true)} 
-              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground"
-            >
-              <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
-              <Share2 className="w-3.5 h-3.5 mr-2" /> Export
-            </Button>
-          </div>
-
-          <div className="h-6 w-px bg-border/50" />
-
-          <div className="flex items-center gap-1 bg-muted/20 p-1 rounded-xl border border-border/40">
-            {(['MONTHLY', 'YEARLY', 'ALL_TIME'] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => {
-                  setTimeframe(t);
-                  router.push(`/assets/${propertyData.id}?timeframe=${t}`, { scroll: false });
-                }}
-                className={cn(
-                  "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
-                  timeframe === t 
-                    ? "bg-background text-foreground shadow-sm border border-border/50" 
-                    : "text-muted-foreground/40 hover:text-muted-foreground"
-                )}
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsEditAssetModalOpen(true)} 
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground h-9"
               >
-                {t.replace('_', ' ')}
-              </button>
-            ))}
+                <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground h-9">
+                <Share2 className="w-3.5 h-3.5 mr-2" /> Export
+              </Button>
+            </div>
+
+            <div className="h-8 w-px bg-border/40" />
+
+            <div className="flex items-center gap-1 bg-muted/20 p-1 rounded-xl border border-border/40">
+              {(['MONTHLY', 'YEARLY', 'ALL_TIME'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => {
+                    setTimeframe(t);
+                    router.push(`/assets/${propertyData.id}?timeframe=${t}`, { scroll: false });
+                  }}
+                  className={cn(
+                    "px-5 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                    timeframe === t 
+                      ? "bg-background text-foreground shadow-lg shadow-black/20 border border-border/50" 
+                      : "text-muted-foreground/40 hover:text-muted-foreground"
+                  )}
+                >
+                  {t.replace('_', ' ')}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -238,40 +245,20 @@ export default function PropertySovereignClient({
       {/* ── 3. OPERATIONAL GRID (FIXED HEIGHT) ──────────────────────────── */}
       <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 flex-grow min-h-0">
         
-        {/* Left: Units Table */}
-        <section className="flex flex-col flex-1 min-h-[300px] lg:min-h-0">
-          <Card className="p-0 overflow-hidden border border-border/40 shadow-none bg-muted/5 flex flex-col h-full">
-            <div className="p-4 border-b border-border/40 bg-muted/10 flex items-center justify-between flex-shrink-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-foreground uppercase tracking-widest">Units</h2>
-                <Badge variant="default" className="text-[9px] font-bold opacity-40">{propertyData.units?.length || 0}</Badge>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="relative w-32 md:w-48">
-                  <input 
-                    type="text" 
-                    placeholder="Search..." 
-                    className="w-full h-8 bg-muted/20 border border-border/50 rounded-lg px-3 text-[10px] font-medium outline-none focus:border-brand/40 transition-all"
-                  />
-                </div>
-                <Button 
-                  onClick={() => setIsAddUnitModalOpen(true)}
-                  disabled={propertyData.status === 'DECOMMISSIONED'}
-                  className="h-8 w-8 p-0 bg-brand hover:bg-brand/90 text-white rounded-lg shadow-lg shadow-brand/20 transition-all flex items-center justify-center disabled:opacity-20 disabled:grayscale"
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex-grow overflow-y-auto custom-scrollbar">
-              <UnitGrid units={propertyData.units} propertyId={propertyData.id} />
-            </div>
+        {/* Left: Inventory Registry */}
+        <section className="flex flex-col flex-1 min-h-[400px] lg:min-h-0">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full">
+            <UnitGrid 
+              units={propertyData.units} 
+              propertyId={propertyData.id} 
+              onAddUnit={() => setIsAddUnitModalOpen(true)}
+              disabled={propertyData.status === 'DECOMMISSIONED'}
+            />
           </Card>
         </section>
 
-        {/* Right: Financial Activity */}
-        <section className="flex flex-col flex-1 min-h-[300px] lg:min-h-0">
+        {/* Right: Fiscal Pulse */}
+        <section className="flex flex-col flex-1 min-h-[400px] lg:min-h-0">
           <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full">
             <FinancialActivityFeed 
               propertyData={propertyData}

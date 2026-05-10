@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { Filter, Receipt, Plus, Calendar, User, FileText, ChevronDown } from 'lucide-react';
+import { Filter, Receipt, Plus, Calendar, User, FileText, ChevronDown, Home, Wrench, ArrowDownRight, ArrowUpRight, Ban, Activity } from 'lucide-react';
 import { Button, Badge } from '@/src/components/finova/ui-finova';
 import { Card } from '@/src/components/system/Card';
 
@@ -18,6 +18,14 @@ const formatCurrency = (val: number) =>
     style: 'currency', 
     currency: 'USD' 
   }).format(val);
+
+const getTransactionIcon = (description: string = '', amount: number) => {
+  const desc = description.toLowerCase();
+  if (desc.includes('rent')) return Home;
+  if (desc.includes('repair') || desc.includes('maintenance') || desc.includes('service')) return Wrench;
+  if (desc.includes('refund') || desc.includes('reversal')) return Ban;
+  return amount > 0 ? ArrowDownRight : ArrowUpRight;
+};
 
 export default function FinancialActivityFeed({ 
   propertyData, 
@@ -58,107 +66,84 @@ export default function FinancialActivityFeed({
 
   return (
     <Card className="flex flex-col h-full p-0 border-none bg-transparent shadow-none">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Unified Header */}
+      <div className="flex items-center justify-between mb-8 px-1">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-muted/20 rounded-lg">
-            <FileText className="w-4 h-4 text-muted-foreground" />
+          <div className="w-8 h-8 rounded-lg bg-muted/10 border border-border/40 flex items-center justify-center">
+            <Activity className="w-4 h-4 text-brand/60" />
           </div>
-          <h2 className="text-lg font-bold text-foreground">Financial Activity</h2>
-          <Badge variant="default" className="text-[10px] font-bold opacity-60">{filteredEntries.length}</Badge>
+          <div className="space-y-0.5">
+            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Fiscal Pulse</h2>
+            <p className="text-[9px] font-medium text-muted-foreground/30 uppercase tracking-tight">{filteredEntries.length} Recorded Events</p>
+          </div>
         </div>
         <Button 
           variant="ghost" 
           size="sm" 
           disabled={disabled}
           onClick={onLogTransaction}
-          className="text-[10px] font-bold uppercase tracking-widest text-brand hover:bg-brand/5 disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
+          className="h-8 px-3 text-[9px] font-bold uppercase tracking-widest text-brand hover:bg-brand/5 border border-brand/20 rounded-lg disabled:opacity-20 transition-all"
         >
-          <Plus className="w-3 h-3 mr-1.5" /> Log Transaction
+          <Plus className="w-3 h-3 mr-1.5" /> Log Entry
         </Button>
       </div>
-      {/* Filters */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="relative group">
-          <select 
-            value={filterUnit}
-            onChange={(e) => setFilterUnit(e.target.value)}
-            className="appearance-none bg-muted/20 hover:bg-muted/30 border border-border/50 rounded-lg px-3 py-1.5 pr-8 text-[10px] font-bold text-muted-foreground outline-none transition-all cursor-pointer"
-            style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-          >
-            <option value="ALL" style={{ backgroundColor: '#000' }}>ALL UNITS</option>
-            {allUnits.map((u: any) => (
-              <option key={u.id} value={u.id} style={{ backgroundColor: '#000' }}>UNIT {u.unitNumber.replace(/^Unit\s+/i, '')}</option>
-            ))}
-          </select>
-          <ChevronDown className="w-3 h-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
-        </div>
 
-        <div className="relative group">
-          <select 
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="appearance-none bg-muted/20 hover:bg-muted/30 border border-border/50 rounded-lg px-3 py-1.5 pr-8 text-[10px] font-bold text-muted-foreground outline-none transition-all cursor-pointer"
-            style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-          >
-            <option value="ALL" style={{ backgroundColor: '#000' }}>ALL TYPES</option>
-            <option value="INCOME" style={{ backgroundColor: '#000' }}>INCOME ONLY</option>
-            <option value="EXPENSE" style={{ backgroundColor: '#000' }}>EXPENSES ONLY</option>
-          </select>
-          <ChevronDown className="w-3 h-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
-        </div>
-
-        <div className="relative group">
-          <select 
-            value={filterMonth}
-            onChange={(e) => setFilterMonth(e.target.value)}
-            className="appearance-none bg-muted/20 hover:bg-muted/30 border border-border/50 rounded-lg px-3 py-1.5 pr-8 text-[10px] font-bold text-muted-foreground outline-none transition-all cursor-pointer"
-            style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-          >
-            <option value="ALL" style={{ backgroundColor: '#000' }}>ALL TIME</option>
-            {uniqueMonths.map(m => (
-              <option key={m} value={m} style={{ backgroundColor: '#000' }}>{m.toUpperCase()}</option>
-            ))}
-          </select>
-          <ChevronDown className="w-3 h-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
-        </div>
+      {/* Synchronized Filters */}
+      <div className="flex items-center gap-2 mb-8 px-1">
+        {[
+          { value: filterUnit, setter: setFilterUnit, options: [{id: 'ALL', label: 'ALL UNITS'}, ...allUnits.map((u: any) => ({id: u.id, label: `UNIT ${u.unitNumber.replace(/^Unit\s+/i, '')}`}))] },
+          { value: filterType, setter: setFilterType, options: [{id: 'ALL', label: 'ALL TYPES'}, {id: 'INCOME', label: 'INCOME'}, {id: 'EXPENSE', label: 'EXPENSES'}] },
+          { value: filterMonth, setter: setFilterMonth, options: [{id: 'ALL', label: 'ALL TIME'}, ...uniqueMonths.map(m => ({id: m, label: m.toUpperCase()}))] }
+        ].map((filter, i) => (
+          <div key={i} className="relative group flex-1">
+            <select 
+              value={filter.value}
+              onChange={(e) => filter.setter(e.target.value)}
+              className="w-full appearance-none bg-muted/5 hover:bg-muted/10 border border-border/20 rounded-lg px-3 py-2 pr-8 text-[9px] font-bold text-muted-foreground/60 outline-none transition-all cursor-pointer focus:border-brand/40 uppercase tracking-wider"
+              style={{ backgroundColor: 'var(--background)' }}
+            >
+              {filter.options.map(opt => (
+                <option key={opt.id} value={opt.id} style={{ backgroundColor: '#0A0A0A' }}>{opt.label}</option>
+              ))}
+            </select>
+            <ChevronDown className="w-3 h-3 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity" />
+          </div>
+        ))}
       </div>
-      <div className="flex-grow overflow-y-auto space-y-6 pr-2 custom-scrollbar">
+
+      {/* Activity Feed */}
+      <div className="flex-grow overflow-y-auto space-y-2 pr-2 custom-scrollbar">
         {filteredEntries.map((entry) => {
-          const isIncome = Number(entry.amount) > 0;
+          const amount = Number(entry.amount);
+          const isIncome = amount > 0;
           const date = new Date(entry.transactionDate);
-          const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          const Icon = getTransactionIcon(entry.description, amount);
           
           return (
-            <div key={entry.id} className="group relative flex items-start justify-between border-b border-border/10 pb-4 last:border-0">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">
-                  {dateStr}
-                </span>
-                <h3 className="text-sm font-bold text-foreground group-hover:text-brand transition-colors">
-                  {entry.description || entry.expenseCategory?.name || 'Fiscal Operation'}
-                </h3>
-                <div className="flex items-center gap-2">
-                  <Badge 
-                    variant="default" 
-                    className={cn(
-                      "text-[8px] font-bold px-1.5 py-0 border",
-                      entry.type === 'CREDIT' ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/20" : "bg-muted/30 text-muted-foreground/60 border-border/50"
-                    )}
-                  >
-                    {entry.type}
-                  </Badge>
-                  <span className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-widest">
-                    {entry.status || 'SYSTEM'} NOTICE
+            <div key={entry.id} className="group relative flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.02] transition-all border border-transparent hover:border-white/5">
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  "w-10 h-10 rounded-xl flex items-center justify-center border transition-all",
+                  isIncome ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-500" : "bg-white/5 border-white/5 text-white/20"
+                )}>
+                  <Icon size={16} className="group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[9px] font-bold text-muted-foreground/20 uppercase tracking-[0.2em]">
+                    {dateStr} • {entry.type}
                   </span>
+                  <h3 className="text-[11px] font-bold text-foreground/80 tracking-tight leading-none group-hover:text-foreground transition-colors">
+                    {entry.description || entry.expenseCategory?.name || 'FISCAL OPERATION'}
+                  </h3>
                 </div>
               </div>
               <div className="text-right">
                 <span className={cn(
-                  "text-sm font-bold tabular-nums",
+                  "text-xs font-bold tabular-nums tracking-tight",
                   isIncome ? "text-emerald-500" : "text-foreground"
                 )}>
-                  {formatCurrency(Math.abs(Number(entry.amount)))}
+                  {isIncome ? '+' : ''}{formatCurrency(Math.abs(amount))}
                 </span>
               </div>
             </div>
@@ -167,13 +152,18 @@ export default function FinancialActivityFeed({
 
         {filteredEntries.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-            <div className="p-4 bg-muted/10 rounded-full">
-              <Receipt className="w-8 h-8 text-muted-foreground/20" />
+            <div className="w-16 h-16 bg-muted/5 rounded-full flex items-center justify-center border border-border/40">
+              <Ban className="w-8 h-8 text-muted-foreground/10" />
             </div>
-            <p className="text-sm font-bold text-muted-foreground/60">No activity recorded for this period</p>
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No Fiscal Events</p>
+              <p className="text-[10px] text-muted-foreground/40 font-medium uppercase tracking-tight">System is awaiting ledger ingestion.</p>
+            </div>
           </div>
         )}
       </div>
     </Card>
+
+
   );
 }
