@@ -108,11 +108,11 @@ export default function UnitSideSheet({ propertyData, activeUnitOverride, isModa
         </div>
 
         {/* VIEWPORT AREA */}
-        <div className="flex-1 overflow-y-auto p-10 space-y-10">
+        <div className="flex-1 overflow-y-auto px-6 md:px-8 py-10 space-y-10 custom-scrollbar">
           
           {activeTab === 'CONFIGURATION' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-               <UnitConfigForm activeUnit={activeUnit} />
+               <UnitConfigForm activeUnit={{ ...activeUnit, property: propertyData }} />
             </div>
           )}
 

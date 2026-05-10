@@ -1,6 +1,6 @@
 import { getSovereignClient } from "@/src/lib/db";
 import { prisma } from "@/src/lib/prisma";
-import { Property, Unit, AccountCategory, EntryStatus, Prisma } from '@prisma/client';
+import { Property, Unit, AccountCategory, EntryStatus, Prisma, MaintenanceStatus } from '@prisma/client';
 import { unstable_cache } from "next/cache";
 import { recordAuditLog } from "@/lib/audit-logger";
 
@@ -194,7 +194,10 @@ export const assetService = {
     return db.ledgerEntry.findMany({
       where: { 
         organizationId,
-        charge: { lease: { unitId } }
+        OR: [
+          { unitId },
+          { charge: { lease: { unitId } } }
+        ]
       },
       include: {
         account: true,
@@ -217,7 +220,7 @@ export const assetService = {
       where: { id: propertyId, organizationId },
       include: {
         units: {
-          where: { maintenanceStatus: { not: 'DECOMMISSIONED' } },
+          // Visibility Protocol: Show all units regardless of status
           include: {
             leases: {
               where: { isActive: true },
@@ -251,6 +254,7 @@ export const assetService = {
       id: property.id,
       name: property.name,
       address: property.address,
+      status: property.status,
       units: property.units.map((u: any) => ({
         id: u.id,
         unitNumber: u.unitNumber,
@@ -282,7 +286,7 @@ export const assetService = {
     const unit = await db.unit.findFirst({
       where: { id: unitId, organizationId },
       include: {
-        property: { select: { id: true, name: true, units: true } },
+        property: { select: { id: true, name: true, status: true, units: true } },
         leases: {
           where: { isActive: true },
           include: { tenant: { select: { name: true } } }
@@ -326,6 +330,66 @@ export const assetService = {
       if (result.count === 0) throw new Error("ERR_IDENTITY_ABSENT");
       await recordAuditLog({ action: 'UPDATE', entityType: 'PROPERTY', entityId: propertyId, metadata: payload, tx });
       return { id: propertyId, ...payload };
+    });
+  },
+
+  async decommissionProperty(propertyId: string, context: { organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    
+    return await db.$transaction(async (tx) => {
+      // 1. Bulk Update all units to DECOMMISSIONED
+      const result = await tx.unit.updateMany({
+        where: { 
+          propertyId, 
+          organizationId: context.organizationId,
+          maintenanceStatus: { not: MaintenanceStatus.DECOMMISSIONED }
+        },
+        data: { maintenanceStatus: MaintenanceStatus.DECOMMISSIONED }
+      });
+
+      // 2. Update Property Status
+      await tx.property.update({
+        where: { id: propertyId, organizationId: context.organizationId },
+        data: { status: 'DECOMMISSIONED' }
+      });
+
+      // 3. Log Governance Event
+      await recordAuditLog({
+        action: 'PROPERTY_DECOMMISSION',
+        entityType: 'PROPERTY',
+        entityId: propertyId,
+        metadata: { unitsAffected: result.count }
+      });
+
+      return { success: true, count: result.count };
+    });
+  },
+
+  async recommissionProperty(propertyId: string, context: { organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    
+    return await db.$transaction(async (tx) => {
+      // 1. Restore Property Status
+      await tx.property.update({
+        where: { id: propertyId, organizationId: context.organizationId },
+        data: { status: 'ACTIVE' }
+      });
+
+      // 2. Restore all units to OPERATIONAL
+      const result = await tx.unit.updateMany({
+        where: { propertyId, organizationId: context.organizationId },
+        data: { maintenanceStatus: MaintenanceStatus.OPERATIONAL }
+      });
+
+      // 3. Log Governance Event
+      await recordAuditLog({
+        action: 'PROPERTY_RECOMMISSION',
+        entityType: 'PROPERTY',
+        entityId: propertyId,
+        metadata: { unitsRestored: result.count }
+      });
+
+      return { success: true, count: result.count };
     });
   },
 

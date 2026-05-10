@@ -9,7 +9,7 @@ import { Button, Badge } from '@/src/components/finova/ui-finova';
 import PropertyMetricsHud from '@/src/components/finova/assets/PropertyMetricsHud';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { updateProperty, deleteProperty, createUnit } from '@/actions/asset.actions';
+import { updateProperty, deleteProperty, decommissionProperty, recommissionProperty, createUnit } from '@/actions/asset.actions';
 import { toast } from '@/lib/toast';
 import { useRouter } from 'next/navigation';
 import { getFinanceMetadataAction } from '@/actions/treasury.actions';
@@ -46,7 +46,7 @@ export default function PropertySovereignClient({
   const [drillDownType, setDrillDownType] = useState<string | null>(null);
   const [isAddUnitModalOpen, setIsAddUnitModalOpen] = useState(false);
   const [isEditAssetModalOpen, setIsEditAssetModalOpen] = useState(false);
-  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'DECOMMISSION' | 'DELETE' | null>(null);
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [governanceData, setGovernanceData] = useState<any>(null);
   const [isLoadingGov, setIsLoadingGov] = useState(false);
@@ -166,7 +166,11 @@ export default function PropertySovereignClient({
               </div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">{propertyData.name}</h1>
-                <Badge variant="brand" className="text-[9px] font-bold px-2 py-0.5 bg-brand/10 border-brand/20 text-brand">ACTIVE</Badge>
+                {propertyData.status === 'DECOMMISSIONED' ? (
+                  <Badge variant="danger" className="text-[9px] font-bold px-2 py-0.5 bg-rose-500/10 border-rose-500/20 text-rose-500 animate-pulse">DECOMMISSIONED</Badge>
+                ) : (
+                  <Badge variant="brand" className="text-[9px] font-bold px-2 py-0.5 bg-brand/10 border-brand/20 text-brand">ACTIVE</Badge>
+                )}
               </div>
             </div>
             
@@ -183,7 +187,12 @@ export default function PropertySovereignClient({
 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setIsEditAssetModalOpen(true)} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsEditAssetModalOpen(true)} 
+              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground"
+            >
               <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
             </Button>
             <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
@@ -247,7 +256,8 @@ export default function PropertySovereignClient({
                 </div>
                 <Button 
                   onClick={() => setIsAddUnitModalOpen(true)}
-                  className="h-8 w-8 p-0 bg-brand hover:bg-brand/90 text-white rounded-lg shadow-lg shadow-brand/20 transition-all flex items-center justify-center"
+                  disabled={propertyData.status === 'DECOMMISSIONED'}
+                  className="h-8 w-8 p-0 bg-brand hover:bg-brand/90 text-white rounded-lg shadow-lg shadow-brand/20 transition-all flex items-center justify-center disabled:opacity-20 disabled:grayscale"
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -267,6 +277,7 @@ export default function PropertySovereignClient({
               propertyData={propertyData}
               ledgerEntries={mainLedger}
               onLogTransaction={handleOpenLogModal}
+              disabled={propertyData.status === 'DECOMMISSIONED'}
             />
           </Card>
         </section>
@@ -306,7 +317,14 @@ export default function PropertySovereignClient({
           <div className="space-y-6">
             <h3 className="text-[10px] font-bold text-rose-500 uppercase tracking-[0.2em]">Management & Danger Zone</h3>
             
-            {propertyData.units?.some((u: any) => u.leases?.length > 0) && (
+            {propertyData.status === 'DECOMMISSIONED' ? (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-3">
+                <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
+                <p className="text-[10px] font-bold text-amber-500 leading-normal">
+                  OPERATIONAL HALT: This asset is currently decommissioned. Recommission the inventory nodes to resume financial operations and management.
+                </p>
+              </div>
+            ) : propertyData.units?.some((u: any) => u.leases?.length > 0) && (
               <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg flex items-start gap-3">
                 <div className="w-4 h-4 rounded-full bg-rose-500 flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
                 <p className="text-[10px] font-bold text-rose-500 leading-normal">
@@ -318,17 +336,78 @@ export default function PropertySovereignClient({
             <div className="space-y-3">
               <div className="p-4 rounded-xl border border-rose-500/10 bg-rose-500/5 space-y-4">
                 <div className="space-y-1">
-                  <p className="text-xs font-bold text-rose-500">Decommission Asset</p>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">Temporarily disable all financial and unit operations for this asset.</p>
+                  <p className="text-xs font-bold text-rose-500">{propertyData.status === 'DECOMMISSIONED' ? 'Recommission Asset' : 'Decommission Asset'}</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    {propertyData.status === 'DECOMMISSIONED' 
+                      ? 'Restore all units and financial operations to active status.' 
+                      : 'Temporarily disable all financial and unit operations for this asset.'}
+                  </p>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  disabled={propertyData.units?.some((u: any) => u.leases?.length > 0)}
-                  onClick={() => toast.success("Asset decommissioned. System state updated.")}
-                  className="w-full border border-rose-500/40 text-rose-500 hover:bg-rose-500/10 h-10 text-[10px] font-bold uppercase tracking-widest cursor-pointer active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  Execute Decommission
-                </Button>
+                {propertyData.status === 'DECOMMISSIONED' ? (
+                  <Button 
+                    variant="ghost" 
+                    disabled={isUpdating}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setIsUpdating(true);
+                      const res = await recommissionProperty(propertyData.id);
+                      if (res.success) {
+                        toast.success(`Asset recommissioned. ${res.count} nodes restored to inventory.`);
+                        setIsEditAssetModalOpen(false);
+                        router.refresh();
+                      } else {
+                        toast.error(res.error || "Recommission sequence failed.");
+                      }
+                      setIsUpdating(false);
+                    }}
+                    className="w-full border border-brand/40 text-brand hover:bg-brand/10 h-10 text-[10px] font-bold uppercase tracking-widest cursor-pointer active:scale-[0.98] transition-all"
+                  >
+                    {isUpdating ? 'Restoring...' : 'Execute Recommission'}
+                  </Button>
+                ) : pendingAction === 'DECOMMISSION' ? (
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={async () => {
+                        setIsUpdating(true);
+                        const res = await decommissionProperty(propertyData.id);
+                        if (res.success) {
+                          toast.success(`Asset decommissioned. ${res.count} units operational nodes suspended.`);
+                          setIsEditAssetModalOpen(false);
+                          router.refresh();
+                        } else {
+                          toast.error(res.error || "Decommission sequence failed.");
+                        }
+                        setIsUpdating(false);
+                        setPendingAction(null);
+                      }}
+                      disabled={isUpdating}
+                      className="flex-1 border-none bg-rose-500 hover:bg-rose-600 text-white h-10 text-[10px] font-bold uppercase tracking-widest"
+                    >
+                      {isUpdating ? 'Executing...' : 'Confirm'}
+                    </Button>
+                    <Button 
+                      onClick={() => setPendingAction(null)}
+                      disabled={isUpdating}
+                      variant="ghost"
+                      className="flex-1 border border-border/50 h-10 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="ghost" 
+                    disabled={isUpdating || propertyData.units?.some((u: any) => u.leases?.length > 0)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPendingAction('DECOMMISSION');
+                    }}
+                    className="w-full border border-rose-500/40 text-rose-500 hover:bg-rose-500/10 h-10 text-[10px] font-bold uppercase tracking-widest cursor-pointer active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Execute Decommission
+                  </Button>
+                )}
+
               </div>
 
               <div className="p-4 rounded-xl border border-rose-500/10 bg-rose-500/5 space-y-4">
@@ -336,18 +415,38 @@ export default function PropertySovereignClient({
                   <p className="text-xs font-bold text-rose-500">Purge / Delete Asset</p>
                   <p className="text-[10px] text-muted-foreground leading-relaxed">Permanently remove this asset and all associated unit metadata.</p>
                 </div>
-                <Button 
-                  variant="primary"
-                  disabled={propertyData.units?.some((u: any) => u.leases?.length > 0)}
-                  onClick={() => {
-                    if (confirm("CRITICAL WARNING: This will permanently delete the asset. Proceed?")) {
-                      handleArchive();
-                    }
-                  }} 
-                  className="w-full bg-rose-500 hover:bg-rose-600 text-white h-10 text-[10px] font-bold uppercase tracking-widest border-none disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  Confirm Permanent Delete
-                </Button>
+                {pendingAction === 'DELETE' ? (
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={() => {
+                        setPendingAction(null);
+                        handleArchive();
+                      }}
+                      className="flex-1 border-none bg-rose-600 hover:bg-rose-700 text-white h-10 text-[10px] font-bold uppercase tracking-widest animate-pulse"
+                    >
+                      Delete
+                    </Button>
+                    <Button 
+                      onClick={() => setPendingAction(null)}
+                      variant="ghost"
+                      className="flex-1 border border-border/50 h-10 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="primary"
+                    disabled={propertyData.units?.some((u: any) => u.leases?.length > 0)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPendingAction('DELETE');
+                    }} 
+                    className="w-full bg-rose-500 hover:bg-rose-600 text-white h-10 text-[10px] font-bold uppercase tracking-widest border-none disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Confirm Permanent Delete
+                  </Button>
+                )}
               </div>
             </div>
           </div>

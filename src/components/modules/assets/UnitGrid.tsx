@@ -39,20 +39,27 @@ export default function UnitGrid({ units = [], propertyId }: UnitGridProps) {
         </thead>
         <tbody className="divide-y divide-border/20">
           {units.map((unit) => {
+            const isDecommissioned = unit.maintenanceStatus === 'DECOMMISSIONED';
+            const isMaintenance = unit.maintenanceStatus === 'UNDER_REPAIR' || unit.maintenanceStatus === 'UNDER_MAINTENANCE';
             const isVacant = !unit.leases || unit.leases.length === 0;
-            const isMaintenance = unit.maintenanceStatus === 'UNDER_MAINTENANCE' || unit.maintenanceStatus === 'DECOMMISSIONED';
-            const isOccupied = !isVacant && !isMaintenance;
+            const isOccupied = !isVacant && !isMaintenance && !isDecommissioned;
             const unitPath = `/assets/${propertyId}/unit/${unit.id}`;
 
             return (
               <tr 
                 key={unit.id}
                 onClick={() => router.push(unitPath)}
-                className="group cursor-pointer transition-all duration-150 hover:bg-muted/30 border-b border-border/10 last:border-0"
+                className={cn(
+                  "group cursor-pointer transition-all duration-150 border-b border-border/10 last:border-0",
+                  isDecommissioned ? "bg-muted/10 opacity-60 grayscale-[0.5]" : "hover:bg-muted/30"
+                )}
               >
                 {/* ID */}
                 <td className="px-6 py-4">
-                  <span className="font-mono text-sm font-bold text-foreground tracking-tight">
+                  <span className={cn(
+                    "font-mono text-sm font-bold tracking-tight",
+                    isDecommissioned ? "text-muted-foreground" : "text-foreground"
+                  )}>
                     {unit.unitNumber.replace(/^Unit\s+/i, '')}
                   </span>
                 </td>
@@ -65,14 +72,16 @@ export default function UnitGrid({ units = [], propertyId }: UnitGridProps) {
                     </span>
                     <span className={cn(
                       "px-2 py-0.5 rounded-full text-[9px] font-bold border flex items-center gap-1.5",
+                      isDecommissioned ? "bg-rose-500/10 border-rose-500/20 text-rose-500" :
                       isMaintenance ? "bg-amber-500/5 border-amber-500/10 text-amber-500" : 
                       isVacant ? "bg-rose-500/5 border-rose-500/10 text-rose-500" :
                       "bg-emerald-500/5 border-emerald-500/10 text-emerald-500"
                     )}>
                       <div className={cn("w-1 h-1 rounded-full", 
+                        isDecommissioned ? "bg-rose-500 animate-pulse" :
                         isMaintenance ? "bg-amber-500" : isVacant ? "bg-rose-500" : "bg-emerald-500"
                       )} />
-                      {isMaintenance ? 'Maintenance' : isVacant ? 'Vacant' : 'Occupied'}
+                      {isDecommissioned ? 'Decommissioned' : isMaintenance ? 'Maintenance' : isVacant ? 'Vacant' : 'Occupied'}
                     </span>
                   </div>
                 </td>
@@ -88,13 +97,14 @@ export default function UnitGrid({ units = [], propertyId }: UnitGridProps) {
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
                     <button 
+                      disabled={isDecommissioned}
                       onClick={(e) => { e.stopPropagation(); /* edit logic */ }}
-                      className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                      className="p-1.5 hover:bg-muted rounded-md transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                     >
                       <Edit2 size={12} className="text-muted-foreground hover:text-brand" />
                     </button>
                     <button 
-                      disabled={unit.leases?.length > 0}
+                      disabled={isDecommissioned || unit.leases?.length > 0}
                       onClick={(e) => { 
                         e.stopPropagation(); 
                         if (confirm("Confirm unit decommissioning?")) {
@@ -103,14 +113,14 @@ export default function UnitGrid({ units = [], propertyId }: UnitGridProps) {
                       }}
                       className={cn(
                         "p-1.5 rounded-md transition-colors",
-                        unit.leases?.length > 0 
+                        (isDecommissioned || unit.leases?.length > 0) 
                           ? "opacity-30 cursor-not-allowed grayscale" 
                           : "hover:bg-muted cursor-pointer"
                       )}
-                      title={unit.leases?.length > 0 ? "Cannot delete occupied unit" : "Delete unit"}
+                      title={isDecommissioned ? "Unit is decommissioned" : unit.leases?.length > 0 ? "Cannot delete occupied unit" : "Delete unit"}
                     >
                       <Trash2 size={12} className={cn(
-                        unit.leases?.length > 0 ? "text-muted-foreground" : "text-muted-foreground hover:text-destructive"
+                        (isDecommissioned || unit.leases?.length > 0) ? "text-muted-foreground" : "text-muted-foreground hover:text-destructive"
                       )} />
                     </button>
                   </div>

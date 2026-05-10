@@ -7,7 +7,7 @@ import { toast } from '@/lib/toast';
 import { Check, Trash2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
-const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius-sm)] h-10 px-3 text-[13px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500 disabled:opacity-30";
+const inputClass = "w-full bg-gray-800/50 border border-gray-700 rounded-[var(--radius-sm)] h-12 px-4 text-[14px] text-[#E5E7EB] outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent font-mono transition-all placeholder:text-gray-500 disabled:opacity-30";
 const labelClass = "text-[10px] text-[#9CA3AF] uppercase tracking-widest font-bold mb-1 block";
 
 const submitAction = async (prevState: any, formData: FormData) => {
@@ -55,6 +55,7 @@ const moveOutAction = async (prevState: any, formData: FormData) => {
 export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any }) {
   const { data: session } = useSession();
   const isViewer = session?.user?.role === 'VIEWER';
+  const isDecommissioned = activeUnit?.maintenanceStatus === 'DECOMMISSIONED' || activeUnit?.property?.status === 'DECOMMISSIONED';
 
   const [state, formAction, isPending] = useActionState(submitAction, null);
   const [moveOutState, moveOutFormAction, isMoveOutPending] = useActionState(moveOutAction, null);
@@ -114,6 +115,15 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           </p>
         </div>
 
+        {isDecommissioned && (
+          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-3">
+            <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
+            <p className="text-[10px] font-bold text-amber-500 leading-normal">
+              GOVERNANCE LOCK: Asset is DECOMMISSIONED. Tenancy mutations are suspended.
+            </p>
+          </div>
+        )}
+
         <form action={moveOutFormAction} className="pt-8 border-t border-[#1F2937]">
           <input type="hidden" name="unitId" value={activeUnit.id} />
           <input type="hidden" name="leaseId" value={activeLease.id} />
@@ -121,8 +131,8 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
           <p className="text-[11px] text-destructive font-mono mb-4 opacity-50">// CRITICAL OPERATION</p>
           <button 
             type="submit"
-            disabled={isMoveOutPending || isViewer}
-            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
+            disabled={isMoveOutPending || isViewer || isDecommissioned}
+            className="flex w-full items-center justify-center gap-2 border border-destructive/20 text-destructive bg-destructive/5 rounded-[var(--radius-sm)] h-12 text-[12px] font-bold tracking-clinical hover:bg-destructive/10 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
           >
             <Trash2 size={14} />
             {isMoveOutPending ? 'Executing...' : 'Annul Lease'}
@@ -138,21 +148,33 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
   // Ingestion State Rendering
   return (
     <div className="space-y-8">
+      {isDecommissioned && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-3">
+          <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
+          <p className="text-[10px] font-bold text-amber-500 leading-normal">
+            GOVERNANCE HALT: Asset is DECOMMISSIONED. New occupant ingestion is blocked.
+          </p>
+        </div>
+      )}
       <div className="flex bg-[#1A1A24] border border-[#1F2937] p-1">
          <button 
            onClick={() => setFlowType('NEW')}
+           disabled={isDecommissioned}
            className={cn(
              "flex-1 py-3 text-[10px] font-bold tracking-widest uppercase transition-all",
-             flowType === 'NEW' ? "bg-white/10 text-white" : "text-[#9CA3AF] hover:text-[#E5E7EB]"
+             flowType === 'NEW' ? "bg-white/10 text-white" : "text-[#9CA3AF] hover:text-[#E5E7EB]",
+             isDecommissioned && "opacity-50 grayscale cursor-not-allowed"
            )}
          >
            [ NEW ONBOARDING ]
          </button>
          <button 
            onClick={() => setFlowType('EXISTING')}
+           disabled={isDecommissioned}
            className={cn(
              "flex-1 py-3 text-[10px] font-bold tracking-widest uppercase transition-all",
-             flowType === 'EXISTING' ? "bg-white/10 text-white" : "text-[#9CA3AF] hover:text-[#E5E7EB]"
+             flowType === 'EXISTING' ? "bg-white/10 text-white" : "text-[#9CA3AF] hover:text-[#E5E7EB]",
+             isDecommissioned && "opacity-50 grayscale cursor-not-allowed"
            )}
          >
            [ EXISTING TENANT ]
@@ -166,7 +188,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
         {flowType === 'EXISTING' ? (
           <div className="space-y-1">
             <label className={labelClass}>Registry Select</label>
-            <select name="tenantId" required disabled={isViewer} className={cn(inputClass, "appearance-none cursor-pointer disabled:opacity-30")}>
+            <select name="tenantId" required disabled={isViewer || isDecommissioned} className={cn(inputClass, "appearance-none cursor-pointer disabled:opacity-30")}>
               <option value="">SELECT OCCUPANT</option>
               {tenants.map(t => (
                 <option key={t.id} value={t.id} className="bg-[#12121A] text-white">
@@ -206,7 +228,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
               type="number" 
               required 
               defaultValue={Number(activeUnit.marketRent || 0)} 
-              disabled={isPending || isViewer}
+              disabled={isPending || isViewer || isDecommissioned}
               className={cn(inputClass, "tabular-nums")} 
             />
           </div>
@@ -217,7 +239,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
               type="number" 
               required 
               defaultValue={0} 
-              disabled={isPending || isViewer}
+              disabled={isPending || isViewer || isDecommissioned}
               className={cn(inputClass, "tabular-nums")} 
             />
           </div>
@@ -230,7 +252,7 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
             type="date" 
             required 
             defaultValue={new Date().toISOString().split('T')[0]} 
-            disabled={isPending || isViewer}
+            disabled={isPending || isViewer || isDecommissioned}
             className={cn(inputClass, "uppercase [color-scheme:dark]")} 
           />
         </div>
@@ -238,8 +260,8 @@ export default function LeaseAssignmentForm({ activeUnit }: { activeUnit: any })
         <div className="pt-8 flex flex-col gap-4">
           <button 
             type="submit" 
-            disabled={isPending || isViewer}
-            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-10 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
+            disabled={isPending || isViewer || isDecommissioned}
+            className="flex w-full items-center justify-center gap-2 bg-brand text-white rounded-[var(--radius-sm)] h-12 text-[12px] font-bold tracking-clinical hover:bg-brand/90 transition-colors disabled:opacity-20 disabled:grayscale cursor-pointer disabled:cursor-not-allowed"
           >
             <Check size={14} />
             {isPending ? 'Processing Ingestion...' : 'Execute Ingestion'}

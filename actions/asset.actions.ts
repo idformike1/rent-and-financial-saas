@@ -84,11 +84,57 @@ export async function deleteProperty(propertyId: string) {
   });
 }
 
+export async function decommissionProperty(propertyId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const res = await assetService.decommissionProperty(
+        propertyId,
+        { organizationId: session.organizationId }
+      );
+
+      revalidatePath('/assets');
+      revalidatePath(`/assets/${propertyId}`);
+      revalidatePath('/assets/[propertyId]', 'page');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
+      return { success: true, count: res.count };
+    } catch (e: any) {
+      console.error('[ASSET_PROPERTY_DECOMMISSION_FATAL]', e);
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}
+
+export async function recommissionProperty(propertyId: string) {
+  return runSecureServerAction('MANAGER', async (session) => {
+    try {
+      const res = await assetService.recommissionProperty(
+        propertyId,
+        { organizationId: session.organizationId }
+      );
+
+      revalidatePath('/assets');
+      revalidatePath(`/assets/${propertyId}`);
+      revalidatePath('/assets/[propertyId]', 'page');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
+      return { success: true, count: res.count };
+    } catch (e: any) {
+      console.error('[ASSET_PROPERTY_RECOMMISSION_FATAL]', e);
+      return { success: false, error: e.message || "ERR_SERVICE_LAYER_FAILURE" };
+    }
+  });
+}
+
 /* ── 2. UNIT MANAGEMENT ─────────────────────────────────────────────────── */
 
 export async function createUnit(data: { unitNumber: string, type: string, category: string, propertyId: string, marketRent?: number }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
+      // Governance Check: Block provisioning on decommissioned assets
+      const property = await assetService.getPropertySovereignView(data.propertyId, session.organizationId);
+      if (property?.status === 'DECOMMISSIONED') {
+        throw new Error("GOVERNANCE_HALT: Cannot provision inventory on a decommissioned asset.");
+      }
+
       const unit = await assetService.createUnit(
         data,
         {
@@ -114,6 +160,12 @@ export async function createUnit(data: { unitNumber: string, type: string, categ
 export async function updateUnit(unitId: string, data: { maintenanceStatus?: MaintenanceStatus, marketRent?: number, propertyId?: string, unitNumber?: string, type?: string, category?: string }) {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
+      // Governance Check: Block unit configuration updates on decommissioned assets
+      const unitDetails = await assetService.getUnitSovereignView(unitId, session.organizationId);
+      if (unitDetails?.property?.status === 'DECOMMISSIONED') {
+        throw new Error("GOVERNANCE_HALT: Cannot modify inventory on a decommissioned asset.");
+      }
+
       const unit = await assetService.updateUnit(
         unitId,
         data,

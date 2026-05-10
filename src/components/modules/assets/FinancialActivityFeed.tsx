@@ -10,6 +10,7 @@ interface FinancialActivityFeedProps {
   propertyData: any;
   ledgerEntries: any[];
   onLogTransaction: () => void;
+  disabled?: boolean;
 }
 
 const formatCurrency = (val: number) => 
@@ -21,7 +22,8 @@ const formatCurrency = (val: number) =>
 export default function FinancialActivityFeed({ 
   propertyData, 
   ledgerEntries = [], 
-  onLogTransaction 
+  onLogTransaction,
+  disabled
 }: FinancialActivityFeedProps) {
   const [filterUnit, setFilterUnit] = useState('ALL');
   const [filterType, setFilterType] = useState('ALL');
@@ -68,8 +70,9 @@ export default function FinancialActivityFeed({
         <Button 
           variant="ghost" 
           size="sm" 
+          disabled={disabled}
           onClick={onLogTransaction}
-          className="text-[10px] font-bold uppercase tracking-widest text-brand hover:bg-brand/5"
+          className="text-[10px] font-bold uppercase tracking-widest text-brand hover:bg-brand/5 disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
         >
           <Plus className="w-3 h-3 mr-1.5" /> Log Transaction
         </Button>

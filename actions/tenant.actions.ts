@@ -23,6 +23,15 @@ export interface OnboardingPayload {
 export async function submitOnboarding(data: OnboardingPayload): Promise<SystemResponse> {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
+      const { prisma } = await import('@/src/lib/prisma');
+      const unit = await prisma.unit.findUnique({ 
+        where: { id: data.unitId, organizationId: session.organizationId },
+        include: { property: { select: { status: true } } }
+      });
+      if (unit?.maintenanceStatus === 'DECOMMISSIONED' || unit?.property?.status === 'DECOMMISSIONED') {
+        throw new Error("GOVERNANCE_HALT: Cannot onboard tenants to decommissioned assets.");
+      }
+
       const result = await tenantService.submitOnboarding(
         data,
         { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }

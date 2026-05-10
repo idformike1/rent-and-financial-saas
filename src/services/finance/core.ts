@@ -21,6 +21,7 @@ export async function createBalancedTransaction(
       type: 'DEBIT' | 'CREDIT';
       tenantId?: string;
       propertyId?: string;
+      unitId?: string;
       expenseCategoryId?: string;
       payee?: string;
       paymentMode?: PaymentMode;
@@ -82,6 +83,7 @@ export async function createBalancedTransaction(
           description: payload.description,
           tenantId: entry.tenantId,
           propertyId: entry.propertyId,
+          unitId: entry.unitId,
           expenseCategoryId: entry.expenseCategoryId,
           payee: entry.payee,
           paymentMode: entry.paymentMode || PaymentMode.CASH,
@@ -171,6 +173,7 @@ export async function logExpenseService(
     ledgerId: string;
     type: 'INCOME' | 'EXPENSE';
     propertyId?: string;
+    unitId?: string;
     expenseCategoryId: string;
     paymentMode: string;
   },
@@ -207,6 +210,7 @@ export async function logExpenseService(
           amount: new Prisma.Decimal(payload.amount).abs(),
           payee: payload.payee,
           propertyId: payload.propertyId,
+          unitId: payload.unitId,
           expenseCategoryId: payload.expenseCategoryId,
           paymentMode: payload.paymentMode as any
         },
@@ -216,6 +220,7 @@ export async function logExpenseService(
           amount: new Prisma.Decimal(payload.amount).abs(),
           payee: payload.payee,
           propertyId: payload.propertyId,
+          unitId: payload.unitId,
           expenseCategoryId: payload.expenseCategoryId,
           paymentMode: payload.paymentMode as any
         }

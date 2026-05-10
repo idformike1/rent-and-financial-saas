@@ -49,6 +49,26 @@ export async function logExpense(formData: FormData) {
   return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const { logExpenseService } = await import('@/src/services/finance');
+      const { assetService } = await import('@/src/services/asset.service');
+      
+      const propertyId = formData.get('propertyId') as string;
+      const unitId = formData.get('unitId') as string;
+
+      if (propertyId) {
+        const property = await assetService.getPropertySovereignView(propertyId, session.organizationId);
+        if (property?.status === 'DECOMMISSIONED') {
+          throw new Error("GOVERNANCE_HALT: Financial ledger is locked for decommissioned properties.");
+        }
+      }
+
+      if (unitId) {
+        const { prisma } = await import('@/src/lib/prisma');
+        const unit = await prisma.unit.findUnique({ where: { id: unitId, organizationId: session.organizationId } });
+        if (unit?.maintenanceStatus === 'DECOMMISSIONED') {
+          throw new Error("GOVERNANCE_HALT: Financial ledger is locked for decommissioned units.");
+        }
+      }
+
       const result = await logExpenseService(
         {
           amount: parseFloat(formData.get('amount') as string),
@@ -57,6 +77,7 @@ export async function logExpense(formData: FormData) {
           ledgerId: formData.get('scope') as string,
           type: (formData.get('type') as string || 'EXPENSE') as any,
           propertyId: formData.get('propertyId') as string || undefined,
+          unitId: formData.get('unitId') as string || undefined,
           expenseCategoryId: formData.get('subCategoryId') as string || formData.get('parentCategoryId') as string,
           paymentMode: formData.get('paymentMode') as any
         },
@@ -95,8 +116,30 @@ export async function processPayment(payload: any) {
   return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
       const { processPaymentService } = await import('@/src/services/finance');
+      const { prisma } = await import('@/src/lib/prisma');
+
+      // Governance Check: Verify Unit/Property status
+      if (payload.unitId) {
+        const unit = await prisma.unit.findUnique({ 
+          where: { id: payload.unitId, organizationId: session.organizationId },
+          include: { property: { select: { status: true } } }
+        });
+        if (unit?.maintenanceStatus === 'DECOMMISSIONED' || unit?.property?.status === 'DECOMMISSIONED') {
+          throw new Error("GOVERNANCE_HALT: Financial transactions are suspended for decommissioned assets.");
+        }
+      } else if (payload.tenantId) {
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: payload.tenantId, organizationId: session.organizationId },
+          include: { leases: { where: { isActive: true }, include: { unit: { include: { property: { select: { status: true } } } } } } }
+        });
+        const activeUnit = tenant?.leases[0]?.unit;
+        if (activeUnit?.maintenanceStatus === 'DECOMMISSIONED' || activeUnit?.property?.status === 'DECOMMISSIONED') {
+          throw new Error("GOVERNANCE_HALT: Financial transactions are suspended for decommissioned assets.");
+        }
+      }
+
       const result = await processPaymentService(
-        { ...payload, idempotencyKey },
+        { ...payload, unitId: payload.unitId, idempotencyKey },
         { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
       );
       revalidatePath('/tenants');
@@ -168,6 +211,15 @@ export async function logUtilityConsumption(payload: any) {
   const idempotencyKey = `UTILITY_V2_${payload.unitId}_${payload.utilityType}_${payload.currentReading}_${Date.now()}`;
   return runIdempotentAction(idempotencyKey, 'MANAGER', async (session) => {
     try {
+      const { assetService } = await import('@/src/services/asset.service');
+      // Governance Check: Verify the property is operational
+      if (payload.unitId) {
+        const unit = await prisma.unit.findUnique({ where: { id: payload.unitId }, select: { property: { select: { status: true } } } });
+        if (unit?.property?.status === 'DECOMMISSIONED') {
+          throw new Error("GOVERNANCE_HALT: Utility reconciliation is suspended for decommissioned assets.");
+        }
+      }
+
       const result = await treasuryService.logUtilityConsumption(
         payload,
         { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }

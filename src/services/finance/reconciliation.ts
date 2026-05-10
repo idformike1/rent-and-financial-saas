@@ -17,6 +17,7 @@ export async function processPaymentService(
     amountPaid: number;
     transactionDate: Date | string;
     paymentMode: string;
+    unitId?: string;
     referenceText?: string;
     idempotencyKey?: string;
   },
@@ -78,6 +79,7 @@ export async function processPaymentService(
       type: 'DEBIT',
       amount: amountToApply,
       paymentMode: payload.paymentMode as any,
+      unitId: payload.unitId,
       referenceText: payload.referenceText
     });
 
@@ -98,6 +100,7 @@ export async function processPaymentService(
         type: 'CREDIT',
         amount: distro.amountToApply,
         tenantId: tenant.id,
+        unitId: payload.unitId,
         chargeId: distro.id,
         paymentMode: payload.paymentMode as any,
         referenceText: `Waterfall Liquidation: ${distro.id}`
@@ -111,6 +114,7 @@ export async function processPaymentService(
         type: 'CREDIT',
         amount: remainingCredit,
         tenantId: tenant.id,
+        unitId: payload.unitId,
         paymentMode: payload.paymentMode as any,
         referenceText: "Unapplied Credit / Prepaid Rent"
       });
