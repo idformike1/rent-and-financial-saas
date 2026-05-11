@@ -51,9 +51,11 @@ export default function UnitGrid({ units = [], propertyId, onAddUnit, disabled }
           <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center shadow-inner">
             <Building2 className="w-5 h-5 text-brand/80" />
           </div>
-          <div>
-            <h2 className="text-[14px] font-semibold text-foreground tracking-tight">Units Registry</h2>
-            <p className="text-[11px] text-white/20 font-medium">{filteredUnits.length} Managed Nodes</p>
+          <div className="flex flex-col">
+            <h2 className="text-[13px] font-bold text-white tracking-tight leading-none mb-1.5 uppercase">REGISTRY</h2>
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] leading-none">
+              {filteredUnits.length} NODES
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -79,103 +81,122 @@ export default function UnitGrid({ units = [], propertyId, onAddUnit, disabled }
         </div>
       </div>
 
-      {/* Slab Registry Table */}
-      <div className="flex-grow overflow-x-auto custom-scrollbar">
-        <table className="w-full border-separate border-spacing-y-1">
-          <thead>
-            <tr>
-              <th className="text-left px-6 py-2 text-[11px] font-medium text-white/20 tracking-wide whitespace-nowrap">Unit / Identifier</th>
-              <th className="text-left px-6 py-2 text-[11px] font-medium text-white/20 tracking-wide whitespace-nowrap">Operational Status</th>
-              <th className="text-left px-6 py-2 text-[11px] font-medium text-white/20 tracking-wide whitespace-nowrap">Current Occupant</th>
-              <th className="text-right px-6 py-2 text-[11px] font-medium text-white/20 tracking-wide whitespace-nowrap pr-8">Ledger Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUnits.map((unit) => {
-              const isDecommissioned = unit.maintenanceStatus === 'DECOMMISSIONED';
-              const isMaintenance = unit.maintenanceStatus === 'UNDER_REPAIR' || unit.maintenanceStatus === 'UNDER_MAINTENANCE';
-              const activeLease = unit.leases?.[0];
-              const occupantName = activeLease?.tenant?.name || 'Vacant';
-              const isVacant = !activeLease;
-              const balance = Number(unit.balance || 0);
-              const marketRent = Number(unit.marketRent || activeLease?.rentAmount || 0);
-              const unitPath = `/assets/${propertyId}/unit/${unit.id}`;
+      {/* Slab Registry (Adaptive Stack) */}
+      <div className="flex-grow space-y-2 overflow-y-auto custom-scrollbar pt-2 pr-1">
+        {/* Header (Hidden on Mobile) */}
+        <div className="hidden md:grid md:grid-cols-[1fr_auto_1.2fr_0.8fr] gap-4 px-6 mb-2">
+          <span className="text-[11px] font-medium text-white/20 tracking-tight">Unit</span>
+          <span className="text-[11px] font-medium text-white/20 tracking-tight">Status</span>
+          <span className="text-[11px] font-medium text-white/20 tracking-tight">Occupant</span>
+          <span className="text-[11px] font-medium text-white/20 tracking-tight text-right">Balance</span>
+        </div>
 
-              return (
-                <tr 
-                  key={unit.id}
-                  onClick={() => router.push(unitPath)}
-                  className={cn(
-                    "group relative transition-all duration-200 cursor-pointer",
-                    isDecommissioned ? "opacity-40 grayscale-[0.5]" : ""
-                  )}
-                >
-                  {/* Unit Column */}
-                  <td className="px-6 py-4 bg-transparent group-hover:bg-white/[0.02] border-y border-l border-transparent group-hover:border-white/10 rounded-l-xl transition-all first:border-l">
-                    <div className="flex flex-col">
-                      <span className="text-[15px] font-semibold text-white tracking-tight group-hover:text-white transition-colors">
-                        {unit.unitNumber.replace(/^Unit\s+/i, '')}
-                      </span>
-                      <span className="text-[11px] text-white/20 font-medium whitespace-nowrap">
-                        {formatCurrency(marketRent)} / month
-                      </span>
-                    </div>
-                  </td>
+        {filteredUnits.map((unit) => {
+          const isDecommissioned = unit.maintenanceStatus === 'DECOMMISSIONED';
+          const isMaintenance = unit.maintenanceStatus === 'UNDER_REPAIR' || unit.maintenanceStatus === 'UNDER_MAINTENANCE';
+          const activeLease = unit.leases?.[0];
+          const occupantName = activeLease?.tenant?.name || 'Vacant';
+          const isVacant = !activeLease;
+          const balance = Number(unit.balance || 0);
+          const marketRent = Number(unit.marketRent || activeLease?.rentAmount || 0);
+          const unitPath = `/assets/${propertyId}/unit/${unit.id}`;
 
-                  {/* Status Column */}
-                  <td className="px-6 py-4 bg-transparent group-hover:bg-white/[0.02] border-y border-transparent group-hover:border-white/10 transition-all">
-                    <div className="flex items-center">
-                      <span className={cn(
-                        "px-2.5 py-1 rounded-lg text-[10px] font-bold border flex items-center gap-2",
-                        isDecommissioned ? "bg-rose-500/5 border-rose-500/10 text-rose-500/60" :
-                        isMaintenance ? "bg-amber-500/5 border-amber-500/10 text-amber-500/60" : 
-                        isVacant ? "bg-rose-500/5 border-rose-500/10 text-rose-500/60" :
-                        "bg-emerald-500/5 border-emerald-500/10 text-emerald-500/60"
-                      )}>
-                        <div className={cn("w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]", 
-                          isDecommissioned ? "bg-rose-500" :
-                          isMaintenance ? "bg-amber-500" : isVacant ? "bg-rose-500" : "bg-emerald-500"
-                        )} />
-                        {isDecommissioned ? 'DECOMMISSIONED' : isMaintenance ? 'MAINTENANCE' : isVacant ? 'VACANT' : 'OCCUPIED'}
-                      </span>
-                    </div>
-                  </td>
+          return (
+            <div 
+              key={unit.id}
+              onClick={() => router.push(unitPath)}
+              className={cn(
+                "group relative transition-all duration-300 ease-out cursor-pointer p-4 md:px-6 md:py-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.08] hover:border-white/25 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/50",
+                isDecommissioned ? "opacity-40 grayscale-[0.5]" : ""
+              )}
+            >
+              <div className="flex flex-col md:grid md:grid-cols-[1fr_auto_1.2fr_0.8fr] gap-4 md:items-center">
+                
+                {/* 1. Unit & Market Rent */}
+                <div className="flex justify-between items-start md:flex-col md:items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[15px] font-semibold text-white tracking-tight group-hover:text-white transition-colors leading-none">
+                      {unit.unitNumber.replace(/^Unit\s+/i, '')}
+                    </span>
+                    <span className="text-[11px] text-white/20 font-medium mt-1">
+                      {formatCurrency(marketRent)} / mo
+                    </span>
+                  </div>
+                  {/* Status Badge (Visible on Mobile here, moves to its own column on Desktop) */}
+                  <div className="md:hidden">
+                    <StatusBadge isDecommissioned={isDecommissioned} isMaintenance={isMaintenance} isVacant={isVacant} />
+                  </div>
+                </div>
 
-                  {/* Occupant Column */}
-                  <td className="px-6 py-4 bg-transparent group-hover:bg-white/[0.02] border-y border-transparent group-hover:border-white/10 transition-all">
-                    <div className="flex flex-col">
-                      <span className={cn(
-                        "text-[13px] font-semibold tracking-tight",
-                        isVacant ? "text-white/10" : "text-white"
-                      )}>
-                        {occupantName}
-                      </span>
-                      <span className="text-[11px] text-white/20 font-medium whitespace-nowrap">
-                        {isVacant ? 'Open Inventory' : 'Primary Occupant'}
-                      </span>
-                    </div>
-                  </td>
+                {/* 2. Status Column (Desktop Only) */}
+                <div className="hidden md:flex">
+                  <StatusBadge isDecommissioned={isDecommissioned} isMaintenance={isMaintenance} isVacant={isVacant} />
+                </div>
 
-                  {/* Balance Column */}
-                  <td className="px-6 py-4 bg-transparent group-hover:bg-white/[0.02] border-y border-r border-transparent group-hover:border-white/10 rounded-r-xl text-right pr-8 transition-all">
-                    <div className="flex flex-col items-end">
-                      <span className={cn(
-                        "text-[16px] font-bold tabular-nums tracking-tight",
-                        balance > 0 ? "text-rose-500" : balance < 0 ? "text-emerald-500" : "text-white/40"
-                      )}>
-                        {balance === 0 ? '—' : formatCurrency(balance)}
-                      </span>
-                      <span className="text-[10px] text-white/10 font-medium uppercase tracking-wider">
-                        {balance > 0 ? 'Arrears' : balance < 0 ? 'Credit' : 'Settled'}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                {/* 3. Occupant Info */}
+                <div className="flex justify-between items-end md:flex-col md:items-start pt-2 md:pt-0 border-t border-white/5 md:border-none">
+                  <div className="flex flex-col">
+                    <span className={cn(
+                      "text-[13px] font-semibold tracking-tight leading-none",
+                      isVacant ? "text-white/10" : "text-white"
+                    )}>
+                      {occupantName}
+                    </span>
+                    <span className="text-[10px] text-white/20 font-medium mt-1 uppercase tracking-wider">
+                      {isVacant ? 'Open Inventory' : 'Primary Occupant'}
+                    </span>
+                  </div>
+                  {/* Balance (Visible on Mobile here) */}
+                  <div className="md:hidden text-right">
+                    <BalanceDisplay balance={balance} />
+                  </div>
+                </div>
+
+                {/* 4. Balance Column (Desktop Only) */}
+                <div className="hidden md:flex justify-end">
+                  <BalanceDisplay balance={balance} />
+                </div>
+
+              </div>
+            </div>
+          );
+        })}
       </div>
+    </div>
+  );
+}
+
+// Sub-components for clean adaptive rendering
+function StatusBadge({ isDecommissioned, isMaintenance, isVacant }: any) {
+  return (
+    <span className={cn(
+      "px-2 py-0.5 rounded-md text-[9px] font-bold border flex items-center gap-1.5",
+      isDecommissioned ? "bg-rose-500/5 border-rose-500/10 text-rose-500/60" :
+      isMaintenance ? "bg-amber-500/5 border-amber-500/10 text-amber-500/60" : 
+      isVacant ? "bg-rose-500/5 border-rose-500/10 text-rose-500/60" :
+      "bg-emerald-500/5 border-emerald-500/10 text-emerald-500/60"
+    )}>
+      <div className={cn("w-1 h-1 rounded-full", 
+        isDecommissioned ? "bg-rose-500" :
+        isMaintenance ? "bg-amber-500" : isVacant ? "bg-rose-500" : "bg-emerald-500"
+      )} />
+      {isDecommissioned ? 'DCM' : isMaintenance ? 'MNT' : isVacant ? 'VAC' : 'OCC'}
+    </span>
+  );
+}
+
+function BalanceDisplay({ balance }: { balance: number }) {
+  return (
+    <div className="flex flex-col items-end">
+      <span className={cn(
+        "text-[15px] font-bold tabular-nums tracking-tight leading-none",
+        balance > 0 ? "text-rose-500" : balance < 0 ? "text-emerald-500" : "text-white/30"
+      )}>
+        {balance === 0 ? '—' : (balance > 0 ? `+$${balance}` : `-$${Math.abs(balance)}`)}
+      </span>
+      <span className="text-[9px] text-white/10 font-bold uppercase tracking-[0.1em] mt-1">
+        {balance > 0 ? 'Arrears' : balance < 0 ? 'Credit' : 'Settled'}
+      </span>
     </div>
   );
 }

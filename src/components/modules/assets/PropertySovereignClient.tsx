@@ -146,7 +146,7 @@ export default function PropertySovereignClient({
   };
 
   return (
-    <div className="min-h-screen lg:h-screen bg-background text-foreground flex flex-col p-4 md:p-8 subpixel-antialiased overflow-y-auto lg:overflow-hidden">
+    <div className="h-screen overflow-hidden bg-background text-foreground flex flex-col p-4 md:p-8 subpixel-antialiased">
       
       {/* ── 1. MINIMALIST HEADER ────────────────────────────────────────── */}
       <header className="mb-12 flex-shrink-0 space-y-6">
@@ -242,12 +242,12 @@ export default function PropertySovereignClient({
         )}
       </section>
 
-      {/* ── 3. OPERATIONAL GRID (FIXED HEIGHT) ──────────────────────────── */}
-      <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 flex-grow min-h-0">
+      {/* ── 3. OPERATIONAL GRID (ABSOLUTE VIEWPORT LOCK ON XL) ──────────────────────────── */}
+      <div className="flex flex-col xl:grid xl:grid-cols-2 gap-8 xl:h-[calc(100vh-500px)] min-h-0">
         
         {/* Left: Inventory Registry */}
-        <section className="flex flex-col flex-1 min-h-[400px] lg:min-h-0">
-          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full">
+        <section className="flex flex-col h-[600px] xl:h-full min-h-0">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full overflow-hidden">
             <UnitGrid 
               units={propertyData.units} 
               propertyId={propertyData.id} 
@@ -257,9 +257,9 @@ export default function PropertySovereignClient({
           </Card>
         </section>
 
-        {/* Right: Fiscal Pulse */}
-        <section className="flex flex-col flex-1 min-h-[400px] lg:min-h-0">
-          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full">
+        {/* Right: Fiscal Ledger */}
+        <section className="flex flex-col h-[600px] xl:h-full min-h-0">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full overflow-hidden">
             <FinancialActivityFeed 
               propertyData={propertyData}
               ledgerEntries={mainLedger}
