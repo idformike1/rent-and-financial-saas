@@ -84,8 +84,8 @@ export default function FinancialActivityFeed({
           </div>
           <div className="flex flex-col">
             <h2 className="text-[13px] font-bold text-white tracking-tight leading-none mb-1.5 uppercase">LEDGER</h2>
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] leading-none">
-              {filteredEntries.length} TRANSACTIONS
+            <p className="text-[10px] font-medium text-white/40 leading-none">
+              {filteredEntries.length} transactions
             </p>
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function FinancialActivityFeed({
       </div>
 
       {/* Activity Feed (Adaptive Slabs) */}
-      <div className="flex-grow overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+      <div className="h-[70vh] xl:h-full xl:flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
         {filteredEntries.map((entry) => {
           const amount = Number(entry.amount);
           const isIncome = amount > 0;

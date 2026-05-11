@@ -47,14 +47,14 @@ export default function UnitGrid({ units = [], propertyId, onAddUnit, disabled }
     <div className="flex flex-col h-full animate-in fade-in duration-500">
       {/* Header Bar */}
       <div className="flex items-center justify-between mb-8 px-2">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center shadow-inner">
-            <Building2 className="w-5 h-5 text-brand/80" />
+        <div className="flex items-center gap-4 group">
+          <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center shadow-inner transition-colors group-hover:border-brand/30">
+            <Building2 className="w-5 h-5 text-brand/80 transition-transform duration-300 group-hover:scale-110" />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-[13px] font-bold text-white tracking-tight leading-none mb-1.5 uppercase">REGISTRY</h2>
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] leading-none">
-              {filteredUnits.length} NODES
+            <h2 className="text-[13px] font-bold text-white tracking-tight leading-none mb-1.5 uppercase">UNITS</h2>
+            <p className="text-[10px] font-medium text-white/40 leading-none">
+              {filteredUnits.length} nodes
             </p>
           </div>
         </div>
@@ -81,8 +81,8 @@ export default function UnitGrid({ units = [], propertyId, onAddUnit, disabled }
         </div>
       </div>
 
-      {/* Slab Registry (Adaptive Stack) */}
-      <div className="flex-grow space-y-2 overflow-y-auto custom-scrollbar pt-2 pr-1">
+      {/* ── 2. UNIT SLABS LIST ────────────────────────────────────────── */}
+      <div className="h-[70vh] xl:h-full xl:flex-1 overflow-y-auto custom-scrollbar pt-2 pr-1 space-y-2">
         {/* Header (Hidden on Mobile) */}
         <div className="hidden md:grid md:grid-cols-[1fr_auto_1.2fr_0.8fr] gap-4 px-6 mb-2">
           <span className="text-[11px] font-medium text-white/20 tracking-tight">Unit</span>

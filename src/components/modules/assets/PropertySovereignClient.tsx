@@ -146,7 +146,7 @@ export default function PropertySovereignClient({
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-background text-foreground flex flex-col p-4 md:p-8 subpixel-antialiased">
+    <div className="min-h-screen xl:h-screen xl:overflow-hidden bg-background text-foreground flex flex-col p-4 md:p-8 subpixel-antialiased overflow-y-auto xl:overflow-hidden">
       
       {/* ── 1. MINIMALIST HEADER ────────────────────────────────────────── */}
       <header className="mb-12 flex-shrink-0 space-y-6">
@@ -243,11 +243,11 @@ export default function PropertySovereignClient({
       </section>
 
       {/* ── 3. OPERATIONAL GRID (ABSOLUTE VIEWPORT LOCK ON XL) ──────────────────────────── */}
-      <div className="flex flex-col xl:grid xl:grid-cols-2 gap-8 xl:h-[calc(100vh-500px)] min-h-0">
+      <div className="flex flex-col xl:grid xl:grid-cols-2 gap-8 xl:h-[calc(100vh-480px)] min-h-0">
         
         {/* Left: Inventory Registry */}
-        <section className="flex flex-col h-[600px] xl:h-full min-h-0">
-          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full overflow-hidden">
+        <section className="flex flex-col h-auto xl:h-full xl:overflow-hidden">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-auto xl:h-full xl:overflow-hidden">
             <UnitGrid 
               units={propertyData.units} 
               propertyId={propertyData.id} 
@@ -258,8 +258,8 @@ export default function PropertySovereignClient({
         </section>
 
         {/* Right: Fiscal Ledger */}
-        <section className="flex flex-col h-[600px] xl:h-full min-h-0">
-          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-full overflow-hidden">
+        <section className="flex flex-col h-auto xl:h-full xl:overflow-hidden">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-auto xl:h-full xl:overflow-hidden">
             <FinancialActivityFeed 
               propertyData={propertyData}
               ledgerEntries={mainLedger}
