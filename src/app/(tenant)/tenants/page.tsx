@@ -11,7 +11,7 @@ export default async function TenantRegistryPage() {
   if (!session) redirect("/login");
 
   // Fetch data at the page level to enforce Client/Server boundary
-  const tenants = await tenantService.getTenantsWithContext(session.organizationId);
+  const { data: tenants, metadata } = await tenantService.getTenantsWithContext(session.organizationId);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col gap-6 w-full">

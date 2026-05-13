@@ -15,6 +15,13 @@ export default async function AuditLogPage({
   const session = await getCurrentSession();
   if (!session) redirect('/login');
 
+  // ── ROLE PROTECTION ──────────────────────────────────────────
+  // Only OWNERS or System Admins can view the Audit Protocol
+  if (session.role !== 'OWNER' && !session.isSystemAdmin) {
+    console.warn(`[SECURITY_BLOCKED] Audit access denied for user ${session.userId} with role ${session.role}`);
+    redirect('/home');
+  }
+
   const activeOrgId = (await getActiveWorkspaceId()) || session.organizationId;
 
   const params = await searchParams;

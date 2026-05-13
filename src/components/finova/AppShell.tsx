@@ -1,13 +1,16 @@
 'use client'
 import { useState } from 'react'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { terminateSession } from '@/actions/auth.actions'
+import { useTransition } from 'react'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import GlobalSearch from './GlobalSearch'
 import WorkspaceSwitcher from '@/src/components/Navigation/WorkspaceSwitcher'
 import { cn } from '@/lib/utils'
 import DynamicSidebar from '@/src/components/Navigation/DynamicSidebar'
-import { Menu, X, LogOut, ChevronDown, PanelLeft, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Menu, X, LogOut, ChevronDown, PanelLeft, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { 
   Popover, 
   PopoverContent, 
@@ -46,13 +49,22 @@ export default function AppShell({
   // ── AUTH ISOLATION GUARD ─────────────────────────────────────────────
   if (pathname === '/login' || pathname === '/onboarding') return <div className="w-full h-screen">{children}</div>;
 
-  const onSignOut = () => signOut({ callbackUrl: '/login' });
+  const [isPending, startTransition] = useTransition()
+  const onSignOut = () => startTransition(async () => {
+    try {
+      await terminateSession();
+    } catch (e) {
+      // Handled by Next.js
+    }
+  });
+
 
   const userMenu = (
     <UserAccountMenu 
       userName={userName} 
       userRole={userRole} 
       onSignOut={onSignOut} 
+      isPending={isPending}
     />
   );
 
@@ -141,6 +153,8 @@ export default function AppShell({
             onMobileClose={() => setIsMobileMenuOpen(false)}
             activeModule={activeModule}
             isCollapsed={isSidebarCollapsed}
+            userRole={userRole as any}
+            isSystemAdmin={session?.user?.isSystemAdmin as boolean}
           />
         </div>
 
@@ -199,7 +213,7 @@ export default function AppShell({
   )
 }
 
-function UserAccountMenu({ userName, userRole, onSignOut }: { userName: string, userRole: string, onSignOut: () => void }) {
+function UserAccountMenu({ userName, userRole, onSignOut, isPending }: { userName: string, userRole: string, onSignOut: () => void, isPending: boolean }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -220,10 +234,18 @@ function UserAccountMenu({ userName, userRole, onSignOut }: { userName: string, 
           <div className="space-y-1">
             <button 
               onClick={onSignOut}
-              className="flex items-center w-full gap-3 px-2 py-2 rounded-[var(--radius-sm)] text-clinical-muted hover:text-red-500 hover:bg-red-500/5 transition-all group"
+              disabled={isPending}
+              className={cn(
+                "flex items-center w-full gap-3 px-2 py-2 rounded-[var(--radius-sm)] text-clinical-muted hover:text-red-500 hover:bg-red-500/5 transition-all group",
+                isPending && "opacity-50 cursor-not-allowed"
+              )}
             >
-              <LogOut size={16} className="group-hover:translate-x-1 transition-transform" />
-              <span className="text-mercury-body">Sign Out</span>
+              {isPending ? (
+                <Loader2 size={16} className="animate-spin text-red-500" />
+              ) : (
+                <LogOut size={16} className="group-hover:translate-x-1 transition-transform" />
+              )}
+              <span className="text-mercury-body">{isPending ? 'Signing Out...' : 'Sign Out'}</span>
             </button>
           </div>
         </div>

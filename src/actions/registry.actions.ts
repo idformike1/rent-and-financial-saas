@@ -44,11 +44,12 @@ export async function getFinancialLedgers() {
 export async function getTransactionsByCategory(categoryId: string, dateRange: { from?: Date, to?: Date }) {
   return runSecureServerAction('VIEWER', async (session) => {
     const currentOrgId = (await getActiveWorkspaceId()) || session.organizationId;
-    return await treasuryService.getMasterLedger(currentOrgId, {
+    const response = await treasuryService.getMasterLedger(currentOrgId, {
       category: categoryId,
       startDate: dateRange.from,
       endDate: dateRange.to
     });
+    return response.data;
   }, false);
 }
 

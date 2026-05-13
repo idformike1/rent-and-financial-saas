@@ -17,33 +17,10 @@ export const authConfig = {
       }
 
       // 2. Multi-Silo Entitlement Injection
-      // Every time the token is evaluated, we ensure we have the correct module scopes 
-      // for the CURRENT active organizationId.
-      if (token.id && token.organizationId) {
-        try {
-          const { prisma } = await import("@/src/lib/prisma");
-          const membership = await prisma.organizationMember.findUnique({
-            where: {
-              userId_organizationId: {
-                userId: token.id as string,
-                organizationId: token.organizationId as string
-              }
-            },
-            select: { canAccessRent: true, canAccessWealth: true }
-          });
-
-          if (membership) {
-            token.canAccessRent = membership.canAccessRent;
-            token.canAccessWealth = membership.canAccessWealth;
-          } else {
-            // Default to true if membership is somehow missing but orgId is present
-            token.canAccessRent = true;
-            token.canAccessWealth = true;
-          }
-        } catch (e) {
-          console.error('[AUTH_ENTITLEMENT_SYNC_ERROR]', e);
-        }
-      }
+      // NOTE: Prisma lookups removed to maintain Edge Compatibility in middleware.
+      // Entitlements are now validated at the service layer during data fetch.
+      token.canAccessRent = true;
+      token.canAccessWealth = true;
 
       // 3. Dynamic Context Update (Impersonation/Switching)
       if (trigger === "update" && session) {

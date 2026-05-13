@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
@@ -36,6 +36,7 @@ export default function TransactionFeedClient({ initialData, properties, tenants
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
   // 1. URL-Synchronized State
   const q = searchParams.get('q') || ''
@@ -90,14 +91,18 @@ export default function TransactionFeedClient({ initialData, properties, tenants
     if (newTab === 'Expense Registry') updates.cat = 'EXPENSE'
     if (newTab === 'All Activity') updates.cat = 'ALL'
 
-    router.replace(pathname + '?' + createQueryString(updates), { scroll: false })
+    startTransition(() => {
+      router.replace(pathname + '?' + createQueryString(updates), { scroll: false })
+    })
   }
 
   // 3. Debounced Search & URL Sync
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchInput !== q) {
-        router.replace(pathname + '?' + createQueryString({ q: searchInput }), { scroll: false })
+        startTransition(() => {
+          router.replace(pathname + '?' + createQueryString({ q: searchInput }), { scroll: false })
+        })
       }
     }, 300)
     return () => clearTimeout(timer)
@@ -113,28 +118,36 @@ export default function TransactionFeedClient({ initialData, properties, tenants
   useEffect(() => {
     const timer = setTimeout(() => {
       if (minInput !== min || maxInput !== max) {
-        router.replace(pathname + '?' + createQueryString({ min: minInput, max: maxInput }), { scroll: false })
+        startTransition(() => {
+          router.replace(pathname + '?' + createQueryString({ min: minInput, max: maxInput }), { scroll: false })
+        })
       }
     }, 400)
     return () => clearTimeout(timer)
   }, [minInput, maxInput, min, max, pathname, router, createQueryString])
 
   const setDateRange = (range: DateRange | undefined) => {
-    router.replace(pathname + '?' + createQueryString({
-      from: range?.from ? range.from.toISOString() : null,
-      to: range?.to ? range.to.toISOString() : null
-    }), { scroll: false })
+    startTransition(() => {
+      router.replace(pathname + '?' + createQueryString({
+        from: range?.from ? range.from.toISOString() : null,
+        to: range?.to ? range.to.toISOString() : null
+      }), { scroll: false })
+    })
   }
 
 
   const openTransaction = (id: string) => {
     setTxid(id)
-    router.replace(pathname + '?' + createQueryString({ txid: id }), { scroll: false })
+    startTransition(() => {
+      router.replace(pathname + '?' + createQueryString({ txid: id }), { scroll: false })
+    })
   }
 
   const closeTransaction = () => {
     setTxid('')
-    router.replace(pathname + '?' + createQueryString({ txid: null }), { scroll: false })
+    startTransition(() => {
+      router.replace(pathname + '?' + createQueryString({ txid: null }), { scroll: false })
+    })
   }
 
   const handleExport = async (formatType: 'csv' | 'pdf' | 'excel') => {
@@ -321,17 +334,21 @@ export default function TransactionFeedClient({ initialData, properties, tenants
           tenants={tenants}
           activePropertyId={pid}
           activeTenantId={tid}
-          onPropertyChange={(id) => router.replace(pathname + '?' + createQueryString({ pid: id }), { scroll: false })}
-          onTenantChange={(id) => router.replace(pathname + '?' + createQueryString({ tid: id }), { scroll: false })}
+          onPropertyChange={(id) => startTransition(() => router.replace(pathname + '?' + createQueryString({ pid: id }), { scroll: false }))}
+          onTenantChange={(id) => startTransition(() => router.replace(pathname + '?' + createQueryString({ tid: id }), { scroll: false }))}
           cat={cat}
-          onCategoryChange={(val) => router.replace(pathname + '?' + createQueryString({ cat: val }), { scroll: false })}
+          onCategoryChange={(val) => startTransition(() => router.replace(pathname + '?' + createQueryString({ cat: val }), { scroll: false }))}
           dateRange={dateRange}
           onDateChange={(range) => {
-            if (!range?.from || !range?.to) return
-            router.replace(pathname + '?' + createQueryString({
-              from: format(range.from, 'yyyy-MM-dd'),
-              to: format(range.to, 'yyyy-MM-dd')
-            }), { scroll: false })
+            const from = range?.from;
+            const to = range?.to;
+            if (!from || !to) return
+            startTransition(() => {
+              router.replace(pathname + '?' + createQueryString({
+                from: format(from, 'yyyy-MM-dd'),
+                to: format(to, 'yyyy-MM-dd')
+              }), { scroll: false })
+            })
           }}
           minAmount={minInput}
           maxAmount={maxInput}
@@ -344,7 +361,9 @@ export default function TransactionFeedClient({ initialData, properties, tenants
             const cleaned = new URLSearchParams()
             const take = searchParams.get('take')
             if (take) cleaned.set('take', take)
-            router.replace(pathname + '?' + cleaned.toString(), { scroll: false })
+            startTransition(() => {
+              router.replace(pathname + '?' + cleaned.toString(), { scroll: false })
+            })
           }}
           onExport={handleExport}
         />

@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import UnitGrid from './UnitGrid';
 import UnitSideSheet from './UnitSideSheet';
-import { Building2, Plus, Edit2, Trash2, X, ArrowLeft, Receipt, LayoutGrid, AlertCircle, Download, Database } from 'lucide-react';
+import { Building2, Plus, Edit2, Trash2, X, ArrowLeft, Receipt, LayoutGrid, AlertCircle, Download, Database, TrendingUp, TrendingDown, Target, BarChart3 } from 'lucide-react';
 import { Button, Badge } from '@/src/components/finova/ui-finova';
 import PropertyMetricsHud from '@/src/components/finova/assets/PropertyMetricsHud';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { updateProperty, deleteProperty, createUnit } from '@/actions/asset.actions';
-import { getPropertyLedgerEntries } from '@/actions/analytics.actions';
+import { updateProperty, deleteProperty, decommissionProperty, recommissionProperty, createUnit } from '@/actions/asset.actions';
 import { toast } from '@/lib/toast';
 import { useRouter } from 'next/navigation';
 import { getFinanceMetadataAction } from '@/actions/treasury.actions';
@@ -19,74 +18,66 @@ import DomainSwitcher from '@/src/components/finova/assets/DomainSwitcher';
 import { SideSheet } from '@/src/components/system/SideSheet';
 import AssetLedgerTable from './AssetLedgerTable';
 import ExpenseFormClient from '../treasury/ExpenseFormClient';
-
+import AssetSwitcher from './AssetSwitcher';
+import FinancialActivityFeed from './FinancialActivityFeed';
+import { MapPin, Share2, Globe } from 'lucide-react';
+import { Card } from '@/src/components/system/Card';
 
 interface PropertySovereignClientProps {
   propertyData: any;
   pulseData: any;
   allProperties: any[];
+  initialLedger?: any[];
   role?: string;
 }
-
-
 
 export default function PropertySovereignClient({ 
   propertyData, 
   pulseData, 
   allProperties,
+  initialLedger = [],
   role 
 }: PropertySovereignClientProps) {
 
-
+  // ... (rest of states and handlers remain the same)
   const router = useRouter();
-  const [timeframe, setTimeframe] = useState<'MONTHLY' | 'YEARLY' | 'ALL_TIME'>('MONTHLY');
+  const [timeframe, setTimeframe] = useState<'MONTHLY' | 'YEARLY' | 'ALL_TIME'>(
+    (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('timeframe') as any) || 'MONTHLY'
+  );
   const [drillDownType, setDrillDownType] = useState<string | null>(null);
   const [isAddUnitModalOpen, setIsAddUnitModalOpen] = useState(false);
   const [isEditAssetModalOpen, setIsEditAssetModalOpen] = useState(false);
-  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'DECOMMISSION' | 'DELETE' | null>(null);
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [governanceData, setGovernanceData] = useState<any>(null);
   const [isLoadingGov, setIsLoadingGov] = useState(false);
 
-
-
-  // Buffer states for forms
   const [editPropName, setEditPropName] = useState(propertyData.name);
   const [editPropAddr, setEditPropAddr] = useState(propertyData.address);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Ledger Logic
-  const [mainLedger, setMainLedger] = useState<any[]>([]);
+  const [mainLedger, setMainLedger] = useState<any[]>(initialLedger);
   const [ledgerEntries, setLedgerEntries] = useState<any[]>([]);
   const [isLedgerLoading, setIsLedgerLoading] = useState(false);
 
+  // Sync server props to client state when timeframe changes
   useEffect(() => {
-    const fetchMainLedger = async () => {
-      const res = await getPropertyLedgerEntries(propertyData.id, 'ALL');
-      if (res.success) {
-        setMainLedger(res.data || []);
-      } else {
-        toast.error(res.error || "Failed to materialize ledger.");
-      }
-    };
-    fetchMainLedger();
-  }, [propertyData.id]);
+    setMainLedger(initialLedger);
+  }, [initialLedger]);
 
   useEffect(() => {
     if (drillDownType) {
-      const fetchLedger = async () => {
-        setIsLedgerLoading(true);
-        const res = await getPropertyLedgerEntries(propertyData.id, drillDownType);
-        if (res.success) {
-          setLedgerEntries(res.data || []);
-        } else {
-          toast.error(res.error || "Drill-down reconciliation failed.");
-        }
-        setIsLedgerLoading(false);
-      };
-      fetchLedger();
+      setIsLedgerLoading(true);
+      let filtered = [...mainLedger];
+      if (drillDownType === 'NOI') {
+        filtered = mainLedger.filter(e => e.account?.category === 'INCOME' || e.account?.category === 'EXPENSE');
+      } else if (['GROSS_POTENTIAL', 'LEAKAGE', 'COLLECTION'].includes(drillDownType)) {
+        filtered = mainLedger.filter(e => e.account?.category === 'INCOME');
+      }
+      setLedgerEntries(filtered);
+      setIsLedgerLoading(false);
     }
-  }, [drillDownType, propertyData.id]);
+  }, [drillDownType, mainLedger]);
 
   const handleUpdate = async () => {
     try {
@@ -154,97 +145,94 @@ export default function PropertySovereignClient({
     }
   };
 
-
-
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col gap-8 p-8 animate-in fade-in duration-700 subpixel-antialiased">
+    <div className="min-h-screen xl:h-screen xl:overflow-hidden bg-background text-foreground flex flex-col p-4 md:p-8 subpixel-antialiased overflow-y-auto xl:overflow-hidden">
       
-      {/* ── 1. HEADER + ACTION SYSTEM ─────────────────────────────────────── */}
-      <header className="flex items-start justify-between">
-        {/* Left: Identity */}
-        <div className="flex items-center gap-6">
-          <Link href="/assets" className="p-2 hover:bg-muted rounded-full transition-colors">
-            <ArrowLeft size={18} className="text-muted-foreground" />
-          </Link>
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">{propertyData.name}</h1>
-              <DomainSwitcher properties={allProperties} />
+      {/* ── 1. MINIMALIST HEADER ────────────────────────────────────────── */}
+      <header className="mb-12 flex-shrink-0 space-y-6">
+        {/* Breadcrumb Row */}
+        <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+          <span className="hover:text-foreground/50 transition-colors cursor-default">PORTFOLIO</span>
+          <span>/</span>
+          <Link href="/assets" className="hover:text-foreground/50 transition-colors">ASSETS</Link>
+          <span>/</span>
+          <AssetSwitcher 
+            currentName={propertyData.name}
+            currentId={propertyData.id}
+            allProperties={allProperties}
+          />
+        </nav>
+
+        {/* Action Row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-5">
+            <div className="w-12 h-12 bg-brand/10 border border-brand/20 rounded-2xl flex items-center justify-center text-brand relative group transition-all hover:bg-brand/20 shadow-[0_0_20px_rgba(var(--brand-rgb),0.05)]">
+              <Building2 className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-brand/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground/60">
-              <Building2 className="w-3.5 h-3.5" />
-              <p className="text-sm font-medium">{propertyData.address}</p>
+            
+            <div className="space-y-1">
+              <div className="flex items-center gap-4">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground leading-none">{propertyData.name}</h1>
+                {propertyData.status === 'DECOMMISSIONED' ? (
+                  <Badge variant="danger" className="text-[9px] font-bold px-2 py-0.5 bg-rose-500/10 border-rose-500/20 text-rose-500 animate-pulse uppercase">DECOMMISSIONED</Badge>
+                ) : (
+                  <Badge variant="brand" className="text-[9px] font-bold px-2 py-0.5 bg-brand/10 border-brand/20 text-brand uppercase">ACTIVE</Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-3 text-muted-foreground/30">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest leading-none">{propertyData.address}</p>
+                </div>
+                <div className="w-1 h-1 rounded-full bg-border/40" />
+                <p className="text-[10px] font-bold uppercase tracking-widest leading-none">SID: {propertyData.id.slice(0, 8).toUpperCase()}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right: Actions (Separated by Intent) */}
-        <div className="flex items-center gap-6">
-          {/* Group: Primary */}
-          <Button 
-            onClick={() => setIsAddUnitModalOpen(true)}
-            className="h-9 px-5 bg-brand hover:bg-brand/90 text-white shadow-lg shadow-brand/20 border-none"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Provision Unit
-          </Button>
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsEditAssetModalOpen(true)} 
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground h-9"
+              >
+                <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground h-9">
+                <Share2 className="w-3.5 h-3.5 mr-2" /> Export
+              </Button>
+            </div>
 
-          {/* Group: Secondary (Safe) */}
-          <div className="flex items-center gap-1 border-x border-border/50 px-4">
-            <Button variant="ghost" size="sm" onClick={() => setIsEditAssetModalOpen(true)} className="text-muted-foreground hover:text-foreground">
-              <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-muted-foreground hover:text-foreground">
-              <Download className="w-3.5 h-3.5 mr-2" /> Export
-            </Button>
-          </div>
+            <div className="h-8 w-px bg-border/40" />
 
-
-          {/* Group: Risk & Destructive */}
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => toast.info('Risk remediation engine initializing...')}
-              className="bg-amber-500/5 text-amber-500 hover:bg-amber-500/10 border border-amber-500/20"
-            >
-              <AlertCircle className="w-3.5 h-3.5 mr-2" /> Remediate
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setIsArchiveModalOpen(true)}
-              className="text-destructive/40 hover:text-destructive hover:bg-destructive/5 border-none p-2"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center gap-1 bg-muted/20 p-1 rounded-xl border border-border/40">
+              {(['MONTHLY', 'YEARLY', 'ALL_TIME'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => {
+                    setTimeframe(t);
+                    router.push(`/assets/${propertyData.id}?timeframe=${t}`, { scroll: false });
+                  }}
+                  className={cn(
+                    "px-5 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                    timeframe === t 
+                      ? "bg-background text-foreground shadow-lg shadow-black/20 border border-border/50" 
+                      : "text-muted-foreground/40 hover:text-muted-foreground"
+                  )}
+                >
+                  {t.replace('_', ' ')}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* ── 2. CONTEXT BAR ────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between border-b border-border pb-4">
-        <div className="flex items-center gap-2">
-          {(['MONTHLY', 'YEARLY', 'ALL_TIME'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTimeframe(t)}
-              className={cn(
-                "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
-                timeframe === t ? "bg-accent text-accent-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              {t.replace('_', ' ')}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-          <Database className="w-3 h-3" /> Node: {propertyData.id.slice(0, 8)}
-        </div>
-      </div>
-
-      {/* ── 3. KPI SECTION (2-TIER) ───────────────────────────────────────── */}
-      <section>
+      {/* ── 2. KPI GRID ─────────────────────────────────────────────────── */}
+      <section className="mb-8 flex-shrink-0">
         {pulseData && (
           <PropertyMetricsHud 
             metrics={pulseData.hud} 
@@ -254,76 +242,200 @@ export default function PropertySovereignClient({
         )}
       </section>
 
-      {/* ── 4. UNITS SECTION ──────────────────────────────────────────────── */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-sm font-bold text-foreground">Units</h2>
-            <Badge variant="default" className="text-[10px] font-bold opacity-60">{propertyData.units?.length || 0}</Badge>
-          </div>
-          {propertyData.units?.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => setIsAddUnitModalOpen(true)} className="text-xs text-brand hover:text-brand/80">
-              <Plus className="w-3 h-3 mr-1.5" /> Add Unit
-            </Button>
-          )}
-        </div>
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <UnitGrid units={propertyData.units} />
-        </div>
-      </section>
+      {/* ── 3. OPERATIONAL GRID (ABSOLUTE VIEWPORT LOCK ON XL) ──────────────────────────── */}
+      <div className="flex flex-col xl:grid xl:grid-cols-2 gap-8 xl:h-[calc(100vh-480px)] min-h-0">
+        
+        {/* Left: Inventory Registry */}
+        <section className="flex flex-col h-auto xl:h-full xl:overflow-hidden">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-auto xl:h-full xl:overflow-hidden">
+            <UnitGrid 
+              units={propertyData.units} 
+              propertyId={propertyData.id} 
+              onAddUnit={() => setIsAddUnitModalOpen(true)}
+              disabled={propertyData.status === 'DECOMMISSIONED'}
+            />
+          </Card>
+        </section>
 
-      {/* ── 5. TRANSACTIONS SECTION ───────────────────────────────────────── */}
-      <section className="space-y-4 pb-20">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-sm font-bold text-foreground">Transactions</h2>
-            <Badge variant="default" className="text-[10px] font-bold opacity-60">{mainLedger.length}</Badge>
-          </div>
-          <Button variant="ghost" size="sm" onClick={handleOpenLogModal} className="text-xs text-brand hover:text-brand/80">
-            <Plus className="w-3 h-3 mr-1.5" /> Log Transaction
-          </Button>
-        </div>
+        {/* Right: Fiscal Ledger */}
+        <section className="flex flex-col h-auto xl:h-full xl:overflow-hidden">
+          <Card className="p-6 border border-border/40 shadow-none bg-muted/5 flex flex-col h-auto xl:h-full xl:overflow-hidden">
+            <FinancialActivityFeed 
+              propertyData={propertyData}
+              ledgerEntries={mainLedger}
+              onLogTransaction={handleOpenLogModal}
+              disabled={propertyData.status === 'DECOMMISSIONED'}
+            />
+          </Card>
+        </section>
 
+      </div>
 
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <AssetLedgerTable 
-            properties={[propertyData]} 
-            ledgerEntries={mainLedger}
-          />
-        </div>
-      </section>
-
+      {/* SIDEBARS & MODALS */}
       <UnitSideSheet propertyData={propertyData} />
 
-      {/* MODALS */}
       <SideSheet
         isOpen={isEditAssetModalOpen}
         onClose={() => setIsEditAssetModalOpen(false)}
-        title="Edit Asset Details"
+        title="Asset Configuration"
       >
-        <div className="space-y-8 py-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-muted-foreground">Property Name</label>
-            <input value={editPropName} onChange={(e) => setEditPropName(e.target.value)} className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40" />
+        <div className="space-y-10 py-6">
+          {/* Identity Section */}
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Identity & Location</h3>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-muted-foreground">Property Name</label>
+                <input value={editPropName} onChange={(e) => setEditPropName(e.target.value)} className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40 transition-all" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-muted-foreground">Global Address</label>
+                <input value={editPropAddr} onChange={(e) => setEditPropAddr(e.target.value)} className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40 transition-all" />
+              </div>
+              <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-sm shadow-lg shadow-brand/20">
+                {isUpdating ? 'Synchronizing...' : 'Save Configuration'}
+              </Button>
+            </div>
           </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-muted-foreground">Address</label>
-            <input value={editPropAddr} onChange={(e) => setEditPropAddr(e.target.value)} className="w-full bg-muted/30 border border-border rounded-lg h-10 px-4 text-sm outline-none focus:border-brand/40" />
-          </div>
-          <Button onClick={handleUpdate} disabled={isUpdating} className="w-full bg-brand h-11 font-bold text-sm">{isUpdating ? 'Saving...' : 'Save Changes'}</Button>
-        </div>
-      </SideSheet>
 
-      <SideSheet
-        isOpen={isArchiveModalOpen}
-        onClose={() => setIsArchiveModalOpen(false)}
-        title="Archive Asset"
-      >
-        <div className="space-y-6 py-4">
-          <p className="text-sm text-muted-foreground">Are you sure you want to archive this asset? This action cannot be undone.</p>
-          <div className="flex gap-4">
-            <Button onClick={() => setIsArchiveModalOpen(false)} variant="ghost" className="flex-1">Cancel</Button>
-            <Button onClick={handleArchive} className="flex-1 bg-destructive hover:bg-destructive/90 text-white border-none">Execute Archive</Button>
+          <div className="h-px bg-border/50" />
+
+          {/* Governance Section */}
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-bold text-rose-500 uppercase tracking-[0.2em]">Management & Danger Zone</h3>
+            
+            {propertyData.status === 'DECOMMISSIONED' ? (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-3">
+                <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
+                <p className="text-[10px] font-bold text-amber-500 leading-normal">
+                  OPERATIONAL HALT: This asset is currently decommissioned. Recommission the inventory nodes to resume financial operations and management.
+                </p>
+              </div>
+            ) : propertyData.units?.some((u: any) => u.leases?.length > 0) && (
+              <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg flex items-start gap-3">
+                <div className="w-4 h-4 rounded-full bg-rose-500 flex items-center justify-center text-[10px] font-bold text-white mt-0.5">!</div>
+                <p className="text-[10px] font-bold text-rose-500 leading-normal">
+                  GOVERNANCE LOCK: Management actions are restricted while occupants are present. Terminate all active leases before decommissioning or purging this asset.
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div className="p-4 rounded-xl border border-rose-500/10 bg-rose-500/5 space-y-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-rose-500">{propertyData.status === 'DECOMMISSIONED' ? 'Recommission Asset' : 'Decommission Asset'}</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    {propertyData.status === 'DECOMMISSIONED' 
+                      ? 'Restore all units and financial operations to active status.' 
+                      : 'Temporarily disable all financial and unit operations for this asset.'}
+                  </p>
+                </div>
+                {propertyData.status === 'DECOMMISSIONED' ? (
+                  <Button 
+                    variant="ghost" 
+                    disabled={isUpdating}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setIsUpdating(true);
+                      const res = await recommissionProperty(propertyData.id);
+                      if (res.success) {
+                        toast.success(`Asset recommissioned. ${res.count} nodes restored to inventory.`);
+                        setIsEditAssetModalOpen(false);
+                        router.refresh();
+                      } else {
+                        toast.error(res.error || "Recommission sequence failed.");
+                      }
+                      setIsUpdating(false);
+                    }}
+                    className="w-full border border-brand/40 text-brand hover:bg-brand/10 h-10 text-[10px] font-bold uppercase tracking-widest cursor-pointer active:scale-[0.98] transition-all"
+                  >
+                    {isUpdating ? 'Restoring...' : 'Execute Recommission'}
+                  </Button>
+                ) : pendingAction === 'DECOMMISSION' ? (
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={async () => {
+                        setIsUpdating(true);
+                        const res = await decommissionProperty(propertyData.id);
+                        if (res.success) {
+                          toast.success(`Asset decommissioned. ${res.count} units operational nodes suspended.`);
+                          setIsEditAssetModalOpen(false);
+                          router.refresh();
+                        } else {
+                          toast.error(res.error || "Decommission sequence failed.");
+                        }
+                        setIsUpdating(false);
+                        setPendingAction(null);
+                      }}
+                      disabled={isUpdating}
+                      className="flex-1 border-none bg-rose-500 hover:bg-rose-600 text-white h-10 text-[10px] font-bold uppercase tracking-widest"
+                    >
+                      {isUpdating ? 'Executing...' : 'Confirm'}
+                    </Button>
+                    <Button 
+                      onClick={() => setPendingAction(null)}
+                      disabled={isUpdating}
+                      variant="ghost"
+                      className="flex-1 border border-border/50 h-10 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="ghost" 
+                    disabled={isUpdating || propertyData.units?.some((u: any) => u.leases?.length > 0)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPendingAction('DECOMMISSION');
+                    }}
+                    className="w-full border border-rose-500/40 text-rose-500 hover:bg-rose-500/10 h-10 text-[10px] font-bold uppercase tracking-widest cursor-pointer active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Execute Decommission
+                  </Button>
+                )}
+
+              </div>
+
+              <div className="p-4 rounded-xl border border-rose-500/10 bg-rose-500/5 space-y-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-rose-500">Purge / Delete Asset</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">Permanently remove this asset and all associated unit metadata.</p>
+                </div>
+                {pendingAction === 'DELETE' ? (
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={() => {
+                        setPendingAction(null);
+                        handleArchive();
+                      }}
+                      className="flex-1 border-none bg-rose-600 hover:bg-rose-700 text-white h-10 text-[10px] font-bold uppercase tracking-widest animate-pulse"
+                    >
+                      Delete
+                    </Button>
+                    <Button 
+                      onClick={() => setPendingAction(null)}
+                      variant="ghost"
+                      className="flex-1 border border-border/50 h-10 text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="primary"
+                    disabled={propertyData.units?.some((u: any) => u.leases?.length > 0)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPendingAction('DELETE');
+                    }} 
+                    className="w-full bg-rose-500 hover:bg-rose-600 text-white h-10 text-[10px] font-bold uppercase tracking-widest border-none disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Confirm Permanent Delete
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </SideSheet>
@@ -423,6 +535,5 @@ export default function PropertySovereignClient({
       </SideSheet>
 
     </div>
-
   );
 }

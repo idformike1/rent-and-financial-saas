@@ -16,6 +16,7 @@ model Property {
   ledgerEntries  LedgerEntry[]
   organization   Organization  @relation(fields: [organizationId], references: [id])
   units          Unit[]
+  status         PropertyStatus @default(ACTIVE)
 
   @@index([organizationId])
 }
@@ -34,6 +35,7 @@ model Unit {
   organization      Organization      @relation(fields: [organizationId], references: [id])
   property          Property          @relation(fields: [propertyId], references: [id])
   meterReadings     MeterReading[]
+  ledgerEntries     LedgerEntry[]
 
   @@index([organizationId])
 }
@@ -177,8 +179,10 @@ model LedgerEntry {
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   organization      Organization     @relation(fields: [organizationId], references: [id])
   property          Property?        @relation(fields: [propertyId], references: [id])
+  unit              Unit?            @relation(fields: [unitId], references: [id])
   tenant            Tenant?          @relation(fields: [tenantId], references: [id])
   transaction       Transaction      @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  unitId            String?
   deletedAt         DateTime?
 
   @@index([chargeId])
@@ -401,4 +405,9 @@ enum PaymentMode {
 enum EntryStatus {
   ACTIVE
   VOIDED
+}
+
+enum PropertyStatus {
+  ACTIVE
+  DECOMMISSIONED
 }

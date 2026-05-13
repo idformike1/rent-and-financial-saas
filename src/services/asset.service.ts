@@ -1,5 +1,7 @@
 import { getSovereignClient } from "@/src/lib/db";
-import { Property, Unit, AccountCategory, EntryStatus, Prisma } from '@prisma/client';
+import { prisma } from "@/src/lib/prisma";
+import { Property, Unit, AccountCategory, EntryStatus, Prisma, MaintenanceStatus } from '@prisma/client';
+import { unstable_cache } from "next/cache";
 import { recordAuditLog } from "@/lib/audit-logger";
 
 /**
@@ -73,85 +75,94 @@ export const assetService = {
    * Retrieves high-performance portfolio-level telemetry.
    */
   async getPortfolioSummary(organizationId: string): Promise<PortfolioSummary> {
-    const db = getSovereignClient(organizationId);
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    return unstable_cache(
+      async () => {
+        const db = getSovereignClient(organizationId);
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-    const properties = await db.property.findMany({
-      where: { organizationId },
-      include: {
-        ledgerEntries: {
-          where: {
-            organizationId,
-            account: { category: AccountCategory.INCOME },
-            status: EntryStatus.ACTIVE,
-            transactionDate: { gte: startOfMonth, lte: endOfMonth }
-          },
-          select: { amount: true, tenantId: true }
-        },
-        units: {
+        const properties = await db.property.findMany({
+          where: { organizationId },
           include: {
-            leases: {
-              where: { isActive: true },
-              include: { tenant: { select: { id: true, name: true } } }
+            ledgerEntries: {
+              where: {
+                organizationId,
+                account: { category: AccountCategory.INCOME },
+                status: EntryStatus.ACTIVE,
+                transactionDate: { gte: startOfMonth, lte: endOfMonth }
+              },
+              select: { amount: true, tenantId: true }
+            },
+            units: {
+              include: {
+                leases: {
+                  where: { isActive: true },
+                  include: { tenant: { select: { id: true, name: true } } }
+                }
+              }
             }
-          }
-        }
-      },
-      orderBy: { name: 'asc' }
-    });
+          },
+          orderBy: { name: 'asc' }
+        });
 
-    const mappedProperties: AssetProperty[] = properties.map((p: any) => {
-      const propCollected = p.ledgerEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
-      
-      const mappedUnits: AssetUnit[] = p.units.map((u: any) => {
-        const activeLease = u.leases[0];
-        const unitTenantId = activeLease?.tenant?.id;
-        const unitEntries = unitTenantId ? p.ledgerEntries.filter((e: any) => e.tenantId === unitTenantId) : [];
-        const unitIncome = unitEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
+        const mappedProperties: AssetProperty[] = properties.map((p: any) => {
+          const propCollected = p.ledgerEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
+          
+          const mappedUnits: AssetUnit[] = p.units.map((u: any) => {
+            const activeLease = u.leases[0];
+            const unitTenantId = activeLease?.tenant?.id;
+            const unitEntries = unitTenantId ? p.ledgerEntries.filter((e: any) => e.tenantId === unitTenantId) : [];
+            const unitIncome = unitEntries.reduce((sum: number, entry: any) => sum + Math.abs(Number(entry.amount)), 0);
 
-        let status = '[ SURVEILLANCE ]';
-        if (u.maintenanceStatus === 'OPERATIONAL' && u.leases.length > 0) {
-          status = '[ OPTIMIZED ]';
-        } else if (u.maintenanceStatus === 'DECOMMISSIONED') {
-          status = '[ CRITICAL ]';
-        }
+            let status = '[ SURVEILLANCE ]';
+            if (u.maintenanceStatus === 'OPERATIONAL' && u.leases.length > 0) {
+              status = '[ OPTIMIZED ]';
+            } else if (u.maintenanceStatus === 'DECOMMISSIONED') {
+              status = '[ CRITICAL ]';
+            }
+
+            return {
+              id: u.id,
+              unitNumber: u.unitNumber,
+              type: u.type,
+              tenantName: u.leases[0]?.tenant?.name || 'VACANT',
+              status,
+              collectedIncome: unitIncome
+            };
+          });
+
+          const activeLeasesCount = p.units.filter((u: any) => u.leases.length > 0).length;
+
+          return {
+            id: p.id,
+            name: p.name,
+            address: p.address,
+            totalUnits: p.units.length,
+            activeLeases: activeLeasesCount,
+            collectedIncome: propCollected,
+            occupancyRate: p.units.length > 0 ? (activeLeasesCount / p.units.length) * 100 : 0,
+            units: mappedUnits
+          };
+        });
+
+        const totalCapacity = mappedProperties.reduce((sum, p) => sum + p.totalUnits, 0);
+        const totalActiveLeases = mappedProperties.reduce((sum, p) => sum + p.activeLeases, 0);
 
         return {
-          id: u.id,
-          unitNumber: u.unitNumber,
-          type: u.type,
-          tenantName: u.leases[0]?.tenant?.name || 'VACANT',
-          status,
-          collectedIncome: unitIncome
+          totalAssets: mappedProperties.length,
+          totalCapacity,
+          blendedOccupancy: totalCapacity > 0 ? (totalActiveLeases / totalCapacity) * 100 : 0,
+          netCollectedIncome: mappedProperties.reduce((sum, p) => sum + p.collectedIncome, 0),
+          properties: mappedProperties
         };
-      });
-
-      const activeLeasesCount = p.units.filter((u: any) => u.leases.length > 0).length;
-
-      return {
-        id: p.id,
-        name: p.name,
-        address: p.address,
-        totalUnits: p.units.length,
-        activeLeases: activeLeasesCount,
-        collectedIncome: propCollected,
-        occupancyRate: p.units.length > 0 ? (activeLeasesCount / p.units.length) * 100 : 0,
-        units: mappedUnits
-      };
-    });
-
-    const totalCapacity = mappedProperties.reduce((sum, p) => sum + p.totalUnits, 0);
-    const totalActiveLeases = mappedProperties.reduce((sum, p) => sum + p.activeLeases, 0);
-
-    return {
-      totalAssets: mappedProperties.length,
-      totalCapacity,
-      blendedOccupancy: totalCapacity > 0 ? (totalActiveLeases / totalCapacity) * 100 : 0,
-      netCollectedIncome: mappedProperties.reduce((sum, p) => sum + p.collectedIncome, 0),
-      properties: mappedProperties
-    };
+      },
+      [`org-${organizationId}-portfolio-summary`],
+      {
+        tags: [`org-${organizationId}-analytics`],
+        revalidate: 3600 // 1 Hour
+      }
+    )();
   },
 
   /**
@@ -183,7 +194,10 @@ export const assetService = {
     return db.ledgerEntry.findMany({
       where: { 
         organizationId,
-        charge: { lease: { unitId } }
+        OR: [
+          { unitId },
+          { charge: { lease: { unitId } } }
+        ]
       },
       include: {
         account: true,
@@ -206,7 +220,7 @@ export const assetService = {
       where: { id: propertyId, organizationId },
       include: {
         units: {
-          where: { maintenanceStatus: { not: 'DECOMMISSIONED' } },
+          // Visibility Protocol: Show all units regardless of status
           include: {
             leases: {
               where: { isActive: true },
@@ -240,19 +254,29 @@ export const assetService = {
       id: property.id,
       name: property.name,
       address: property.address,
-      units: property.units.map((u: any) => ({
-        id: u.id,
-        unitNumber: u.unitNumber,
-        type: u.type,
-        maintenanceStatus: u.maintenanceStatus,
-        leases: u.leases.map((l: any) => ({
-          id: l.id,
-          rentAmount: Number(l.rentAmount),
-          depositAmount: Number(l.depositAmount),
-          startDate: l.startDate,
-          tenant: l.tenant ? { name: l.tenant.name } : null
-        }))
-      })),
+      status: property.status,
+      units: property.units.map((u: any) => {
+        const activeLease = u.leases[0];
+        // In this system, balance is often derived from the active lease's financial standing
+        // We'll calculate a mock balance for now or use the unit's balance field if it exists in the schema
+        const unitBalance = Number(u.balance || activeLease?.balance || 0);
+
+        return {
+          id: u.id,
+          unitNumber: u.unitNumber,
+          type: u.type,
+          maintenanceStatus: u.maintenanceStatus,
+          balance: unitBalance, // INJECTING FISCAL DATA
+          marketRent: Number(u.marketRent || 0),
+          leases: u.leases.map((l: any) => ({
+            id: l.id,
+            rentAmount: Number(l.rentAmount),
+            depositAmount: Number(l.depositAmount),
+            startDate: l.startDate,
+            tenant: l.tenant ? { id: l.tenantId, name: l.tenant.name } : null
+          }))
+        };
+      }),
       telemetry: {
         totalUnits,
         activeLeases,
@@ -260,6 +284,35 @@ export const assetService = {
         collectedIncome,
         portfolioValue
       }
+    };
+  },
+
+  /**
+   * Retrieves a granular view of a specific unit with its active lease context.
+   */
+  async getUnitSovereignView(unitId: string, organizationId: string) {
+    const db = getSovereignClient(organizationId);
+    const unit = await db.unit.findFirst({
+      where: { id: unitId, organizationId },
+      include: {
+        property: { select: { id: true, name: true, status: true, units: true } },
+        leases: {
+          where: { isActive: true },
+          include: { tenant: { select: { name: true } } }
+        }
+      }
+    });
+
+    if (!unit) return null;
+
+    return {
+      ...unit,
+      marketRent: Number(unit.marketRent),
+      leases: unit.leases.map((l: any) => ({
+        ...l,
+        rentAmount: Number(l.rentAmount),
+        depositAmount: Number(l.depositAmount)
+      }))
     };
   },
 
@@ -289,13 +342,83 @@ export const assetService = {
     });
   },
 
+  async decommissionProperty(propertyId: string, context: { organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    
+    return await db.$transaction(async (tx) => {
+      // 1. Bulk Update all units to DECOMMISSIONED
+      const result = await tx.unit.updateMany({
+        where: { 
+          propertyId, 
+          organizationId: context.organizationId,
+          maintenanceStatus: { not: MaintenanceStatus.DECOMMISSIONED }
+        },
+        data: { maintenanceStatus: MaintenanceStatus.DECOMMISSIONED }
+      });
+
+      // 2. Update Property Status
+      await tx.property.update({
+        where: { id: propertyId, organizationId: context.organizationId },
+        data: { status: 'DECOMMISSIONED' }
+      });
+
+      // 3. Log Governance Event
+      await recordAuditLog({
+        action: 'PROPERTY_DECOMMISSION',
+        entityType: 'PROPERTY',
+        entityId: propertyId,
+        metadata: { unitsAffected: result.count }
+      });
+
+      return { success: true, count: result.count };
+    });
+  },
+
+  async recommissionProperty(propertyId: string, context: { organizationId: string }) {
+    const db = getSovereignClient(context.organizationId);
+    
+    return await db.$transaction(async (tx) => {
+      // 1. Restore Property Status
+      await tx.property.update({
+        where: { id: propertyId, organizationId: context.organizationId },
+        data: { status: 'ACTIVE' }
+      });
+
+      // 2. Restore all units to OPERATIONAL
+      const result = await tx.unit.updateMany({
+        where: { propertyId, organizationId: context.organizationId },
+        data: { maintenanceStatus: MaintenanceStatus.OPERATIONAL }
+      });
+
+      // 3. Log Governance Event
+      await recordAuditLog({
+        action: 'PROPERTY_RECOMMISSION',
+        entityType: 'PROPERTY',
+        entityId: propertyId,
+        metadata: { unitsRestored: result.count }
+      });
+
+      return { success: true, count: result.count };
+    });
+  },
+
   async deleteProperty(propertyId: string, context: { operatorId: string, organizationId: string }) {
     const db = getSovereignClient(context.organizationId);
     return await db.$transaction(async (tx: any) => {
-      // Soft deletion is preferred for financial integrity
-      const result = await tx.property.delete({
-        where: { id: propertyId, organizationId: context.organizationId }
+      const now = new Date();
+      
+      // 1. Soft delete all associated units
+      await tx.unit.updateMany({
+        where: { propertyId, organizationId: context.organizationId },
+        data: { deletedAt: now }
       });
+
+      // 2. Soft delete the property itself
+      const result = await tx.property.update({
+        where: { id: propertyId, organizationId: context.organizationId },
+        data: { deletedAt: now }
+      });
+
       await recordAuditLog({ action: 'DELETE', entityType: 'PROPERTY', entityId: propertyId, tx });
       return result;
     });
@@ -334,27 +457,78 @@ export const assetService = {
   /**
    * Materializes real-time telemetry for a specific asset.
    */
-  async getPropertyAssetPulse(propertyId: string, organizationId: string) {
-    const db = getSovereignClient(organizationId);
+  async getPropertyAssetPulse(propertyId: string, organizationId: string, timeframe: string = 'ALL_TIME') {
+    const now = new Date();
+    let dateFilter: any = {};
 
-    const property = await db.property.findUnique({ where: { id: propertyId, organizationId } });
-    const units = await db.unit.findMany({
-      where: { propertyId, organizationId },
-      include: { leases: { where: { isActive: true }, include: { tenant: { select: { name: true } } } } }
-    });
-    const revenueAgg = await db.ledgerEntry.aggregate({
-      _sum: { amount: true },
-      where: { propertyId, organizationId, account: { category: AccountCategory.INCOME } }
-    });
-    const opexAgg = await db.ledgerEntry.aggregate({
-      _sum: { amount: true },
-      where: { propertyId, organizationId, account: { category: AccountCategory.EXPENSE } }
-    });
-    const chargeAgg = await db.charge.aggregate({
-      _sum: { amount: true, amountPaid: true },
-      where: { organizationId, lease: { unit: { propertyId } } }
-    });
+    if (timeframe === 'MONTHLY') {
+      dateFilter = {
+        transactionDate: {
+          gte: new Date(now.getFullYear(), now.getMonth(), 1),
+          lte: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+        }
+      };
+    } else if (timeframe === 'YEARLY') {
+      dateFilter = {
+        transactionDate: {
+          gte: new Date(now.getFullYear(), 0, 1),
+          lte: new Date(now.getFullYear(), 11, 31, 23, 59, 59)
+        }
+      };
+    }
 
+    // Find all active tenants for this property to include their transactions in KPIs
+    const propertyTenants = await prisma.lease.findMany({
+      where: { unit: { propertyId }, isActive: true, deletedAt: null },
+      select: { tenantId: true }
+    });
+    const tenantIds = propertyTenants.map(l => l.tenantId).filter(Boolean);
+
+    const assetFilter: any = {
+      OR: [
+        { propertyId },
+        { tenantId: { in: tenantIds } }
+      ]
+    };
+
+    const [property, units, revenueAgg, opexAgg, chargeAgg] = await Promise.all([
+      prisma.property.findUnique({ where: { id: propertyId, organizationId } }),
+      prisma.unit.findMany({
+        where: { propertyId, organizationId },
+        include: { leases: { where: { isActive: true }, include: { tenant: { select: { id: true, name: true } } } } }
+      }),
+      prisma.ledgerEntry.aggregate({
+        _sum: { amount: true },
+        where: { 
+          ...assetFilter,
+          organizationId, 
+          status: 'ACTIVE',
+          account: { category: 'INCOME' }, 
+          ...dateFilter 
+        }
+      }),
+      prisma.ledgerEntry.aggregate({
+        _sum: { amount: true },
+        where: { 
+          ...assetFilter,
+          organizationId, 
+          status: 'ACTIVE',
+          account: { category: 'EXPENSE' }, 
+          ...dateFilter 
+        }
+      }),
+      prisma.charge.aggregate({
+        _sum: { amount: true, amountPaid: true },
+        where: { 
+          organizationId, 
+          OR: [
+            { lease: { unit: { propertyId } } },
+            { tenantId: { in: tenantIds } }
+          ],
+          ...(timeframe !== 'ALL_TIME' ? { dueDate: dateFilter.transactionDate } : {})
+        }
+      })
+    ]);
 
     if (!property) throw new Error("ERR_ASSET_ABSENT");
 
@@ -366,8 +540,11 @@ export const assetService = {
     const totalPaid = Number(chargeAgg._sum.amountPaid || 0);
     const collectionEfficiency = totalCharged > 0 ? (totalPaid / totalCharged) * 100 : 100;
 
-    const grossPotential = units.reduce((sum, u) => sum + Number(u.marketRent || 0), 0);
-    const actualBilled = units.reduce((sum, u) => sum + (u.leases[0] ? Number(u.leases[0].rentAmount || 0) : 0), 0);
+    // Scale static metrics by timeframe
+    const multiplier = timeframe === 'YEARLY' ? 12 : 1;
+
+    const grossPotential = units.reduce((sum, u) => sum + Number(u.marketRent || 0), 0) * multiplier;
+    const actualBilled = units.reduce((sum, u) => sum + (u.leases[0] ? Number(u.leases[0].rentAmount || 0) : 0), 0) * multiplier;
     const leakagePercent = grossPotential > 0 ? ((grossPotential - actualBilled) / grossPotential) * 100 : 0;
 
     return {

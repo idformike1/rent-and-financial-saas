@@ -1,7 +1,7 @@
 'use server'
 
 import { runSecureServerAction } from '@/lib/auth-utils'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { SystemResponse } from '@/types'
 import { tenantService } from '@/src/services/tenant.service'
 
@@ -23,12 +23,22 @@ export interface OnboardingPayload {
 export async function submitOnboarding(data: OnboardingPayload): Promise<SystemResponse> {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
+      const { prisma } = await import('@/src/lib/prisma');
+      const unit = await prisma.unit.findUnique({ 
+        where: { id: data.unitId, organizationId: session.organizationId },
+        include: { property: { select: { status: true } } }
+      });
+      if (unit?.maintenanceStatus === 'DECOMMISSIONED' || unit?.property?.status === 'DECOMMISSIONED') {
+        throw new Error("GOVERNANCE_HALT: Cannot onboard tenants to decommissioned assets.");
+      }
+
       const result = await tenantService.submitOnboarding(
         data,
         { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
       );
       revalidatePath('/tenants');
       revalidatePath('/assets');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: "Tenancy materialized.", data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "Onboarding failed" };
@@ -57,6 +67,7 @@ export async function liquidateTenantDebt(tenantId: string) {
         { operatorId: session.userId || "OP_SYSTEM_ADMIN", organizationId: session.organizationId }
       );
       revalidatePath(`/tenants/${tenantId}`);
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: "RECONCILIATION_SUCCESS", data: result };
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -122,6 +133,7 @@ export async function addAdditionalLease(data: any) {
       );
       revalidatePath(`/tenants/${data.tenantId}`);
       revalidatePath('/assets');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: "Additional lease protocol established.", data: result };
     } catch (e: any) {
       return { success: false, message: e.message };
@@ -139,6 +151,7 @@ export async function processMoveOut(tenantId: string, leaseId: string, unitId: 
       revalidatePath(`/tenants/${tenantId}`);
       revalidatePath('/tenants');
       revalidatePath('/assets');
+      revalidateTag(`org-${session.organizationId}-analytics`, 'max');
       return { success: true, message: "Move-out protocol executed." };
     } catch (e: any) {
       return { success: false, message: e.message || "ERR_SERVICE_LAYER_FAILURE" };
@@ -149,10 +162,10 @@ export async function processMoveOut(tenantId: string, leaseId: string, unitId: 
 export async function getActiveTenants() {
   return runSecureServerAction('MANAGER', async (session) => {
     try {
-      const tenants = await tenantService.getTenantsWithContext(session.organizationId);
-      return { success: true, data: tenants.map(t => ({ id: t.id, name: t.name })) };
+      const response = await tenantService.getTenantsWithContext(session.organizationId);
+      return { success: true, data: response.data.map(t => ({ id: t.id, name: t.name })) };
     } catch (e: any) {
-      return { success: false, data: [] };
+      return { success: false, data: [], message: "ERR_SERVICE_FAILURE" };
     }
   }, false);
 }
@@ -164,7 +177,7 @@ export async function getVacantUnits() {
       const units = await assetService.getAvailableUnits(session.organizationId);
       return { success: true, data: units };
     } catch (e: any) {
-      return { success: false, data: [] };
+      return { success: false, data: [], message: "ERR_SERVICE_FAILURE" };
     }
   }, false); // Set isMutation to false for READ operations
 }

@@ -26,7 +26,7 @@ export const getSovereignClient = (organizationId: string) => {
             await tx.$executeRawUnsafe(`SELECT set_config('app.current_tenant_id', '${organizationId}', true)`);
             return query(args);
           }, {
-            timeout: 15000 // Sovereign Reliability: Extended for deep analytical aggregation
+            timeout: 30000 // Sovereign Reliability: Extended for deep analytical aggregation
           });
         },
       },

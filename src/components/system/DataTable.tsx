@@ -28,6 +28,7 @@ interface DataTableProps<T> {
   className?: string;
   sortConfig?: { key: string; direction: 'asc' | 'desc' } | null;
   onSort?: (key: string) => void;
+  isLoading?: boolean;
 }
 
 // --- HIGH-LEVEL COMPONENT ---
@@ -40,10 +41,11 @@ export function DataTable<T>({
   className,
   sortConfig,
   onSort,
+  isLoading,
 }: DataTableProps<T>) {
   return (
     <TableContainer className={className}>
-      <Table>
+      <Table className={cn(isLoading && "opacity-50 pointer-events-none transition-opacity duration-300")}>
         <THead>
           <TR isHeader>
             {columns.map((column, idx) => (
