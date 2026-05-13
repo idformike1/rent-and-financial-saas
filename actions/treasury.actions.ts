@@ -18,7 +18,16 @@ export async function getAccountLedger(accountId: string) {
       let balance = 0;
       let entries: any[] = [];
 
-      const formatD = (d: Date) => d.toISOString().split('T')[0];
+      const formatD = (d: any) => {
+        try {
+          if (!d) return null;
+          if (typeof d.toISOString === 'function') return d.toISOString().split('T')[0];
+          const date = new Date(d);
+          return isNaN(date.getTime()) ? d : date.toISOString().split('T')[0];
+        } catch (e) {
+          return d;
+        }
+      };
 
       if (accountId === 'operating') {
         const ledgerEntries = await prisma.ledgerEntry.findMany({

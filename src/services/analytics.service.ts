@@ -57,8 +57,8 @@ export async function getGlobalExecutiveMetrics(organizationId: string, periodSt
         const occupancyRate = unitCount > 0 ? (activeLeaseCount / unitCount) * 100 : 0;
 
         return {
-          noi,
-          totalArrears,
+          noi: noi.toNumber(),
+          totalArrears: totalArrears.toNumber(),
           occupancyRate: parseFloat(occupancyRate.toFixed(2))
         };
       } catch (e: any) {
@@ -98,9 +98,9 @@ export async function getCollectionVelocity(organizationId: string, periodStr: s
           : 0;
 
         return {
-          totalBilled,
-          collected,
-          remaining,
+          totalBilled: totalBilled.toNumber(),
+          collected: collected.toNumber(),
+          remaining: remaining.toNumber(),
           velocityPercentage: parseFloat(velocityPercentage.toFixed(2))
         };
       } catch (e: any) {
@@ -160,13 +160,24 @@ export async function getPropertyLedgerEntries(organizationId: string, propertyI
         const response = await treasuryService.getMasterLedger(organizationId, filters);
         const rawLedger = response.data;
         
+        const safeIso = (d: any) => {
+          try {
+            if (!d) return null;
+            if (typeof d.toISOString === 'function') return d.toISOString();
+            const date = new Date(d);
+            return isNaN(date.getTime()) ? d : date.toISOString();
+          } catch (e) {
+            return d;
+          }
+        };
+
         return rawLedger.map((entry: any) => ({
           ...entry,
           amount: Number(entry.amount),
-          transactionDate: new Date(entry.transactionDate).toISOString(),
-          createdAt: entry.createdAt ? new Date(entry.createdAt).toISOString() : null,
-          updatedAt: entry.updatedAt ? new Date(entry.updatedAt).toISOString() : null,
-          deletedAt: entry.deletedAt ? new Date(entry.deletedAt).toISOString() : null
+          transactionDate: safeIso(entry.transactionDate),
+          createdAt: safeIso(entry.createdAt),
+          updatedAt: safeIso(entry.updatedAt),
+          deletedAt: safeIso(entry.deletedAt)
         }));
       } catch (e: any) {
         console.error('[ANALYTICS_SERVICE_LEDGER_FATAL]', e);

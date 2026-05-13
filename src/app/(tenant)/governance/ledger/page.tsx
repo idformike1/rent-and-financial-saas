@@ -34,7 +34,7 @@ export default async function LedgerExplorerPage({
   const cookieStore = await cookies();
   const activeModule = (cookieStore.get('active_module_context')?.value as 'RENT' | 'WEALTH') || 'RENT';
 
-  const [ledgerData, metadata] = await Promise.all([
+  const [ledgerResponse, metadataResponse] = await Promise.all([
      getMasterLedger({
        query: params.q,
        category: params.cat,
@@ -47,19 +47,26 @@ export default async function LedgerExplorerPage({
        minAmount: params.min ? parseFloat(params.min) : undefined,
        maxAmount: params.max ? parseFloat(params.max) : undefined,
        skip: params.skip ? parseInt(params.skip) : 0,
-       take: params.take ? parseInt(params.take) : 500, // Higher default for explorer
+       take: params.take ? parseInt(params.take) : 500,
        scope: activeModule
      }),
      getLedgerFilterMetadata()
   ]);
-
-  const rawLedger = Array.isArray(ledgerData) ? ledgerData : [];
+  
+  const rawLedger = ledgerResponse.success ? (ledgerResponse.data || []) : [];
+  const rawMetadata = metadataResponse.success ? metadataResponse.data : null;
+  const metadata = {
+    properties: rawMetadata?.properties || [],
+    tenants: rawMetadata?.tenants || [],
+    accounts: rawMetadata?.ledgers || [],
+    categories: rawMetadata?.categories || []
+  };
   
   const serializedLedger = rawLedger.map((tx: any) => ({
     id: tx.id,
     description: tx.description,
     amount: tx.amount ? Number(tx.amount) : 0,
-    transactionDate: tx.transactionDate instanceof Date ? tx.transactionDate.toISOString() : tx.transactionDate,
+    transactionDate: tx.transactionDate, // Already serialized by the action
     account: { 
         id: tx.accountId, 
         name: tx.account?.name, 

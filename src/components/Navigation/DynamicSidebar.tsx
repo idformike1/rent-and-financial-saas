@@ -25,7 +25,7 @@ const PROPERTY_NAV = [
   {
     label: 'COMMAND',
     items: [
-      { name: 'Dashboard', href: '/home', icon: Home },
+      { name: 'Dashboard', href: '/dashboard', icon: Home },
       { name: 'Assets', href: '/assets', icon: Building2 },
       { name: 'Tenants', href: '/tenants', icon: Users },
     ]
@@ -48,7 +48,7 @@ const PROPERTY_NAV = [
     label: 'SYSTEM',
     items: [
       { name: 'Settings', href: '/settings/parameters', icon: Settings },
-      { name: 'Audit Panopticon', href: '/admin/audit', icon: History },
+      { name: 'Audit Panopticon', href: '/settings/audit', icon: History, requiredRole: 'OWNER' },
     ]
   }
 ]
@@ -69,7 +69,7 @@ const WEALTH_NAV = [
     items: [
       { name: 'Master Ledger', href: '/treasury', icon: Database },
       { name: 'Ledger Explorer', href: '/governance/ledger', icon: History },
-      { name: 'Internal Audit', href: '/settings/audit', icon: ShieldCheck },
+      { name: 'Internal Audit', href: '/settings/audit', icon: ShieldCheck, requiredRole: 'OWNER' },
       { name: 'System Registry', href: '/settings/registry', icon: Settings },
     ]
   }
@@ -78,15 +78,35 @@ const WEALTH_NAV = [
 export default function DynamicSidebar({ 
   onMobileClose,
   activeModule,
-  isCollapsed = false
+  isCollapsed = false,
+  userRole,
+  isSystemAdmin = false
 }: {
   onMobileClose?: () => void;
   activeModule?: 'RENT' | 'WEALTH';
   isCollapsed?: boolean;
+  userRole?: 'OWNER' | 'MANAGER' | 'ADMIN' | 'VIEWER';
+  isSystemAdmin?: boolean;
 }) {
 
   const pathname = usePathname()
-  const navGroups = activeModule === 'WEALTH' ? WEALTH_NAV : PROPERTY_NAV
+  const rawNavGroups = activeModule === 'WEALTH' ? WEALTH_NAV : PROPERTY_NAV
+
+  // ── ROLE-BASED FILTERING ───────────────────────────────────────────
+  const navGroups = rawNavGroups.map(group => ({
+    ...group,
+    items: group.items.filter(item => {
+      // If it's a system admin, they see everything
+      if (isSystemAdmin) return true;
+      
+      // If a specific role is required, check it
+      if ((item as any).requiredRole) {
+        return userRole === (item as any).requiredRole;
+      }
+      
+      return true;
+    })
+  }))
   const activeColor = activeModule === 'WEALTH' ? 'text-amber-500' : 'text-emerald-500'
   const activeBg = activeModule === 'WEALTH' ? 'bg-amber-500' : 'bg-emerald-500'
 

@@ -51,15 +51,15 @@ export default async function CommandCenterPage({ searchParams }: { searchParams
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <DashboardKPI 
           title="Net Operating Income" 
-          value={executiveMetrics.noi.toNumber()} 
+          value={executiveMetrics.noi} 
           type="currency" 
           trend="+12.4%" 
         />
         <DashboardKPI 
           title="Total Arrears" 
-          value={executiveMetrics.totalArrears.toNumber()} 
+          value={executiveMetrics.totalArrears} 
           type="currency" 
-          alert={executiveMetrics.totalArrears.gt(0)} 
+          alert={executiveMetrics.totalArrears > 0} 
         />
         <DashboardKPI 
           title="Global Occupancy" 
@@ -73,9 +73,9 @@ export default async function CommandCenterPage({ searchParams }: { searchParams
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8">
           <VelocityHeatmap data={{
-            totalBilled: collectionVelocity.totalBilled.toNumber(),
-            collected: collectionVelocity.collected.toNumber(),
-            remaining: collectionVelocity.remaining.toNumber(),
+            totalBilled: collectionVelocity.totalBilled,
+            collected: collectionVelocity.collected,
+            remaining: collectionVelocity.remaining,
             velocityPercentage: collectionVelocity.velocityPercentage
           }} />
         </div>

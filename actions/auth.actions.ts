@@ -1,9 +1,24 @@
 'use server'
-
-import { auth } from '@/auth'
+import { auth, signOut } from '@/auth'
 import { prisma } from '@/src/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { revalidatePath } from 'next/cache'
+
+/**
+ * SESSION TERMINATION PROTOCOL
+ * Forcefully destroys the server-side session and redirects to the login gate.
+ * This is the most reliable method for Next.js 15 environments.
+ */
+export async function terminateSession() {
+  try {
+    await signOut({ redirectTo: '/login' });
+  } catch (error) {
+    // NextAuth signOut throws a redirect, which is normal behavior.
+    if ((error as any).digest?.startsWith('NEXT_REDIRECT')) throw error;
+    console.error('[AUTH_SIGNOUT_FATAL]', error);
+    throw error;
+  }
+}
 
 export async function setupNewPassword(password: string) {
   const session = await auth();

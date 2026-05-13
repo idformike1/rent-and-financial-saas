@@ -23,8 +23,8 @@ export default async function ExpenseRegistryPage() {
   const entries = entriesRaw.map((e: any) => ({
     id: e.id,
     amount: Number(e.amount),
-    transactionDate: e.transactionDate?.toISOString() || null,
-    date: e.date?.toISOString() || null,
+    transactionDate: (e.transactionDate && typeof e.transactionDate.toISOString === 'function') ? e.transactionDate.toISOString() : e.transactionDate,
+    date: (e.date && typeof e.date.toISOString === 'function') ? e.date.toISOString() : e.date,
     description: e.description,
     paymentMode: e.paymentMode,
     referenceText: e.referenceText,

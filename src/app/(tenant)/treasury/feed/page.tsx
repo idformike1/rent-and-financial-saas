@@ -53,7 +53,7 @@ export default async function TransactionsPage({
     id: tx.id,
     description: tx.description,
     amount: tx.amount ? Number(tx.amount) : 0,
-    transactionDate: tx.transactionDate instanceof Date ? tx.transactionDate.toISOString() : tx.transactionDate,
+    transactionDate: (tx.transactionDate && typeof tx.transactionDate.toISOString === 'function') ? tx.transactionDate.toISOString() : tx.transactionDate,
     account: { name: tx.account?.name, category: tx.account?.category },
     expenseCategory: { name: tx.expenseCategory?.name },
     payee: tx.payee,

@@ -62,13 +62,32 @@ export async function getMasterLedger(filters?: any) {
       const rawLedger = response.data;
       
       // EXPLICIT SERIALIZATION
+      if (rawLedger && rawLedger.length > 0) {
+        console.log('[DEBUG_LEDGER_ENTRY]', {
+          id: rawLedger[0].id,
+          dateType: typeof rawLedger[0].transactionDate,
+          isDate: rawLedger[0].transactionDate instanceof Date,
+          hasIso: typeof rawLedger[0].transactionDate?.toISOString === 'function'
+        });
+      }
+      const safeIso = (d: any) => {
+        try {
+          if (!d) return null;
+          if (typeof d.toISOString === 'function') return d.toISOString();
+          const date = new Date(d);
+          return isNaN(date.getTime()) ? d : date.toISOString();
+        } catch (e) {
+          return d;
+        }
+      };
+
       const serializedData = rawLedger.map((entry: any) => ({
         ...entry,
         amount: Number(entry.amount),
-        transactionDate: entry.transactionDate.toISOString(),
-        createdAt: entry.createdAt?.toISOString(),
-        updatedAt: entry.updatedAt?.toISOString(),
-        deletedAt: entry.deletedAt?.toISOString() || null
+        transactionDate: safeIso(entry.transactionDate),
+        createdAt: safeIso(entry.createdAt),
+        updatedAt: safeIso(entry.updatedAt),
+        deletedAt: safeIso(entry.deletedAt)
       }));
 
       return { success: true, data: serializedData, metadata: response.metadata };

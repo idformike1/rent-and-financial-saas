@@ -22,8 +22,12 @@ export function serializeData<T>(data: T): T {
   }
 
   // 3. Date Object Normalization
-  if (data instanceof Date) {
-    return data.toISOString() as unknown as T;
+  if (data instanceof Date || (typeof (data as any).toISOString === 'function')) {
+    try {
+      return (data as any).toISOString() as unknown as T;
+    } catch (e) {
+      return data;
+    }
   }
 
   // 4. Prisma Decimal Precision Guard
